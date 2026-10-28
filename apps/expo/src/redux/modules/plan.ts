@@ -14,6 +14,7 @@ import { RootState } from './reducer'
 import { importData, receiveLiveUpdates, USER_LOGOUT } from './user'
 import { markReadingSliceAsRead, setEntitySliceRead } from '~features/plans/planProgress'
 import { getEditorialKind, isCivilDate } from '~features/plans/readingCalendar'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 
 type ImageModel = { [key: string]: string }
 
@@ -49,6 +50,7 @@ let planCatalogReadAt: number | undefined
 export const fetchPlans = createAsyncThunk(
   'plan/fetchPlans',
   async (_options: { reuseRecent?: boolean } | void) => {
+    if (usesCyberJudahEditorial()) return [] as OnlinePlan[]
     const results = (await docsArr('plans')) as OnlinePlan[]
     planCatalogReadAt = Date.now()
     return results
@@ -71,6 +73,7 @@ export const fetchPlans = createAsyncThunk(
 export const fetchPlan = createAsyncThunk(
   'plan/fetchPlan',
   async ({ id, update = false }: { id: string; update?: boolean; enroll?: boolean }) => {
+    if (usesCyberJudahEditorial()) throw new Error('Reading content is unavailable')
     const planRef = doc(firebaseDb, 'plans', id)
 
     const planSnapshot = await getDoc(planRef)
@@ -107,6 +110,7 @@ const readOnlineLastUpdate = async (planId: string) => {
 export const updatePlans = createAsyncThunk(
   'plan/updatesPlans',
   async (arg, { dispatch, getState }) => {
+    if (usesCyberJudahEditorial()) return
     const myPlans: Plan[] = (getState() as RootState).plan.myPlans
 
     if (!myPlans.length) {

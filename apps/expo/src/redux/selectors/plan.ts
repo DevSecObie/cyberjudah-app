@@ -1,6 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '~redux/modules/reducer'
 import { OngoingPlan, OnlinePlan, Plan } from '~common/types'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 
 // Base selectors
 const selectMyPlans = (state: RootState) => state.plan.myPlans
@@ -12,6 +13,7 @@ const selectPlanState = (state: RootState) => state.plan
 export const selectSortedOnlinePlans = createSelector(
   [selectOnlinePlans],
   (onlinePlans): OnlinePlan[] => {
+    if (usesCyberJudahEditorial()) return []
     return [...onlinePlans].sort((a, b) => (a.featured === b.featured ? 0 : a.featured ? -1 : 1))
   }
 )

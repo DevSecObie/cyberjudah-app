@@ -16,6 +16,8 @@ import reducer, {
 } from '../plan'
 import { RECEIVE_LIVE_UPDATES, IMPORT_DATA, USER_LOGOUT } from '../user'
 import type { Plan, OngoingPlan, OnlinePlan, Section, ReadingSlice } from '~common/types'
+import { selectSortedOnlinePlans } from '~redux/selectors/plan'
+import type { RootState } from '../reducer'
 
 jest.mock('react-native', () => ({
   Appearance: {
@@ -110,6 +112,38 @@ const getInitialState = () => ({
   onlinePlans: [] as OnlinePlan[],
   ongoingPlans: [] as OngoingPlan[],
   images: {} as { [key: string]: string },
+})
+
+it('keeps saved plans intact while CyberJudah has no published plan catalog', async () => {
+  const originalProfile = process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+  process.env.EXPO_PUBLIC_RESOURCE_PROFILE = 'cyberjudah'
+  jest.mocked(getDocs).mockClear()
+  jest.mocked(getDoc).mockClear()
+  const saved = createPlan('reader-imported-plan')
+  const seeded = createPlan('bible-project-plan-en')
+  let state: { plan: ReturnType<typeof reducer> } = {
+    plan: { ...getInitialState(), myPlans: [saved, seeded], onlinePlans: [seeded] },
+  }
+  const getState = () => state
+  const dispatch: jest.Mock = jest.fn((action: unknown) => {
+    if (typeof action === 'function') return action(dispatch, getState, undefined)
+    state = { plan: reducer(state.plan, action as { type: string }) }
+    return action
+  })
+  try {
+    expect(selectSortedOnlinePlans(state as RootState)).toEqual([])
+    await fetchPlans()(dispatch as never, getState, undefined)
+    await updatePlans()(dispatch as never, getState, undefined)
+    const result = await fetchPlan({ id: seeded.id })(dispatch as never, getState, undefined)
+    expect(fetchPlan.rejected.match(result)).toBe(true)
+    expect(state.plan.onlinePlans).toEqual([])
+    expect(state.plan.myPlans).toEqual([saved, seeded])
+    expect(getDocs).not.toHaveBeenCalled()
+    expect(getDoc).not.toHaveBeenCalled()
+  } finally {
+    if (originalProfile === undefined) delete process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+    else process.env.EXPO_PUBLIC_RESOURCE_PROFILE = originalProfile
+  }
 })
 
 describe('Plan Reducer', () => {

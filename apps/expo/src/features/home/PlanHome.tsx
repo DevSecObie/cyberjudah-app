@@ -19,6 +19,7 @@ import { getEditorialKind } from '~features/plans/readingCalendar'
 import { hasPlanParticipation } from '~features/plans/planProgress'
 import FollowedPlanCard from '~features/plans/FollowedPlanCard'
 import useLanguage from '~helpers/useLanguage'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import { addPlan } from '~redux/modules/plan'
 import type { RootState } from '~redux/modules/reducer'
 
@@ -61,7 +62,7 @@ const useGetFirstPlans = () => {
   )
   const dispatch = useDispatch()
   useEffect(() => {
-    if (hasPlan) return
+    if (hasPlan || usesCyberJudahEditorial()) return
     let active = true
     void loadBibleProjectPlan(lang)
       .then(plan => {

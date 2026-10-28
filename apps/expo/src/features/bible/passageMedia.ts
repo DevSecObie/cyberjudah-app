@@ -2,6 +2,7 @@ import passageMediaJson from '~assets/passage-media.json'
 import { getBook } from '~helpers/bibleBookCatalog'
 import type { ActiveLanguage } from '~helpers/languageUtils'
 import englishBookNames from '../../../i18n/locales/en/translation_book.json'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 
 type PassageMediaPlacement =
   | 'introduction'
@@ -391,7 +392,17 @@ export const resolvePassageMediaLibrary = (
   return result
 }
 
-const passageMediaCatalog = passageMediaJson as PassageMediaCatalog
+const passageMediaCatalog: PassageMediaCatalog = usesCyberJudahEditorial()
+  ? {
+      attribution: {
+        label: 'CyberJudah',
+        url: 'https://cyberjudah.io',
+        termsUrl: 'https://cyberjudah.io/app/terms',
+      },
+      works: [],
+      indexes: { chapters: {}, strongs: {}, library: [] },
+    }
+  : (passageMediaJson as PassageMediaCatalog)
 
 export const getPassageMediaForChapter = (input: ResolvePassageMediaChapterInput) =>
   resolvePassageMediaChapter(passageMediaCatalog, input)

@@ -5,6 +5,7 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import i18n from '~i18n'
 
 import { cdnUrl } from '~helpers/firebase'
+import { canShowReadingPlan, usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import { cacheImage, fetchPlan, updatePlans } from '~redux/modules/plan'
 import { getPlanByIdSelector, getOngoingPlanByIdSelector } from '~redux/selectors/plan'
 
@@ -85,7 +86,7 @@ export const useComputedPlan = (id: string): ComputedPlan | undefined => {
   const plan = useSelector((state: RootState) => selectPlanById(state, id))
   const ongoingPlan = useSelector((state: RootState) => selectOngoingPlanById(state, id))
 
-  if (!plan) {
+  if (!plan || !canShowReadingPlan(plan.id)) {
     return
   }
 
@@ -116,12 +117,14 @@ export const useComputedPlanItems = (): ComputedPlanItem[] => {
     areOngoingPlansEqual
   )
 
-  return myPlans.map(plan =>
-    buildComputedPlanItem(
-      plan,
-      ongoingPlans.find(ongoingPlan => ongoingPlan.id === plan.id)
+  return myPlans
+    .filter(plan => canShowReadingPlan(plan.id))
+    .map(plan =>
+      buildComputedPlanItem(
+        plan,
+        ongoingPlans.find(ongoingPlan => ongoingPlan.id === plan.id)
+      )
     )
-  )
 }
 
 /**
@@ -135,6 +138,7 @@ export const useDownloadPlans = () => {
 
   // Plans are read once, when the screen mounts.
   const downloadMissingPlans = React.useEffectEvent(async () => {
+    if (usesCyberJudahEditorial()) return
     const planNeedsToBeDownloaded = ongoingPlans.filter(
       plan => !myPlans.find(myPlan => myPlan.id === plan.id)
     )
@@ -187,7 +191,7 @@ export const useDownloadFollowedPlans = () => {
   )
 
   React.useEffect(() => {
-    if (!missingIds) return
+    if (!missingIds || usesCyberJudahEditorial()) return
     for (const id of missingIds.split(',')) {
       if (requestedFollowedPlans.has(id)) continue
       requestedFollowedPlans.add(id)

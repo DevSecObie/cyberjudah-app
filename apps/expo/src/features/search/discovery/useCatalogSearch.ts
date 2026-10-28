@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { getEditorialKind } from '~features/plans/readingCalendar'
 import { useComputedPlanItems } from '~features/plans/plan.hooks'
 import { timelineEventsQueryOptions } from '~features/timeline/timelineEventsQuery'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import { matchesQuery } from '../shared/matchesQuery'
 import {
   searchCommentaries,
@@ -42,7 +43,7 @@ export function useCatalogSearch(
   })
   const plans = [
     ...savedPlans,
-    ...(catalog.data ?? cachedPlans).filter(
+    ...(usesCyberJudahEditorial() ? [] : (catalog.data ?? cachedPlans)).filter(
       plan => !savedPlans.some(saved => saved.id === plan.id)
     ),
   ]
