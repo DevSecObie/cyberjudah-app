@@ -306,6 +306,8 @@ type HttpStrongBibleResourceAdapterOptions = {
   /** Explains a request that failed without a response; defaults to the online gate. */
   isOfflineFailure?: () => Promise<boolean>
   bibleChapterAdapter: BibleChapterAdapter
+  /** Expected publication identity for a configured content provider. */
+  datasetIdForVersion?: (versionId: StrongBibleVersionId) => string | undefined
   timeoutMs?: number
   availabilityStaleTimeMs?: number
   now?: () => number
@@ -385,6 +387,7 @@ export const createHttpStrongBibleResourceAdapter = ({
   isOnline,
   isOfflineFailure = async () => !(await isOnline()),
   bibleChapterAdapter,
+  datasetIdForVersion = getStrongDatasetId,
   timeoutMs = 10_000,
   availabilityStaleTimeMs = STRONG_BIBLE_AVAILABILITY_STALE_TIME_MS,
   now = Date.now,
@@ -423,7 +426,7 @@ export const createHttpStrongBibleResourceAdapter = ({
     resource: { versionId: string; datasetId: string },
     versionId: StrongBibleVersionId
   ) => {
-    if (resource.versionId !== versionId || resource.datasetId !== getStrongDatasetId(versionId)) {
+    if (resource.versionId !== versionId || resource.datasetId !== datasetIdForVersion(versionId)) {
       throw new ResourceAccessError('INTEGRITY_FAILURE')
     }
   }

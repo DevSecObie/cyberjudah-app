@@ -231,6 +231,10 @@ const onlineStrongBibleAdapter = resourceApiBaseUrl
         isOnline: async () => onlineManager.isOnline(),
         isOfflineFailure: isLikelyOfflineAfterFailure,
         bibleChapterAdapter,
+        datasetIdForVersion:
+          process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+            ? versionId => (versionId === 'KJV' ? 'CYBERJUDAH' : undefined)
+            : undefined,
       })
     )
   : localStrongBibleResourceAdapter

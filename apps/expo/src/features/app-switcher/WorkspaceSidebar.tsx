@@ -128,14 +128,14 @@ const WorkspaceSidebar = ({
               className="flex-1 flex-row items-center min-h-[40px]"
               onPress={openHome}
               accessibilityRole="button"
-              accessibilityLabel={`Bible Strong — ${t('Accueil')}`}
+              accessibilityLabel={`CyberJudah — ${t('Accueil')}`}
             >
               <Image
                 source={require('~assets/images/icon.png')}
                 style={{ width: 24, height: 24, borderRadius: 12 }}
                 accessible={false}
               />
-              <Text className="flex-1 ml-[10px] font-bold text-[15px]">Bible Strong</Text>
+              <Text className="flex-1 ml-[10px] font-bold text-[15px]">CyberJudah</Text>
             </TouchableBox>
           </HStack>
           {/* A desktop scrollbar would take its width from the right margin of the rows only. */}

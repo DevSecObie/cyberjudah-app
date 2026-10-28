@@ -141,6 +141,10 @@ const strongBibleAdapter = resourceApiBaseUrl
       isOnline,
       isOfflineFailure: isLikelyOfflineAfterFailure,
       bibleChapterAdapter: bibleChapter,
+      datasetIdForVersion:
+        process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+          ? versionId => (versionId === 'KJV' ? 'CYBERJUDAH' : undefined)
+          : undefined,
     })
   : unavailableAccess<StrongBibleResourceAdapter>()
 const strongBible = createStrongBibleResourceAccess(strongBibleAdapter)

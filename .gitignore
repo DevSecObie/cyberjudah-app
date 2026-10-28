@@ -204,3 +204,8 @@ scripts/google-service-account.json
 
 # Generated video exports
 *.mp4
+
+# Local tool caches
+.corepack/
+.npm-cache/
+.yarn-cache/

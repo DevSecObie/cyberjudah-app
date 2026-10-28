@@ -67,6 +67,40 @@ const unavailableAdapter = (): jest.Mocked<StrongBibleResourceAdapter> => ({
 })
 
 describe('Strong Bible HTTP resource access', () => {
+  it.each(['CYBERJUDAH', 'KJV'])(
+    'checks the configured CyberJudah dataset against %s',
+    async datasetId => {
+      const adapter = createHttpStrongBibleResourceAdapter({
+        baseUrl: 'https://resources.test',
+        fetcher: (() =>
+          jsonResponse({
+            resource: { ...resource, versionId: 'KJV', datasetId },
+            identity: { kind: 'strong', code: 'H430' },
+            counts: [{ book: 1, verseCount: 1 }],
+          })) as typeof fetch,
+        isOnline: async () => true,
+        datasetIdForVersion: versionId => (versionId === 'KJV' ? 'CYBERJUDAH' : undefined),
+        bibleChapterAdapter: {
+          loadChapter: async () => ({ status: 'unavailable', reason: 'resource-unsupported' }),
+          loadCoverage: async () => ({ status: 'unavailable', reason: 'resource-unsupported' }),
+        },
+      })
+      const result = adapter.loadCountsByBook('KJV', {
+        currentVersionId: 'KJV',
+        defaultVersionId: 'KJV',
+        book: 1,
+        reference: 'H430',
+      })
+      if (datasetId === 'CYBERJUDAH') {
+        await expect(result).resolves.toMatchObject({
+          counts: [{ Livre: 1, versesCountByBook: 1 }],
+        })
+      } else {
+        await expect(result).rejects.toMatchObject({ code: 'INTEGRITY_FAILURE' })
+      }
+    }
+  )
+
   it('resolves a padded lexicon reference through unpadded KJV concordance endpoints', async () => {
     const identity = { kind: 'dstrong', code: 'H430G' }
     const fetcher = jest.fn((url: string) => {
