@@ -93,3 +93,41 @@ it('keeps the restore disabled when the Telegram logout request fails', async ()
   expect(mockSignIn).not.toHaveBeenCalled()
   expect(fetch).toHaveBeenCalledTimes(1)
 })
+it('does not restore the Telegram session in a new tab after its logout request failed', async () => {
+  const local = new Map<string, string>()
+  Object.defineProperty(global, 'localStorage', {
+    configurable: true,
+    value: {
+      getItem: (k: string) => local.get(k) ?? null,
+      setItem: (k: string, v: string) => local.set(k, v),
+      removeItem: (k: string) => local.delete(k),
+    },
+  })
+  jest.mocked(fetch).mockRejectedValueOnce(new Error('offline'))
+  const first = await import('../cyberJudahAccount.web')
+  await expect(first.endCyberJudahSession()).rejects.toThrow('offline')
+
+  // A new tab: its session storage starts empty, while the server session may still be alive.
+  mockStore.clear()
+  jest.resetModules()
+  // The server session is still alive and the logout retry fails again.
+  jest.mocked(fetch).mockImplementation((async (url: string) => {
+    if (url === '/api/auth/logout') throw new Error('still offline')
+    return response({ user: { id: 1 }, token: 'server-token' })
+  }) as never)
+  const next = await import('../cyberJudahAccount.web')
+  await next.restoreCyberJudahSession()
+  expect(mockSignIn).not.toHaveBeenCalled()
+
+  // Once the logout finally succeeds, the sign-out is complete and nothing is restored either.
+  mockStore.clear()
+  jest.mocked(fetch).mockReset()
+  jest.mocked(fetch).mockResolvedValue(response({ ok: true }) as never)
+  await next.restoreCyberJudahSession()
+  expect(fetch).toHaveBeenCalledWith(
+    '/api/auth/logout',
+    expect.objectContaining({ method: 'POST' })
+  )
+  expect(mockSignIn).not.toHaveBeenCalled()
+  expect(local.size).toBe(0)
+})

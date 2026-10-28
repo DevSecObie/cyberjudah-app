@@ -11,6 +11,24 @@ import { toast } from './toast'
 let sessionRevision = 0
 let activeRestoreSignIn: Promise<unknown> | undefined
 const pendingKey = 'cyberjudah:link-telegram'
+// Kept across tabs until the server confirms the Telegram session ended: session storage alone
+// lets a new tab restore a session whose logout request failed.
+const pendingLogoutKey = 'cyberjudah:telegram-logout-pending'
+const readLocal = (key: string) => {
+  try {
+    return globalThis.localStorage?.getItem(key) ?? null
+  } catch {
+    return null
+  }
+}
+const writeLocal = (key: string, value: string | null) => {
+  try {
+    if (value === null) globalThis.localStorage?.removeItem(key)
+    else globalThis.localStorage?.setItem(key, value)
+  } catch {
+    // Storage may be unavailable; the session flag still covers this tab.
+  }
+}
 const enabled = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
 const api = (path: string, init?: RequestInit) =>
   fetch(`/api/${path}`, {
@@ -93,6 +111,12 @@ export async function restoreCyberJudahSession() {
       return
     }
     if (auth.currentUser || sessionStorage.getItem('cyberjudah:signed-out')) return
+    if (readLocal(pendingLogoutKey)) {
+      // Finish the logout the reader asked for instead of signing them back in.
+      const logout = await api('auth/logout', { method: 'POST' })
+      if (logout.ok) writeLocal(pendingLogoutKey, null)
+      return
+    }
     const initialUser = auth.currentUser
     const response = await api('auth/status')
     const status = await response.json()
@@ -124,8 +148,10 @@ export async function endCyberJudahSession() {
   ++sessionRevision
   sessionStorage.setItem('cyberjudah:signed-out', '1')
   sessionStorage.removeItem(pendingKey)
+  writeLocal(pendingLogoutKey, '1')
   // Let any SDK sign-in already dispatched settle before the caller signs Firebase out.
   await activeRestoreSignIn?.catch(() => undefined)
   const response = await api('auth/logout', { method: 'POST' })
   if (!response.ok) throw new Error('Telegram could not be signed out. Please try again.')
+  writeLocal(pendingLogoutKey, null)
 }
