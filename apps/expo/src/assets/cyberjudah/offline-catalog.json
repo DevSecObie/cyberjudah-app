@@ -2,7 +2,7 @@
   "format": "bible-strong-mobile-resource-catalog",
   "schemaVersion": 1,
   "generatedAt": "2026-10-25T15:12:31.261Z",
-  "resourceCount": 2,
+  "resourceCount": 4,
   "resources": {
     "bible:KJV": {
       "id": "bible:KJV",
@@ -47,6 +47,48 @@
       "strategy": "archive-extract",
       "textRevision": "3a5a5432a8357dcda5092441248d45ddac40ae1668498007bd83d9eed51c12fd",
       "textSha256": "3a5a5432a8357dcda5092441248d45ddac40ae1668498007bd83d9eed51c12fd"
+    },
+    "database:TIMELINE:en": {
+      "id": "database:TIMELINE:en",
+      "file": "cyberjudah-timeline-en.json.zip",
+      "entry": "bible-timeline-events.json",
+      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/cyberjudah-timeline-en.json.zip?sha256=1dc5e082e0e35a7d3ad153c903eb3c538bb1ca8143b5e6b556015c437bd4a6eb",
+      "entries": {
+        "canonical": {
+          "entry": "bible-timeline-events.json",
+          "sha256": "04d55a5b60ef1ced89de0373c913d75bcb826a7219fb1f9864eee1354520d7cc",
+          "bytes": 1661066
+        }
+      },
+      "archiveSha256": "1dc5e082e0e35a7d3ad153c903eb3c538bb1ca8143b5e6b556015c437bd4a6eb",
+      "archiveBytes": 527703,
+      "contentSha256": "04d55a5b60ef1ced89de0373c913d75bcb826a7219fb1f9864eee1354520d7cc",
+      "contentBytes": 1661066,
+      "installedBytes": 1661066,
+      "peakInstallationBytes": 3849835,
+      "strategy": "archive-extract",
+      "resourceRevision": "cj-timeline-44d9dfb398295250fa3266c55db748ed39c36db6fae8f351ed11d378e1e86b49"
+    },
+    "database:TIMELINE:fr": {
+      "id": "database:TIMELINE:fr",
+      "file": "cyberjudah-timeline-en.json.zip",
+      "entry": "bible-timeline-events.json",
+      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/cyberjudah-timeline-en.json.zip?sha256=1dc5e082e0e35a7d3ad153c903eb3c538bb1ca8143b5e6b556015c437bd4a6eb",
+      "entries": {
+        "canonical": {
+          "entry": "bible-timeline-events.json",
+          "sha256": "04d55a5b60ef1ced89de0373c913d75bcb826a7219fb1f9864eee1354520d7cc",
+          "bytes": 1661066
+        }
+      },
+      "archiveSha256": "1dc5e082e0e35a7d3ad153c903eb3c538bb1ca8143b5e6b556015c437bd4a6eb",
+      "archiveBytes": 527703,
+      "contentSha256": "04d55a5b60ef1ced89de0373c913d75bcb826a7219fb1f9864eee1354520d7cc",
+      "contentBytes": 1661066,
+      "installedBytes": 1661066,
+      "peakInstallationBytes": 3849835,
+      "strategy": "archive-extract",
+      "resourceRevision": "cj-timeline-44d9dfb398295250fa3266c55db748ed39c36db6fae8f351ed11d378e1e86b49"
     }
   }
 }

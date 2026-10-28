@@ -1,6 +1,7 @@
 import { useTimelineTranslation } from './useTimelineLanguage'
 import { viewportWidth, wp, wpUI } from '~helpers/utils'
 import { mapRange, offset, scrollViewHeight } from './constants'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import {
   Extrapolation,
   interpolate,
@@ -27,6 +28,7 @@ export const useTimeline = ({
   const height = scrollViewHeight + 200
 
   const yearNow = new Date().getFullYear()
+  const isCyberJudah = usesCyberJudahEditorial()
   const avJCString = t('avJC')
   const futurString = t('futur')
 
@@ -44,7 +46,7 @@ export const useTimeline = ({
       interpolate(currentTimelineX, [0, scrollViewWidth], [startYear, endYear], Extrapolation.CLAMP)
     )
 
-    if (currentYearNb >= yearNow) {
+    if (currentYearNb >= yearNow && !isCyberJudah) {
       return futurString
     } else {
       const yearSuffix = currentYearNb >= 0 ? '' : avJCString

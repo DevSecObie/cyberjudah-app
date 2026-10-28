@@ -16,6 +16,7 @@ import useTimelineLanguage from './useTimelineLanguage'
 import { getLegacyLocalizedField } from '~helpers/languageUtils'
 import { wp } from '~helpers/utils'
 import { ShallowTimelineSection } from './types'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 interface Props extends ShallowTimelineSection {
   inline?: boolean
   modalRef: React.RefObject<SheetRef | null>
@@ -105,7 +106,11 @@ const SectionDetailsModal = ({
             {`${t('Vous souhaitez aller plus loin ?')}\n`}
             <InlineLink
               scale={-2}
-              href="https://www.bibleuniverse.com/study-tools/storacles/c/3/l/french"
+              href={
+                usesCyberJudahEditorial()
+                  ? 'https://cyberjudah.io/app/timeline'
+                  : 'https://www.bibleuniverse.com/study-tools/storacles/c/3/l/french'
+              }
             >
               {t('Cliquez ici')}
             </InlineLink>

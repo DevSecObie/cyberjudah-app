@@ -9,6 +9,7 @@ import { floatingShadow } from '~common/ui/surfaces'
 import Text from '~common/ui/Text'
 import { offset } from './constants'
 import { useTimelineTranslation } from './useTimelineLanguage'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 const Datebar = ({
   width,
   x,
@@ -63,7 +64,7 @@ const Datebar = ({
                 ...titleFontStyle(stylingTheme),
               }}
             >
-              {value < 2020 ? Math.abs(value) : t('Futur')}
+              {usesCyberJudahEditorial() || value < 2020 ? Math.abs(value) : t('Futur')}
             </Text>
           </Box>
         </Box>

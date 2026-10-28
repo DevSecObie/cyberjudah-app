@@ -1,6 +1,7 @@
 import { wp } from '~helpers/utils'
 import i18n from '~i18n'
 import type { ResourceLanguage } from '~helpers/databaseTypes'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 
 export const offsetTop = 50
 export const rows = 24
@@ -22,19 +23,19 @@ export const calculateLabel = (start: number, end: number, language: ResourceLan
   const absEnd = Math.abs(end)
   const range = Math.abs(start - end)
 
-  if (start >= 3000 && end >= 3000) {
+  if (!usesCyberJudahEditorial() && start >= 3000 && end >= 3000) {
     return t('Après le millenium')
   }
 
-  if (start >= 2010 && end >= 2010) {
+  if (!usesCyberJudahEditorial() && start >= 2010 && end >= 2010) {
     return t('Futur')
   }
 
-  if (end === 2020) {
+  if (!usesCyberJudahEditorial() && end === 2020) {
     return `${absStart}${t('-Futur')}`
   }
 
-  if (end === 1844) {
+  if (!usesCyberJudahEditorial() && end === 1844) {
     return t('457 av.JC. à 1844')
   }
 

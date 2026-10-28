@@ -37,6 +37,23 @@ try {
     assert.equal(content.length, entry.contentBytes)
     await writeFile(join(temp, entry.entry), content)
     if (entry.id === 'bible:KJV') bible = JSON.parse(content)
+    if (entry.id === 'database:TIMELINE:en' || entry.id === 'database:TIMELINE:fr') {
+      const events = JSON.parse(content)
+      const geometry = JSON.parse(
+        await readFile(join(app, 'src/assets/cyberjudah/timeline-sections.json'), 'utf8')
+      )
+      const timeline = JSON.parse(
+        await readFile(join(app, 'src/assets/cyberjudah/timeline-publication.json'), 'utf8')
+      )
+      assert.equal(events.length, timeline.readableEvents)
+      assert.equal(new Set(events.map(event => event.slug)).size, events.length)
+      assert.equal(`cj-timeline-${hash(JSON.stringify({ geometry, events }))}`, timeline.revision)
+      for (const event of events) {
+        assert.ok(geometry.some(section => section.events.some(row => row.slug === event.slug)))
+        assert.equal(typeof event.article, 'string')
+        assert.ok(Array.isArray(event.scriptures))
+      }
+    }
   }
   assert.equal(bible.schemaVersion, 4)
   assert.equal(bible.datasetId, 'CYBERJUDAH')

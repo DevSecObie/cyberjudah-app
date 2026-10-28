@@ -143,12 +143,15 @@ if (db.prepare('PRAGMA integrity_check').get().integrity_check !== 'ok')
   throw new Error('Invalid SQLite archive')
 db.close()
 await writeFile(join(output, 'KJV.json'), JSON.stringify(text))
+const existingCatalog = JSON.parse(
+  await readFile(join(app, 'src/assets/cyberjudah/offline-catalog.json'), 'utf8')
+)
 const catalog = {
   format: 'bible-strong-mobile-resource-catalog',
   schemaVersion: 1,
   generatedAt: metadata.built,
   resourceCount: 2,
-  resources: {},
+  resources: { ...existingCatalog.resources },
 }
 for (const [id, file, strategy] of [
   ['bible:KJV', 'KJV.json', 'sqlite-import'],
@@ -179,6 +182,7 @@ for (const [id, file, strategy] of [
   }
   await rm(join(output, file))
 }
+catalog.resourceCount = Object.keys(catalog.resources).length
 await writeFile(
   join(app, 'src/assets/cyberjudah/offline-catalog.json'),
   JSON.stringify(catalog, null, 2) + '\n'
