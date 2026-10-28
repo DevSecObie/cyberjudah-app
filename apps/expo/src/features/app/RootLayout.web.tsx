@@ -16,7 +16,6 @@ import ErrorBoundary from '~common/ErrorBoundary'
 import FullAppRuntime from '~features/app/FullAppRuntime'
 import { ResourceAccessProvider } from '~features/resources/resourceAccess'
 import { configureQueryManagers, queryClient } from '~helpers/queryClient'
-import { initializeResourceAppCheck } from '~helpers/resourceAppCheck'
 import { filterSentryEvent } from '~helpers/sentryEventFilter'
 import useCurrentThemeSelector from '~helpers/useCurrentThemeSelector'
 import type { RootState } from '~redux/modules/reducer'
@@ -69,10 +68,10 @@ const RootLayout = () => {
   useEffect(() => {
     let active = true
     configureQueryManagers()
-    Promise.all([
-      initializeResourceAppCheck(),
-      loadWebFonts().catch(error => appLogger.error('startup', 'fonts.failed', { error })),
-    ])
+    // Public reading does not need attestation. Protected requests initialize App Check
+    // on demand and still fail closed when its configuration is missing.
+    loadWebFonts()
+      .catch(error => appLogger.error('startup', 'fonts.failed', { error }))
       .then(() => setI18n())
       .then(() => {
         startPersistence()

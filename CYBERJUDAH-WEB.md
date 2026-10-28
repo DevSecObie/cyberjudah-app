@@ -39,6 +39,8 @@ Output: `apps/expo/dist`. This command builds only; it does not deploy.
   `CYBERJUDAH`. Every response still passes the upstream schema and publication
   identity checks. Other datasets are rejected. Both web and native adapters use
   this mapping when that profile is enabled.
+- Public reading boots without App Check. Protected downloads/assistant requests
+  still initialize App Check on demand and fail closed without valid configuration.
 - Analytics, Sentry reporting, the upstream study-assistant endpoint and automatic
   OTA updates are disabled in the local CyberJudah environment.
 
@@ -49,8 +51,8 @@ Output: `apps/expo/dist`. This command builds only; it does not deploy.
 - Tabs and selected passage survive reload.
 - Cross-reference excerpts and dictionary discovery around John 3:16.
 - Strong display, clickable G2316 and the original Greek-definition popover.
-- Typecheck; targeted Firebase/Strong HTTP tests (25 passing); upstream styling
-  guard; architecture guard (existing warnings); production web export.
+- Typecheck; targeted Firebase, App Check and Strong HTTP tests (36 passing); upstream styling
+  guard; architecture guard (existing warnings); production web export and browser boot.
 
 ## Incomplete integration — not a release candidate
 
