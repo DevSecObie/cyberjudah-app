@@ -6,11 +6,15 @@ export const BIBLE_REFERENCE_PARSER_VERSION = '3.2.0-bible-strong.2'
 
 const languages = { en, fr }
 
-export const createBibleReferenceParser = language => {
+export const createBibleReferenceParser = (language, { bookAliases = [] } = {}) => {
   if (!(language in languages)) {
     throw new Error(`BIBLE_REFERENCE_PARSER_LANGUAGE_UNSUPPORTED:${language}`)
   }
   const parser = new bcv_parser(languages[language])
+  if (bookAliases.length)
+    parser.add_books({
+      books: bookAliases.map(({ osis, pattern }) => ({ osis: [osis], regexp: pattern })),
+    })
   parser.set_options({
     book_match_strategy: 'strict',
     consecutive_combination_strategy: 'separate',

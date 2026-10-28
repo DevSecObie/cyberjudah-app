@@ -42,3 +42,22 @@ describe('CyberJudah book identities', () => {
     })
   })
 })
+
+it.each([
+  ['Rest of Esther 10:4', 'GkEsth.10.4'],
+  ['Prayer of Manasses 1:1', 'PrMan.1.1'],
+])('recognizes the published book name %s', async (text, osis) => {
+  const { createBibleReferenceParser } =
+    await import('@bible-strong/bible-reference-parser/reference-parser')
+  const parser = createBibleReferenceParser('en', {
+    bookAliases: [
+      { osis: 'GkEsth', pattern: /Rest of Esther/ },
+      { osis: 'PrMan', pattern: /Prayer of Manasses/ },
+    ],
+  })
+  expect(parser.parse(text).osis()).toBe(osis)
+  expect(parser.parse(`Read ${text} today`).osis_and_indices()[0].indices).toEqual([
+    5,
+    5 + text.length,
+  ])
+})

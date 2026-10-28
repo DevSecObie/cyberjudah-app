@@ -53,11 +53,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     versionCode: 514,
     package: isCyberJudah ? 'io.cyberjudah.app' : 'com.smontlouis.biblestrong',
-    googleServicesFile:
-      process.env.ANDROID_GOOGLE_SERVICES_FILE ??
-      (isCyberJudah
-        ? 'firebase/cyberjudah/google-services.json'
-        : 'firebase/dev/google-services.json'),
+    googleServicesFile: isCyberJudah
+      ? 'firebase/cyberjudah/google-services.json'
+      : (process.env.ANDROID_GOOGLE_SERVICES_FILE ?? 'firebase/dev/google-services.json'),
     adaptiveIcon: {
       foregroundImage: './assets/images/foreground-image.png',
       backgroundImage: './assets/images/background-image.png',
@@ -79,15 +77,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
   },
   ios: {
+    ...(isCyberJudah && process.env.CYBERJUDAH_APPLE_TEAM_ID
+      ? { appleTeamId: process.env.CYBERJUDAH_APPLE_TEAM_ID }
+      : {}),
     bundleIdentifier:
       process.env.BUNDLE_IDENTIFIER ??
       (isCyberJudah ? 'io.cyberjudah.app.dev' : 'com.smontlouis.biblestrong.dev'),
     buildNumber: '301',
-    googleServicesFile:
-      process.env.IOS_GOOGLE_SERVICES_FILE ??
-      (isCyberJudah
-        ? './firebase/cyberjudah/GoogleService-Info.plist'
-        : './firebase/dev/GoogleService-Info.plist'),
+    googleServicesFile: isCyberJudah
+      ? './firebase/cyberjudah/GoogleService-Info.plist'
+      : (process.env.IOS_GOOGLE_SERVICES_FILE ?? './firebase/dev/GoogleService-Info.plist'),
     userInterfaceStyle: 'automatic',
     supportsTablet: true,
     infoPlist: {

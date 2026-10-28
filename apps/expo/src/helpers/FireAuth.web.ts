@@ -369,7 +369,12 @@ export class WebFireAuth {
     this.isLoggingOut = true
     const hadUser = Boolean(this.user)
     try {
-      await endCyberJudahSession()
+      // A failed Telegram logout must never retain the Firebase account locally.
+      try {
+        await endCyberJudahSession()
+      } catch (error) {
+        this.onError?.(error)
+      }
       await signOut(getAuth(firebaseApp))
       void identifyAnalyticsUser(null)
       if (this.user) {

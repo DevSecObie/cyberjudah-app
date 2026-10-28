@@ -806,7 +806,10 @@ const getExpectedSidecar = (
     strongRevision: snapshot.metadata.strongRevision,
     schemaVersion: STRONG_BIBLE_INDEX_MIN_SCHEMA_VERSION,
     ...snapshot.counts,
-    reverseInterlinearSchemaVersion: REVERSE_INTERLINEAR_MIN_SCHEMA_VERSION,
+    reverseInterlinearSchemaVersion:
+      process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+        ? undefined
+        : REVERSE_INTERLINEAR_MIN_SCHEMA_VERSION,
   }
 }
 

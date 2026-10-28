@@ -162,3 +162,14 @@ describe('WebFireAuth account-switch races', () => {
     expect(auth.user?.uid).toBe('second')
   })
 })
+
+it('signs Firebase out even if the Telegram logout service is unreachable', async () => {
+  const { endCyberJudahSession } = await import('../cyberJudahAccount')
+  const { signOut } = await import('firebase/auth')
+  const { WebFireAuth } = await import('../FireAuth.web')
+  jest.mocked(endCyberJudahSession).mockRejectedValueOnce(new Error('offline'))
+  const auth = new WebFireAuth()
+  await auth.init(jest.fn(), jest.fn(), jest.fn(), jest.fn(), jest.fn(), {} as never)
+  await auth.logout()
+  expect(signOut).toHaveBeenCalled()
+})

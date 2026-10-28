@@ -29,9 +29,21 @@ export interface InlineBibleReference {
   target: BibleReferenceTarget
 }
 
+const parserOptions =
+  process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+    ? {
+        bookAliases: [
+          { osis: 'GkEsth', pattern: /Rest of Esther/ },
+          { osis: 'PrMan', pattern: /Prayer of Manasses/ },
+          { osis: 'EpJer', pattern: /Epistle of Jeremy/ },
+          { osis: 'SgThree', pattern: /Song of the Three Holy Children/ },
+        ],
+      }
+    : undefined
+
 const bcvByLanguage: Record<BcvLanguage, BibleReferenceParser> = {
-  fr: createBibleReferenceParser('fr'),
-  en: createBibleReferenceParser('en'),
+  fr: createBibleReferenceParser('fr', parserOptions),
+  en: createBibleReferenceParser('en', parserOptions),
 }
 
 const getBcvParser = (parserLanguage: BcvLanguage = getLanguage()) => bcvByLanguage[parserLanguage]

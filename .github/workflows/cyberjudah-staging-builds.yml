@@ -26,7 +26,8 @@ jobs:
       - run: yarn workspaces focus @bible-strong/expo
       - run: cp apps/expo/.env.cyberjudah.example apps/expo/.env.local
       - run: yarn workspace @bible-strong/expo typecheck
-      - run: yarn workspace @bible-strong/expo exec jest src/helpers/__tests__/firestoreScope-test.ts src/helpers/__tests__/FireAuth.web-test.ts src/helpers/__tests__/cyberJudahCatalog-test.ts --runInBand
+      - run: yarn workspace @bible-strong/expo exec jest src/helpers/__tests__/firestoreScope-test.ts src/helpers/__tests__/FireAuth.web-test.ts src/helpers/__tests__/cyberJudahCatalog-test.ts src/helpers/__tests__/cyberJudahAccount.web-test.ts src/helpers/__tests__/cyberJudahOffline-test.ts --runInBand
+      - run: node --experimental-strip-types apps/expo/scripts/verify-cyberjudah-offline.mjs
       - run: yarn workspace @bible-strong/expo exec expo export --platform web
       - uses: actions/upload-artifact@v4
         with:
@@ -55,6 +56,10 @@ jobs:
       - run: yarn workspaces focus @bible-strong/expo
       - run: cp apps/expo/.env.cyberjudah.example apps/expo/.env.local
       - run: yarn workspace @bible-strong/expo exec expo prebuild --platform android --no-install
+      - run: node apps/expo/scripts/verify-cyberjudah-native-config.mjs android
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
       - name: Configure the private staging signing key
         env:
           CJ_KEYSTORE: ${{ secrets.ANDROID_STAGING_KEYSTORE_BASE64 }}
@@ -103,6 +108,7 @@ jobs:
       - run: yarn workspaces focus @bible-strong/expo
       - run: cp apps/expo/.env.cyberjudah.example apps/expo/.env.local
       - run: yarn workspace @bible-strong/expo exec expo prebuild --platform ios --no-install
+      - run: node apps/expo/scripts/verify-cyberjudah-native-config.mjs ios
       - run: pod install
         working-directory: apps/expo/ios
       - name: Compile iPhone archive without signing or publishing

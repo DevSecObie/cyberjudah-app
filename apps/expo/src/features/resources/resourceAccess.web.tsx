@@ -96,7 +96,13 @@ const unavailableAccess = <Access extends object>(): Access =>
   ) as Access
 
 const bibleVersions = new Set(resourceApiBaseUrl ? ONLINE_BIBLE_VERSION_IDS : [])
-const strongBibleVersions = new Set(resourceApiBaseUrl ? STRONG_BIBLE_FALLBACK_PRIORITY : [])
+const strongBibleVersions = new Set(
+  resourceApiBaseUrl
+    ? process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+      ? ['KJV']
+      : STRONG_BIBLE_FALLBACK_PRIORITY
+    : []
+)
 const languages = new Set<ResourceLanguage>(
   resourceApiBaseUrl
     ? process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'

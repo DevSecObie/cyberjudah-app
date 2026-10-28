@@ -13,6 +13,7 @@ export type StrongBibleVersionId =
   | 'RV1895'
 
 export type StrongBibleDatasetId =
+  | 'CYBERJUDAH'
   | 'LSG'
   | 'DBY'
   | 'DBYR'

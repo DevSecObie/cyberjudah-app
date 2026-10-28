@@ -1,3 +1,4 @@
+import { isCyberJudahPublicArchive } from './cyberJudahPublicArchive'
 import * as FileSystem from 'expo-file-system/legacy'
 
 import { resolveOfflineArchiveSource, type OfflineArchiveSource } from './offlineArchiveSource'
@@ -58,7 +59,7 @@ export const downloadResourceArtifact = async ({
   ): Promise<DownloadResourceArtifactResult> => {
     // Encrypted copies are public; only plain archives still need an attestation.
     const appCheckToken =
-      source.kind === 'plain'
+      source.kind === 'plain' && !isCyberJudahPublicArchive(source.url, source.archiveSha256)
         ? await getResourceDownloadAppCheckToken(source.url, forceAppCheckRefresh)
         : undefined
     const appCheckHeaders: Record<string, string> = appCheckToken

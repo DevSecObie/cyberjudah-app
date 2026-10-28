@@ -1,5 +1,6 @@
+import cyberJudahCatalog from '../assets/cyberjudah/offline-catalog.json'
 import {
-  BUNDLED_MOBILE_RESOURCE_CATALOG as catalogJson,
+  BUNDLED_MOBILE_RESOURCE_CATALOG as upstreamCatalogJson,
   type MobileResourceCatalog,
   type MobileResourceCatalogEntry,
   type MobileResourceCatalogFileEntry,
@@ -16,9 +17,15 @@ export type {
   MobileResourceInstallationStrategy,
 } from '@bible-strong/resource-catalog/catalog'
 
-export const MOBILE_RESOURCE_CATALOG_URL = 'https://api.bible-strong.app/v1/offline-catalog'
-export const MOBILE_RESOURCE_ARTIFACT_BASE_URL =
-  'https://api.bible-strong.app/v1/offline-artifacts/'
+const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+const catalogJson = isCyberJudah ? cyberJudahCatalog : upstreamCatalogJson
+const cyberJudahOrigin = 'https://cyberjudah-telegram-staging.oisrae1.workers.dev'
+export const MOBILE_RESOURCE_CATALOG_URL = isCyberJudah
+  ? `${cyberJudahOrigin}/offline/catalog.json`
+  : 'https://api.bible-strong.app/v1/offline-catalog'
+export const MOBILE_RESOURCE_ARTIFACT_BASE_URL = isCyberJudah
+  ? `${cyberJudahOrigin}/offline/`
+  : 'https://api.bible-strong.app/v1/offline-artifacts/'
 export const resourceArtifactUrl = (path: string): string =>
   new URL(path, MOBILE_RESOURCE_ARTIFACT_BASE_URL).toString()
 const MOBILE_RESOURCE_CATALOG_TIMEOUT_MS = 3_000

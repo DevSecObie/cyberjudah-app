@@ -276,7 +276,8 @@
     "testPathIgnorePatterns": [],
     "moduleNameMapper": {
       "^@sentry/react-native$": "<rootDir>/test/jestSentryMock.js",
-      "/modules/bible-strong-archive$": "<rootDir>/test/jestBibleStrongArchiveMock.js"
+      "/modules/bible-strong-archive$": "<rootDir>/test/jestBibleStrongArchiveMock.js",
+      "^expo/virtual/env$": "<rootDir>/test/jestExpoEnvMock.js"
     },
     "transformIgnorePatterns": [
       "/node_modules/(?!@bible-strong/bible-reference-parser/)"

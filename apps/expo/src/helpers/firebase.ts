@@ -77,21 +77,27 @@ export const CDN_URL = 'https://assets.bible-strong.app/'
 export const cdnUrl = (path: string) => `${CDN_URL}${path}`
 
 // French database URLs
-export const databasesRef = {
-  MHY: getMobileResourceCatalogEntry('database:MHY:fr').url,
-  TRESOR: getMobileResourceCatalogEntry('database:TRESOR:fr').url,
-  DICTIONNAIRE: getMobileResourceCatalogEntry('database:DICTIONNAIRE:fr').url,
-  NAVE: getMobileResourceCatalogEntry('database:NAVE:fr').url,
-  TIMELINE: getMobileResourceCatalogEntry('database:TIMELINE:fr').url,
-}
+export const databasesRef: Partial<Record<RemoteDatabaseId, string>> =
+  process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+    ? {}
+    : {
+        MHY: getMobileResourceCatalogEntry('database:MHY:fr').url,
+        TRESOR: getMobileResourceCatalogEntry('database:TRESOR:fr').url,
+        DICTIONNAIRE: getMobileResourceCatalogEntry('database:DICTIONNAIRE:fr').url,
+        NAVE: getMobileResourceCatalogEntry('database:NAVE:fr').url,
+        TIMELINE: getMobileResourceCatalogEntry('database:TIMELINE:fr').url,
+      }
 
 // English database URLs
-export const databasesEnRef: Partial<Record<RemoteDatabaseId, string>> = {
-  TRESOR: getMobileResourceCatalogEntry('database:TRESOR:fr').url,
-  DICTIONNAIRE: getMobileResourceCatalogEntry('database:DICTIONNAIRE:en').url,
-  NAVE: getMobileResourceCatalogEntry('database:NAVE:en').url,
-  TIMELINE: getMobileResourceCatalogEntry('database:TIMELINE:en').url,
-}
+export const databasesEnRef: Partial<Record<RemoteDatabaseId, string>> =
+  process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+    ? {}
+    : {
+        TRESOR: getMobileResourceCatalogEntry('database:TRESOR:fr').url,
+        DICTIONNAIRE: getMobileResourceCatalogEntry('database:DICTIONNAIRE:en').url,
+        NAVE: getMobileResourceCatalogEntry('database:NAVE:en').url,
+        TIMELINE: getMobileResourceCatalogEntry('database:TIMELINE:en').url,
+      }
 
 // Database IDs that have remote URLs (excludes BIBLES which is local-only)
 type RemoteDatabaseId = Exclude<DatabaseId, 'BIBLES'>

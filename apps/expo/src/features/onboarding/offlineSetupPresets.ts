@@ -1,3 +1,4 @@
+import { MOBILE_RESOURCE_CATALOG } from '~helpers/mobileResourceCatalog'
 import { getSimpleStrongModuleId } from '@bible-strong/resource-domain/strong-lexicon'
 import { versions } from '~helpers/bibleVersions'
 import { databases } from '~helpers/databases'
@@ -424,6 +425,35 @@ export const getOfflineSetupFolderSections = (
   folderId: OfflineSetupFolderId,
   lang: ResourceLanguage
 ): OfflineSetupSection[] => {
+  if (process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah') {
+    if (folderId === 'read-bible') return flattenResourceSections(getReadableBibleSections(lang))
+    // The CyberJudah publication has no offline lexicon or original-language dataset yet.
+    // Keep the upstream folders and only offer complete, published download choices.
+    if (folderId === 'understand-words') return []
+    if (folderId === 'original-languages') return []
+    return getExploreSections(lang)
+      .map(section => ({
+        ...section,
+        options: section.options.filter(option =>
+          option.selections.every(
+            selection =>
+              getOnboardingResourceSelectionId(selection) in MOBILE_RESOURCE_CATALOG.resources
+          )
+        ),
+        groups: section.groups
+          ?.map(group => ({
+            ...group,
+            options: group.options.filter(option =>
+              option.selections.every(
+                selection =>
+                  getOnboardingResourceSelectionId(selection) in MOBILE_RESOURCE_CATALOG.resources
+              )
+            ),
+          }))
+          .filter(group => group.options.length > 0),
+      }))
+      .filter(section => section.options.length > 0 || section.groups?.length)
+  }
   switch (folderId) {
     case 'read-bible':
       return flattenResourceSections(getReadableBibleSections(lang))

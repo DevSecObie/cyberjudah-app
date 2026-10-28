@@ -21,5 +21,6 @@ export interface BibleReferenceParser {
 export const BIBLE_REFERENCE_PARSER_VERSION: string
 
 export function createBibleReferenceParser(
-  language: BibleReferenceParserLanguage
+  language: BibleReferenceParserLanguage,
+  options?: { bookAliases?: { osis: string; pattern: RegExp }[] }
 ): BibleReferenceParser

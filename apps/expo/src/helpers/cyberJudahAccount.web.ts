@@ -8,6 +8,8 @@ import {
 import { firebaseApp } from './firebaseApp.web'
 import { toast } from './toast'
 
+let sessionRevision = 0
+let activeRestoreSignIn: Promise<unknown> | undefined
 const pendingKey = 'cyberjudah:link-telegram'
 const enabled = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
 const api = (path: string, init?: RequestInit) =>
@@ -57,6 +59,7 @@ export async function connectTelegramAccount() {
       )
     if (auth.currentUser?.uid !== user.uid) throw new Error('The signed-in account changed.')
     // No token or identity proof is put in storage or in the redirect URL.
+    sessionStorage.removeItem('cyberjudah:signed-out')
     sessionStorage.setItem(pendingKey, JSON.stringify({ uid: user.uid, created: Date.now() }))
     window.location.assign('/api/auth/start?return=profile')
   } catch (error) {
@@ -66,15 +69,21 @@ export async function connectTelegramAccount() {
 
 export async function restoreCyberJudahSession() {
   if (!enabled) return
+  const revision = ++sessionRevision
   const auth = getAuth(firebaseApp)
-  await auth.authStateReady()
+  const isCurrent = () =>
+    revision === sessionRevision && !sessionStorage.getItem('cyberjudah:signed-out')
   try {
+    await auth.authStateReady()
+    if (!isCurrent()) return
     const pending = sessionStorage.getItem(pendingKey)
     if (pending && new URLSearchParams(window.location.search).get('telegram') === 'returned') {
       sessionStorage.removeItem(pendingKey)
       const attempt = JSON.parse(pending)
       if (
         typeof attempt.uid !== 'string' ||
+        typeof attempt.created !== 'number' ||
+        !Number.isFinite(attempt.created) ||
         Date.now() - attempt.created > 600_000 ||
         attempt.created > Date.now()
       )
@@ -87,12 +96,22 @@ export async function restoreCyberJudahSession() {
     const initialUser = auth.currentUser
     const response = await api('auth/status')
     const status = await response.json()
-    if (!response.ok || !status.user || auth.currentUser !== initialUser) return
+    if (!response.ok || !status.user || auth.currentUser !== initialUser || !isCurrent()) return
     const tokenResponse = await api('firebase/token', { method: 'POST' })
     const result = await tokenResponse.json()
-    if (!tokenResponse.ok || typeof result.token !== 'string' || auth.currentUser !== initialUser)
+    if (
+      !tokenResponse.ok ||
+      typeof result.token !== 'string' ||
+      auth.currentUser !== initialUser ||
+      !isCurrent()
+    )
       return
-    await signInWithCustomToken(auth, result.token)
+    activeRestoreSignIn = signInWithCustomToken(auth, result.token)
+    try {
+      await activeRestoreSignIn
+    } finally {
+      activeRestoreSignIn = undefined
+    }
   } catch (error) {
     // Keep the standard reader available when account services cannot be reached.
     if (sessionStorage.getItem(pendingKey)) sessionStorage.removeItem(pendingKey)
@@ -102,8 +121,11 @@ export async function restoreCyberJudahSession() {
 
 export async function endCyberJudahSession() {
   if (!enabled) return
+  ++sessionRevision
   sessionStorage.setItem('cyberjudah:signed-out', '1')
   sessionStorage.removeItem(pendingKey)
+  // Let any SDK sign-in already dispatched settle before the caller signs Firebase out.
+  await activeRestoreSignIn?.catch(() => undefined)
   const response = await api('auth/logout', { method: 'POST' })
   if (!response.ok) throw new Error('Telegram could not be signed out. Please try again.')
 }

@@ -48,11 +48,17 @@ export type StrongBiblePublication = StrongBibleIdentity & {
 
 /** The Strong-capable Bibles and their datasets: identities, whatever revision is published. */
 export const STRONG_BIBLE_PUBLICATIONS = Object.fromEntries(
-  STRONG_BIBLE_FALLBACK_PRIORITY.map(versionId => [
+  (process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+    ? (['KJV'] as const)
+    : STRONG_BIBLE_FALLBACK_PRIORITY
+  ).map(versionId => [
     versionId,
     {
       applicationVersionId: versionId,
-      datasetId: getStrongBibleCatalogIdentity(versionId).datasetId,
+      datasetId:
+        process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+          ? 'CYBERJUDAH'
+          : getStrongBibleCatalogIdentity(versionId).datasetId,
     },
   ])
 ) as Record<StrongBibleVersionId, StrongBibleIdentity>
@@ -111,9 +117,11 @@ const ENGLISH_BIBLE_VERSION_IDS = new Set([
 export const getStrongBibleFallbackPriority = (
   bibleVersionId: string
 ): readonly StrongBibleVersionId[] =>
-  ENGLISH_BIBLE_VERSION_IDS.has(bibleVersionId)
-    ? ENGLISH_STRONG_BIBLE_PRIORITY
-    : FRENCH_STRONG_BIBLE_PRIORITY
+  process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+    ? ['KJV']
+    : ENGLISH_BIBLE_VERSION_IDS.has(bibleVersionId)
+      ? ENGLISH_STRONG_BIBLE_PRIORITY
+      : FRENCH_STRONG_BIBLE_PRIORITY
 
 export const getStrongDatasetId = (versionId: string): StrongBibleDatasetId | undefined =>
   isStrongCapableBibleVersion(versionId)
