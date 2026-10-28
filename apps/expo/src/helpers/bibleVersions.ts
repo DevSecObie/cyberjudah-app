@@ -152,7 +152,7 @@ const getWordPocketKjvAudioUrl = (bookNum: number, chapterNum: number) => {
   return `https://www.wordpocket.org/bibles/app/audio/1/${bookNum}/${chapterNum}.mp3`
 }
 
-export const versions: Record<string, Version> = {
+const upstreamVersions: Record<string, Version> = {
   LSG: {
     id: 'LSG',
     name: 'Bible Segond 1910',
@@ -683,6 +683,19 @@ export const versions: Record<string, Version> = {
     readingProfile: null,
   },
 }
+
+export const versions: Record<string, Version> =
+  process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+    ? {
+        KJV: {
+          ...upstreamVersions.KJV,
+          name: 'King James Version with Apocrypha',
+          canonId: 'kjv-1611',
+          hasRedWords: false,
+          hasPericope: false,
+        },
+      }
+    : upstreamVersions
 
 export const getBibleVersionCanonId = (versionId: string): BibleCanonId =>
   versions[versionId]?.canonId ?? 'protestant-66'

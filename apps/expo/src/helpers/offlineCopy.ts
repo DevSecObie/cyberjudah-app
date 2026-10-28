@@ -19,7 +19,7 @@ import type {
   StrongLexiconModuleId,
   StrongLexiconPublicationArtifact,
 } from './strongLexiconPublications'
-import { COMMENTARY_CATALOG } from '@bible-strong/resource-catalog/commentaries'
+import { COMMENTARY_CATALOG } from '~helpers/commentaryCatalog'
 import { createOfflineCopyId, type OfflineCopyId, type OfflineCopyIdentity } from './offlineCopyId'
 export { createOfflineCopyId, type OfflineCopyId, type OfflineCopyIdentity } from './offlineCopyId'
 

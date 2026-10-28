@@ -67,7 +67,7 @@ const CANONICAL_OSIS_BOOK_IDS = [
   'Rev',
 ]
 
-const SUPPORTED_OSIS_BOOK_ENTRIES: readonly (readonly [string, number])[] = [
+const UPSTREAM_OSIS_BOOK_ENTRIES: readonly (readonly [string, number])[] = [
   ...CANONICAL_OSIS_BOOK_IDS.map((book, index): [string, number] => [book, index + 1]),
   ['Tob', 67],
   ['Jdt', 68],
@@ -82,76 +82,105 @@ const SUPPORTED_OSIS_BOOK_ENTRIES: readonly (readonly [string, number])[] = [
   ['PssSol', 77],
 ]
 
-const SUPPORTED_OSIS_BOOK_NUMBERS = new Map(SUPPORTED_OSIS_BOOK_ENTRIES)
-const SUPPORTED_OSIS_BOOK_IDS_BY_NUMBER = new Map(
-  SUPPORTED_OSIS_BOOK_ENTRIES.map(([book, number]) => [number, book] as const)
-)
+export const createOsisReferenceTools = (profile: 'upstream' | 'cyberjudah' = 'upstream') => {
+  const SUPPORTED_OSIS_BOOK_ENTRIES =
+    profile === 'cyberjudah'
+      ? ([
+          ...CANONICAL_OSIS_BOOK_IDS.map((book, index): [string, number] => [book, index + 1]),
+          ['1Esd', 67],
+          ['2Esd', 68],
+          ['Tob', 69],
+          ['Jdt', 70],
+          ['GkEsth', 71],
+          ['Wis', 72],
+          ['Sir', 73],
+          ['Bar', 74],
+          ['EpJer', 75],
+          ['SgThree', 76],
+          ['Sus', 77],
+          ['Bel', 78],
+          ['PrMan', 79],
+          ['1Macc', 80],
+          ['2Macc', 81],
+        ] as readonly (readonly [string, number])[])
+      : UPSTREAM_OSIS_BOOK_ENTRIES
 
-export const getSupportedOsisBookNumber = (book: string): number | undefined =>
-  SUPPORTED_OSIS_BOOK_NUMBERS.get(book)
+  const SUPPORTED_OSIS_BOOK_NUMBERS = new Map(SUPPORTED_OSIS_BOOK_ENTRIES)
+  const SUPPORTED_OSIS_BOOK_IDS_BY_NUMBER = new Map(
+    SUPPORTED_OSIS_BOOK_ENTRIES.map(([book, number]) => [number, book] as const)
+  )
 
-export const getSupportedOsisBookId = (bookNumber: number): string | undefined =>
-  SUPPORTED_OSIS_BOOK_IDS_BY_NUMBER.get(bookNumber)
+  const getSupportedOsisBookNumber = (book: string): number | undefined =>
+    SUPPORTED_OSIS_BOOK_NUMBERS.get(book)
 
-type OsisPoint = {
-  book: string
-  chapter: string
-  verse?: string
-}
+  const getSupportedOsisBookId = (bookNumber: number): string | undefined =>
+    SUPPORTED_OSIS_BOOK_IDS_BY_NUMBER.get(bookNumber)
 
-type OsisSegment = {
-  start: OsisPoint
-  end?: OsisPoint
-}
-
-const OSIS_SEGMENT_PATTERN =
-  /^([1-3]?[A-Za-z]+)\.([1-9]\d*)(?:\.([1-9]\d*))?(?:-(?:([1-3]?[A-Za-z]+)\.([1-9]\d*)(?:\.([1-9]\d*))?|([1-9]\d*)))?$/
-
-const parseOsisSegment = (segment: string): OsisSegment | undefined => {
-  const match = OSIS_SEGMENT_PATTERN.exec(segment)
-  if (!match) return undefined
-
-  const [, startBook, startChapter, startVerse, endBook, endChapter, endVerse, relativeEnd] = match
-  if (!getSupportedOsisBookNumber(startBook)) return undefined
-
-  const start: OsisPoint = {
-    book: startBook,
-    chapter: startChapter,
-    ...(startVerse ? { verse: startVerse } : {}),
+  type OsisPoint = {
+    book: string
+    chapter: string
+    verse?: string
   }
-  if (endBook && endChapter) {
-    if (!getSupportedOsisBookNumber(endBook)) return undefined
+
+  type OsisSegment = {
+    start: OsisPoint
+    end?: OsisPoint
+  }
+
+  const OSIS_SEGMENT_PATTERN =
+    /^([1-3]?[A-Za-z]+)\.([1-9]\d*)(?:\.([1-9]\d*))?(?:-(?:([1-3]?[A-Za-z]+)\.([1-9]\d*)(?:\.([1-9]\d*))?|([1-9]\d*)))?$/
+
+  const parseOsisSegment = (segment: string): OsisSegment | undefined => {
+    const match = OSIS_SEGMENT_PATTERN.exec(segment)
+    if (!match) return undefined
+
+    const [, startBook, startChapter, startVerse, endBook, endChapter, endVerse, relativeEnd] =
+      match
+    if (!getSupportedOsisBookNumber(startBook)) return undefined
+
+    const start: OsisPoint = {
+      book: startBook,
+      chapter: startChapter,
+      ...(startVerse ? { verse: startVerse } : {}),
+    }
+    if (endBook && endChapter) {
+      if (!getSupportedOsisBookNumber(endBook)) return undefined
+      return {
+        start,
+        end: {
+          book: endBook,
+          chapter: endChapter,
+          ...(endVerse ? { verse: endVerse } : {}),
+        },
+      }
+    }
+    if (!relativeEnd) return { start }
+
     return {
       start,
-      end: {
-        book: endBook,
-        chapter: endChapter,
-        ...(endVerse ? { verse: endVerse } : {}),
-      },
+      end: startVerse
+        ? { book: startBook, chapter: startChapter, verse: relativeEnd }
+        : { book: startBook, chapter: relativeEnd },
     }
   }
-  if (!relativeEnd) return { start }
 
-  return {
-    start,
-    end: startVerse
-      ? { book: startBook, chapter: startChapter, verse: relativeEnd }
-      : { book: startBook, chapter: relativeEnd },
-  }
+  const serializeOsisPoint = ({ book, chapter, verse }: OsisPoint): string =>
+    verse ? `${book}.${chapter}.${verse}` : `${book}.${chapter}`
+
+  const serializeOsisSegment = ({ start, end }: OsisSegment): string =>
+    end ? `${serializeOsisPoint(start)}-${serializeOsisPoint(end)}` : serializeOsisPoint(start)
+
+  const normalizeOsisReference = (osis: string): string =>
+    osis
+      .trim()
+      .split(/[,\s]+/u)
+      .map(segment => {
+        const parsed = parseOsisSegment(segment)
+        return parsed ? serializeOsisSegment(parsed) : segment
+      })
+      .join(',')
+
+  return { getSupportedOsisBookNumber, getSupportedOsisBookId, normalizeOsisReference }
 }
-
-const serializeOsisPoint = ({ book, chapter, verse }: OsisPoint): string =>
-  verse ? `${book}.${chapter}.${verse}` : `${book}.${chapter}`
-
-const serializeOsisSegment = ({ start, end }: OsisSegment): string =>
-  end ? `${serializeOsisPoint(start)}-${serializeOsisPoint(end)}` : serializeOsisPoint(start)
-
-export const normalizeOsisReference = (osis: string): string =>
-  osis
-    .trim()
-    .split(/[,\s]+/u)
-    .map(segment => {
-      const parsed = parseOsisSegment(segment)
-      return parsed ? serializeOsisSegment(parsed) : segment
-    })
-    .join(',')
+export const { getSupportedOsisBookNumber, getSupportedOsisBookId, normalizeOsisReference } =
+  createOsisReferenceTools()

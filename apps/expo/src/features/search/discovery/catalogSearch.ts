@@ -1,4 +1,4 @@
-import { COMMENTARY_CATALOG } from '@bible-strong/resource-catalog/commentaries'
+import { COMMENTARY_CATALOG } from '~helpers/commentaryCatalog'
 import type { TimelineSection } from '~features/timeline/types'
 import type { TabItem } from '~state/tabs'
 import { matchesQuery } from '../shared/matchesQuery'

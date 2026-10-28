@@ -1,7 +1,7 @@
 import { searchCommentaries, searchTimeline } from '../catalogSearch'
 import type { TimelineSection } from '~features/timeline/types'
 
-jest.mock('@bible-strong/resource-catalog/commentaries', () => ({
+jest.mock('~helpers/commentaryCatalog', () => ({
   COMMENTARY_CATALOG: [
     {
       id: 'tyndale',

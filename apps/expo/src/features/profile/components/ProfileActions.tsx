@@ -1,3 +1,4 @@
+import { connectTelegramAccount } from '~helpers/cyberJudahAccount'
 import React, { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Platform } from 'react-native'
@@ -16,6 +17,9 @@ const ProfileActions = () => {
   const passwordModalRef = useRef<SheetRef>(null)
   const deleteAccountModalRef = useRef<SheetRef>(null)
 
+  const canConnectTelegram =
+    process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah' &&
+    process.env.EXPO_PUBLIC_ACCOUNT_SYNC_SCOPE === 'staging'
   const isEmailProvider = user.provider === 'password'
 
   const promptLogout = async () => {
@@ -31,8 +35,15 @@ const ProfileActions = () => {
 
   return (
     <Box>
-      {(isEmailProvider || Platform.OS !== 'web') && (
+      {(isEmailProvider || Platform.OS !== 'web' || canConnectTelegram) && (
         <ListSection title={t('profile.accountSettings')}>
+          {canConnectTelegram && (
+            <ListRow
+              onPress={() => void connectTelegramAccount()}
+              icon={<FeatherIcon name="link" size={18} color="grey" />}
+              label="Connect Telegram"
+            />
+          )}
           {isEmailProvider && (
             <ListRow
               onPress={() => passwordModalRef.current?.present()}

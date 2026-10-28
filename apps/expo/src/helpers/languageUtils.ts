@@ -47,6 +47,7 @@ export const DEFAULT_BIBLE_VERSIONS: Record<ActiveLanguage, DefaultVersionCode> 
  * Falls back to KJV if language is not found
  */
 export const getDefaultBibleVersion = (lang: string): DefaultVersionCode => {
+  if (process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah') return 'KJV'
   if (isActiveLanguage(lang)) {
     return DEFAULT_BIBLE_VERSIONS[lang]
   }

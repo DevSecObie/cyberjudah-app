@@ -4,7 +4,7 @@ import {
   COMMENTARY_CATALOG,
   type CommentaryCatalogEntry,
   type CommentaryLanguage,
-} from '@bible-strong/resource-catalog/commentaries'
+} from '~helpers/commentaryCatalog'
 import { colorWithOpacity } from '~themes/colorValues'
 import { useTheme } from '~themes/ThemeProvider'
 import React from 'react'

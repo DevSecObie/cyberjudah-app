@@ -1,6 +1,6 @@
 import { twMerge } from '~common/ui/classNames'
 
-import type { CommentaryCatalogEntry } from '@bible-strong/resource-catalog/commentaries'
+import type { CommentaryCatalogEntry } from '~helpers/commentaryCatalog'
 import React from 'react'
 import { StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'

@@ -1,7 +1,7 @@
 import * as Schema from 'effect/Schema'
 
 const VersionId = Schema.String.pipe(Schema.pattern(/^[A-Z0-9][A-Z0-9_-]{1,31}$/))
-const Book = Schema.NumberFromString.pipe(Schema.int(), Schema.between(1, 77))
+const Book = Schema.NumberFromString.pipe(Schema.int(), Schema.between(1, 81))
 const Chapter = Schema.NumberFromString.pipe(Schema.int(), Schema.between(1, 200))
 const REFERENCE_PATTERN = /^(?:[HG])?\d+[A-Z]*$/i
 const Reference = Schema.String.pipe(Schema.pattern(REFERENCE_PATTERN))

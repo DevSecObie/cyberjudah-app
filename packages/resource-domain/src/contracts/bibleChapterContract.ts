@@ -2,7 +2,7 @@ import * as Schema from 'effect/Schema'
 
 export class BibleChapterRequest extends Schema.Class<BibleChapterRequest>('BibleChapterRequest')({
   version: Schema.String.pipe(Schema.pattern(/^[A-Z0-9][A-Z0-9_-]{1,31}$/)),
-  book: Schema.NumberFromString.pipe(Schema.int(), Schema.between(1, 77)),
+  book: Schema.NumberFromString.pipe(Schema.int(), Schema.between(1, 81)),
   chapter: Schema.NumberFromString.pipe(Schema.int(), Schema.between(1, 200)),
 }) {}
 
@@ -38,7 +38,7 @@ export const parseBibleVerseKey = (value: string): BibleVerseLocation | undefine
     Number.isInteger(chapter) &&
     Number.isInteger(verse) &&
     book >= 1 &&
-    book <= 77 &&
+    book <= 81 &&
     chapter >= 1 &&
     chapter <= 200 &&
     verse >= 0 &&
@@ -64,7 +64,7 @@ export class BibleVerseTextsQuery extends Schema.Class<BibleVerseTextsQuery>(
 
 export class BibleSearchQuery extends Schema.Class<BibleSearchQuery>('BibleSearchQuery')({
   q: Schema.NonEmptyString.pipe(Schema.maxLength(200)),
-  book: Schema.optional(Schema.NumberFromString.pipe(Schema.int(), Schema.between(1, 77))),
+  book: Schema.optional(Schema.NumberFromString.pipe(Schema.int(), Schema.between(1, 81))),
   section: Schema.optional(Schema.Literal('ot', 'nt')),
   canon: Schema.optional(
     Schema.Literal('protestant-66', 'catholic-73', 'clementine-vulgate', 'theotex-septuagint')
@@ -219,7 +219,7 @@ export class BibleChaptersDto extends Schema.Class<BibleChaptersDto>('BibleChapt
 }) {}
 
 export class BibleVerseTextDto extends Schema.Class<BibleVerseTextDto>('BibleVerseTextDto')({
-  book: Schema.Int.pipe(Schema.between(1, 77)),
+  book: Schema.Int.pipe(Schema.between(1, 81)),
   chapter: Schema.Int.pipe(Schema.between(1, 200)),
   number: Schema.Int.pipe(Schema.nonNegative()),
   text: Schema.String,

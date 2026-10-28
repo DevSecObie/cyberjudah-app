@@ -1,3 +1,4 @@
+import { restoreCyberJudahSession, endCyberJudahSession } from './cyberJudahAccount'
 import { identifyAnalyticsUser, trackAnalyticsEvent } from './analytics'
 import * as Sentry from '@sentry/react-native'
 import {
@@ -76,6 +77,8 @@ export class WebFireAuth {
   onEmailVerified: VoidCallback | null = null
   onLogin: OnLoginCallback | null = null
   onError: AuthErrorCallback | null = null
+  private authRevision = 0
+  private unsubscribeAuth: (() => void) | undefined
   previousEmailVerified = false
   accountEntryAttempts = new AccountEntryAttemptCoordinator()
   unresolvedAccountEntries = createUnresolvedAccountEntryRepository(storage)
@@ -133,7 +136,9 @@ export class WebFireAuth {
     this.onEmailVerified = onEmailVerified
     this.onError = onError
 
-    onAuthStateChanged(getAuth(firebaseApp), async user => {
+    this.unsubscribeAuth?.()
+    this.unsubscribeAuth = onAuthStateChanged(getAuth(firebaseApp), async user => {
+      const revision = ++this.authRevision
       if (!user) {
         void identifyAnalyticsUser(null)
         const wasAuthenticated = Boolean(this.user)
@@ -158,6 +163,7 @@ export class WebFireAuth {
         userId: user.uid,
         repository: this.unresolvedAccountEntries,
       })
+      if (revision !== this.authRevision) return
       const primaryProvider = user.providerData[0]
       const emailVerified = primaryProvider?.providerId !== 'password' || user.emailVerified
       const profile: FireAuthProfile = {
@@ -181,6 +187,15 @@ export class WebFireAuth {
         appLogger.warn('sync', 'web_auth.profile_read_failed', { error })
       }
 
+      if (revision !== this.authRevision) return
+      if (this.user && this.user.uid !== user.uid) {
+        runAllCleanups()
+        tokenManager.reset()
+        this.user = null
+        this.profile = null
+        await this.onLogout?.()
+        if (revision !== this.authRevision) return
+      }
       if (!this.user) {
         this.user = user
         this.profile = profile
@@ -191,15 +206,18 @@ export class WebFireAuth {
         return
       }
 
+      this.user = user
       this.profile = profile
       this.onUserChange?.(profile)
       if (!this.previousEmailVerified && emailVerified) this.onEmailVerified?.()
       this.previousEmailVerified = emailVerified
     })
+    void restoreCyberJudahSession()
   }
 
   private providerLogin = async (provider: GoogleAuthProvider | OAuthProvider) => {
     const providerId = provider.providerId as AccountEntryProvider
+    sessionStorage.removeItem('cyberjudah:signed-out')
     const attempt = this.beginAccountEntryAttempt('provider-sign-in', providerId)
     try {
       const credential = await signInWithPopup(getAuth(firebaseApp), provider)
@@ -351,6 +369,7 @@ export class WebFireAuth {
     this.isLoggingOut = true
     const hadUser = Boolean(this.user)
     try {
+      await endCyberJudahSession()
       await signOut(getAuth(firebaseApp))
       void identifyAnalyticsUser(null)
       if (this.user) {

@@ -17,7 +17,7 @@ import { getOnboardingResourceSelectionId } from './onboardingResourceSelectionI
 import {
   getCommentaryCatalogForLanguage,
   type CommentaryCatalogEntry,
-} from '@bible-strong/resource-catalog/commentaries'
+} from '~helpers/commentaryCatalog'
 import { KNOWN_DICTIONARY_WORKS } from '~features/resources/dictionaryAccess'
 
 export const OFFLINE_SETUP_FOLDER_IDS = [

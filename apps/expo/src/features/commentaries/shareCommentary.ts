@@ -1,4 +1,4 @@
-import type { CommentaryCatalogEntry } from '@bible-strong/resource-catalog/commentaries'
+import type { CommentaryCatalogEntry } from '~helpers/commentaryCatalog'
 import { isTag, isText, type AnyNode } from 'domhandler'
 import { parseDocument } from 'htmlparser2'
 import { cleanReadingHTML } from '~common/readingHtml'

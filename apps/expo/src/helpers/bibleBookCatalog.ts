@@ -86,6 +86,7 @@ const THEOTEX_SEPTUAGINT_BOOK_ORDER = [
 ]
 
 const BOOK_ORDER_BY_CANON: Record<BibleCanonId, number[]> = {
+  'kjv-1611': Array.from({ length: 81 }, (_, index) => index + 1),
   'protestant-66': PROTESTANT_BOOK_ORDER,
   'catholic-73': CATHOLIC_BOOK_ORDER,
   'clementine-vulgate': CLEMENTINE_BOOK_ORDER,
@@ -99,6 +100,8 @@ export const getBook = (bookId: number) => booksById.get(bookId)
 export const getBookCorpus = (bookId: number): BibleBookCorpus | undefined => {
   if (bookId >= 1 && bookId <= 39) return 'old'
   if (bookId >= 40 && bookId <= 66) return 'new'
+  if (process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah' && bookId >= 67 && bookId <= 81)
+    return 'deuterocanonical'
   if (bookId >= 67 && bookId <= 73) return 'deuterocanonical'
   if (bookId >= 74 && bookId <= 77) return 'septuagint'
   return undefined

@@ -2,7 +2,7 @@ import {
   COMMENTARY_CATALOG_BY_ID,
   type CommentaryCatalogEntry,
   type CommentaryLanguage,
-} from '@bible-strong/resource-catalog/commentaries'
+} from '~helpers/commentaryCatalog'
 
 import type { CommentaryUnavailableResource } from '~features/resources/commentaryAccess'
 import type { Comment } from './types'

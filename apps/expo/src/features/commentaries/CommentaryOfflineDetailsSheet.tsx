@@ -1,5 +1,5 @@
 import { useConfirmDialog } from '~common/ConfirmDialog/useConfirmDialog'
-import type { CommentaryCatalogEntry } from '@bible-strong/resource-catalog/commentaries'
+import type { CommentaryCatalogEntry } from '~helpers/commentaryCatalog'
 import React from 'react'
 import { StyleSheet } from 'react-native'
 

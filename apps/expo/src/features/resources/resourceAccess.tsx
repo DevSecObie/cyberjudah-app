@@ -85,7 +85,7 @@ import {
   createHttpCommentaryChapterSource,
   type CommentaryAccess,
 } from '~features/resources/commentaryAccess'
-import { COMMENTARY_CATALOG } from '@bible-strong/resource-catalog/commentaries'
+import { COMMENTARY_CATALOG } from '~helpers/commentaryCatalog'
 import {
   isLocalResourceAvailable,
   type LocalResourceRef,
@@ -186,10 +186,18 @@ const onlineNaveAccess = resourceApiBaseUrl
     )
   : unavailableHttpNaveAccess
 const remotelyReadableDictionaryLanguages = new Set<ResourceLanguage>(
-  resourceApiBaseUrl ? ['fr', 'en'] : []
+  resourceApiBaseUrl
+    ? process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+      ? ['en']
+      : ['fr', 'en']
+    : []
 )
 const remotelyReadableNaveLanguages = new Set<ResourceLanguage>(
-  resourceApiBaseUrl ? ['fr', 'en'] : []
+  resourceApiBaseUrl
+    ? process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+      ? ['en']
+      : ['fr', 'en']
+    : []
 )
 const remotelyReadableCommentaryCollections = new Set<string>(
   resourceApiBaseUrl ? COMMENTARY_CATALOG.map(entry => entry.publicationId) : []
@@ -206,7 +214,11 @@ const commentaryAccess = createCommentaryAccess({
   isOnline: async () => onlineManager.isOnline(),
 })
 const remotelyReadableTimelineLanguages = new Set<ResourceLanguage>(
-  resourceApiBaseUrl ? ['fr', 'en'] : []
+  resourceApiBaseUrl
+    ? process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+      ? ['en']
+      : ['fr', 'en']
+    : []
 )
 const onlineDictionaryAccess = resourceApiBaseUrl
   ? onlineSource(
@@ -220,7 +232,11 @@ const onlineDictionaryAccess = resourceApiBaseUrl
     )
   : unavailableHttpDictionaryAccess
 const remotelyReadableStrongBibleVersions = new Set(
-  resourceApiBaseUrl ? STRONG_BIBLE_FALLBACK_PRIORITY : []
+  resourceApiBaseUrl
+    ? process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+      ? (['KJV'] as const)
+      : STRONG_BIBLE_FALLBACK_PRIORITY
+    : []
 )
 const onlineStrongBibleAdapter = resourceApiBaseUrl
   ? onlineSource(
@@ -247,7 +263,11 @@ const strongBibleAccess = createStrongBibleResourceAccess(
   })
 )
 const remotelyReadableInterlinearLocales = new Set<ResourceLanguage>(
-  resourceApiBaseUrl ? ['fr', 'en'] : []
+  resourceApiBaseUrl
+    ? process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+      ? ['en']
+      : ['fr', 'en']
+    : []
 )
 const onlineInterlinearBibleAdapter = resourceApiBaseUrl
   ? onlineSource(
@@ -312,7 +332,11 @@ const strongLexiconAccess = createLayeredStrongLexiconAccess(
   detailedStrongLexiconAccess
 )
 const remotelyReadableStrongLexiconModules = new Set(
-  resourceApiBaseUrl ? ['core', 'resources', 'entities', 'simple-fr', 'simple-en'] : []
+  resourceApiBaseUrl
+    ? process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+      ? ['core']
+      : ['core', 'resources', 'entities', 'simple-fr', 'simple-en']
+    : []
 )
 const onlineBibleSearchAccess = resourceApiBaseUrl
   ? onlineSource(

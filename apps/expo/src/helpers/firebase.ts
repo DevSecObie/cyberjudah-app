@@ -2,8 +2,8 @@ import {
   getFirestore,
   increment as firestoreIncrement,
   deleteField as firestoreDeleteField,
-  collection,
-  doc,
+  collection as firestoreCollection,
+  doc as firestoreDoc,
   setDoc,
   getDoc,
   getDocs,
@@ -27,10 +27,29 @@ import {
   getMobileResourceCatalogEntry,
 } from '~helpers/mobileResourceCatalog'
 
+import { scopeFirestorePath } from './firestoreScope'
+
 // Firebase instances (modular API)
 export const firebaseDb = getFirestore()
 export const storageRef = ref(getStorage())
 export const increment = firestoreIncrement(1)
+
+// Route root references, including persisted outbox paths, through the same scope.
+// Relative document/collection references are already scoped and must not be rewritten.
+const scopedPath = (parent: unknown, path: string) =>
+  parent === firebaseDb
+    ? scopeFirestorePath(path, process.env.EXPO_PUBLIC_ACCOUNT_SYNC_SCOPE)
+    : path
+const doc: typeof firestoreDoc = ((...args: Parameters<typeof firestoreDoc>) => {
+  const [parent, path, ...segments] = args
+  return firestoreDoc(parent, scopedPath(parent, path), ...segments)
+}) as typeof firestoreDoc
+const collection: typeof firestoreCollection = ((
+  ...args: Parameters<typeof firestoreCollection>
+) => {
+  const [parent, path, ...segments] = args
+  return firestoreCollection(parent, scopedPath(parent, path), ...segments)
+}) as typeof firestoreCollection
 
 // Re-export modular Firestore functions for use in other files
 export {

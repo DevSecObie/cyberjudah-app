@@ -1,8 +1,8 @@
 import {
-  collection,
+  collection as firestoreCollection,
   deleteDoc,
   deleteField as firestoreDeleteField,
-  doc,
+  doc as firestoreDoc,
   getDoc,
   getDocs,
   getFirestore,
@@ -27,6 +27,8 @@ import { getStorage, ref } from 'firebase/storage'
 import type { ResourceLanguage, DatabaseId } from '~helpers/databaseTypes'
 import { firebaseApp } from './firebaseApp.web'
 
+import { scopeFirestorePath } from './firestoreScope'
+
 // The cache survives reloads, as in the native apps: a listener attached again within 30 minutes
 // is billed only for the documents that changed, instead of the whole account.
 const createFirestore = () => {
@@ -43,6 +45,23 @@ const createFirestore = () => {
 export const firebaseDb = createFirestore()
 export const storageRef = ref(getStorage(firebaseApp))
 export const increment = firestoreIncrement(1)
+
+// Route root references, including persisted outbox paths, through the same scope.
+// Relative document/collection references are already scoped and must not be rewritten.
+const scopedPath = (parent: unknown, path: string) =>
+  parent === firebaseDb
+    ? scopeFirestorePath(path, process.env.EXPO_PUBLIC_ACCOUNT_SYNC_SCOPE)
+    : path
+const doc: typeof firestoreDoc = ((...args: Parameters<typeof firestoreDoc>) => {
+  const [parent, path, ...segments] = args
+  return firestoreDoc(parent, scopedPath(parent, path), ...segments)
+}) as typeof firestoreDoc
+const collection: typeof firestoreCollection = ((
+  ...args: Parameters<typeof firestoreCollection>
+) => {
+  const [parent, path, ...segments] = args
+  return firestoreCollection(parent, scopedPath(parent, path), ...segments)
+}) as typeof firestoreCollection
 
 export {
   collection,

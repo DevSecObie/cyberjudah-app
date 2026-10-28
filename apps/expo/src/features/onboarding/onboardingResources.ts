@@ -18,7 +18,7 @@ import type { StrongBibleVersionId } from '~helpers/strongBiblePublications'
 import type { StrongLexiconModuleId } from '~helpers/strongLexiconPublications'
 import { createOfflineCopyId, type OfflineCopyIdentity } from '~helpers/offlineCopyId'
 import { getOnboardingResourceSelectionId } from './onboardingResourceSelectionId'
-import { getCommentaryByPublicationId } from '@bible-strong/resource-catalog/commentaries'
+import { getCommentaryByPublicationId } from '~helpers/commentaryCatalog'
 
 export { getOnboardingResourceSelectionId } from './onboardingResourceSelectionId'
 

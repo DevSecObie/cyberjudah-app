@@ -1,7 +1,7 @@
 import { ScrollView, StyleSheet } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
-import { COMMENTARY_CATALOG_BY_ID } from '@bible-strong/resource-catalog/commentaries'
+import { COMMENTARY_CATALOG_BY_ID } from '~helpers/commentaryCatalog'
 import Box, { HStack, TouchableBox } from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import Checkbox from '~common/ui/Checkbox'

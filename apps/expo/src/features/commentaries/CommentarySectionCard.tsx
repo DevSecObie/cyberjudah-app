@@ -1,6 +1,6 @@
 import { Linking } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import type { CommentaryCatalogEntry } from '@bible-strong/resource-catalog/commentaries'
+import type { CommentaryCatalogEntry } from '~helpers/commentaryCatalog'
 import Box from '~common/ui/Box'
 import Card from '~common/ui/Card'
 import SwitchableHTMLView from '~common/SwitchableHTMLView'

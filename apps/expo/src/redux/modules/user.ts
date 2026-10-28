@@ -651,7 +651,10 @@ const getInitialState = (): UserState => ({
     wordAnnotations: {},
     settings: {
       defaultBibleVersion: getDefaultBibleVersion(getLanguage()),
-      defaultStrongBibleVersionId: getLanguage() === 'en' ? 'KJV' : 'LSG',
+      defaultStrongBibleVersionId:
+        process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah' || getLanguage() === 'en'
+          ? 'KJV'
+          : 'LSG',
       alignContent: 'left',
       lineHeight: 'normal',
       fontSizeScale: 0,

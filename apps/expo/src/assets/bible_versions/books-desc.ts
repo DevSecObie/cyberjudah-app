@@ -1,10 +1,12 @@
+import cyberJudahBooks from '../cyberjudah/books.json'
+
 export interface Book {
   Numero: number
   Nom: string
   Chapitres: number
 }
 
-export const sections = [
+const upstreamSections = [
   {
     title: 'Loi',
     data: [
@@ -452,7 +454,7 @@ export const sections = [
   },
 ]
 
-const books = [
+const upstreamBooks = [
   {
     Numero: 1,
     Nom: 'Genèse',
@@ -840,4 +842,23 @@ const books = [
   },
 ] as const
 
+const cyberJudahApocrypha: Book[] = cyberJudahBooks
+  .filter(book => book.id > 66)
+  .map(book => ({
+    Numero: book.id,
+    Nom: book.name,
+    Chapitres: Math.max(...book.chapters),
+  }))
+const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+const books: readonly Book[] = isCyberJudah
+  ? [...upstreamBooks.filter(book => book.Numero <= 66), ...cyberJudahApocrypha]
+  : upstreamBooks
+export const sections = isCyberJudah
+  ? [
+      ...upstreamSections
+        .map(section => ({ ...section, data: section.data.filter(book => book.Numero <= 66) }))
+        .filter(section => section.data.length),
+      { title: 'Apocrypha', data: cyberJudahApocrypha },
+    ]
+  : upstreamSections
 export default books

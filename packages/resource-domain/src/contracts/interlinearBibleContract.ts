@@ -2,7 +2,7 @@ import * as Schema from 'effect/Schema'
 
 const VersionId = Schema.Literal('BHG')
 const Language = Schema.Literal('fr', 'en')
-const Book = Schema.NumberFromString.pipe(Schema.int(), Schema.between(1, 77))
+const Book = Schema.NumberFromString.pipe(Schema.int(), Schema.between(1, 81))
 const Chapter = Schema.NumberFromString.pipe(Schema.int(), Schema.between(1, 200))
 
 export class InterlinearBibleCoveragePath extends Schema.Class<InterlinearBibleCoveragePath>(

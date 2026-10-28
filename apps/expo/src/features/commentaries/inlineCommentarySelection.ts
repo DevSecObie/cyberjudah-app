@@ -1,5 +1,5 @@
 import { parseCommentaryProjectionId } from './commentarySelection'
-import { COMMENTARY_CATALOG_BY_ID } from '@bible-strong/resource-catalog/commentaries'
+import { COMMENTARY_CATALOG_BY_ID } from '~helpers/commentaryCatalog'
 
 /** Each enabled commentary costs one request per chapter read inline. */
 export const MAX_INLINE_COMMENTARIES = 5

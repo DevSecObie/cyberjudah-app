@@ -97,11 +97,27 @@ const unavailableAccess = <Access extends object>(): Access =>
 
 const bibleVersions = new Set(resourceApiBaseUrl ? ONLINE_BIBLE_VERSION_IDS : [])
 const strongBibleVersions = new Set(resourceApiBaseUrl ? STRONG_BIBLE_FALLBACK_PRIORITY : [])
-const languages = new Set<ResourceLanguage>(resourceApiBaseUrl ? ['fr', 'en'] : [])
-const strongLexiconModules = new Set(
-  resourceApiBaseUrl ? ['core', 'resources', 'entities', 'simple-fr', 'simple-en'] : []
+const languages = new Set<ResourceLanguage>(
+  resourceApiBaseUrl
+    ? process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+      ? ['en']
+      : ['fr', 'en']
+    : []
 )
-const commentaryCollections = new Set(resourceApiBaseUrl ? ['MHY'] : [])
+const strongLexiconModules = new Set(
+  resourceApiBaseUrl
+    ? process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+      ? ['core']
+      : ['core', 'resources', 'entities', 'simple-fr', 'simple-en']
+    : []
+)
+const commentaryCollections = new Set(
+  resourceApiBaseUrl
+    ? process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+      ? ['cyberjudah']
+      : ['MHY']
+    : []
+)
 
 const bibleChapter = resourceApiBaseUrl
   ? createHttpBibleChapterAdapter({

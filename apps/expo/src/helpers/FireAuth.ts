@@ -71,6 +71,8 @@ const getErrorCode = (error: unknown): string | undefined => {
 
 const FireAuth = class {
   authFlag = false
+  private authRevision = 0
+  private unsubscribeAuth: (() => void) | undefined
 
   user: User | null = null
 
@@ -162,11 +164,15 @@ const FireAuth = class {
 
     GoogleSignin.configure({
       scopes: ['profile', 'email', 'openid'],
-      webClientId: '204116128917-56eubi7hu2f0k3rnb6dn8q3sfv23588l.apps.googleusercontent.com',
+      webClientId:
+        process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ??
+        '204116128917-56eubi7hu2f0k3rnb6dn8q3sfv23588l.apps.googleusercontent.com',
     })
 
     const authInstance = getAuth()
-    onAuthStateChanged(authInstance, async user => {
+    this.unsubscribeAuth?.()
+    this.unsubscribeAuth = onAuthStateChanged(authInstance, async user => {
+      const revision = ++this.authRevision
       if (!user) void identifyAnalyticsUser(null)
       if (user && user.isAnonymous) {
         console.log('[Auth] Deprecated, user exists and is anonymous', user.uid)
@@ -181,6 +187,7 @@ const FireAuth = class {
           userId: user.uid,
           repository: this.unresolvedAccountEntries,
         })
+        if (revision !== this.authRevision) return
         appLogger.info('sync', 'account_entry.classified', {
           lifecycleState: 'classifying-account-transition',
           classification: accountEntryClassification,
@@ -225,6 +232,16 @@ const FireAuth = class {
           console.log('[Auth] Error fetching user document from Firestore:', e)
         }
 
+        if (revision !== this.authRevision) return
+        if (this.user && this.user.uid !== user.uid) {
+          runAllCleanups()
+          tokenManager.reset()
+          this.user = null
+          this.profile = null
+          await this.onLogout?.()
+          if (revision !== this.authRevision) return
+        }
+        this.profile = profile
         if (!this.user) {
           if (this.onLogin) {
             /**
@@ -243,6 +260,8 @@ const FireAuth = class {
           return
         }
 
+        this.user = user
+        this.onUserChange?.(profile)
         // Check if emailVerified status changed (user verified email while app was open)
         if (!this.previousEmailVerified && emailVerified) {
           console.log('[Auth] Email verification detected!')

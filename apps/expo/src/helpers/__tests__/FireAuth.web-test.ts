@@ -101,3 +101,64 @@ describe('WebFireAuth auth-state cleanup', () => {
     expect(fireAuth.profile).toBeNull()
   })
 })
+
+jest.mock('../cyberJudahAccount', () => ({
+  restoreCyberJudahSession: jest.fn(async () => undefined),
+  endCyberJudahSession: jest.fn(async () => undefined),
+}))
+
+describe('WebFireAuth account-switch races', () => {
+  const reader = (uid: string) => ({
+    uid,
+    email: `${uid}@example.test`,
+    emailVerified: true,
+    displayName: uid,
+    photoURL: null,
+    metadata: {},
+    providerData: [{ providerId: 'password' }],
+  })
+
+  it('discards a profile read that finishes after sign-out', async () => {
+    const { WebFireAuth } = await import('../FireAuth.web')
+    const { getDoc } = await import('~helpers/firebase')
+    let finish!: (value: unknown) => void
+    jest.mocked(getDoc).mockImplementationOnce(
+      () =>
+        new Promise(resolve => {
+          finish = resolve as typeof finish
+        }) as never
+    )
+    const auth = new WebFireAuth(),
+      onLogin = jest.fn()
+    await auth.init(onLogin, jest.fn(), jest.fn(), jest.fn(), jest.fn(), {} as never)
+    const pending = mockAuthStateListener!(reader('old'))
+    // Account-entry classification crosses a promise boundary before the document read.
+    for (let i = 0; i < 10 && !finish; i++) await Promise.resolve()
+    expect(finish).toBeDefined()
+    await mockAuthStateListener!(null)
+    finish({ exists: () => false })
+    await pending
+    expect(onLogin).not.toHaveBeenCalled()
+    expect(auth.user).toBeNull()
+  })
+
+  it('cleans up the previous account before starting another account', async () => {
+    const { WebFireAuth } = await import('../FireAuth.web')
+    const order: string[] = []
+    const auth = new WebFireAuth()
+    await auth.init(
+      ({ profile }) => order.push(profile.id),
+      jest.fn(),
+      () => {
+        order.push('cleanup')
+      },
+      jest.fn(),
+      jest.fn(),
+      {} as never
+    )
+    await mockAuthStateListener!(reader('first'))
+    await mockAuthStateListener!(reader('second'))
+    expect(order).toEqual(['first', 'cleanup', 'second'])
+    expect(auth.user?.uid).toBe('second')
+  })
+})

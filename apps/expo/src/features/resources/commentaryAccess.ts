@@ -5,7 +5,7 @@ import {
   createCommentarySectionId,
   type CommentaryResourceSection,
 } from '@bible-strong/resource-domain/contracts/commentarySections'
-import { COMMENTARY_CATALOG_BY_ID } from '@bible-strong/resource-catalog/commentaries'
+import { COMMENTARY_CATALOG_BY_ID } from '~helpers/commentaryCatalog'
 import * as Schema from 'effect/Schema'
 
 import type { Comment } from '~features/commentaries/types'

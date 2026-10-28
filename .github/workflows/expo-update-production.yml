@@ -19,7 +19,7 @@ permissions:
 jobs:
   publish-update:
     name: Publish update (production)
-    if: github.ref == 'refs/heads/master'
+    if: github.repository == 'smontlouis/bible-strong' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     timeout-minutes: 30
 

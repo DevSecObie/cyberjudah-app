@@ -5,7 +5,7 @@ import {
   COMMENTARY_CATALOG,
   type CommentaryCatalogEntry,
   type CommentaryLanguage,
-} from '@bible-strong/resource-catalog/commentaries'
+} from '~helpers/commentaryCatalog'
 import React from 'react'
 import { Platform, SectionList, TouchableOpacity } from 'react-native'
 import { useTranslation } from 'react-i18next'

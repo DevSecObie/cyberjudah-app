@@ -1,5 +1,5 @@
 import { previewHistoryAtom } from '~features/bibleReferencePreview/state'
-import { getCommentaryByPublicationId } from '@bible-strong/resource-catalog/commentaries'
+import { getCommentaryByPublicationId } from '~helpers/commentaryCatalog'
 import { getInlineCommentaryResources } from '~features/commentaries/inlineCommentarySelection'
 import {
   placeInlineCommentaries,

@@ -1,4 +1,4 @@
-import { COMMENTARY_CATALOG_BY_ID } from '@bible-strong/resource-catalog/commentaries'
+import { COMMENTARY_CATALOG_BY_ID } from '~helpers/commentaryCatalog'
 
 import type { ResourceLanguage } from '~helpers/databaseTypes'
 import { getLanguage } from '~i18n'

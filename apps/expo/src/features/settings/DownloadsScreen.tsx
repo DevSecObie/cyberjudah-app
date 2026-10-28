@@ -63,7 +63,7 @@ import { resourceIdentityFromOfflineCopy } from '~features/resources/resourceMod
 import useConnection from '~helpers/useConnection'
 import ResourceUnavailableView from '~features/resources/ResourceUnavailableView'
 import { buildBibleItems, type UnifiedDownloadItem } from './downloadBibleItems'
-import { getCommentaryCatalogForLanguage } from '@bible-strong/resource-catalog/commentaries'
+import { getCommentaryCatalogForLanguage } from '~helpers/commentaryCatalog'
 import type { DictionaryWork } from '~features/resources/dictionaryAccess'
 import {
   buildDownloadResourceSections,

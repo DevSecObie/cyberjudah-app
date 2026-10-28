@@ -73,7 +73,7 @@ it('offers only display selection, without download controls or availability des
 })
 
 it('disables the remaining choices once five commentaries are shown inline', async () => {
-  const { COMMENTARY_CATALOG_BY_ID } = require('@bible-strong/resource-catalog/commentaries')
+  const { COMMENTARY_CATALOG_BY_ID } = require('~helpers/commentaryCatalog')
   const selected = [...COMMENTARY_CATALOG_BY_ID.values()]
     .filter(entry => entry.id !== 'egw-writings' && entry.languages.includes('fr'))
     .slice(0, 6)
