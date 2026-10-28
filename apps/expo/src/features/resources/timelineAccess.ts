@@ -212,6 +212,8 @@ export const createLocalTimelineAccess = (
 
 type HttpTimelineAccessOptions = {
   baseUrl: string
+  /** Separates browser caches when the app's bundled timeline geometry changes. */
+  publicationRevision?: string
   fetcher?: typeof fetch
   isOnline: () => Promise<boolean>
   /** Explains a request that failed without a response; defaults to the online gate. */
@@ -231,6 +233,7 @@ const timelineResourceError = (status: number, code: unknown) => {
 
 export const createHttpTimelineAccess = ({
   baseUrl,
+  publicationRevision,
   fetcher = fetch,
   isOnline,
   isOfflineFailure = async () => !(await isOnline()),
@@ -241,7 +244,9 @@ export const createHttpTimelineAccess = ({
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), timeoutMs)
     try {
-      const response = await fetcher(`${normalizedBaseUrl}${path}`, {
+      const url = new URL(`${normalizedBaseUrl}${path}`)
+      if (publicationRevision) url.searchParams.set('revision', publicationRevision)
+      const response = await fetcher(url.toString(), {
         headers: { accept: 'application/json' },
         signal: controller.signal,
       })

@@ -264,3 +264,24 @@ describe('hybrid Timeline access', () => {
     expect(online.loadIndex).not.toHaveBeenCalled()
   })
 })
+
+it('separates a new timeline publication from cached empty indexes and retains search parameters', async () => {
+  const fetcher = jest.fn(async () => ({
+    ok: true,
+    json: async () => ({
+      resource: { kind: 'timeline', language: 'en', revision: 'cj-timeline-test' },
+      events: [],
+    }),
+  }))
+  const access = createHttpTimelineAccess({
+    baseUrl: 'https://resources.test',
+    publicationRevision: 'cj-timeline-test',
+    fetcher: fetcher as unknown as typeof fetch,
+    isOnline: async () => true,
+  })
+  await access.searchIndex('Adam', 'en', 5)
+  const url = new URL((fetcher.mock.calls[0] as unknown as [string])[0])
+  expect(url.searchParams.get('revision')).toBe('cj-timeline-test')
+  expect(url.searchParams.get('search')).toBe('Adam')
+  expect(url.searchParams.get('limit')).toBe('5')
+})

@@ -1,3 +1,4 @@
+import cyberJudahTimeline from '~assets/cyberjudah/timeline-publication.json'
 import { createLayeredStrongLexiconAccess } from './layeredStrongLexiconAccess'
 import {
   createCommentaryReadingAccess,
@@ -224,6 +225,10 @@ const nave = resourceApiBaseUrl
 const timeline = resourceApiBaseUrl
   ? createHttpTimelineAccess({
       baseUrl: resourceApiBaseUrl,
+      publicationRevision:
+        process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+          ? cyberJudahTimeline.revision
+          : undefined,
       fetcher: resourceApiFetch,
       isOnline,
       isOfflineFailure: isLikelyOfflineAfterFailure,
