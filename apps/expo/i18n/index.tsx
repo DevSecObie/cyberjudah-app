@@ -12,12 +12,17 @@ const enBooksTranslation = require('./locales/en/translation_book.json')
 const frTranslation = require('./locales/fr/translation.json')
 const frBooksTranslation = require('./locales/fr/translation_book.json')
 
+// The CyberJudah build names itself and its own contact routes, not the upstream app or developer.
+const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+const enCyberJudah = isCyberJudah ? require('./locales/en/cyberjudah.json') : {}
+const frCyberJudah = isCyberJudah ? require('./locales/fr/cyberjudah.json') : {}
+
 const resources = {
   en: {
-    translation: { ...enTranslation, ...enBooksTranslation },
+    translation: { ...enTranslation, ...enBooksTranslation, ...enCyberJudah },
   },
   fr: {
-    translation: { ...frTranslation, ...frBooksTranslation },
+    translation: { ...frTranslation, ...frBooksTranslation, ...frCyberJudah },
   },
 }
 

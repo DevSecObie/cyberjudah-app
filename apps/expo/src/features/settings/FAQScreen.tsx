@@ -85,7 +85,8 @@ const FAQScreen = () => {
       link: { href: 'https://bible-strong.app/give', label: t('faq.donate') },
     },
     { id: 'author', question: t('faq.authorQuestion'), answer: t('faq.authorAnswer') },
-  ].filter(entry => !isCyberJudah || entry.id !== 'support')
+    // CyberJudah has no donations, and the author entry describes the upstream developer.
+  ].filter(entry => !isCyberJudah || (entry.id !== 'support' && entry.id !== 'author'))
 
   const categories = [
     {
@@ -268,7 +269,13 @@ const FAQScreen = () => {
                   </Box>
                 </HStack>
                 <Button
-                  onPress={() => Linking.openURL('mailto:stephane@lestudio316.com')}
+                  onPress={() =>
+                    Linking.openURL(
+                      isCyberJudah
+                        ? 'https://github.com/DevSecObie/cyberjudah-app/issues'
+                        : 'mailto:stephane@lestudio316.com'
+                    )
+                  }
                   rightIcon={
                     <FeatherIcon
                       name="arrow-right"

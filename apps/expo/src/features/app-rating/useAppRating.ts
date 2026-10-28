@@ -117,6 +117,8 @@ export function useAppRating() {
         await StoreReview.requestReview()
       }
     } catch {
+      // CyberJudah has no store page of its own yet; never send its readers to Bible Strong's.
+      if (process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah') return
       // Fallback: open store page directly
       const storeUrl =
         Platform.OS === 'ios'

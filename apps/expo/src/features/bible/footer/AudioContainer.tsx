@@ -95,13 +95,16 @@ const AudioContainer = ({ children, onReduce, audioMode, onChangeMode }: AudioCo
             </Chip>
           </>
         )}
-        <Chip
-          onPress={() => Linking.openURL('https://click.audibible.app/5nmN/stephane30')}
-          accessibilityRole="link"
-          accessibilityLabel={t('accessibility.openAudibible')}
-        >
-          Audibible
-        </Chip>
+        {/* An upstream referral link; CyberJudah carries no referrals. */}
+        {process.env.EXPO_PUBLIC_RESOURCE_PROFILE !== 'cyberjudah' && (
+          <Chip
+            onPress={() => Linking.openURL('https://click.audibible.app/5nmN/stephane30')}
+            accessibilityRole="link"
+            accessibilityLabel={t('accessibility.openAudibible')}
+          >
+            Audibible
+          </Chip>
+        )}
       </HStack>
       <Box className="overflow-hidden border-continuous items-center justify-center mb-[10px]">
         <TouchableBox
