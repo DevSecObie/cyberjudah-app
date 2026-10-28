@@ -52,6 +52,8 @@ jobs:
       - run: corepack enable
       - run: yarn workspaces focus @bible-strong/expo
       - run: cp apps/expo/.env.cyberjudah.example apps/expo/.env.local
+      - run: yarn workspace @bible-strong/expo typecheck
+      - run: yarn workspace @bible-strong/expo test --runInBand
       - run: yarn workspace @bible-strong/expo exec expo prebuild --platform ios --no-install
       - run: node apps/expo/scripts/verify-cyberjudah-native-config.mjs ios
       - run: pod install
