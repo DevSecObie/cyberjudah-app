@@ -740,28 +740,26 @@ const userSlice = createSlice({
         },
       }
     },
-    onUserUpdateProfile(
-      state,
-      action: PayloadAction<
-        Partial<{ displayName: string; photoURL: string; emailVerified: boolean }>
-      >
-    ) {
+    onUserUpdateProfile(state, action: PayloadAction<Partial<FireAuthProfile>>) {
       const profile = action.payload
+      if (profile.id !== undefined && profile.id !== state.id) return
       if (profile) {
+        if (profile.email !== undefined) state.email = profile.email
+        if (profile.provider !== undefined) state.provider = profile.provider
+        if (profile.createdAt !== undefined) state.createdAt = profile.createdAt
         if (profile.displayName !== undefined) state.displayName = profile.displayName
         if (profile.photoURL !== undefined) state.photoURL = profile.photoURL
         if (profile.emailVerified !== undefined) state.emailVerified = profile.emailVerified
       }
     },
     receiveLiveUpdates(state, action: PayloadAction<{ remoteUserData: FireStoreUserData }>) {
-      const { id, email, displayName, photoURL, provider, bible, subscription } =
-        action.payload.remoteUserData
+      const { id, displayName, photoURL, bible, subscription } = action.payload.remoteUserData
 
-      state.id = id
-      state.email = email
+      // Study snapshots cannot establish or change authentication. Legacy documents may
+      // contain blank/stale provider fields, and an old listener can finish after logout.
+      if (!state.id || state.id !== id) return
       state.displayName = state.displayName || displayName
       state.photoURL = photoURL
-      state.provider = provider
       state.subscription = subscription
 
       // Preserve subcollection data (managed separately)

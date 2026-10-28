@@ -163,6 +163,34 @@ describe('WebFireAuth account-switch races', () => {
   })
 })
 
+it('keeps the Firebase display name when Apple and a legacy profile have blank names', async () => {
+  const { WebFireAuth } = await import('../FireAuth.web')
+  const { getDoc } = await import('~helpers/firebase')
+  jest.mocked(getDoc).mockResolvedValueOnce({
+    exists: () => true,
+    data: () => ({ displayName: '' }),
+  } as never)
+  const auth = new WebFireAuth(),
+    onLogin = jest.fn()
+  await auth.init(onLogin, jest.fn(), jest.fn(), jest.fn(), jest.fn(), {} as never)
+  await mockAuthStateListener!({
+    uid: 'apple-reader',
+    email: 'reader@privaterelay.appleid.com',
+    displayName: 'Reader',
+    providerData: [{ providerId: 'apple.com', displayName: '' }],
+    metadata: {},
+  })
+  expect(onLogin).toHaveBeenCalledWith(
+    expect.objectContaining({
+      profile: expect.objectContaining({
+        displayName: 'Reader',
+        provider: 'apple.com',
+        email: 'reader@privaterelay.appleid.com',
+      }),
+    })
+  )
+})
+
 it('signs Firebase out even if the Telegram logout service is unreachable', async () => {
   const { endCyberJudahSession } = await import('../cyberJudahAccount')
   const { signOut } = await import('firebase/auth')

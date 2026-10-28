@@ -24,6 +24,7 @@ jest.mock('~common/ui/ListSection', () => ({
 }))
 jest.mock('../ChangePasswordModal', () => ({ __esModule: true, default: () => null }))
 jest.mock('../DeleteAccountModal', () => ({ __esModule: true, default: () => null }))
+jest.mock('../ConnectedAccounts', () => ({ __esModule: true, default: () => null }))
 
 describe('ProfileActions logout', () => {
   let renderer: ReactTestRenderer

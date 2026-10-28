@@ -5,6 +5,7 @@ const mockAuth: { currentUser: any; authStateReady: jest.Mock } = {
 }
 const mockSignIn = jest.fn(async (..._args: unknown[]) => ({ user: { uid: 'linked' } }))
 const mockToast = { success: jest.fn(), error: jest.fn() }
+jest.mock('../accountConnections', () => ({ notifyAccountConnectionsChanged: jest.fn() }))
 jest.mock('firebase/auth', () => ({
   getAuth: () => mockAuth,
   GoogleAuthProvider: jest.fn(),

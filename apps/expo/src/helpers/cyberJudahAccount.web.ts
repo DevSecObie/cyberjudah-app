@@ -7,6 +7,7 @@ import {
 } from 'firebase/auth'
 import { firebaseApp } from './firebaseApp.web'
 import { toast } from './toast'
+import { notifyAccountConnectionsChanged } from './accountConnections'
 
 let sessionRevision = 0
 let activeRestoreSignIn: Promise<unknown> | undefined
@@ -55,6 +56,7 @@ async function finishLink(uid: string) {
   const result = await response.json()
   if (!response.ok) throw new Error(errorMessage(result.error))
   if (result.uid !== uid) throw new Error('Account verification did not match.')
+  notifyAccountConnectionsChanged()
   toast.success('Telegram connected. Your linked sign-ins share the same Ask account.')
 }
 

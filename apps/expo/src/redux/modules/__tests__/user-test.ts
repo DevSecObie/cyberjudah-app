@@ -332,6 +332,24 @@ describe('User Reducer', () => {
   })
 
   describe('onUserUpdateProfile', () => {
+    it('refreshes provider identity only for the currently displayed account', () => {
+      const state = createState({ id: 'apple-reader', email: '', provider: '' })
+      const profile = {
+        id: 'apple-reader',
+        email: 'reader@privaterelay.appleid.com',
+        provider: 'apple.com',
+      }
+      const refreshed = reducer(state, onUserUpdateProfile(profile))
+      expect(refreshed.email).toBe(profile.email)
+      expect(refreshed.provider).toBe('apple.com')
+      expect(
+        reducer(
+          refreshed,
+          onUserUpdateProfile({ ...profile, id: 'old-reader', displayName: 'Old reader' })
+        )
+      ).toBe(refreshed)
+    })
+
     it('should update displayName', () => {
       const newState = reducer(initialState, onUserUpdateProfile({ displayName: 'Updated Name' }))
       expect(newState.displayName).toBe('Updated Name')
@@ -435,6 +453,55 @@ describe('User Reducer', () => {
     })
   })
 
+  it.each(['', undefined, 'google.com'])(
+    'keeps authenticated identity when study sync carries provider %s',
+    provider => {
+      const state = createState({
+        id: 'apple-reader',
+        email: 'reader@privaterelay.appleid.com',
+        provider: 'apple.com',
+        displayName: 'Reader',
+      })
+      const next = reducer(
+        state,
+        receiveLiveUpdates({
+          remoteUserData: {
+            id: 'apple-reader',
+            email: '',
+            provider,
+            displayName: '',
+            bible: { settings: { ...initialState.bible.settings, fontSizeScale: 2 } },
+          },
+        } as never)
+      )
+      expect(next.id).toBe('apple-reader')
+      expect(next.email).toBe('reader@privaterelay.appleid.com')
+      expect(next.provider).toBe('apple.com')
+      expect(next.displayName).toBe('Reader')
+      expect(next.bible.settings.fontSizeScale).toBe(2)
+    }
+  )
+
+  it.each(['', 'another-reader'])(
+    'ignores a late study snapshot for a different displayed account %s',
+    id => {
+      const state = createState({ id })
+      expect(
+        reducer(
+          state,
+          receiveLiveUpdates({
+            remoteUserData: {
+              id: 'old-reader',
+              email: 'old@example.test',
+              provider: 'apple.com',
+              bible: { settings: { ...initialState.bible.settings, fontSizeScale: 2 } },
+            },
+          } as never)
+        )
+      ).toBe(state)
+    }
+  )
+
   it('drops legacy automatic comparisons received from Firestore', () => {
     const remoteUserData = {
       id: 'user-123',
@@ -452,7 +519,10 @@ describe('User Reducer', () => {
       },
     }
 
-    const newState = reducer(initialState, receiveLiveUpdates({ remoteUserData } as never))
+    const newState = reducer(
+      createState({ id: 'user-123' }),
+      receiveLiveUpdates({ remoteUserData } as never)
+    )
 
     expect(newState.bible.settings.compare).toEqual({})
     expect(newState.bible.settings.compareSelectionVersion).toBe(2)
@@ -510,7 +580,7 @@ describe('User Reducer', () => {
     expect(write.settings.compare).toEqual({ DBY: true })
 
     const reloaded = reducer(
-      selected,
+      { ...selected, id: 'test-user' },
       receiveLiveUpdates({
         remoteUserData: {
           id: 'test-user',

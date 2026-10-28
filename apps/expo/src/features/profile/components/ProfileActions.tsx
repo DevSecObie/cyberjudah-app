@@ -1,4 +1,3 @@
-import { connectTelegramAccount } from '~helpers/cyberJudahAccount'
 import React, { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Platform } from 'react-native'
@@ -10,6 +9,7 @@ import ListSection, { ListRow } from '~common/ui/ListSection'
 import useLogin from '~helpers/useLogin'
 import ChangePasswordModal from './ChangePasswordModal'
 import DeleteAccountModal from './DeleteAccountModal'
+import ConnectedAccounts from './ConnectedAccounts'
 const ProfileActions = () => {
   const { t } = useTranslation()
   const { user, logout } = useLogin()
@@ -35,15 +35,9 @@ const ProfileActions = () => {
 
   return (
     <Box>
-      {(isEmailProvider || Platform.OS !== 'web' || canConnectTelegram) && (
+      {canConnectTelegram && <ConnectedAccounts />}
+      {(isEmailProvider || Platform.OS !== 'web') && (
         <ListSection title={t('profile.accountSettings')}>
-          {canConnectTelegram && (
-            <ListRow
-              onPress={() => void connectTelegramAccount()}
-              icon={<FeatherIcon name="link" size={18} color="grey" />}
-              label="Connect Telegram"
-            />
-          )}
           {isEmailProvider && (
             <ListRow
               onPress={() => passwordModalRef.current?.present()}

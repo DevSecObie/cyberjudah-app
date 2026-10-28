@@ -226,12 +226,13 @@ const useLiveUpdates = ({ enabled, runBeforeSync, resumeToken }: AccountMigratio
 
       // Subscribe to user document (settings, subscription, etc.)
       currentUnsubscribeUsers = onSnapshot(doc(firebaseDb, 'users', userId), docSnapshot => {
+        if (disposed || getCurrentAuthUser()?.uid !== userId) return
         const source = docSnapshot?.metadata.hasPendingWrites ? 'Local' : 'Server'
         if (source === 'Local' || !docSnapshot) return
 
         const userData = docSnapshot.data() as FireStoreUserData | undefined
 
-        if (!userData?.id) {
+        if (userData?.id !== userId) {
           return
         }
 

@@ -116,6 +116,7 @@ jest.mock('~i18n', () => ({
 
 jest.mock('~redux/modules/user', () => ({
   onUserLoginSuccess: (payload: unknown) => ({ type: 'user/login', payload }),
+  onUserUpdateProfile: (payload: unknown) => ({ type: 'user/profile', payload }),
   onUserLogout: () => ({ type: 'user/logout' }),
   verifyEmail: () => ({ type: 'user/verify-email' }),
   importData: (payload: unknown) => ({ type: 'user/import-data', payload }),
@@ -190,11 +191,23 @@ describe('useInitFireAuth account-entry orchestration', () => {
       accountEntryClassification: AccountEntryClassification
     }) => Promise<void>
 
+    const onUserChange = mockInit.mock.calls[0][1] as (value: typeof profile) => void
     const onLogout = mockInit.mock.calls[0][2] as () => Promise<void>
     const onSignedOut = mockInit.mock.calls[0][6] as () => void
 
-    return { getState: () => state!, onLogin, onLogout, onSignedOut }
+    return { getState: () => state!, onLogin, onUserChange, onLogout, onSignedOut }
   }
+
+  it('refreshes the visible profile after same-account reauthentication', async () => {
+    const controller = await renderController()
+    mockSignedInUserId = profile.id
+    controller.onUserChange(profile)
+    expect(mockDispatch).toHaveBeenCalledWith({ type: 'user/profile', payload: profile })
+    mockDispatch.mockClear()
+    mockSignedInUserId = 'different-user'
+    controller.onUserChange(profile)
+    expect(mockDispatch).not.toHaveBeenCalled()
+  })
 
   it('keeps an existing account gated until the safety backup settles', async () => {
     let finishBackup!: (completed: boolean) => void

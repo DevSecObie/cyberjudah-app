@@ -169,7 +169,7 @@ export class WebFireAuth {
       const profile: FireAuthProfile = {
         id: user.uid,
         email: user.email ?? '',
-        displayName: primaryProvider?.displayName ?? user.displayName ?? '',
+        displayName: primaryProvider?.displayName || user.displayName || '',
         photoURL: primaryProvider?.photoURL ?? user.photoURL ?? '',
         provider: primaryProvider?.providerId ?? '',
         emailVerified,
@@ -180,7 +180,8 @@ export class WebFireAuth {
         const userDocument = await getDoc(doc(firebaseDb, 'users', user.uid))
         if (userDocument.exists()) {
           const data = userDocument.data()
-          if (data && typeof data.displayName === 'string') profile.displayName = data.displayName
+          if (data && typeof data.displayName === 'string' && data.displayName.trim())
+            profile.displayName = data.displayName
           if (data && typeof data.photoURL === 'string') profile.photoURL = data.photoURL
         }
       } catch (error) {

@@ -10,6 +10,7 @@ import { createAuthSessionRecovery } from '~helpers/authSessionRecovery'
 import { runAllCleanups } from '~helpers/cleanupRegistry'
 import { clearAccountCacheAfterLogout } from '~helpers/clearAccountCacheAfterLogout'
 import { getCurrentAuthUser } from '~helpers/firebaseAuthRuntime'
+import { notifyAccountConnectionsChanged } from '~helpers/accountConnections'
 import { firestoreSyncOutbox } from '~helpers/firestoreSyncOutbox'
 import i18n from '~i18n'
 import * as UserActions from '~redux/modules/user'
@@ -199,6 +200,7 @@ const useInitFireAuth = () => {
 
       setAccountEntryState(nextEntryState)
       dispatch(UserActions.onUserLoginSuccess({ profile }))
+      notifyAccountConnectionsChanged()
 
       if (nextEntryState.phase === 'backing-up-guest-data') {
         const backupCompleted = await autoBackupManager.createBackupNow(guestState, 'account_entry')
@@ -297,8 +299,11 @@ const useInitFireAuth = () => {
     }
 
     const emailVerified = () => dispatch(UserActions.verifyEmail())
-    const onUserChange = (profile: FireAuthProfile) =>
-      console.log('[Auth] User changed', profile.id)
+    const onUserChange = (profile: FireAuthProfile) => {
+      if (getCurrentAuthUser()?.uid !== profile.id) return
+      dispatch(UserActions.onUserUpdateProfile(profile))
+      notifyAccountConnectionsChanged()
+    }
     const onLogout = async () => {
       sessionRecovery.loggedOut()
       await leaveAccount('logout')

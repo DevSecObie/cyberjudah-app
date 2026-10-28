@@ -183,6 +183,40 @@ describe('useLiveUpdates account-entry gate', () => {
     })
   })
 
+  it('does not forward a profile snapshot after logout or with a different account ID', async () => {
+    const runBeforeSync = jest.fn(async () => true)
+    const Harness = () => {
+      useLiveUpdates({ enabled: true, runBeforeSync, resumeToken: 0 })
+      return null
+    }
+    let renderer!: ReturnType<typeof create>
+    await act(async () => {
+      renderer = create(<Harness />)
+    })
+    const callback = mockOnSnapshot.mock.calls[0][1] as (snapshot: unknown) => void
+    const snapshot = (id: string) => ({
+      metadata: { hasPendingWrites: false },
+      data: () => ({ id, bible: {} }),
+    })
+    mockDispatch.mockClear()
+    callback(snapshot('other-user'))
+    expect(mockDispatch).not.toHaveBeenCalled()
+    mockSignedInUserId = undefined
+    callback(snapshot('user-1'))
+    expect(mockDispatch).not.toHaveBeenCalled()
+    mockSignedInUserId = 'user-1'
+    callback(snapshot('user-1'))
+    expect(mockDispatch).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'user/receive-live' })
+    )
+    await act(async () => {
+      renderer.unmount()
+    })
+    mockDispatch.mockClear()
+    callback(snapshot('user-1'))
+    expect(mockDispatch).not.toHaveBeenCalled()
+  })
+
   it('marks an initial cache snapshot as non-authoritative for Redux hydration', async () => {
     const runBeforeSync = jest.fn(async () => true)
     const Harness = ({ enabled }: { enabled: boolean }) => {
