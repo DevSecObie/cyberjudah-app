@@ -75,3 +75,30 @@ test('the original production document is untouched by staging writes', async ()
   assert.equal((await getDoc(doc(owner, 'users/alice'))).data().displayName, 'Original')
   await assertFails(getDoc(doc(db('bob'), 'users/alice')))
 })
+test('the server-owned subscription cannot be set or changed by the account owner', async () => {
+  const owner = db('alice')
+  for (const root of ['users', 'staging_users']) {
+    const path = `${root}/alice`
+    await assertFails(setDoc(doc(owner, path), { subscription: 'premium' }))
+    await assertSucceeds(setDoc(doc(owner, path), { displayName: 'Reader' }))
+    await assertFails(updateDoc(doc(owner, path), { subscription: 'premium' }))
+    await env.withSecurityRulesDisabled(ctx =>
+      setDoc(doc(ctx.firestore(), path), { displayName: 'Reader', subscription: 'server' })
+    )
+    await assertSucceeds(updateDoc(doc(owner, path), { displayName: 'Renamed' }))
+    await assertFails(updateDoc(doc(owner, path), { subscription: 'premium' }))
+    await assertSucceeds(deleteDoc(doc(owner, path)))
+  }
+})
+test("a study's revision history is as private as the study", async () => {
+  const owner = db('alice'),
+    path = 'studies/private'
+  await assertSucceeds(setDoc(doc(owner, path), { user: { id: 'alice' }, title: 'fixture' }))
+  await assertSucceeds(setDoc(doc(owner, path + '/revisions/one'), { text: 'previous' }))
+  await assertSucceeds(getDoc(doc(owner, path + '/revisions/one')))
+  for (const uid of ['bob', null]) {
+    await assertFails(getDoc(doc(db(uid), path + '/revisions/one')))
+    await assertFails(setDoc(doc(db(uid), path + '/revisions/two'), { text: 'planted' }))
+  }
+  await assertSucceeds(deleteDoc(doc(owner, path + '/revisions/one')))
+})

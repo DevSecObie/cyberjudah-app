@@ -7,6 +7,7 @@ import { twMerge } from '~common/ui/classNames'
 import { SheetFooter, SheetHeader, SheetTextInput, SheetView, type SheetRef } from '~common/sheet'
 import Sheet from '~common/ModalSheet'
 import { deleteCurrentAuthUser, getCurrentAuthUser } from '~helpers/firebaseAuthRuntime'
+import { deleteAccountWithData } from '~helpers/deleteAccountData'
 import type { Theme as AppTheme } from '~themes'
 import { useTheme } from '~themes/ThemeProvider'
 
@@ -48,7 +49,8 @@ const DeleteAccountModal = ({ modalRef }: DeleteAccountModalProps) => {
 
     setIsLoading(true)
     try {
-      await deleteCurrentAuthUser()
+      // The account's synced data goes with it: CyberJudah has no server-side deletion function.
+      await deleteAccountWithData(authUser, deleteCurrentAuthUser)
       handleClose()
       FireAuth.logout()
     } catch (error: unknown) {
