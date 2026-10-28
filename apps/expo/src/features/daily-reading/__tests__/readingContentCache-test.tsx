@@ -36,6 +36,41 @@ jest.mock('~features/plans/readingCalendar', () => ({
 }))
 jest.mock('../meditationPassage', () => ({}))
 
+it('shows an unavailable state for an excluded saved starter plan without fetching or deleting it', async () => {
+  const originalProfile = process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+  process.env.EXPO_PUBLIC_RESOURCE_PROFILE = 'cyberjudah'
+  mockFetch.mockClear()
+  const seeded = { ...mockPlan, id: 'bible-project-plan-en' }
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+  mockStore = createStore((state = { plan: { myPlans: [seeded] } }) => state)
+  let result: ReturnType<typeof useReadingContent>
+  const Reader = () => {
+    result = useReadingContent(seeded.id)
+    return null
+  }
+  let tree!: ReactTestRenderer
+  try {
+    await act(async () => {
+      tree = create(
+        <Provider store={mockStore}>
+          <QueryClientProvider client={client}>
+            <Reader />
+          </QueryClientProvider>
+        </Provider>
+      )
+    })
+    expect(result!.isError).toBe(true)
+    expect(result!.collection).toBeUndefined()
+    expect(mockFetch).not.toHaveBeenCalled()
+    expect(mockStore.getState()).toEqual({ plan: { myPlans: [seeded] } })
+  } finally {
+    await act(async () => tree?.unmount())
+    client.clear()
+    if (originalProfile === undefined) delete process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+    else process.env.EXPO_PUBLIC_RESOURCE_PROFILE = originalProfile
+  }
+})
+
 it('reloads Redux content when a previously loaded plan is removed and reopened', async () => {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   mockStore = createStore((state = { plan: { myPlans: [] as (typeof mockPlan)[] } }, action) => {

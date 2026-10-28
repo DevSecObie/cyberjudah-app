@@ -1,4 +1,5 @@
 import type { OngoingPlan, Plan } from '~common/types'
+import { canShowReadingPlan } from '~helpers/editorialProfile'
 import {
   findMeditationForDate,
   getScheduledPlanDay,
@@ -59,6 +60,7 @@ export const buildReadingReminderSchedule = ({
     }
     for (const participation of ongoing) {
       if (
+        !canShowReadingPlan(participation.id) ||
         !participation.startDate ||
         !participation.reminderTime ||
         participation.status === 'Completed'

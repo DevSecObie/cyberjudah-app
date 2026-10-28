@@ -35,6 +35,32 @@ const collection: Plan = {
 }
 
 describe('reading reminder scheduling', () => {
+  it('does not schedule an excluded starter plan in the CyberJudah profile', () => {
+    const originalProfile = process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+    process.env.EXPO_PUBLIC_RESOURCE_PROFILE = 'cyberjudah'
+    const seeded = { ...plan, id: 'bible-project-plan-en' }
+    try {
+      expect(
+        buildReadingReminderSchedule({
+          owner: 'reader',
+          plans: [seeded],
+          ongoing: [
+            {
+              id: seeded.id,
+              status: 'Progress',
+              startDate: '2026-09-14',
+              reminderTime: '08:30',
+              readingSlices: {},
+            },
+          ],
+          now: new Date(2026, 8, 14, 7),
+        })
+      ).toEqual([])
+    } finally {
+      if (originalProfile === undefined) delete process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+      else process.env.EXPO_PUBLIC_RESOURCE_PROFILE = originalProfile
+    }
+  })
   it('does not backdate today’s reminder and carries the exact date and owner', () => {
     const schedule = buildReadingReminderSchedule({
       time: '08:30',

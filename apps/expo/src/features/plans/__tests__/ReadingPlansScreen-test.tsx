@@ -117,3 +117,45 @@ it('lists a followed plan once, and a finished one under its own title', () => {
     act(() => tree?.unmount())
   }
 })
+
+it('hides an already saved upstream starter plan in CyberJudah while retaining reader imports', () => {
+  const originalProfile = process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+  const originalLocal = mockState.plan.myPlans
+  process.env.EXPO_PUBLIC_RESOURCE_PROFILE = 'cyberjudah'
+  mockState.plan.myPlans = [
+    {
+      id: 'bible-project-plan-en',
+      title: 'Read Scripture',
+      lang: 'en',
+      kind: 'reading-plan',
+      duration: 358,
+      sections: [],
+    },
+    {
+      id: 'reader-imported-plan',
+      title: 'My imported readings',
+      lang: 'en',
+      kind: 'reading-plan',
+      duration: 3,
+      sections: [],
+    },
+  ] as never[]
+  const savedBeforeRender = JSON.stringify(mockState.plan)
+  let tree!: ReactTestRenderer
+  try {
+    act(() => {
+      tree = create(<ReadingPlansScreen filters={{ language: 'all', query: '' }} />)
+    })
+    const rendered = JSON.stringify(tree.toJSON())
+    expect(rendered).not.toContain('Read Scripture')
+    expect(rendered).not.toContain('Discover the Bible')
+    expect(rendered).not.toContain('My English plan')
+    expect(rendered).toContain('My imported readings')
+    expect(JSON.stringify(mockState.plan)).toBe(savedBeforeRender)
+  } finally {
+    act(() => tree?.unmount())
+    mockState.plan.myPlans = originalLocal
+    if (originalProfile === undefined) delete process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+    else process.env.EXPO_PUBLIC_RESOURCE_PROFILE = originalProfile
+  }
+})

@@ -1,4 +1,5 @@
 import { useConnectionStatus } from '~helpers/useConnection'
+import { canShowReadingPlan } from '~helpers/editorialProfile'
 import { resolveMeditationOpening } from './meditationPassage'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
@@ -43,6 +44,7 @@ export const useLocalReadingDate = (offset = 0) => {
 export const useReadingContent = (collectionId: string) => {
   const dispatch = useDispatch<AppDispatch>()
   const connection = useConnectionStatus()
+  const isExcluded = !canShowReadingPlan(collectionId)
   const storedCollection = useSelector((state: RootState) =>
     state.plan.myPlans.find(plan => plan.id === collectionId)
   )
@@ -50,7 +52,7 @@ export const useReadingContent = (collectionId: string) => {
   const query = useQuery({
     queryKey: ['reading-content', collectionId],
     queryFn: () => dispatch(fetchPlan({ id: collectionId, enroll: false })).unwrap(),
-    enabled: !hasLocalContent && Boolean(collectionId) && connection !== 'offline',
+    enabled: !isExcluded && !hasLocalContent && Boolean(collectionId) && connection !== 'offline',
     networkMode: 'online',
     // Redux content can be removed independently of the query cache.
     // Re-enabling the query must fetch and repopulate Redux.
@@ -58,7 +60,9 @@ export const useReadingContent = (collectionId: string) => {
     retry: 1,
   })
   const collection =
-    storedCollection && (hasLocalContent || (query.isSuccess && connection !== 'offline'))
+    !isExcluded &&
+    storedCollection &&
+    (hasLocalContent || (query.isSuccess && connection !== 'offline'))
       ? storedCollection
       : undefined
   const isOffline = !collection && connection === 'offline'
@@ -67,7 +71,7 @@ export const useReadingContent = (collectionId: string) => {
     collection: collection ? normalizeMeditationCollection(collection) : undefined,
     isError:
       !collection &&
-      (!collectionId || isOffline || query.isError || query.fetchStatus === 'paused'),
+      (isExcluded || !collectionId || isOffline || query.isError || query.fetchStatus === 'paused'),
     retry: query.refetch,
   }
 }

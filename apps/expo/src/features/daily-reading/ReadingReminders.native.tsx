@@ -7,6 +7,7 @@ import { AppState, Platform } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector, useStore } from 'react-redux'
 import { getCurrentAuthUser } from '~helpers/firebaseAuthRuntime'
+import { canShowReadingPlan } from '~helpers/editorialProfile'
 import { addPlan, fetchPlan } from '~redux/modules/plan'
 import type { RootState } from '~redux/modules/reducer'
 import type { AppDispatch } from '~redux/store'
@@ -49,6 +50,7 @@ const ReadingReminders = () => {
       ...ongoing.filter(plan => plan.startDate && plan.reminderTime).map(plan => plan.id),
     ])
     for (const id of needed) {
+      if (!canShowReadingPlan(id)) continue
       if (plans.some(plan => plan.id === id)) continue
       void queryClient
         .fetchQuery({
