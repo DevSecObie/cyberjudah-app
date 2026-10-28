@@ -40,7 +40,12 @@ jest.mock('~helpers/agentObservability', () => ({
   appLogger: { warn: (...args: unknown[]) => mockWarn(...args) },
 }))
 
-import { getInstalledVersions, insertBibleVersion, removeBibleVersion } from '../biblesDb'
+import {
+  getInstalledVersions,
+  insertBibleVersion,
+  removeBibleVersion,
+  searchVerses,
+} from '../biblesDb'
 
 const lsg = { '1': { '1': { '1': 'Au commencement, Dieu créa les cieux et la terre.' } } }
 const sqlOf = (mock: jest.Mock) => mock.mock.calls.map(([sql]) => String(sql).trim())
@@ -131,5 +136,26 @@ describe('Bible SQLite writes', () => {
 
     await expect(getInstalledVersions()).resolves.toEqual([])
     expect(mockOpenDatabaseAsync).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('CyberJudah offline search canon', () => {
+  const previousProfile = process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+  afterEach(() => {
+    if (previousProfile === undefined) delete process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+    else process.env.EXPO_PUBLIC_RESOURCE_PROFILE = previousProfile
+  })
+
+  it('keeps the final Apocrypha books in both the match and result queries', async () => {
+    process.env.EXPO_PUBLIC_RESOURCE_PROFILE = 'cyberjudah'
+    jest.clearAllMocks()
+    mockDatabase.getFirstAsync.mockResolvedValueOnce({ found: 1 })
+    mockDatabase.getAllAsync.mockResolvedValueOnce([
+      { book: 81, chapter: 1, verse: 1, text: 'Judas', version: 'KJV' },
+    ])
+    const result = await searchVerses('Judas', { section: 'ot', version: 'KJV' })
+    expect(result[0].book).toBe(81)
+    expect(sqlOf(mockDatabase.getFirstAsync)[0]).toContain('vf.book BETWEEN 67 AND 81')
+    expect(sqlOf(mockDatabase.getAllAsync)[0]).toContain('vf.book BETWEEN 67 AND 81')
   })
 })

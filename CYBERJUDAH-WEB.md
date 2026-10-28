@@ -66,7 +66,7 @@ The existing profile controls include the staging account-link action. It reauth
 
 ## Validation and staging builds
 
-- Full Expo test suite: 511 suites, 3,484 tests passing.
+- Full Expo test suite: 511 suites, 3,486 tests passing.
 - Expo typecheck and production web export pass.
 - Architecture and shared-resource boundaries pass; original styling/surface guards pass.
 - All three Firestore emulator access-control tests pass.
@@ -79,3 +79,5 @@ The existing profile controls include the staging account-link action. It reauth
 CyberJudah currently publishes KJV, classic Strong tags, Easton, topics, cross references and its commentary. It does not publish Bible Strong's other translations, aligned original-language interlinear, enhanced entities or dated timeline events. The port must show existing unavailable states for those resources; it must not fabricate equivalents. Offline downloads offer only resources that are actually packaged; the browser keeps Bible Strong's upstream online behavior.
 
 Physical-device sign-in, account sync, download/airplane-mode reading and Apple provider setup remain acceptance checks. Apple requires the owner's developer team, signing identity and App Store Connect setup before TestFlight. No production deployment, paid transaction, merge, or store publication is part of this staging work.
+
+Bible Strong’s original dictionary catalog and lookup behavior are retained, including Easton + Webster, Smith, ISBE and Translation Words. Staging reads the original public dictionary service through its fixed dictionary gateway, preserving source attribution. Dictionary downloads remain subject to the upstream App Check configuration; only KJV and its Strong index are prepared for CyberJudah offline use. Search and commentary routing include books 80 and 81. CyberJudah staging omits upstream donation, referral and store-download links; the existing controls, reader and navigation remain Bible Strong’s.

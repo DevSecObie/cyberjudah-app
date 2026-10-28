@@ -13,7 +13,10 @@ export type PublicCommentaryRoute = {
 }
 
 const BOOK_NUMBERS_BY_OSIS_SLUG = new Map(
-  Array.from({ length: 77 }, (_, index) => index + 1).flatMap(bookNumber => {
+  Array.from(
+    { length: process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah' ? 81 : 77 },
+    (_, index) => index + 1
+  ).flatMap(bookNumber => {
     const osis = getSupportedOsisBookId(bookNumber)
     return osis ? [[osis.toLocaleLowerCase(), bookNumber] as const] : []
   })

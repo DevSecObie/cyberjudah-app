@@ -27,15 +27,20 @@ const HomeFooter = () => {
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const isWide = useResponsiveWorkspace()
+  const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
 
   if (Platform.OS === 'web' && isWide)
     return (
       <Box className="mx-[20px]">
         <Border />
         <HStack className="items-center flex-wrap gap-[24px] pt-[16px] pb-[32px]">
-          <FooterLink href="https://www.facebook.com/fr.bible.strong">{t('Suivre')}</FooterLink>
+          {!isCyberJudah && (
+            <FooterLink href="https://www.facebook.com/fr.bible.strong">{t('Suivre')}</FooterLink>
+          )}
           <FooterLink route="FAQ">{t('FAQ')}</FooterLink>
-          <FooterLink href="https://bible-strong.app">{t('home.desktop.downloadApp')}</FooterLink>
+          {!isCyberJudah && (
+            <FooterLink href="https://bible-strong.app">{t('home.desktop.downloadApp')}</FooterLink>
+          )}
         </HStack>
       </Box>
     )
@@ -46,18 +51,27 @@ const HomeFooter = () => {
         className="overflow-hidden border-continuous bg-surface flex-row px-[20px] pt-[20px] rounded-t-[24px]"
         style={{ paddingBottom: insets.bottom + 100 }}
       >
-        <Box className="overflow-hidden border-continuous flex-[1]">
-          <Button
-            color="#3b5998"
-            onPress={() => Linking.openURL('https://www.facebook.com/fr.bible.strong')}
-            leftIcon={
-              <FeatherIcon name="facebook" size={20} color="white" style={{ marginRight: 10 }} />
-            }
-          >
-            {t('Suivre')}
-          </Button>
-        </Box>
-        <Box className="overflow-hidden border-continuous w-[20px]" />
+        {!isCyberJudah && (
+          <>
+            <Box className="overflow-hidden border-continuous flex-[1]">
+              <Button
+                color="#3b5998"
+                onPress={() => Linking.openURL('https://www.facebook.com/fr.bible.strong')}
+                leftIcon={
+                  <FeatherIcon
+                    name="facebook"
+                    size={20}
+                    color="white"
+                    style={{ marginRight: 10 }}
+                  />
+                }
+              >
+                {t('Suivre')}
+              </Button>
+            </Box>
+            <Box className="overflow-hidden border-continuous w-[20px]" />
+          </>
+        )}
         <Box className="overflow-hidden border-continuous flex-[1]">
           <Button
             success

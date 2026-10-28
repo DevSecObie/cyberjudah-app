@@ -73,8 +73,12 @@ export const Home = ({ closeHome, inWorkspace = false }: HomeProps) => {
             <HomeExploreGrid />
             <HomeSubsectionTitle title={t('home.randomWord')} className="pt-[16px] pb-[4px]" />
             <HomeDiscovery />
-            <HomeSectionTitle title={t('Aller plus loin')} />
-            <HomeGoFurther />
+            {process.env.EXPO_PUBLIC_RESOURCE_PROFILE !== 'cyberjudah' && (
+              <>
+                <HomeSectionTitle title={t('Aller plus loin')} />
+                <HomeGoFurther />
+              </>
+            )}
             <HomeFooter />
           </HomeLayout>
         </HomeScrollView>

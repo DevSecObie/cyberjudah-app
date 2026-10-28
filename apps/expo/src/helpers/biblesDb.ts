@@ -1103,7 +1103,11 @@ function buildSearchFilter(ftsQuery: string, options?: SearchOptions) {
     }
   }
   if (options?.section === 'ot') {
-    existsConditions.push('(vf.book BETWEEN 1 AND 39 OR vf.book BETWEEN 67 AND 77)')
+    existsConditions.push(
+      process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+        ? '(vf.book BETWEEN 1 AND 39 OR vf.book BETWEEN 67 AND 81)'
+        : '(vf.book BETWEEN 1 AND 39 OR vf.book BETWEEN 67 AND 77)'
+    )
   } else if (options?.section === 'nt') {
     existsConditions.push('vf.book BETWEEN 40 AND 66')
   }

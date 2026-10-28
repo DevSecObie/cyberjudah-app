@@ -53,3 +53,27 @@ describe('public commentary routes', () => {
     ).toBeUndefined()
   })
 })
+
+describe('CyberJudah commentary canon', () => {
+  it('round-trips routes for the final Apocrypha books', () => {
+    const previousProfile = process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+    process.env.EXPO_PUBLIC_RESOURCE_PROFILE = 'cyberjudah'
+    try {
+      jest.isolateModules(() => {
+        const routes =
+          require('../publicCommentaryRoutes') as typeof import('../publicCommentaryRoutes')
+        for (const book of [80, 81]) {
+          const route = { resourceId: 'cyberjudah', language: 'en' as const, book, chapter: 1 }
+          const path = routes.buildPublicCommentaryPath(route)
+          const [, , language, resource, osis, chapter] = path.split('/')
+          expect(
+            routes.parsePublicCommentaryRoute({ language, resource, book: osis, chapter })
+          ).toEqual(route)
+        }
+      })
+    } finally {
+      if (previousProfile === undefined) delete process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+      else process.env.EXPO_PUBLIC_RESOURCE_PROFILE = previousProfile
+    }
+  })
+})

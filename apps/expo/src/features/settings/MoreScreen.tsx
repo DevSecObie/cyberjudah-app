@@ -58,7 +58,10 @@ export const LinkItem = (
   )
 }
 
+const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+const cyberJudahWebUrl = process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL ?? 'https://cyberjudah.io'
 const shareMessage = () => {
+  if (isCyberJudah) return `CyberJudah ${cyberJudahWebUrl}/home`
   const appUrl =
     Platform.OS === 'ios'
       ? 'https://apps.apple.com/fr/app/bible-strong/id1454738221?mt=8'
@@ -294,7 +297,8 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
             label={t('Foire aux questions')}
           />
           <ListRow
-            onPress={() => contactDeveloperRef.current?.present()}
+            href={isCyberJudah ? 'https://github.com/DevSecObie/cyberjudah-app/issues' : undefined}
+            onPress={isCyberJudah ? undefined : () => contactDeveloperRef.current?.present()}
             icon={<FeatherIcon name="send" size={18} color="quint" />}
             iconTint="quint"
             label={t('Contacter le développeur')}
@@ -302,29 +306,33 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
         </ListSection>
 
         <ListSection title={t('settings.community')}>
-          <ListRow
-            href="https://www.facebook.com/fr.bible.strong"
-            icon={<FeatherIcon name="facebook" size={18} color="primary" />}
-            iconTint="primary"
-            label={t('Nous suivre sur facebook')}
-          />
-          <ListRow
-            href={
-              Platform.OS === 'ios'
-                ? 'https://apps.apple.com/fr/app/bible-strong/id1454738221?mt=8'
-                : 'https://play.google.com/store/apps/details?id=com.smontlouis.biblestrong'
-            }
-            icon={<FeatherIcon name="star" size={18} color="secondary" />}
-            iconTint="secondary"
-            label={t("Noter l'application")}
-          />
+          {!isCyberJudah && (
+            <ListRow
+              href="https://www.facebook.com/fr.bible.strong"
+              icon={<FeatherIcon name="facebook" size={18} color="primary" />}
+              iconTint="primary"
+              label={t('Nous suivre sur facebook')}
+            />
+          )}
+          {!isCyberJudah && (
+            <ListRow
+              href={
+                Platform.OS === 'ios'
+                  ? 'https://apps.apple.com/fr/app/bible-strong/id1454738221?mt=8'
+                  : 'https://play.google.com/store/apps/details?id=com.smontlouis.biblestrong'
+              }
+              icon={<FeatherIcon name="star" size={18} color="secondary" />}
+              iconTint="secondary"
+              label={t("Noter l'application")}
+            />
+          )}
           <ListRow
             share={shareMessage()}
             icon={<FeatherIcon name="share-2" size={18} color="success" />}
             iconTint="success"
             label={t("Partager l'application")}
           />
-          {!appleIsReviewing && (
+          {!isCyberJudah && !appleIsReviewing && (
             <ListRow
               href={
                 lang === 'fr' ? 'https://bible-strong.app/fr/give' : 'https://bible-strong.app/give'
@@ -335,7 +343,11 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
             />
           )}
           <ListRow
-            href="https://github.com/smontlouis/bible-strong"
+            href={
+              isCyberJudah
+                ? 'https://github.com/DevSecObie/cyberjudah-app'
+                : 'https://github.com/smontlouis/bible-strong'
+            }
             icon={<FeatherIcon name="github" size={18} color="grey" />}
             label="Github"
           />
@@ -358,9 +370,11 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
           <LinkItem
             style={{ paddingVertical: 8, paddingHorizontal: 0 }}
             href={
-              lang === 'fr'
-                ? 'https://bible-strong.app/politique-de-confidentialite'
-                : 'https://bible-strong.app/privacy-policy'
+              isCyberJudah
+                ? 'https://cyberjudah.io/app/privacy'
+                : lang === 'fr'
+                  ? 'https://bible-strong.app/politique-de-confidentialite'
+                  : 'https://bible-strong.app/privacy-policy'
             }
           >
             <Text className="text-[13px] text-grey">{t('Politique de confidentialité')}</Text>
@@ -368,7 +382,11 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
           <LinkItem
             style={{ paddingVertical: 8, paddingHorizontal: 0 }}
             href={
-              lang === 'fr' ? 'https://bible-strong.app/eula' : 'https://bible-strong.app/eula-en'
+              isCyberJudah
+                ? 'https://cyberjudah.io/app/terms'
+                : lang === 'fr'
+                  ? 'https://bible-strong.app/eula'
+                  : 'https://bible-strong.app/eula-en'
             }
           >
             <Text className="text-[13px] text-grey">{t("Conditions d'utilisation")}</Text>

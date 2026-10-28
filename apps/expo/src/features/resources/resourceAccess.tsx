@@ -186,11 +186,7 @@ const onlineNaveAccess = resourceApiBaseUrl
     )
   : unavailableHttpNaveAccess
 const remotelyReadableDictionaryLanguages = new Set<ResourceLanguage>(
-  resourceApiBaseUrl
-    ? process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
-      ? ['en']
-      : ['fr', 'en']
-    : []
+  resourceApiBaseUrl ? ['fr', 'en'] : []
 )
 const remotelyReadableNaveLanguages = new Set<ResourceLanguage>(
   resourceApiBaseUrl

@@ -25,12 +25,18 @@ const FAQScreen = () => {
   const [contentWidth, setContentWidth] = useState(0)
   const wide = contentWidth >= 900
   const titleStyle = titleFontStyle(stylingTheme)
+  const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
   const entries = [
     {
       id: 'availability',
       question: t('faq.availabilityQuestion'),
       answer: t('faq.availabilityAnswer'),
-      link: { href: 'https://web.bible-strong.app/home', label: t('faq.openWeb') },
+      link: {
+        href: isCyberJudah
+          ? `${process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL ?? 'https://cyberjudah.io'}/home`
+          : 'https://web.bible-strong.app/home',
+        label: t('faq.openWeb'),
+      },
     },
     { id: 'free', question: t('faq.freeQuestion'), answer: t('faq.freeAnswer') },
     { id: 'account', question: t('faq.accountQuestion'), answer: t('faq.accountAnswer') },
@@ -55,7 +61,9 @@ const FAQScreen = () => {
       question: t('faq.bugNoticedQuestion'),
       answer: t('faq.bugNoticedAnswer'),
       link: {
-        href: 'https://github.com/smontlouis/bible-strong/issues',
+        href: isCyberJudah
+          ? 'https://github.com/DevSecObie/cyberjudah-app/issues'
+          : 'https://github.com/smontlouis/bible-strong/issues',
         label: t('faq.openIssues'),
       },
     },
@@ -63,7 +71,12 @@ const FAQScreen = () => {
       id: 'idea',
       question: t('faq.ideaQuestion'),
       answer: t('faq.ideaAnswer'),
-      link: { href: 'mailto:stephane@lestudio316.com', label: t('faq.contact') },
+      link: {
+        href: isCyberJudah
+          ? 'https://github.com/DevSecObie/cyberjudah-app/issues'
+          : 'mailto:stephane@lestudio316.com',
+        label: t('faq.contact'),
+      },
     },
     {
       id: 'support',
@@ -72,7 +85,7 @@ const FAQScreen = () => {
       link: { href: 'https://bible-strong.app/give', label: t('faq.donate') },
     },
     { id: 'author', question: t('faq.authorQuestion'), answer: t('faq.authorAnswer') },
-  ]
+  ].filter(entry => !isCyberJudah || entry.id !== 'support')
 
   const categories = [
     {

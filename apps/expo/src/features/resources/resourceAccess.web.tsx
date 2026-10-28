@@ -294,7 +294,7 @@ export const defaultResourceAccess: ResourceAccessRegistry = {
       getResourceOnlineAccess(
         identity,
         bibleVersions,
-        languages,
+        new Set<ResourceLanguage>(resourceApiBaseUrl ? ['fr', 'en'] : []),
         strongBibleVersions,
         languages,
         strongLexiconModules,
