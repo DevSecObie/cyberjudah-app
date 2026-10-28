@@ -51,7 +51,6 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-      - uses: android-actions/setup-android@v3
       - run: corepack enable
       - run: yarn workspaces focus @bible-strong/expo
       - run: cp apps/expo/.env.cyberjudah.example apps/expo/.env.local
@@ -104,7 +103,8 @@ jobs:
       - run: yarn workspaces focus @bible-strong/expo
       - run: cp apps/expo/.env.cyberjudah.example apps/expo/.env.local
       - run: yarn workspace @bible-strong/expo exec expo prebuild --platform ios --no-install
-      - run: pod install --project-directory=apps/expo/ios
+      - run: pod install
+        working-directory: apps/expo/ios
       - name: Compile iPhone archive without signing or publishing
         run: |
           workspace=$(find apps/expo/ios -maxdepth 1 -name '*.xcworkspace' -print -quit)

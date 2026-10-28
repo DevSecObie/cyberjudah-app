@@ -211,3 +211,5 @@ scripts/google-service-account.json
 .yarn-cache/
 
 .cyberjudah-signing/
+
+.gh-cache/
