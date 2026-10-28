@@ -1,0 +1,22 @@
+{
+  "Bible Strong - Migration Issue": "CyberJudah - Migration Issue",
+  "Bible Strong aimerait stocker les études dans votre dossier \"Downloads\"": "CyberJudah aimerait stocker les études dans votre dossier \"Downloads\"",
+  "assistant.modal.intro": "Un passage vous interroge ? Cherchons ensemble, avec les textes et les ressources de CyberJudah.",
+  "assistant.sources.open": "Ouvrir dans CyberJudah",
+  "contact.feedbackBody": "Bonjour,\n\nVoici mon retour sur CyberJudah :\n\n",
+  "faq.availabilityAnswer": "CyberJudah fonctionne sur iPhone, iPad et Android, ainsi que dans votre navigateur. Sur ordinateur, la version web permet de lire et d’étudier sans rien installer.",
+  "faq.availabilityQuestion": "Sur quels appareils puis-je utiliser CyberJudah ?",
+  "faq.bugNoticedAnswer": "Tout le monde peut signaler un problème. Ouvrez un ticket sur GitHub depuis le lien ci-dessous.\n\nIndiquez les étapes pour reproduire le bug, le résultat attendu, ce qui se passe réellement et la version de l’application. Une capture d’écran peut aider. Pensez à masquer les informations personnelles qu’elle contient.",
+  "faq.category.helpDescription": "Un problème, une idée ou l’envie d’en savoir plus sur CyberJudah ? Vous êtes au bon endroit.",
+  "faq.category.startTitle": "Bienvenue dans CyberJudah.",
+  "faq.contact": "Ouvrir un ticket GitHub",
+  "faq.contactDescription": "Vous ne trouvez pas la réponse à votre question ? Ouvrez un ticket sur GitHub.",
+  "faq.freeAnswer": "Oui. CyberJudah est gratuit pour lire et étudier. Il n’y a rien à acheter et aucun abonnement.",
+  "faq.ideaAnswer": "Vos idées sont les bienvenues. Expliquez ce que vous aimeriez pouvoir faire, dans quelle situation et ce qui vous bloque aujourd’hui.\n\nOuvrez un ticket sur GitHub pour la partager. Nous ne pouvons pas garantir une réponse immédiate ni une date de réalisation pour chaque proposition.",
+  "faq.offlineQuestion": "Puis-je utiliser CyberJudah sans Internet ?",
+  "faq.syncAnswer": "Connectez-vous au même compte CyberJudah sur vos appareils et dans la version web. Vos notes, surbrillances, marque-pages, étiquettes et études peuvent alors se synchroniser avec une connexion Internet.\n\nSi des données manquent, vérifiez le compte utilisé et laissez la synchronisation se terminer. Les ressources téléchargées pour une utilisation hors ligne doivent être installées séparément sur chaque appareil mobile.",
+  "offlineSetup.choice.subtitle": "Vous pouvez utiliser CyberJudah immédiatement et ajouter des copies hors ligne quand vous le souhaitez.",
+  "playground.badge": "CyberJudah · Playground",
+  "playground.description": "Un espace isolé pour découvrir et tester les expériences en cours de construction dans CyberJudah.",
+  "rating.title": "Vous appréciez CyberJudah ?"
+}

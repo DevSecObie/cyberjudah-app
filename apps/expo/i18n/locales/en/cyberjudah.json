@@ -1,0 +1,22 @@
+{
+  "Bible Strong - Migration Issue": "CyberJudah - Migration Issue",
+  "Bible Strong aimerait stocker les études dans votre dossier \"Downloads\"": "CyberJudah would like to store the studies in your \"Downloads\" folder",
+  "assistant.modal.intro": "Wondering about a passage? Explore it with the texts and resources in CyberJudah.",
+  "assistant.sources.open": "Open in CyberJudah",
+  "contact.feedbackBody": "Hello,\n\nMy feedback on CyberJudah:\n\n",
+  "faq.availabilityAnswer": "CyberJudah runs on iPhone, iPad and Android, and in your web browser. On a computer, the web version lets you read and study without installing anything.",
+  "faq.availabilityQuestion": "Where can I use CyberJudah?",
+  "faq.bugNoticedAnswer": "Anyone can report a problem. Open an issue on GitHub from the link below.\n\nInclude the steps to reproduce the bug, what you expected, what actually happened and the app version. A screenshot can help; hide any personal information it contains.",
+  "faq.category.helpDescription": "Have a problem, an idea, or want to learn more about CyberJudah? You are in the right place.",
+  "faq.category.startTitle": "Welcome to CyberJudah.",
+  "faq.contact": "Open a GitHub issue",
+  "faq.contactDescription": "Cannot find the answer to your question? Open an issue on GitHub.",
+  "faq.freeAnswer": "Yes. CyberJudah is free to read and study. There is nothing to buy and no subscription.",
+  "faq.ideaAnswer": "Your ideas are welcome. Explain what you would like to do, in what situation, and what gets in your way today.\n\nOpen a GitHub issue to share it. We cannot promise an immediate response or a delivery date for every suggestion.",
+  "faq.offlineQuestion": "Can I use CyberJudah offline?",
+  "faq.syncAnswer": "Sign in to the same CyberJudah account on your devices and in the web app. Your notes, highlights, bookmarks, tags and studies can then sync over an Internet connection.\n\nIf data is missing, check which account you are using and allow sync to finish. Resources downloaded for offline use must be installed separately on each mobile device.",
+  "offlineSetup.choice.subtitle": "You can use CyberJudah right away and add Offline copies whenever you want.",
+  "playground.badge": "CyberJudah · Playground",
+  "playground.description": "An isolated space for discovering and testing experiences currently being built for CyberJudah.",
+  "rating.title": "Enjoying CyberJudah?"
+}

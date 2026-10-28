@@ -109,6 +109,11 @@ const MigrationModal = () => {
         failedLabels || 'N/A'
       }\nErreur: ${progress.error || 'N/A'}\n\nMerci de votre aide.`
     )
+    // CyberJudah readers report problems through its own issues, never the upstream developer's mailbox.
+    if (process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah') {
+      Linking.openURL('https://github.com/DevSecObie/cyberjudah-app/issues')
+      return
+    }
     Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`)
   }
 
