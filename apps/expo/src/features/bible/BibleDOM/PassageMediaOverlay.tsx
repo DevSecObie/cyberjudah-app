@@ -1,4 +1,5 @@
 import { m, useReducedMotion, type Transition } from 'motion/react'
+import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { formatPassageMediaDuration, type ResolvedPassageMedia } from '../passageMedia'
 import { useTranslations } from './TranslationsContext'
@@ -16,6 +17,11 @@ import {
 import { NAVIGATE_TO_STRONG } from './dispatch'
 import { useDispatch } from './DispatchProvider'
 import { withColorAlpha } from './themeOverlayColor'
+
+// A chapter can have hundreds of classes: after the first dozen the rest arrive together, and a
+// section that brings a "show all" label shows its first SHOWN cards until the reader asks for all.
+const STAGGER_CAP = 12
+const SHOWN = 24
 
 type OverlayColors = {
   default: string
@@ -138,7 +144,8 @@ const PassageMediaGalleryCard = ({
               lineHeight: 1.1,
             }}
           >
-            {formatPassageMediaDuration(item.durationSeconds)}
+            {/* A class plays from the moment it read the verse, so its badge shows that moment. */}
+            {formatPassageMediaDuration(item.startSeconds ?? item.durationSeconds)}
           </m.span>
         </PassageMediaImage>
       </m.button>
@@ -196,6 +203,20 @@ const PassageMediaGalleryCard = ({
             </div>
           )}
         </div>
+        {item.subtitle ? (
+          <div
+            style={{
+              marginTop: 6,
+              overflow: 'hidden',
+              fontSize: 12,
+              lineHeight: 1.2,
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {item.subtitle}
+          </div>
+        ) : null}
         <div
           style={{
             marginTop: 6,
@@ -239,9 +260,14 @@ const PassageMediaOverlay = ({
       trap: true,
     },
   })
+  const [expandedSections, setExpandedSections] = useState<string[]>([])
+  const shownItems = (section: PassageMediaGallerySection) =>
+    section.showAllLabel && !expandedSections.includes(section.id)
+      ? section.items.slice(0, SHOWN)
+      : section.items
   const itemCount = sections.reduce((count, section) => count + section.items.length, 0)
   const chapterReference = `${translations.passageMediaBookName} ${translations.passageMediaChapter}`
-  const displayedItems = showSections ? sections.flatMap(section => section.items) : items
+  const displayedItems = showSections ? sections.flatMap(shownItems) : items
   const displayedItemIds = new Set(displayedItems.map(item => item.editionId))
   const sourceItemIdSet = new Set(sourceItemIds)
   const displayedSourceItemIds = sourceItemIds.filter(editionId => displayedItemIds.has(editionId))
@@ -266,7 +292,8 @@ const PassageMediaOverlay = ({
     shouldReduceMotion
       ? 0
       : additionalItemsStartDelay +
-        (additionalItemIndexes.get(editionId) ?? 0) * OVERLAY_ADDITIONAL_STAGGER_SECONDS
+        Math.min(additionalItemIndexes.get(editionId) ?? 0, STAGGER_CAP) *
+          OVERLAY_ADDITIONAL_STAGGER_SECONDS
   const getSourceItemDelay = (editionId: string) =>
     getOverlaySourceDelay(sourceItemIndexes.get(editionId) ?? 0, shouldReduceMotion)
   const getItemRevealDelay = (editionId: string, isAdditionalItem: boolean) =>
@@ -450,10 +477,37 @@ const PassageMediaOverlay = ({
                     gap: 14,
                   }}
                 >
-                  {section.items.map((item, index) =>
+                  {shownItems(section).map((item, index) =>
                     renderGalleryCard(item, item.reference, index)
                   )}
                 </div>
+                {section.showAllLabel && shownItems(section).length < section.items.length ? (
+                  <m.button
+                    type="button"
+                    whileTap={{ opacity: 0.55, scale: 0.98 }}
+                    onClick={event => {
+                      event.stopPropagation()
+                      setExpandedSections(ids => [...ids, section.id])
+                    }}
+                    style={{
+                      display: 'block',
+                      margin: '18px auto 0',
+                      minHeight: 44,
+                      padding: '10px 18px',
+                      border: `1px solid ${withColorAlpha(colors.default, 0.18)}`,
+                      borderRadius: 999,
+                      background: colors.reverse,
+                      color: colors.default,
+                      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+                      fontSize: 14,
+                      fontWeight: 650,
+                      cursor: 'pointer',
+                      WebkitTapHighlightColor: 'transparent',
+                    }}
+                  >
+                    {section.showAllLabel}
+                  </m.button>
+                ) : null}
               </section>
             ))}
           </div>

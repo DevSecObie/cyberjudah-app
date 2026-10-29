@@ -6,6 +6,8 @@ export type PassageMediaGallerySection = {
   id: 'introduction' | 'passages' | 'chapter-resources'
   title: string
   items: PassageMediaGalleryItem[]
+  /** A long section shows its first cards and this button for the rest (CyberJudah's classes). */
+  showAllLabel?: string
 }
 
 const getPassageItems = (
@@ -37,6 +39,8 @@ export const getPassageMediaGallerySections = ({
   passageMedia,
   sectionTitles,
 }: GetPassageMediaGallerySectionsInput): PassageMediaGallerySection[] => {
+  // CyberJudah's classes bring their own sections: taught from the chapter, then read in class.
+  if (passageMedia.gallerySections?.length) return passageMedia.gallerySections
   return (
     [
       {
