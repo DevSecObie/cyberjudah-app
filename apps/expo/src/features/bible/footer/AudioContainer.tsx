@@ -8,6 +8,7 @@ import { useFooterFullScreen } from './footerFullScreen'
 import Box, { AnimatedBox, BoxProps, HStack, TouchableBox } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import { useBottomBarHeightInTab } from '~features/app-switcher/context/TabContext'
 import { HEADER_HEIGHT } from '~features/app-switcher/utils/constants'
 export interface AudioContainerProps {
@@ -88,13 +89,15 @@ const AudioContainer = ({ children, onReduce, audioMode, onChangeMode }: AudioCo
             </Chip>
           </>
         )}
-        <Chip
-          onPress={() => Linking.openURL('https://click.audibible.app/5nmN/stephane30')}
-          accessibilityRole="link"
-          accessibilityLabel={t('accessibility.openAudibible')}
-        >
-          Audibible
-        </Chip>
+        {!usesCyberJudahEditorial() && (
+          <Chip
+            onPress={() => Linking.openURL('https://click.audibible.app/5nmN/stephane30')}
+            accessibilityRole="link"
+            accessibilityLabel={t('accessibility.openAudibible')}
+          >
+            Audibible
+          </Chip>
+        )}
       </HStack>
       <Box className="overflow-hidden border-continuous items-center justify-center mb-[10px]">
         <TouchableBox

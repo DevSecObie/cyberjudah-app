@@ -17,6 +17,7 @@ import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
 import { useComputedPlanItems } from '~features/plans/plan.hooks'
 import ProfileStats from '~features/profile/components/ProfileStats'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import useLanguage from '~helpers/useLanguage'
 import type { MainStackProps } from '~navigation/type'
 import { useTheme } from '~themes/ThemeProvider'
@@ -237,31 +238,35 @@ export default function DesktopHome() {
               <Box className="bg-reverse rounded-[20px] p-[16px] shadow-[0_2px_7px_rgba(89,131,240,0.1)]">
                 <PlanHome compact />
               </Box>
-              <LinkBox
-                href="https://click.audibible.app/5nmN/stephane30"
-                className="rounded-[20px] overflow-hidden p-[24px] min-h-[200px]"
-                style={{ backgroundColor: '#122B4B' }}
-              >
-                <HStack className="gap-[12px] items-center z-10">
-                  <Box
-                    className="w-[54px] h-[54px] rounded-full items-center justify-center"
-                    style={{ backgroundColor: '#24447A' }}
-                  >
-                    <FeatherIcon name="headphones" size={30} color="white" />
-                  </Box>
-                  <Box className="flex-1 gap-[7px]">
-                    <Text className="text-[white] font-bold text-[19px]">{t('audibible.try')}</Text>
-                    <Text className="text-[white] text-[13px]">{t('audibible.description')}</Text>
-                  </Box>
-                </HStack>
-                <Image
-                  source={illustrations.audio}
-                  contentFit="contain"
-                  contentPosition="bottom right"
-                  style={{ position: 'absolute', right: 0, bottom: 0, width: 240, height: 160 }}
-                  accessible={false}
-                />
-              </LinkBox>
+              {!usesCyberJudahEditorial() && (
+                <LinkBox
+                  href="https://click.audibible.app/5nmN/stephane30"
+                  className="rounded-[20px] overflow-hidden p-[24px] min-h-[200px]"
+                  style={{ backgroundColor: '#122B4B' }}
+                >
+                  <HStack className="gap-[12px] items-center z-10">
+                    <Box
+                      className="w-[54px] h-[54px] rounded-full items-center justify-center"
+                      style={{ backgroundColor: '#24447A' }}
+                    >
+                      <FeatherIcon name="headphones" size={30} color="white" />
+                    </Box>
+                    <Box className="flex-1 gap-[7px]">
+                      <Text className="text-[white] font-bold text-[19px]">
+                        {t('audibible.try')}
+                      </Text>
+                      <Text className="text-[white] text-[13px]">{t('audibible.description')}</Text>
+                    </Box>
+                  </HStack>
+                  <Image
+                    source={illustrations.audio}
+                    contentFit="contain"
+                    contentPosition="bottom right"
+                    style={{ position: 'absolute', right: 0, bottom: 0, width: 240, height: 160 }}
+                    accessible={false}
+                  />
+                </LinkBox>
+              )}
             </div>
           </div>
           <HStack className="items-center flex-wrap gap-[24px] border-t border-border pt-[16px]">
