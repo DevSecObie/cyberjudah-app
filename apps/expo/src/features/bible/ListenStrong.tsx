@@ -5,6 +5,7 @@ import { LinkBox } from '~common/Link'
 import Box from '~common/ui/Box'
 import { IonIcon } from '~common/ui/Icon'
 import { useStrongAudio } from './StrongAudioProvider'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 interface Props {
   type: 'hebreu' | 'grec'
   code: string | number
@@ -13,6 +14,8 @@ interface Props {
 }
 
 export const hasStrongAudio = (type: Props['type'], code: Props['code']) => {
+  // The recordings are hosted by a third party; CyberJudah has none of its own yet.
+  if (usesCyberJudahEditorial()) return false
   const numericCode = Number(code)
   const maximumCode = type === 'hebreu' ? 8674 : 5624
 
