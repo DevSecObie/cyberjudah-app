@@ -41,7 +41,7 @@ import {
 } from '~features/resources/resourceFailure'
 import ResourceUnavailableView from '~features/resources/ResourceUnavailableView'
 import type { StrongLexiconEntryCard } from '~features/resources/strongLexiconAccess'
-import { getChapterVerseCountFromCoverage } from '~helpers/bibleCoverage'
+import { getChapterFirstVerse, getChapterLastVerseFromCoverage } from '~helpers/bibleCoverage'
 import type { ResourceLanguage } from '~helpers/databaseTypes'
 import { localQueryOptions, staticResourceQueryOptions } from '~helpers/queryOptions'
 import { resourceQueryKeys } from '~helpers/resourceQueryKeys'
@@ -462,7 +462,7 @@ const BibleVerseDetailCard: React.FC<Props> = ({
 
   const formattedTexte = strongVerseData?.formattedTexte ?? null
   const versesInCurrentChapter =
-    getChapterVerseCountFromCoverage(coverageQuery.data, verseBook, verseChapter) ||
+    getChapterLastVerseFromCoverage(coverageQuery.data, verseBook, verseChapter) ||
     countLsgChapters[`${verseBook}-${verseChapter}`]
   const error =
     !strongVerseData && strongVerseQuery.error instanceof StrongVerseQueryError
@@ -613,6 +613,7 @@ const BibleVerseDetailCard: React.FC<Props> = ({
           goToNextVerse={() => updateVerse(+1)}
           goToPrevVerse={() => updateVerse(-1)}
           versesInCurrentChapter={versesInCurrentChapter}
+          firstVerseInCurrentChapter={getChapterFirstVerse(verseBook, verseChapter)}
         />
       </Box>
       <Box className="overflow-hidden border-continuous bg-light-grey mt-[-30px] relative z-[0]">

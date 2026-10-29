@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import countLsgChapters from '~assets/bible_versions/countLsgChapters'
 import { getBooksForCanon, isBibleCanonId } from '~helpers/bibleBookCatalog'
+import { getChapterFirstVerse } from '~helpers/bibleCoverage'
 import { getBibleVersionCanonId } from '~helpers/bibleVersions'
 import { resourceQueryKeys } from '~helpers/resourceQueryKeys'
 import { staticResourceQueryOptions } from '~helpers/queryOptions'
@@ -39,8 +40,10 @@ export function usePassageBrowser(version: VersionCode) {
     coverage?.verseCountByBookChapter[`${book!.Numero}-${chapter}`] ??
     countLsgChapters[`${book!.Numero}-${chapter}`] ??
     1
+  const firstVerse = (chapter: number) => getChapterFirstVerse(book!.Numero, chapter)
+  const lastVerse = (chapter: number) => firstVerse(chapter) + verseCount(chapter) - 1
   const verses = selectedChapter
-    ? Array.from({ length: verseCount(selectedChapter) }, (_, i) => i + 1)
+    ? Array.from({ length: verseCount(selectedChapter) }, (_, i) => firstVerse(selectedChapter) + i)
     : []
   const chapterResult = (chapter: number, verse?: number) =>
     getReferenceSearchItemsFromSegments(
@@ -48,8 +51,8 @@ export function usePassageBrowser(version: VersionCode) {
         {
           book: book!.Numero,
           chapter,
-          startVerse: verse ?? 1,
-          endVerse: verse ?? verseCount(chapter),
+          startVerse: verse ?? firstVerse(chapter),
+          endVerse: verse ?? lastVerse(chapter),
           isWholeChapter: verse === undefined,
         },
       ],
