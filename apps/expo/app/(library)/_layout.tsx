@@ -28,6 +28,8 @@ const LibraryLayout = () => {
       <Stack.Screen name="case-studies" />
       <Stack.Screen name="precepts" />
       <Stack.Screen name="law" />
+      <Stack.Screen name="study-notes" />
+      <Stack.Screen name="encyclopedia" />
     </Stack>
   )
 }

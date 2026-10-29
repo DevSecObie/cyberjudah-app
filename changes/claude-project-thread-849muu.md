@@ -9,3 +9,9 @@
 - The note's Share text no longer starts with French "Note pour" in English.
 - New JS-only dependencies: pdf-lib, marked, entities (htmlparser2 was already there). No native
   module, so no new dev client is needed, but `yarn install` must run before Metro picks them up.
+- Every note the Telegram app lists is now in the app. Classes, 15 Min w/ Captains and Hidden
+  History were already in Courses & videos; this adds "4 Chapters a Day" (the study note for every
+  chapter, book by book, with search) and the Encyclopedia, both under More beside Precepts and
+  the Law. They read live from data.cyberjudah.io, keep the last list for offline, use the class
+  notes' layout (verse blocks, precepts under each verse) and have Save as PDF. A link from one
+  note to a study note or encyclopedia entry opens it in the app.
