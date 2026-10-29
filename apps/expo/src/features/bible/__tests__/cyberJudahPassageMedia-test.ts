@@ -1,4 +1,4 @@
-it('does not expose the original video catalog through reader, Strong or library entry points', () => {
+it('lists only CyberJudah classes and never the original video catalog', () => {
   const originalProfile = process.env.EXPO_PUBLIC_RESOURCE_PROFILE
   process.env.EXPO_PUBLIC_RESOURCE_PROFILE = 'cyberjudah'
   try {
@@ -12,9 +12,18 @@ it('does not expose the original video catalog through reader, Strong or library
         isIntroductionStartChapter: false,
       })
       expect(media.getPassageMediaForStrong({ strongCode: 'H7225', language: 'en' })).toEqual([])
-      expect(media.getPassageMediaLibrary({ language: 'en' })).toEqual([])
+      const library = media.getPassageMediaLibrary({ language: 'en' })
+      expect(library.map(item => item.series)).toEqual([
+        ...Array(3).fill('IUIC in the ClassRoom'),
+        ...Array(3).fill('15 Minutes w/ The Captains'),
+        ...Array(3).fill('Our Hidden History'),
+      ])
+      expect(library.every(item => item.workId.startsWith('cyberjudah-class-'))).toBe(true)
       expect(media.getPassageMediaForBook(1, 'en')).toEqual([])
       expect(media.getPassageMediaById('book-genesis', 'en')).toBeNull()
+      expect(media.getPassageMediaEmbedUrl('abcDEF_1234')).toBe(
+        'https://cyberjudah-telegram-staging.oisrae1.workers.dev/embed/youtube.html?v=abcDEF_1234&appId=io.cyberjudah.app'
+      )
     })
   } finally {
     if (originalProfile === undefined) delete process.env.EXPO_PUBLIC_RESOURCE_PROFILE

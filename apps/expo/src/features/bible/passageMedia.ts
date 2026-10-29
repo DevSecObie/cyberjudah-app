@@ -1,4 +1,5 @@
 import passageMediaJson from '~assets/passage-media.json'
+import cyberJudahPassageMedia from '~assets/cyberjudah/passage-media.json'
 import { getBook } from '~helpers/bibleBookCatalog'
 import type { ActiveLanguage } from '~helpers/languageUtils'
 import englishBookNames from '../../../i18n/locales/en/translation_book.json'
@@ -47,6 +48,8 @@ type PassageMediaAnchor = {
 
 type PassageMediaWork = {
   id: string
+  /** The series a class belongs to, which the library lists it under. */
+  series?: string
   categories?: PassageMediaCategory[]
   editions: Partial<Record<ActiveLanguage, PassageMediaEdition>>
   anchors: PassageMediaAnchor[]
@@ -92,6 +95,7 @@ export type ResolvedPassageMediaChapter = {
 
 export type ResolvedPassageMediaLibraryItem = ResolvedPassageMedia & {
   categories: PassageMediaCategory[]
+  series?: string
 }
 
 export const formatPassageMediaDuration = (durationSeconds: number): string => {
@@ -107,8 +111,16 @@ export const formatPassageMediaDuration = (durationSeconds: number): string => {
   return `${minutes}:${String(seconds).padStart(2, '0')}`
 }
 
-const PASSAGE_MEDIA_PLAYER_URL = 'https://bible-strong.app/embed/youtube.html'
-const PASSAGE_MEDIA_APP_ID = 'com.smontlouis.biblestrong'
+// CyberJudah serves its own copy of the player page (public/embed/youtube.html) from its server.
+const PASSAGE_MEDIA_PLAYER_URL = usesCyberJudahEditorial()
+  ? `${(
+      process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL ||
+      'https://cyberjudah-telegram-staging.oisrae1.workers.dev'
+    ).replace(/\/+$/, '')}/embed/youtube.html`
+  : 'https://bible-strong.app/embed/youtube.html'
+const PASSAGE_MEDIA_APP_ID = usesCyberJudahEditorial()
+  ? 'io.cyberjudah.app'
+  : 'com.smontlouis.biblestrong'
 
 export const getPassageMediaEmbedUrl = (providerId: string): string =>
   `${PASSAGE_MEDIA_PLAYER_URL}?v=${encodeURIComponent(providerId)}` +
@@ -386,6 +398,7 @@ export const resolvePassageMediaLibrary = (
     result.push({
       ...edition,
       categories: work.categories?.length ? work.categories : ['uncategorized'],
+      ...(work.series ? { series: work.series } : {}),
     })
   }
 
@@ -393,15 +406,7 @@ export const resolvePassageMediaLibrary = (
 }
 
 const passageMediaCatalog: PassageMediaCatalog = usesCyberJudahEditorial()
-  ? {
-      attribution: {
-        label: 'CyberJudah',
-        url: 'https://cyberjudah.io',
-        termsUrl: 'https://cyberjudah.io/app/terms',
-      },
-      works: [],
-      indexes: { chapters: {}, strongs: {}, library: [] },
-    }
+  ? (cyberJudahPassageMedia as PassageMediaCatalog)
   : (passageMediaJson as PassageMediaCatalog)
 
 export const getPassageMediaForChapter = (input: ResolvePassageMediaChapterInput) =>
