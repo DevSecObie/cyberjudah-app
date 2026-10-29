@@ -1,3 +1,5 @@
+> **CyberJudah, 2026-10-29.** The pictures in this folder were redrawn for CyberJudah with Higgsfield (GPT Image 2.5, high quality, transparent background), using the earlier Bible Strong pictures as layout references. The owner's rule for people: Black, Hispanic or Native American; men with full beards and heads uncovered; women in a head wrap. The text below describes the earlier Bible Strong pictures and their prompts.
+
 # Home « Explorer » illustrations
 
 Style `bible-strong-univers-v1`. Generated on 2026-10-19 with Codex's built-in `image_gen` (imagegen skill, `codex exec`), then trimmed and exported to WebP with alpha (420 px max, quality 85, alpha quality 90: enough for a 3x screen at the displayed size). Version 2: drawn in the hand of the new-tab series (library-reader and notes-writer as references).
