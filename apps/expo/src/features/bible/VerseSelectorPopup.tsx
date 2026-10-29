@@ -11,7 +11,7 @@ import Text from '~common/ui/Text'
 import { useResourceAccess } from '~features/resources/resourceAccess'
 import { useQuery } from '@tanstack/react-query'
 import { bibleChapterQueryOptions } from '~features/resources/resourceQueries'
-import { getChapterVerseCountFromCoverage } from '~helpers/bibleCoverage'
+import { getChapterVerseNumbersFromCoverage } from '~helpers/bibleCoverage'
 import type { BibleVersionCoverage } from '~helpers/biblesDb'
 type VerseSelectorPopupProps = {
   bibleAtom: PrimitiveAtom<BibleTab>
@@ -41,12 +41,9 @@ export const VerseSelectorPopup = ({
     ...bibleChapterQueryOptions({ book: book.Numero, chapter, version }, resources),
     enabled: !preferCoverage,
   })
-  const verseCount = getChapterVerseCountFromCoverage(coverage, book.Numero, chapter)
-  const verseNumbers = verseCount
-    ? Array.from({ length: verseCount }, (_, index) => index + 1)
-    : verses?.success
-      ? verses.data.verses.map(verse => Number(verse.Verset))
-      : []
+  const verseNumbers =
+    getChapterVerseNumbersFromCoverage(coverage, book.Numero, chapter) ??
+    (verses?.success ? verses.data.verses.map(verse => Number(verse.Verset)) : [])
 
   const ITEM_WIDTH = 40
   const ITEM_GAP = 10

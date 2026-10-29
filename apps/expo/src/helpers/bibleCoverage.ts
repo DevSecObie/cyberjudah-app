@@ -6,6 +6,8 @@ import {
   isBibleCanonId,
 } from '~helpers/bibleBookCatalog'
 import { getChapterVerseCount, type BibleVersionCoverage } from '~helpers/biblesDb'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
+import cyberJudahVerseNumbering from '~assets/cyberjudah/verse-numbering.json'
 
 export const resolveBibleCoverageCanonId = (
   coverage: BibleVersionCoverage | undefined,
@@ -33,6 +35,41 @@ export const getChapterVerseCountFromCoverage = (
   bookNumber: number,
   chapter: number
 ) => coverage?.verseCountByBookChapter[`${bookNumber}-${chapter}`]
+
+const cyberJudahFirstVerses: Record<string, number> =
+  cyberJudahVerseNumbering.firstVerseByBookChapter
+
+/**
+ * Coverage gives a verse count, not verse numbers. The published KJV has one chapter whose
+ * numbering does not start at 1 (Rest of Esther 10 begins at verse 4), checked against the
+ * offline archive by scripts/verify-cyberjudah-offline.mjs.
+ */
+export const getChapterFirstVerse = (bookNumber: number, chapter: number) =>
+  (usesCyberJudahEditorial() ? cyberJudahFirstVerses[`${bookNumber}-${chapter}`] : undefined) ?? 1
+
+export const getChapterVerseNumbersFromCoverage = (
+  coverage: BibleVersionCoverage | undefined,
+  bookNumber: number,
+  chapter: number
+) => {
+  const count = getChapterVerseCountFromCoverage(coverage, bookNumber, chapter)
+  if (!count) return undefined
+  const first = getChapterFirstVerse(bookNumber, chapter)
+  return Array.from({ length: count }, (_, i) => first + i)
+}
+
+/** The number of the chapter's last verse, given its verse count. */
+export const getChapterLastVerse = (bookNumber: number, chapter: number, verseCount: number) =>
+  getChapterFirstVerse(bookNumber, chapter) + verseCount - 1
+
+export const getChapterLastVerseFromCoverage = (
+  coverage: BibleVersionCoverage | undefined,
+  bookNumber: number,
+  chapter: number
+) => {
+  const count = getChapterVerseCountFromCoverage(coverage, bookNumber, chapter)
+  return count ? getChapterLastVerse(bookNumber, chapter, count) : undefined
+}
 
 export const getPreviousAvailableChapterLocation = (
   book: Book,
