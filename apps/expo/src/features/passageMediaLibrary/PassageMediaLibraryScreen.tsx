@@ -55,6 +55,16 @@ const getHowToReadTheBibleEpisodes = (items: ResolvedPassageMediaLibraryItem[]) 
         (HOW_TO_READ_THE_BIBLE_ORDER.get(right.workId) ?? Number.MAX_SAFE_INTEGER)
     )
 
+// CyberJudah's classes, listed under their series in catalog order.
+const getSeriesSections = (items: ResolvedPassageMediaLibraryItem[]): LibrarySection[] => {
+  const sections = new Map<string, ResolvedPassageMediaLibraryItem[]>()
+  for (const item of items) {
+    if (!item.series) continue
+    sections.set(item.series, [...(sections.get(item.series) ?? []), item])
+  }
+  return [...sections].map(([title, data]) => ({ title, data }))
+}
+
 const PassageMediaLibraryScreen = () => {
   const stylingTheme = useStylingTheme()
 
@@ -62,17 +72,21 @@ const PassageMediaLibraryScreen = () => {
   const router = useRouter()
   const language = useLanguage()
   const { width: windowWidth } = useWindowDimensions()
-  const episodes = getHowToReadTheBibleEpisodes(getPassageMediaLibrary({ language }))
+  const library = getPassageMediaLibrary({ language })
+  const seriesSections = getSeriesSections(library)
+  const episodes = getHowToReadTheBibleEpisodes(library)
   const contentWidth = Math.min(windowWidth, 760)
   const thumbnailWidth = Math.min(176, Math.max(128, (contentWidth - 40) * 0.38))
-  const sections: LibrarySection[] = episodes.length
-    ? [
-        {
-          title: t('passageMediaLibrary.categories.how-to-read'),
-          data: episodes,
-        },
-      ]
-    : []
+  const sections: LibrarySection[] = seriesSections.length
+    ? seriesSections
+    : episodes.length
+      ? [
+          {
+            title: t('passageMediaLibrary.categories.how-to-read'),
+            data: episodes,
+          },
+        ]
+      : []
 
   const playVideo = (item: ResolvedPassageMediaLibraryItem) => {
     router.push({
@@ -113,7 +127,11 @@ const PassageMediaLibraryScreen = () => {
               className="text-grey text-[15px] leading-[21px]"
               style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.text) }}
             >
-              {t('passageMediaLibrary.subtitle')}
+              {t(
+                seriesSections.length
+                  ? 'passageMediaLibrary.cyberJudahSubtitle'
+                  : 'passageMediaLibrary.subtitle'
+              )}
             </Text>
           </VStack>
         }

@@ -63,7 +63,7 @@ export const Home = ({ closeHome, inWorkspace = false }: HomeProps) => {
           >
             {t('Apprendre')}
           </Text>
-          {!cyberJudah && <PassageMediaLibraryWidget />}
+          <PassageMediaLibraryWidget />
           <HStack className="overflow-hidden border-continuous mt-[12px] h-[174px] gap-[12px] items-stretch">
             {!cyberJudah && <TheBibleProject />}
             <TimelineWidget />
