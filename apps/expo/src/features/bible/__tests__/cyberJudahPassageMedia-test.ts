@@ -21,6 +21,9 @@ it('lists only CyberJudah classes and never the original video catalog', () => {
       expect(library.every(item => item.workId.startsWith('cyberjudah-class-'))).toBe(true)
       expect(media.getPassageMediaForBook(1, 'en')).toEqual([])
       expect(media.getPassageMediaById('book-genesis', 'en')).toBeNull()
+      expect(media.getPassageMediaEmbedUrl('abcDEF_1234')).toBe(
+        'https://cyberjudah-telegram-staging.oisrae1.workers.dev/embed/youtube.html?v=abcDEF_1234&appId=io.cyberjudah.app'
+      )
     })
   } finally {
     if (originalProfile === undefined) delete process.env.EXPO_PUBLIC_RESOURCE_PROFILE
