@@ -62,7 +62,9 @@ jobs:
         # Build 303's bundle came out without them although Expo loaded .env.local, so every
         # later process, including the Xcode bundle phase and its Metro workers, gets them too.
         run: |
-          grep -E '^[A-Z_][A-Z0-9_]*=' apps/expo/.env.cyberjudah.example | sed -E 's/^([A-Z0-9_]+)="?([^"]*)"?$/\1=\2/' >> "$GITHUB_ENV"
+          # Only the app's public settings: a variable such as NODE_OPTIONS or PATH can never be
+          # set for the signing steps from this file.
+          grep -E '^(EXPO_PUBLIC_[A-Z0-9_]+|APP_NAME|BUNDLE_IDENTIFIER|IOS_GOOGLE_SERVICES_FILE|ANDROID_GOOGLE_SERVICES_FILE|EAS_BUILD_CHANNEL|OTA_URL)=' apps/expo/.env.cyberjudah.example | sed -E 's/^([A-Z0-9_]+)="?([^"]*)"?$/\1=\2/' >> "$GITHUB_ENV"
           echo NODE_ENV=production >> "$GITHUB_ENV"
       - run: yarn workspace @bible-strong/expo exec expo prebuild --platform ios --no-install
       - run: node apps/expo/scripts/verify-cyberjudah-native-config.mjs ios
