@@ -9,76 +9,93 @@ jest.mock('~helpers/storage', () => ({
 }))
 
 import {
+  filterClassLibrary,
   getCachedClassById,
   loadClassLibrary,
   readCachedClassLibrary,
   toClassLibrary,
 } from '../cyberJudahClasses'
 
-const note = (
-  kind: string,
-  series: string,
-  videoId: string | null,
-  date: string,
-  title = videoId ?? 'x'
-) => ({
-  kind,
-  series,
+const row = (videoId: string | null, date: string, extra: Record<string, unknown> = {}) => ({
   videoId,
   date,
-  title,
+  title: videoId ?? 'x',
   teacher: 'Bishop Nathanyel',
-  url: `/${kind}/${date}`,
+  url: `/classes/${date}`,
+  ...extra,
 })
 
-const notes = [
-  note('history', 'Our Hidden History', 'FLSncKJFYss', '2026-10-25'),
-  note('class', 'IUIC in the ClassRoom', 'sBoGbQK5zMA', '2026-10-24'),
-  note('class', 'IUIC in the ClassRoom', 'P4cR6i32U80', '2026-10-26'),
-  note('captains', '15 Minutes w/ The Captains', 'FQeCG3N9PZQ', '2026-10-26'),
-  note('class', 'IUIC in the ClassRoom', null, '2026-10-27'),
-  note('study', 'Bible study', 'AAAAAAAAAAA', '2026-10-27'),
-]
+const feeds = {
+  classes: [
+    row('sBoGbQK5zMA', '2026-10-24'),
+    row('P4cR6i32U80', '2026-10-26', { allBooks: ['Genesis', 'Exodus'], topics: ['captivity'] }),
+    row('TRUTH000001', '2026-10-20', {
+      collection: 'The Truth Shall Make You Free · Kente FM Radio',
+    }),
+    row('POWERHOUR01', '2026-10-19', { collection: 'The Power Hour' }),
+    row(null, '2026-10-27'),
+  ],
+  captains: [
+    row('FQeCG3N9PZQ', '2026-10-26', { teacher: 'Captain Yaya' }),
+    row('SENSE000001', '2026-10-21', { collection: 'Giving The Sense From A to Z' }),
+  ],
+  history: [row('FLSncKJFYss', '2026-10-25', { duration: 7594, teacher: 'Deacon Eythan' })],
+}
+
+const respond = (data: Record<string, unknown>) =>
+  jest.fn(async (url: string) => ({
+    ok: true,
+    json: async () =>
+      url.endsWith('/search/classes.json')
+        ? data.classes
+        : url.endsWith('/search/captains.json')
+          ? data.captains
+          : data.history,
+  })) as unknown as typeof fetch
 
 beforeEach(() => mockStore.clear())
 
 describe('CyberJudah class library', () => {
-  it('lists classes with a video by series in order, newest first', () => {
-    const library = toClassLibrary(notes, [{ videoId: 'FLSncKJFYss', duration: 7594 }])
+  it('files classes with a video by collection in the Telegram order, newest first', () => {
+    const library = toClassLibrary(feeds)
     expect(library.map(item => [item.series, item.providerId])).toEqual([
-      ['IUIC in the ClassRoom', 'P4cR6i32U80'],
-      ['IUIC in the ClassRoom', 'sBoGbQK5zMA'],
-      ['15 Minutes w/ The Captains', 'FQeCG3N9PZQ'],
+      ['Sabbath classes', 'P4cR6i32U80'],
+      ['Sabbath classes', 'sBoGbQK5zMA'],
+      ['15 Min w/ Captains', 'FQeCG3N9PZQ'],
       ['Our Hidden History', 'FLSncKJFYss'],
+      ['Giving The Sense From A to Z', 'SENSE000001'],
+      ['The Truth Shall Make You Free', 'TRUTH000001'],
+      ['Shows', 'POWERHOUR01'],
     ])
     expect(library[3].durationSeconds).toBe(7594)
-    expect(library[0].durationSeconds).toBe(0)
     expect(library[0].subtitle).toBe('2026-10-26 · Bishop Nathanyel')
+    expect(library[6].subtitle).toBe('2026-10-19 · Bishop Nathanyel · The Power Hour')
+  })
+
+  it('searches titles, teachers, books and topics, and narrows by teacher and year', () => {
+    const library = toClassLibrary(feeds)
+    expect(
+      filterClassLibrary(library, { query: 'exodus captivity' }).map(i => i.providerId)
+    ).toEqual(['P4cR6i32U80'])
+    expect(filterClassLibrary(library, { teacher: 'Captain Yaya' }).map(i => i.providerId)).toEqual(
+      ['FQeCG3N9PZQ']
+    )
+    expect(filterClassLibrary(library, { series: 'Shows', year: '2026' })).toHaveLength(1)
+    expect(filterClassLibrary(library, { year: '2025' })).toHaveLength(0)
   })
 
   it('shows a newly published class without an app update and keeps it for offline', async () => {
-    const published = [
-      ...notes,
-      note('class', 'IUIC in the ClassRoom', 'NEWCLASS123', '2026-10-30'),
-    ]
-    const fetcher = jest.fn(async (url: string) => ({
-      ok: true,
-      json: async () => (url.endsWith('/api/notes/index.json') ? published : []),
-    })) as unknown as typeof fetch
-    const library = await loadClassLibrary(fetcher)
+    const published = { ...feeds, classes: [...feeds.classes, row('NEWCLASS123', '2026-10-30')] }
+    const library = await loadClassLibrary(respond(published))
     expect(library[0].providerId).toBe('NEWCLASS123')
     expect(readCachedClassLibrary()?.[0].providerId).toBe('NEWCLASS123')
     expect(getCachedClassById('cyberjudah-class-NEWCLASS123')?.title).toBe('NEWCLASS123')
   })
 
-  it('keeps the last list when the index cannot be read', async () => {
-    const ok = jest.fn(async () => ({
-      ok: true,
-      json: async () => notes,
-    })) as unknown as typeof fetch
-    await loadClassLibrary(ok)
+  it('keeps the last list when the classes cannot be read', async () => {
+    await loadClassLibrary(respond(feeds))
     const failing = jest.fn(async () => ({ ok: false, status: 503 })) as unknown as typeof fetch
     await expect(loadClassLibrary(failing)).rejects.toThrow('CYBERJUDAH_CLASSES_UNAVAILABLE:503')
-    expect(readCachedClassLibrary()).toHaveLength(4)
+    expect(readCachedClassLibrary()).toHaveLength(7)
   })
 })

@@ -412,6 +412,36 @@ describe('commentary access', () => {
     )
   })
 
+  it('reads several teachings on one verse in order', async () => {
+    const fetcher = jest.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            resource: {
+              kind: 'commentary',
+              resourceId: 'cyberjudah',
+              language: 'en',
+              revision: 'cj-r1',
+            },
+            book: 1,
+            chapter: 1,
+            serializedComments: JSON.stringify({ 1: ['<h3>One</h3>', '<h3>Two</h3>'], 2: 'Three' }),
+          }),
+          { status: 200, headers: { 'content-type': 'application/json' } }
+        )
+    )
+    const http = createHttpCommentaryChapterSource({
+      baseUrl: 'https://resources.example/',
+      fetcher,
+      isOnline: async () => true,
+    })
+
+    await expect(http.loadResourceChapter('cyberjudah', 'en', 1, 1)).resolves.toEqual({
+      1: '<h3>One</h3><h3>Two</h3>',
+      2: 'Three',
+    })
+  })
+
   it('requests and validates compact commentary coverage from the resource API', async () => {
     const fetcher = jest.fn(
       async () =>

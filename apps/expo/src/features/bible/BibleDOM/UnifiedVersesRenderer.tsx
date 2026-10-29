@@ -311,6 +311,10 @@ export function UnifiedVersesRenderer({
   // Pre-compute which verses have word annotations: O(a*r) once instead of O(n*a*r)
   const versesWithWordAnnotationsByKey = getVersesWithWordAnnotations(wordAnnotations, version)
 
+  // The scriptures the classes read with each verse, as chips after it.
+  const preceptChips = inlineCommentaries?.preceptChips ?? {}
+  const verseTags = inlineCommentaries?.verseTags ?? {}
+
   return (
     <>
       {!annotationMode && !(isPassagePreview && isContextFocused) && (
@@ -460,6 +464,8 @@ export function UnifiedVersesRenderer({
               redWords={redWords}
               passageMedia={passageMediaAfterVerses[verseNumber]}
               passageMediaGallerySections={passageMediaGallerySections}
+              preceptChips={preceptChips[verseNumber]}
+              cyberJudahTags={verseTags[verseNumber]}
             />
             <InlineCommentaryChips
               chips={inlineCommentaries?.afterVerses[verseNumber]}

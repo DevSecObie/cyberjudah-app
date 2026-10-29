@@ -112,7 +112,13 @@ const decodeSerializedComments = (value: string): SerializedCommentaryChapter =>
     if (!decoded || typeof decoded !== 'object' || Array.isArray(decoded)) {
       throw new Error('COMMENTARY_CHAPTER_INVALID')
     }
-    const entries = Object.entries(decoded)
+    // CyberJudah serves several teachings on one verse as a list of sections; they read in order.
+    const entries = Object.entries(decoded).map(([verse, content]) => [
+      verse,
+      Array.isArray(content) && content.every(part => typeof part === 'string')
+        ? content.join('')
+        : content,
+    ])
     if (entries.some(([verse, content]) => !/^\d+$/u.test(verse) || typeof content !== 'string')) {
       throw new Error('COMMENTARY_CHAPTER_INVALID')
     }

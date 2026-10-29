@@ -2,9 +2,14 @@ import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { pageContentStyle } from '~common/ui/PageContent'
 import { useRouter } from 'expo-router'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SectionList, useWindowDimensions } from 'react-native'
 import Header from '~common/Header'
+import FiltersHeader, { type FiltersHeaderItem } from '~common/FiltersHeader'
+import PanelSearch from '~common/ContextualPanel/PanelSearch'
+import { Image } from 'expo-image'
+import { TouchableBox } from '~common/ui/Box'
 import Box, { SafeAreaBox, VStack } from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import {
@@ -15,7 +20,13 @@ import useLanguage from '~helpers/useLanguage'
 import { useQuery } from '@tanstack/react-query'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import PassageMediaLibraryCard from './PassageMediaLibraryCard'
-import { loadClassLibrary, readCachedClassLibrary } from './cyberJudahClasses'
+import {
+  CLASS_COLLECTIONS,
+  filterClassLibrary,
+  loadClassLibrary,
+  readCachedClassLibrary,
+  type CyberJudahClass,
+} from './cyberJudahClasses'
 // Editorial order of the 19 episodes published in BibleProject's
 // "How to Read the Bible" collection.
 const HOW_TO_READ_THE_BIBLE_WORK_IDS = [
@@ -47,6 +58,18 @@ const HOW_TO_READ_THE_BIBLE_ORDER = new Map<string, number>(
 type LibrarySection = {
   title: string
   data: ResolvedPassageMediaLibraryItem[]
+  /** Shown with "See all" when the section lists only its newest classes. */
+  more?: number
+}
+// Each collection lists its newest classes; "See all" opens the whole collection.
+const SECTION_PAGE = 12
+
+type ClassFilters = {
+  query: string
+  series?: string
+  teacher?: string
+  year?: string
+  collection?: string
 }
 
 const getHowToReadTheBibleEpisodes = (items: ResolvedPassageMediaLibraryItem[]) =>
@@ -58,15 +81,27 @@ const getHowToReadTheBibleEpisodes = (items: ResolvedPassageMediaLibraryItem[]) 
         (HOW_TO_READ_THE_BIBLE_ORDER.get(right.workId) ?? Number.MAX_SAFE_INTEGER)
     )
 
-// CyberJudah's classes, listed under their series in catalog order.
-const getSeriesSections = (items: ResolvedPassageMediaLibraryItem[]): LibrarySection[] => {
-  const sections = new Map<string, ResolvedPassageMediaLibraryItem[]>()
-  for (const item of items) {
-    if (!item.series) continue
-    sections.set(item.series, [...(sections.get(item.series) ?? []), item])
+// CyberJudah's classes under their collections, as in the Telegram app, or one list when filtered.
+// The featured latest class is left out of its section below, so it is listed once.
+const getClassSections = (
+  classes: CyberJudahClass[],
+  filters: ClassFilters,
+  featured?: CyberJudahClass
+): LibrarySection[] => {
+  const rows = filterClassLibrary(classes, filters)
+  const filtered = !!(filters.query.trim() || filters.teacher || filters.year || filters.collection)
+  if (filtered || filters.series) {
+    return rows.length
+      ? [{ title: filters.collection || filters.series || 'Results', data: rows }]
+      : []
   }
-  return [...sections].map(([title, data]) => ({ title, data }))
+  return CLASS_COLLECTIONS.map(title => {
+    const data = rows.filter(item => item.series === title && item !== featured)
+    return { title, data: data.slice(0, SECTION_PAGE), more: data.length }
+  }).filter(section => section.data.length)
 }
+
+const unique = (values: string[]) => [...new Set(values.filter(Boolean))]
 
 const PassageMediaLibraryScreen = () => {
   const stylingTheme = useStylingTheme()
@@ -87,11 +122,111 @@ const PassageMediaLibraryScreen = () => {
     networkMode: 'always',
     retry: 1,
   })
-  const library =
-    cyberJudah && classLibrary.data?.length
-      ? classLibrary.data
-      : getPassageMediaLibrary({ language })
-  const seriesSections = getSeriesSections(library)
+  const classes = cyberJudah ? (classLibrary.data ?? []) : []
+  const library = classes.length ? classes : getPassageMediaLibrary({ language })
+  const [filters, setFilters] = useState<ClassFilters>({ query: '' })
+  const setFilter = (next: Partial<ClassFilters>) =>
+    setFilters(current => ({ ...current, ...next }))
+  const unfiltered =
+    !filters.query.trim() &&
+    !filters.series &&
+    !filters.teacher &&
+    !filters.year &&
+    !filters.collection
+  const featured = unfiltered ? classes.find(item => item.series === 'Sabbath classes') : undefined
+  const seriesSections = useMemo(
+    () => getClassSections(classes, filters, featured),
+    [classes, filters, featured]
+  )
+  const inSeries = useMemo(
+    () => (filters.series ? classes.filter(item => item.series === filters.series) : classes),
+    [classes, filters.series]
+  )
+  const choices = (
+    current: string | undefined,
+    values: string[],
+    every: string,
+    key: 'series' | 'teacher' | 'year' | 'collection'
+  ) => [
+    { key: '', label: every, selected: !current, onSelect: () => setFilter({ [key]: undefined }) },
+    ...values.map(value => ({
+      key: value,
+      label: value,
+      selected: value === current,
+      onSelect: () => setFilter({ [key]: value }),
+    })),
+  ]
+  const classFilters: FiltersHeaderItem[] = [
+    {
+      key: 'search',
+      icon: 'search',
+      label: t('passageMediaLibrary.search'),
+      value: filters.query.trim() || undefined,
+      active: !!filters.query.trim(),
+      onPress: () => {},
+      content: () => <PanelSearch value={filters.query} onChange={query => setFilter({ query })} />,
+    },
+    {
+      key: 'series',
+      icon: 'layers',
+      label: t('passageMediaLibrary.collection'),
+      value: filters.series,
+      active: !!filters.series,
+      onPress: () => {},
+      options: choices(
+        filters.series,
+        CLASS_COLLECTIONS.filter(title => classes.some(item => item.series === title)),
+        t('passageMediaLibrary.everyCollection'),
+        'series'
+      ),
+    },
+    {
+      key: 'teacher',
+      icon: 'user',
+      label: t('passageMediaLibrary.teacher'),
+      value: filters.teacher,
+      active: !!filters.teacher,
+      searchable: true,
+      onPress: () => {},
+      options: choices(
+        filters.teacher,
+        unique(inSeries.map(item => item.teacher)).sort(),
+        t('passageMediaLibrary.everyTeacher'),
+        'teacher'
+      ),
+    },
+    {
+      key: 'year',
+      icon: 'clock',
+      label: t('passageMediaLibrary.year'),
+      value: filters.year,
+      active: !!filters.year,
+      onPress: () => {},
+      options: choices(
+        filters.year,
+        unique(inSeries.map(item => item.year))
+          .sort()
+          .reverse(),
+        t('passageMediaLibrary.everyYear'),
+        'year'
+      ),
+    },
+    {
+      key: 'collection',
+      icon: 'list',
+      label: t('passageMediaLibrary.show'),
+      value: filters.collection,
+      active: !!filters.collection,
+      searchable: true,
+      onPress: () => {},
+      options: choices(
+        filters.collection,
+        unique(inSeries.map(item => item.collection)).sort(),
+        t('passageMediaLibrary.everyShow'),
+        'collection'
+      ),
+    },
+  ]
   const episodes = getHowToReadTheBibleEpisodes(library)
   const contentWidth = Math.min(windowWidth, 760)
   const thumbnailWidth = Math.min(176, Math.max(128, (contentWidth - 40) * 0.38))
@@ -115,7 +250,16 @@ const PassageMediaLibraryScreen = () => {
 
   return (
     <SafeAreaBox className="overflow-hidden border-continuous bg-reverse">
-      <Header hasBackButton background title={t('passageMediaLibrary.title')} />
+      {classes.length ? (
+        <FiltersHeader
+          hasBackButton
+          title={t('passageMediaLibrary.title')}
+          filters={classFilters}
+          onReset={() => setFilters({ query: '' })}
+        />
+      ) : (
+        <Header hasBackButton background title={t('passageMediaLibrary.title')} />
+      )}
       <SectionList
         sections={sections}
         keyExtractor={item => item.editionId}
@@ -151,16 +295,54 @@ const PassageMediaLibraryScreen = () => {
                   : 'passageMediaLibrary.subtitle'
               )}
             </Text>
+            {!!featured && (
+              <TouchableBox
+                className="mt-[18px] gap-[10px]"
+                accessibilityRole="button"
+                accessibilityLabel={featured.title}
+                activeOpacity={0.85}
+                onPress={() => playVideo(featured)}
+              >
+                <Image
+                  source={{ uri: featured.thumbnailUrl.replace('hqdefault', 'maxresdefault') }}
+                  placeholder={{ blurhash: featured.blurHash }}
+                  contentFit="cover"
+                  cachePolicy="memory-disk"
+                  transition={180}
+                  style={{ width: '100%', aspectRatio: 16 / 9, borderRadius: 14 }}
+                />
+                <Text className="font-bold text-primary text-[12px]">
+                  {t('passageMediaLibrary.latest')} · {featured.subtitle}
+                </Text>
+                <Text
+                  className="text-[20px] leading-[25px]"
+                  style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+                >
+                  {featured.title}
+                </Text>
+              </TouchableBox>
+            )}
           </VStack>
         }
         renderSectionHeader={({ section }) => (
-          <Box className="overflow-hidden border-continuous bg-reverse pt-[30px] pb-[20px]">
+          <Box className="overflow-hidden border-continuous bg-reverse pt-[30px] pb-[20px] flex-row items-center">
             <Text
-              className="text-[19px]"
+              className="text-[19px] flex-[1]"
               style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
             >
               {section.title}
             </Text>
+            {!!section.more && section.more > section.data.length && (
+              <TouchableBox
+                accessibilityRole="button"
+                className="py-[4px] pl-[12px]"
+                onPress={() => setFilter({ series: section.title })}
+              >
+                <Text className="text-primary text-[14px]">
+                  {t('passageMediaLibrary.seeAll', { count: section.more })}
+                </Text>
+              </TouchableBox>
+            )}
           </Box>
         )}
         renderItem={({ item, index }) => (

@@ -31,6 +31,7 @@ import { useRouter } from 'expo-router'
 import { Events } from './Events'
 import ProfileStats from '~features/profile/components/ProfileStats'
 import PassageMediaLibraryWidget from './PassageMediaLibraryWidget'
+import CaseStudiesWidget from './CaseStudiesWidget'
 // local react props
 type HomeProps = {
   closeHome: () => void
@@ -67,6 +68,7 @@ export const Home = ({ closeHome, inWorkspace = false }: HomeProps) => {
           <HStack className="overflow-hidden border-continuous mt-[12px] h-[174px] gap-[12px] items-stretch">
             {!cyberJudah && <TheBibleProject />}
             <TimelineWidget />
+            {cyberJudah && <CaseStudiesWidget />}
           </HStack>
         </Box>
         <Box className="overflow-hidden border-continuous bg-light-grey pt-[40px] px-[20px]">

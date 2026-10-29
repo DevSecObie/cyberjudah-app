@@ -99,6 +99,7 @@ import {
   setSettingsCommentaires,
   setSettingsInlineCommentaries,
   setSettingsInlineCommentariesEnabled,
+  setSettingsCyberJudahTagsEnabled,
   setSettingsCommentarySelection,
   reorderSettingsCommentarySelection,
   setSettingsContextualInformationDisplay,
@@ -564,6 +565,8 @@ export interface UserState {
       tagsDisplay: 'inline' | 'block'
       commentsDisplay: boolean
       inlineCommentariesEnabled?: boolean
+      /** CyberJudah's precept and law tags on verses; shown unless switched off. */
+      cyberJudahTagsEnabled?: boolean
       inlineCommentaries?: string[]
       commentarySelection: CommentarySelectionState
       contextualInformationDisplay?: boolean
@@ -1329,6 +1332,9 @@ const userSlice = createSlice({
     })
     builder.addCase(setSettingsCommentaires, (state, action) => {
       state.bible.settings.commentsDisplay = action.payload
+    })
+    builder.addCase(setSettingsCyberJudahTagsEnabled, (state, action) => {
+      state.bible.settings.cyberJudahTagsEnabled = action.payload
     })
     builder.addCase(setSettingsInlineCommentariesEnabled, (state, action) => {
       state.bible.settings.inlineCommentariesEnabled = action.payload

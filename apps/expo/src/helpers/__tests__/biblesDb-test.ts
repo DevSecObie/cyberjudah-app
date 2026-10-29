@@ -4,18 +4,16 @@ const mockTransaction = {
   execAsync: jest.fn((_sql: string) => Promise.resolve()),
   runAsync: jest.fn((_sql: string, _params?: unknown) => Promise.resolve()),
 }
+// Writes run in a transaction on the open connection, so its statements are the database's.
 const mockDatabase = {
-  execAsync: jest.fn((_sql: string) => Promise.resolve()),
-  runAsync: jest.fn((_sql: string, _params?: unknown) => Promise.resolve()),
+  ...mockTransaction,
   getAllAsync: jest.fn(
     (_sql: string, _params?: unknown): Promise<unknown[]> => Promise.resolve([])
   ),
   getFirstAsync: jest.fn(
     (_sql: string, _params?: unknown): Promise<unknown> => Promise.resolve(null)
   ),
-  withExclusiveTransactionAsync: jest.fn(
-    async (task: (txn: typeof mockTransaction) => Promise<void>) => task(mockTransaction)
-  ),
+  withTransactionAsync: jest.fn(async (task: () => Promise<void>) => task()),
 }
 const mockOpenDatabaseAsync = jest.fn((..._args: unknown[]) => Promise.resolve(mockDatabase))
 const mockWarn = jest.fn()
@@ -60,15 +58,14 @@ describe('Bible SQLite writes', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    mockDatabase.withExclusiveTransactionAsync.mockImplementation(async task =>
-      task(mockTransaction)
-    )
+    mockDatabase.withTransactionAsync.mockImplementation(async task => task())
   })
 
-  it('replaces a version inside its own transaction connection', async () => {
+  it('replaces a version inside one transaction on the open connection', async () => {
     await insertBibleVersion('LSG', lsg)
 
-    expect(mockDatabase.runAsync).not.toHaveBeenCalled()
+    // A second connection would be closed afterwards, which crashes with the FTS5 table loaded.
+    expect(mockDatabase.withTransactionAsync).toHaveBeenCalledTimes(1)
     const statements = sqlOf(mockTransaction.runAsync)
     expect(statements[0]).toMatch(/^INSERT INTO verses_fts\(verses_fts, rowid/)
     expect(statements[1]).toBe('DELETE FROM verses WHERE version = ?')
@@ -110,8 +107,8 @@ describe('Bible SQLite writes', () => {
 
   it('queues a removal behind an install still running', async () => {
     let finishInstall!: () => void
-    mockDatabase.withExclusiveTransactionAsync.mockImplementationOnce(async task => {
-      await task(mockTransaction)
+    mockDatabase.withTransactionAsync.mockImplementationOnce(async task => {
+      await task()
       await new Promise<void>(resolve => {
         finishInstall = resolve
       })
@@ -120,11 +117,11 @@ describe('Bible SQLite writes', () => {
     const install = insertBibleVersion('LSG', lsg)
     const removal = removeBibleVersion('KJV')
     await new Promise(resolve => setTimeout(resolve, 0))
-    expect(mockDatabase.withExclusiveTransactionAsync).toHaveBeenCalledTimes(1)
+    expect(mockDatabase.withTransactionAsync).toHaveBeenCalledTimes(1)
 
     finishInstall()
     await Promise.all([install, removal])
-    expect(mockDatabase.withExclusiveTransactionAsync).toHaveBeenCalledTimes(2)
+    expect(mockDatabase.withTransactionAsync).toHaveBeenCalledTimes(2)
   })
 
   it('reopens the connection once when Android no longer finds the native object', async () => {

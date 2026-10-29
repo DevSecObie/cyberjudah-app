@@ -34,6 +34,7 @@ import { linkifyStrongEditorialBibleReferences } from './strongEditorialHtml'
 import { getScaledStrongTextStyle, type StrongReadingTypography } from './strongEditorialHtmlStyles'
 import { isStrongEditorialPreviewOverflowing } from './strongDetailPreview'
 import { getStrongEntityAvatarSource } from './strongEntityAvatars'
+import { withoutRepeatedSummary } from './strongEntityArticle'
 import { isStrongOriginalUnnamed } from './strongOriginalPresentation'
 export const StrongEyebrow = ({ children }: { children: React.ReactNode }) => (
   <Text className="text-primary text-[11px] font-bold uppercase">{children}</Text>
@@ -371,8 +372,11 @@ export const StrongEntitySummaryCard = ({
   readingTypography,
   onOpenBibleReference,
   onOpenStrong,
+  eyebrowDetail,
 }: {
   entity: StrongLexiconEntity
+  /** Shown after the kind of entity, such as the person's tribe ("Tribe of Levi"). */
+  eyebrowDetail?: string
   expanded?: boolean
   plain?: boolean
   compact?: boolean
@@ -384,7 +388,10 @@ export const StrongEntitySummaryCard = ({
   onOpenStrong: (stepCode: string) => void
 }) => {
   const { t } = useTranslation()
-  const detailedDescription = entity.articleHtml || entity.summaryHtml
+  const detailedDescription = withoutRepeatedSummary(
+    entity.articleHtml || entity.summaryHtml,
+    entity.shortDescription
+  )
   const presentation = entityCardPresentation(compact)
   const resolvedEditorialTypography = resolveEntityEditorialTypography(
     readingTypography,
@@ -404,12 +411,20 @@ export const StrongEntitySummaryCard = ({
     >
       <HStack className="overflow-hidden border-continuous gap-[12px] items-center">
         <Image
-          source={getStrongEntityAvatarSource(entity.category, entity.type)}
-          style={{ width: presentation.avatarSize, height: presentation.avatarSize }}
+          source={getStrongEntityAvatarSource(entity.category, entity.type, entity.uniqueName)}
+          style={{
+            width: presentation.avatarSize,
+            height: presentation.avatarSize,
+            borderRadius: presentation.avatarSize / 2,
+          }}
           contentFit="contain"
         />
         <VStack className="overflow-hidden border-continuous flex-[1] gap-[3px]">
-          <StrongEyebrow>{getEntityLabel(entity.category, entity.type, t)}</StrongEyebrow>
+          <StrongEyebrow>
+            {[getEntityLabel(entity.category, entity.type, t), eyebrowDetail]
+              .filter(Boolean)
+              .join(' · ')}
+          </StrongEyebrow>
           <Text className={presentation.nameClassName}>{entity.name}</Text>
           {!plain && (
             <HStack className="overflow-hidden border-continuous gap-[6px] flex-wrap">

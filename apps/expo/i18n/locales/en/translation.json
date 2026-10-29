@@ -976,7 +976,7 @@
   "passageMediaLibrary.categories.how-to-read": "How to Read the Bible ?",
   "passageMediaLibrary.heading": "Explore the Bible through video",
   "passageMediaLibrary.subtitle": "A series provided by BibleProject.",
-  "passageMediaLibrary.cyberJudahSubtitle": "Classes from the IUIC, by series.",
+  "passageMediaLibrary.cyberJudahSubtitle": "The Sabbath classes, the Captains, Our Hidden History and Giving The Sense From A to Z.",
   "passageMediaLibrary.empty": "No videos are available in this language yet.",
   "passageMediaLibrary.playerTitle": "Video player",
   "passageMediaLibrary.playbackError": "This video could not be played. Check your connection and try again.",
@@ -2615,5 +2615,16 @@
   "contact.diagnosticNotice": "The draft includes your user ID and app and device versions to help with troubleshooting. You can edit them before sending.",
   "contact.copied": "Message and email address copied",
   "contact.copyFailed": "Unable to copy the message.",
-  "contact.copyEmail": "Copy message and email address"
+  "contact.copyEmail": "Copy message and email address",
+  "passageMediaLibrary.search": "Search",
+  "passageMediaLibrary.collection": "Collection",
+  "passageMediaLibrary.everyCollection": "Every collection",
+  "passageMediaLibrary.teacher": "Teacher",
+  "passageMediaLibrary.everyTeacher": "Every teacher",
+  "passageMediaLibrary.year": "Year",
+  "passageMediaLibrary.everyYear": "Every year",
+  "passageMediaLibrary.show": "Show or series",
+  "passageMediaLibrary.everyShow": "Every show",
+  "passageMediaLibrary.latest": "Latest class",
+  "passageMediaLibrary.seeAll": "See all {{count}}"
 }

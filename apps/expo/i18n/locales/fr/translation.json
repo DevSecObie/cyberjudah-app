@@ -988,7 +988,7 @@
   "passageMediaLibrary.categories.how-to-read": "Comment lire la Bible ?",
   "passageMediaLibrary.heading": "Explorer la Bible en vidéo",
   "passageMediaLibrary.subtitle": "Une série offerte par BibleProject.",
-  "passageMediaLibrary.cyberJudahSubtitle": "Les cours de l’IUIC, par série.",
+  "passageMediaLibrary.cyberJudahSubtitle": "Les cours du sabbat, les Capitaines, Our Hidden History et Giving The Sense From A to Z.",
   "passageMediaLibrary.empty": "Aucune vidéo n’est disponible dans cette langue pour le moment.",
   "passageMediaLibrary.playerTitle": "Lecture vidéo",
   "passageMediaLibrary.playbackError": "Impossible de lire cette vidéo. Vérifiez votre connexion puis réessayez.",
@@ -2643,5 +2643,16 @@
   "contact.diagnosticNotice": "Le brouillon inclut votre identifiant utilisateur et les versions de l’app et du téléphone pour faciliter le diagnostic. Vous pouvez les modifier avant l’envoi.",
   "contact.copied": "Message et adresse copiés",
   "contact.copyFailed": "Impossible de copier le message.",
-  "contact.copyEmail": "Copier le message et l’adresse"
+  "contact.copyEmail": "Copier le message et l’adresse",
+  "passageMediaLibrary.search": "Rechercher",
+  "passageMediaLibrary.collection": "Collection",
+  "passageMediaLibrary.everyCollection": "Toutes les collections",
+  "passageMediaLibrary.teacher": "Enseignant",
+  "passageMediaLibrary.everyTeacher": "Tous les enseignants",
+  "passageMediaLibrary.year": "Année",
+  "passageMediaLibrary.everyYear": "Toutes les années",
+  "passageMediaLibrary.show": "Émission ou série",
+  "passageMediaLibrary.everyShow": "Toutes les émissions",
+  "passageMediaLibrary.latest": "Dernier cours",
+  "passageMediaLibrary.seeAll": "Tout voir ({{count}})"
 }
