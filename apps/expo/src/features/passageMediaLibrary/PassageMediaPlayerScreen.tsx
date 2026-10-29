@@ -14,6 +14,7 @@ import Text from '~common/ui/Text'
 import { formatPassageMediaDuration, getPassageMediaById } from '~features/bible/passageMedia'
 import { IS_FORM_SHEET } from '~helpers/constants'
 import useLanguage from '~helpers/useLanguage'
+import { getCachedClassById } from './cyberJudahClasses'
 const YOUTUBE_PLAYER_BASE_URL =
   'https://lonelycpp.github.io/react-native-youtube-iframe/iframe_v2.html'
 
@@ -30,7 +31,7 @@ const PassageMediaPlayerScreen = () => {
     requestedLanguage === 'fr' || requestedLanguage === 'en' ? requestedLanguage : preferredLanguage
   const { width: windowWidth } = useWindowDimensions()
   const [playerError, setPlayerError] = useState<string>()
-  const item = workId ? getPassageMediaById(workId, language) : null
+  const item = workId ? (getPassageMediaById(workId, language) ?? getCachedClassById(workId)) : null
   const playerWidth = Math.min(windowWidth - 32, 720)
   const playerHeight = (playerWidth * 9) / 16
 

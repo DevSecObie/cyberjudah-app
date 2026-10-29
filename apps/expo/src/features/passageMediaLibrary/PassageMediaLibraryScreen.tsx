@@ -12,7 +12,10 @@ import {
   type ResolvedPassageMediaLibraryItem,
 } from '~features/bible/passageMedia'
 import useLanguage from '~helpers/useLanguage'
+import { useQuery } from '@tanstack/react-query'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import PassageMediaLibraryCard from './PassageMediaLibraryCard'
+import { loadClassLibrary, readCachedClassLibrary } from './cyberJudahClasses'
 // Editorial order of the 19 episodes published in BibleProject's
 // "How to Read the Bible" collection.
 const HOW_TO_READ_THE_BIBLE_WORK_IDS = [
@@ -72,7 +75,22 @@ const PassageMediaLibraryScreen = () => {
   const router = useRouter()
   const language = useLanguage()
   const { width: windowWidth } = useWindowDimensions()
-  const library = getPassageMediaLibrary({ language })
+  const cyberJudah = usesCyberJudahEditorial()
+  // CyberJudah lists every published class, read live and kept for offline opens.
+  const classLibrary = useQuery({
+    queryKey: ['cyberjudah-class-library'],
+    queryFn: () => loadClassLibrary(),
+    initialData: () => readCachedClassLibrary() ?? undefined,
+    initialDataUpdatedAt: 0,
+    enabled: cyberJudah,
+    staleTime: 5 * 60 * 1000,
+    networkMode: 'always',
+    retry: 1,
+  })
+  const library =
+    cyberJudah && classLibrary.data?.length
+      ? classLibrary.data
+      : getPassageMediaLibrary({ language })
   const seriesSections = getSeriesSections(library)
   const episodes = getHowToReadTheBibleEpisodes(library)
   const contentWidth = Math.min(windowWidth, 760)

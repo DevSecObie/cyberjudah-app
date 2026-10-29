@@ -96,6 +96,8 @@ export type ResolvedPassageMediaChapter = {
 export type ResolvedPassageMediaLibraryItem = ResolvedPassageMedia & {
   categories: PassageMediaCategory[]
   series?: string
+  /** Shown in place of the episode number, e.g. a class's date and teacher. */
+  subtitle?: string
 }
 
 export const formatPassageMediaDuration = (durationSeconds: number): string => {

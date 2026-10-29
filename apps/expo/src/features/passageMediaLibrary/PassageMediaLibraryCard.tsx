@@ -57,7 +57,7 @@ const PassageMediaLibraryCard = ({ item, episodeNumber, thumbnailWidth, onPress 
       </Box>
       <VStack className="overflow-hidden border-continuous flex-[1] gap-[4px] py-[2px]">
         <Text className="font-bold text-primary text-[12px] leading-[15px]">
-          {t('passageMediaLibrary.episode', { number: episodeNumber })}
+          {item.subtitle || t('passageMediaLibrary.episode', { number: episodeNumber })}
         </Text>
         <Text
           className="text-[16px] leading-[20px]"
@@ -66,12 +66,14 @@ const PassageMediaLibraryCard = ({ item, episodeNumber, thumbnailWidth, onPress 
         >
           {item.title}
         </Text>
-        <Text
-          className="text-grey text-[12px] leading-[16px]"
-          style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.text) }}
-        >
-          {formatPassageMediaDuration(item.durationSeconds)}
-        </Text>
+        {item.durationSeconds > 0 && (
+          <Text
+            className="text-grey text-[12px] leading-[16px]"
+            style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.text) }}
+          >
+            {formatPassageMediaDuration(item.durationSeconds)}
+          </Text>
+        )}
       </VStack>
     </TouchableBox>
   )
