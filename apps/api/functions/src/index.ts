@@ -12,5 +12,6 @@ if (getApps().length === 0) {
 export { iaphub } from './iaphub'
 export { exportStudyPDF, deleteStudy } from './studies'
 export { createUser, deleteUser } from './users'
+export { deleteAccount } from './accountDeletion'
 
 export { fetchOpenGraph } from './open-graph'
