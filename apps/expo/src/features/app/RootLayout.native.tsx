@@ -111,7 +111,7 @@ const preparePlaygroundFonts = async () => {
     await Font.loadAsync({
       ...Icon.Feather.font,
       'Literata Book': require('~assets/fonts/LiterataBook-Regular.otf'),
-      'eina-03-bold': require('~assets/fonts/eina-03-bold.otf'),
+      'eina-03-bold': require('~assets/fonts/Inter-Bold.ttf'),
     })
   } catch (error) {
     appLogger.warn('startup', 'playground.fonts.failed', { error })

@@ -145,7 +145,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         fonts: [
           './src/assets/fonts/LiterataBook-Regular.otf',
-          './src/assets/fonts/eina-03-bold.otf',
+          './src/assets/fonts/Inter-Bold.ttf',
         ],
       },
     ],
