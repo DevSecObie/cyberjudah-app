@@ -83,7 +83,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     bundleIdentifier:
       process.env.BUNDLE_IDENTIFIER ??
       (isCyberJudah ? 'io.cyberjudah.app.dev' : 'com.smontlouis.biblestrong.dev'),
-    buildNumber: '301',
+    buildNumber: '302',
     googleServicesFile: isCyberJudah
       ? './firebase/cyberjudah/GoogleService-Info.plist'
       : (process.env.IOS_GOOGLE_SERVICES_FILE ?? './firebase/dev/GoogleService-Info.plist'),
