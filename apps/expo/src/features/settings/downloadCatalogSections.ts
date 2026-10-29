@@ -1,7 +1,4 @@
-import {
-  getSimpleStrongModuleId,
-  isStandaloneStrongModule,
-} from '@bible-strong/resource-domain/strong-lexicon'
+import { getSimpleStrongModuleId } from '@bible-strong/resource-domain/strong-lexicon'
 import { versions, type Version } from '~helpers/bibleVersions'
 import { databases } from '~helpers/databases'
 import {
@@ -18,6 +15,7 @@ import {
 import { createOfflineCopyId } from '~helpers/offlineCopyId'
 import { MOBILE_RESOURCE_CATALOG } from '~helpers/mobileResourceCatalog'
 import type { StrongLexiconModuleId } from '~helpers/strongLexiconPublications'
+import { requiresStrongLexiconCore } from '~helpers/strongLexiconCore'
 import { getCommentaryCatalogForLanguage } from '~helpers/commentaryCatalog'
 import type { DictionaryWork } from '~features/resources/dictionaryAccess'
 import { buildBibleVersionGroups } from './downloadVersionGroups'
@@ -177,7 +175,7 @@ function buildStrongLexiconItems(
     const identity = { kind: 'strong-lexicon-module' as const, moduleId }
     const id = createOfflineCopyId(identity)
     if (!MOBILE_RESOURCE_CATALOG.resources[id]) return []
-    if (!isStandaloneStrongModule(moduleId) && !MOBILE_RESOURCE_CATALOG.resources[coreId]) return []
+    if (requiresStrongLexiconCore(moduleId) && !MOBILE_RESOURCE_CATALOG.resources[coreId]) return []
     const item = createOfflineCopyDownloadItem(identity)
     return [
       {
@@ -244,7 +242,11 @@ export function buildDownloadCatalogSections(
       otherResources: t('downloads.subsection.otherResources'),
     },
     french: {
-      studyTools: buildStrongLexiconItems('fr', t),
+      // CyberJudah publishes in English only: its People module is listed once, under English.
+      studyTools:
+        process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+          ? []
+          : buildStrongLexiconItems('fr', t),
       bibles: bibleGroups.get('bible-fr') ?? [],
       commentaries: buildCommentaryItems('fr'),
       dictionaries: buildDictionaryItems(frenchDictionaries),

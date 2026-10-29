@@ -1,4 +1,5 @@
 import { COMMENTARY_CATALOG_BY_ID } from '~helpers/commentaryCatalog'
+import { cyberJudahSiteLinkToOsis } from '~helpers/cyberJudahSiteLinks'
 
 import { parseCommentaryProjectionId } from './commentarySelection'
 
@@ -34,6 +35,8 @@ export const parseCommentaryResourceParams = ({
 }
 
 export const commentaryHrefToOsis = (href: string) => {
+  const siteOsis = cyberJudahSiteLinkToOsis(href)
+  if (siteOsis) return siteOsis
   const normalized = href
     .trim()
     .replace(/^bible:\/\//iu, '')

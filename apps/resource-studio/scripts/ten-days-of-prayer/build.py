@@ -94,7 +94,7 @@ def from_pdf(path,start,end,day,lang,year):
     return title,text, list(range(start,end))
 
 def make_cover(theme,lang,year,color):
-    image=Image.new('RGB',(640,360),color);d=ImageDraw.Draw(image);font=ROOT/'apps/expo/src/assets/fonts/eina-03-bold.otf'
+    image=Image.new('RGB',(640,360),color);d=ImageDraw.Draw(image);font=ROOT/'apps/expo/src/assets/fonts/Inter-Bold.ttf'
     d.text((32,68),'10',font=ImageFont.truetype(str(font),112),fill='#ffffff')
     small=ImageFont.truetype(str(font),23);d.text((40,208),'JOURS' if lang=='fr' else 'DAYS',font=small,fill='#e2e8ed')
     large=ImageFont.truetype(str(font),34)

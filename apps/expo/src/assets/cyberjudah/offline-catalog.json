@@ -2,7 +2,7 @@
   "format": "bible-strong-mobile-resource-catalog",
   "schemaVersion": 1,
   "generatedAt": "2026-10-25T15:12:31.261Z",
-  "resourceCount": 4,
+  "resourceCount": 5,
   "resources": {
     "bible:KJV": {
       "id": "bible:KJV",
@@ -89,6 +89,27 @@
       "peakInstallationBytes": 3849835,
       "strategy": "archive-extract",
       "resourceRevision": "cj-timeline-44d9dfb398295250fa3266c55db748ed39c36db6fae8f351ed11d378e1e86b49"
+    },
+    "strong-lexicon:entities": {
+      "id": "strong-lexicon:entities",
+      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/bible_entities.cyberjudah.sqlite.zip?sha256=323fd6a4cd8521ab018c9795550280fb68467d935397734474d1b9512d66dd51",
+      "file": "bible_entities.cyberjudah.sqlite.zip",
+      "entry": "bible_entities.cyberjudah.sqlite",
+      "entries": {
+        "canonical": {
+          "entry": "bible_entities.cyberjudah.sqlite",
+          "sha256": "af6a42132091df07fe934ab8298d3a0027733505a5b7937f88d009c9fabf8ac6",
+          "bytes": 4452352
+        }
+      },
+      "archiveSha256": "323fd6a4cd8521ab018c9795550280fb68467d935397734474d1b9512d66dd51",
+      "archiveBytes": 853074,
+      "contentSha256": "af6a42132091df07fe934ab8298d3a0027733505a5b7937f88d009c9fabf8ac6",
+      "contentBytes": 4452352,
+      "installedBytes": 4452352,
+      "peakInstallationBytes": 9757778,
+      "strategy": "archive-extract",
+      "resourceRevision": "cj-entities-1dcf6ff23cee05997006d5944c20bf1bd90940acdcbf1b6d9ff06c42086dd8fb"
     }
   }
 }

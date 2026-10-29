@@ -23,3 +23,11 @@ The installed testing build’s account recovery, Firestore outbox, study sync a
 The branch workflows build signed staging artifacts only. Upstream production workflows are repository-guarded and OTA delivery is disabled for CyberJudah. No merge or public release is authorized. Upload to the existing owner-only TestFlight group follows CI success, independent signing/package verification and mobile interface checks.
 
 Required physical checks: Free mode from the verse toolbar; Downloads opens without the missing-catalog crash; Apple and Google sign-in indication; same-account study/annotation sync; relaunch and offline preservation. Automated checks do not establish these physical-device results.
+
+## People, places and other names
+
+Bible Strong's chapter people row, entity profile and family tree read its downloadable People module (`strong-lexicon:entities`). Bible Strong's own module is built from STEPBible/TIPNR, so CyberJudah publishes its own: `apps/expo/scripts/build-cyberjudah-entities.mjs` builds `public/offline/bible_entities.cyberjudah.sqlite.zip` in the same schema from `DevSecObie/cyberjudah` `data/{people,places,other}-kjv` (4,081 people, 1,274 places, 47 other names; every verse reference and family link as published, with the catalog's own evidence labels; coordinates only where a place has a pin). It records its source commit in `EntityMeta` and adds its checksums to the CyberJudah offline catalog.
+
+The CyberJudah module names no Strong entries, so it stands alone: `requiresStrongLexiconCore` keeps it from depending on Bible Strong's lexicon core (STEPBible-derived), which CyberJudah does not publish. Its references use Bible Strong's book codes for books 1–66 and `src/assets/cyberjudah/entity-book-codes.json` adds the Apocrypha (67–81). Bible Strong builds are unchanged.
+
+The archive is served from the staging web host with the other offline archives, so it is downloadable after the next staging deployment.
