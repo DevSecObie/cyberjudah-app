@@ -1,0 +1,251 @@
+{
+  "schemaVersion": 1,
+  "preview": "Nine of the newest classes, three per series, to show the Courses & videos page; the full catalog follows in a later build.",
+  "attribution": {
+    "label": "CyberJudah",
+    "url": "https://cyberjudah.io",
+    "termsUrl": "https://cyberjudah.io/app/terms"
+  },
+  "works": [
+    {
+      "id": "cyberjudah-class-P4cR6i32U80",
+      "series": "IUIC in the ClassRoom",
+      "categories": ["classroom"],
+      "editions": {
+        "en": {
+          "id": "cyberjudah-class-P4cR6i32U80:en",
+          "language": "en",
+          "provider": "youtube",
+          "providerId": "P4cR6i32U80",
+          "sourceUrl": "https://www.youtube.com/watch?v=P4cR6i32U80",
+          "title": "I Have Loved Strangers and After Them Will I Go",
+          "thumbnailUrl": "https://i.ytimg.com/vi/P4cR6i32U80/hqdefault.jpg",
+          "blurHash": "L03+Gm%M00t7_3ofWBWB00of~qWB",
+          "durationSeconds": 7068
+        }
+      },
+      "anchors": [
+        {
+          "kind": "library",
+          "placement": "library",
+          "relevance": "primary"
+        }
+      ]
+    },
+    {
+      "id": "cyberjudah-class-sBoGbQK5zMA",
+      "series": "IUIC in the ClassRoom",
+      "categories": ["classroom"],
+      "editions": {
+        "en": {
+          "id": "cyberjudah-class-sBoGbQK5zMA:en",
+          "language": "en",
+          "provider": "youtube",
+          "providerId": "sBoGbQK5zMA",
+          "sourceUrl": "https://www.youtube.com/watch?v=sBoGbQK5zMA",
+          "title": "Black Christians Choose Approval Over Truth",
+          "thumbnailUrl": "https://i.ytimg.com/vi/sBoGbQK5zMA/hqdefault.jpg",
+          "blurHash": "L03+Gm%M00t7_3ofWBWB00of~qWB",
+          "durationSeconds": 12549
+        }
+      },
+      "anchors": [
+        {
+          "kind": "library",
+          "placement": "library",
+          "relevance": "primary"
+        }
+      ]
+    },
+    {
+      "id": "cyberjudah-class-82pXYTvNmkU",
+      "series": "IUIC in the ClassRoom",
+      "categories": ["classroom"],
+      "editions": {
+        "en": {
+          "id": "cyberjudah-class-82pXYTvNmkU:en",
+          "language": "en",
+          "provider": "youtube",
+          "providerId": "82pXYTvNmkU",
+          "sourceUrl": "https://www.youtube.com/watch?v=82pXYTvNmkU",
+          "title": "If You Leave Now, You Were Never with Us",
+          "thumbnailUrl": "https://i.ytimg.com/vi/82pXYTvNmkU/hqdefault.jpg",
+          "blurHash": "L03+Gm%M00t7_3ofWBWB00of~qWB",
+          "durationSeconds": 8794
+        }
+      },
+      "anchors": [
+        {
+          "kind": "library",
+          "placement": "library",
+          "relevance": "primary"
+        }
+      ]
+    },
+    {
+      "id": "cyberjudah-class-FQeCG3N9PZQ",
+      "series": "15 Minutes w/ The Captains",
+      "categories": ["classroom"],
+      "editions": {
+        "en": {
+          "id": "cyberjudah-class-FQeCG3N9PZQ:en",
+          "language": "en",
+          "provider": "youtube",
+          "providerId": "FQeCG3N9PZQ",
+          "sourceUrl": "https://www.youtube.com/watch?v=FQeCG3N9PZQ",
+          "title": "How To Prove Part 1",
+          "thumbnailUrl": "https://i.ytimg.com/vi/FQeCG3N9PZQ/hqdefault.jpg",
+          "blurHash": "L03+Gm%M00t7_3ofWBWB00of~qWB",
+          "durationSeconds": 1049
+        }
+      },
+      "anchors": [
+        {
+          "kind": "library",
+          "placement": "library",
+          "relevance": "primary"
+        }
+      ]
+    },
+    {
+      "id": "cyberjudah-class-hVIpx4WkiJY",
+      "series": "15 Minutes w/ The Captains",
+      "categories": ["classroom"],
+      "editions": {
+        "en": {
+          "id": "cyberjudah-class-hVIpx4WkiJY:en",
+          "language": "en",
+          "provider": "youtube",
+          "providerId": "hVIpx4WkiJY",
+          "sourceUrl": "https://www.youtube.com/watch?v=hVIpx4WkiJY",
+          "title": "One Man Esteemeth One Day Above Another",
+          "thumbnailUrl": "https://i.ytimg.com/vi/hVIpx4WkiJY/hqdefault.jpg",
+          "blurHash": "L03+Gm%M00t7_3ofWBWB00of~qWB",
+          "durationSeconds": 1124
+        }
+      },
+      "anchors": [
+        {
+          "kind": "library",
+          "placement": "library",
+          "relevance": "primary"
+        }
+      ]
+    },
+    {
+      "id": "cyberjudah-class-HJmeeAfj_WI",
+      "series": "15 Minutes w/ The Captains",
+      "categories": ["classroom"],
+      "editions": {
+        "en": {
+          "id": "cyberjudah-class-HJmeeAfj_WI:en",
+          "language": "en",
+          "provider": "youtube",
+          "providerId": "HJmeeAfj_WI",
+          "sourceUrl": "https://www.youtube.com/watch?v=HJmeeAfj_WI",
+          "title": "PRIDE - Destroyer Of Relationships",
+          "thumbnailUrl": "https://i.ytimg.com/vi/HJmeeAfj_WI/hqdefault.jpg",
+          "blurHash": "L03+Gm%M00t7_3ofWBWB00of~qWB",
+          "durationSeconds": 1080
+        }
+      },
+      "anchors": [
+        {
+          "kind": "library",
+          "placement": "library",
+          "relevance": "primary"
+        }
+      ]
+    },
+    {
+      "id": "cyberjudah-class-FLSncKJFYss",
+      "series": "Our Hidden History",
+      "categories": ["classroom"],
+      "editions": {
+        "en": {
+          "id": "cyberjudah-class-FLSncKJFYss:en",
+          "language": "en",
+          "provider": "youtube",
+          "providerId": "FLSncKJFYss",
+          "sourceUrl": "https://www.youtube.com/watch?v=FLSncKJFYss",
+          "title": "The Seven Heads and Ten Horns",
+          "thumbnailUrl": "https://i.ytimg.com/vi/FLSncKJFYss/hqdefault.jpg",
+          "blurHash": "L03+Gm%M00t7_3ofWBWB00of~qWB",
+          "durationSeconds": 7594
+        }
+      },
+      "anchors": [
+        {
+          "kind": "library",
+          "placement": "library",
+          "relevance": "primary"
+        }
+      ]
+    },
+    {
+      "id": "cyberjudah-class-d9weOSjqU04",
+      "series": "Our Hidden History",
+      "categories": ["classroom"],
+      "editions": {
+        "en": {
+          "id": "cyberjudah-class-d9weOSjqU04:en",
+          "language": "en",
+          "provider": "youtube",
+          "providerId": "d9weOSjqU04",
+          "sourceUrl": "https://www.youtube.com/watch?v=d9weOSjqU04",
+          "title": "The Seven Heads and Ten Horns Halloween Edition",
+          "thumbnailUrl": "https://i.ytimg.com/vi/d9weOSjqU04/hqdefault.jpg",
+          "blurHash": "L03+Gm%M00t7_3ofWBWB00of~qWB",
+          "durationSeconds": 8693
+        }
+      },
+      "anchors": [
+        {
+          "kind": "library",
+          "placement": "library",
+          "relevance": "primary"
+        }
+      ]
+    },
+    {
+      "id": "cyberjudah-class-Q_9OwwfF7uM",
+      "series": "Our Hidden History",
+      "categories": ["classroom"],
+      "editions": {
+        "en": {
+          "id": "cyberjudah-class-Q_9OwwfF7uM:en",
+          "language": "en",
+          "provider": "youtube",
+          "providerId": "Q_9OwwfF7uM",
+          "sourceUrl": "https://www.youtube.com/watch?v=Q_9OwwfF7uM",
+          "title": "The Prophet and the Fourth Beast Pt 4",
+          "thumbnailUrl": "https://i.ytimg.com/vi/Q_9OwwfF7uM/hqdefault.jpg",
+          "blurHash": "L03+Gm%M00t7_3ofWBWB00of~qWB",
+          "durationSeconds": 9254
+        }
+      },
+      "anchors": [
+        {
+          "kind": "library",
+          "placement": "library",
+          "relevance": "primary"
+        }
+      ]
+    }
+  ],
+  "indexes": {
+    "chapters": {},
+    "strongs": {},
+    "library": [
+      "cyberjudah-class-P4cR6i32U80",
+      "cyberjudah-class-sBoGbQK5zMA",
+      "cyberjudah-class-82pXYTvNmkU",
+      "cyberjudah-class-FQeCG3N9PZQ",
+      "cyberjudah-class-hVIpx4WkiJY",
+      "cyberjudah-class-HJmeeAfj_WI",
+      "cyberjudah-class-FLSncKJFYss",
+      "cyberjudah-class-d9weOSjqU04",
+      "cyberjudah-class-Q_9OwwfF7uM"
+    ]
+  }
+}
