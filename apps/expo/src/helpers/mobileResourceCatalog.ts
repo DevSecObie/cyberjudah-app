@@ -19,7 +19,11 @@ export type {
 
 const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
 const catalogJson = isCyberJudah ? cyberJudahCatalog : upstreamCatalogJson
-const cyberJudahOrigin = 'https://cyberjudah-telegram-staging.oisrae1.workers.dev'
+// The bundled catalog names the staging archives; a build serves them from its own CyberJudah server.
+const cyberJudahOrigin = (
+  process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL ||
+  'https://cyberjudah-telegram-staging.oisrae1.workers.dev'
+).replace(/\/+$/, '')
 export const MOBILE_RESOURCE_CATALOG_URL = isCyberJudah
   ? `${cyberJudahOrigin}/offline/catalog.json`
   : 'https://api.bible-strong.app/v1/offline-catalog'
