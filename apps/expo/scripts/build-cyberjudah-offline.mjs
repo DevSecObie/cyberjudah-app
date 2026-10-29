@@ -143,6 +143,17 @@ if (db.prepare('PRAGMA integrity_check').get().integrity_check !== 'ok')
   throw new Error('Invalid SQLite archive')
 db.close()
 await writeFile(join(output, 'KJV.json'), JSON.stringify(text))
+// Coverage carries verse counts only; record each chapter that does not begin at verse 1.
+const firstVerseByBookChapter = {}
+for (const [book, bookChapters] of Object.entries(text.verses))
+  for (const [chapter, chapterVerses] of Object.entries(bookChapters)) {
+    const first = Math.min(...Object.keys(chapterVerses).map(Number))
+    if (first !== 1) firstVerseByBookChapter[`${book}-${chapter}`] = first
+  }
+await writeFile(
+  join(app, 'src/assets/cyberjudah/verse-numbering.json'),
+  JSON.stringify({ textSha256: metadata.textSha256, firstVerseByBookChapter }, null, 2) + '\n'
+)
 const existingCatalog = JSON.parse(
   await readFile(join(app, 'src/assets/cyberjudah/offline-catalog.json'), 'utf8')
 )

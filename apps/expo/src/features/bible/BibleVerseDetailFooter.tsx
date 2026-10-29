@@ -49,7 +49,9 @@ type BibleVerseDetailFooterProps = {
   verseNumber: number | string
   goToNextVerse: (versesInCurrentChapter: number) => void
   goToPrevVerse: (versesInCurrentChapter: number) => void
+  /** The number of the chapter's last verse. */
   versesInCurrentChapter?: number | null
+  firstVerseInCurrentChapter?: number
 }
 
 const BibleVerseDetailFooter = ({
@@ -57,6 +59,7 @@ const BibleVerseDetailFooter = ({
   goToNextVerse,
   goToPrevVerse,
   versesInCurrentChapter,
+  firstVerseInCurrentChapter = 1,
 }: BibleVerseDetailFooterProps) => {
   const { t } = useTranslation()
   if (!versesInCurrentChapter) return null
@@ -65,7 +68,7 @@ const BibleVerseDetailFooter = ({
 
   return (
     <Box className="overflow-hidden border-continuous flex-row pl-[20px] pr-[20px] mb-[20px]">
-      {currentVerseNumber !== 1 && (
+      {currentVerseNumber > firstVerseInCurrentChapter && (
         <IconButton activeOpacity={0.5} onPress={() => goToPrevVerse(versesInCurrentChapter)}>
           <FeatherIcon name="arrow-left-circle" size={16} />
           <Text className="text-[12px] pl-[10px] text-dark-grey">{t('Verset précédent')}</Text>

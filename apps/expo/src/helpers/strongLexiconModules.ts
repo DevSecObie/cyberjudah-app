@@ -24,6 +24,7 @@ import {
   type StrongLexiconModuleId,
   type StrongLexiconPublicationArtifact,
 } from './strongLexiconPublications'
+import { requiresStrongLexiconCore } from './strongLexiconCore'
 import type { ResourceInstallationLifecycle } from './resourceInstallationLifecycle'
 
 export type { StrongLexiconModuleAvailability } from '@bible-strong/resource-domain/strong-lexicon'
@@ -358,7 +359,7 @@ export const validateStrongLexiconModuleDatabase = async (
     metadata.moduleKind !== moduleId ||
     metadata.resourceIdentity !== `strong-lexicon:${moduleId}` ||
     revision !== publication.resourceRevision ||
-    (!isStandaloneStrongModule(moduleId) && metadata.coreRevision !== publication.coreRevision)
+    (requiresStrongLexiconCore(moduleId) && metadata.coreRevision !== publication.coreRevision)
   ) {
     return {
       status: 'incompatible',
@@ -367,7 +368,10 @@ export const validateStrongLexiconModuleDatabase = async (
     }
   }
 
-  if (moduleId === 'resources' || moduleId === 'entities') {
+  if (
+    (moduleId === 'resources' || moduleId === 'entities') &&
+    requiresStrongLexiconCore(moduleId)
+  ) {
     const core = await getCoreAvailability()
     if (core.status !== 'available') {
       return { status: 'core-missing', moduleId }
