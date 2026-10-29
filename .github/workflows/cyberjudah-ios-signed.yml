@@ -51,7 +51,11 @@ jobs:
           node-version: 22
       - run: corepack enable
       - run: yarn workspaces focus @bible-strong/expo
-      - run: cp apps/expo/.env.cyberjudah.example apps/expo/.env.local
+      - name: Use only the CyberJudah staging settings
+        run: |
+          cp apps/expo/.env.cyberjudah.example apps/expo/.env.local
+          # Bible Strong's own environment files must not be loadable by the release bundler.
+          rm -f apps/expo/.env.production apps/expo/.env.staging apps/expo/.env.development
       - run: yarn workspace @bible-strong/expo typecheck
       - run: yarn workspace @bible-strong/expo test --runInBand
       - run: yarn workspace @bible-strong/expo exec expo prebuild --platform ios --no-install
@@ -67,6 +71,7 @@ jobs:
           xcodebuild -workspace "$workspace" -scheme "$scheme" -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/CyberJudah-Staging.xcarchive" archive > "$RUNNER_TEMP/ios-build.log" 2>&1 || { tail -100 "$RUNNER_TEMP/ios-build.log"; exit 1; }
           app=$(find "$RUNNER_TEMP/CyberJudah-Staging.xcarchive/Products/Applications" -maxdepth 1 -name '*.app' -print -quit)
           codesign --verify --deep --strict "$app"
+          node apps/expo/scripts/verify-cyberjudah-bundle.mjs "$app/main.jsbundle"
           xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/CyberJudah-Staging.xcarchive" -exportOptionsPlist "$RUNNER_TEMP/ios-signing/ExportOptions.plist" -exportPath "$RUNNER_TEMP/CyberJudah-Staging-IPA" > "$RUNNER_TEMP/ios-export.log" 2>&1 || { tail -100 "$RUNNER_TEMP/ios-export.log"; exit 1; }
       - uses: actions/upload-artifact@v4
         if: always()

@@ -69,7 +69,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       process.env.BUNDLE_IDENTIFIER ??
       (isCyberJudah ? 'io.cyberjudah.app.dev' : 'com.smontlouis.biblestrong.dev'),
     appleTeamId: isCyberJudah ? process.env.CYBERJUDAH_APPLE_TEAM_ID : undefined,
-    buildNumber: isCyberJudah ? '303' : '297',
+    buildNumber: isCyberJudah ? '304' : '297',
     googleServicesFile:
       process.env.IOS_GOOGLE_SERVICES_FILE ??
       (isCyberJudah
