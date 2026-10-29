@@ -1,4 +1,4 @@
-import { firebaseDb, doc, getDoc, updateDoc, deleteField } from './firebase'
+import { firebaseDb, doc, getDoc, setDoc, updateDoc, deleteField } from './firebase'
 import { autoBackupManager } from './AutoBackupManager'
 import { appLogger } from './agentObservability'
 import {
@@ -231,10 +231,16 @@ async function isRelationsCleanupCurrent(userId: string): Promise<boolean> {
 
 async function markRelationsAsMigrated(userId: string): Promise<void> {
   const userDocRef = doc(firebaseDb, 'users', userId)
-  await updateDoc(userDocRef, {
-    _relationsMigrated: true,
-    _relationsCleanupVersion: RELATIONS_CLEANUP_VERSION,
-  })
+  // A first sign-in can reach this migration before its profile document exists.
+  // Merge the checkpoint so both new and existing accounts retain their study/profile data.
+  await setDoc(
+    userDocRef,
+    {
+      _relationsMigrated: true,
+      _relationsCleanupVersion: RELATIONS_CLEANUP_VERSION,
+    },
+    { merge: true }
+  )
 }
 
 async function markRelationsCleanupComplete(userId: string): Promise<void> {

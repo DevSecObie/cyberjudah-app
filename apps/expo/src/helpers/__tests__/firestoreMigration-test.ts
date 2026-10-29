@@ -1,4 +1,4 @@
-import { getDoc, updateDoc } from '../firebase'
+import { getDoc, updateDoc, setDoc } from '../firebase'
 import {
   batchWriteSubcollection,
   clearSubcollection,
@@ -25,6 +25,7 @@ jest.mock('../firebase', () => ({
   doc: jest.fn(() => ({ path: 'user-doc' })),
   getDoc: jest.fn(),
   updateDoc: jest.fn(),
+  setDoc: jest.fn(),
   deleteField: jest.fn(() => ({ __delete: true })),
 }))
 
@@ -248,6 +249,9 @@ describe('embedded migration reconciliation', () => {
 describe('relations architecture migration', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    ;(updateDoc as jest.Mock).mockReset()
+    ;(setDoc as jest.Mock).mockReset()
+    ;(fetchSubcollection as jest.Mock).mockReset().mockResolvedValue({})
     jest.spyOn(console, 'log').mockImplementation(() => undefined)
     jest.spyOn(console, 'error').mockImplementation(() => undefined)
     ;(getDoc as jest.Mock).mockResolvedValue({ data: () => ({ _relationsMigrated: false }) })
@@ -255,6 +259,30 @@ describe('relations architecture migration', () => {
 
   afterEach(() => {
     jest.restoreAllMocks()
+  })
+
+  it('initializes the relations checkpoint for a new account without a user document', async () => {
+    ;(getDoc as jest.Mock).mockResolvedValue({ data: () => undefined })
+    // Firestore updateDoc rejects a nonexistent document, even if its subcollections exist.
+    ;(updateDoc as jest.Mock).mockRejectedValue(new Error('firestore/not-found'))
+
+    await expect(
+      migrateUserRelationsArchitecture('new-reader', { user: { bible: {} } } as never)
+    ).resolves.toEqual({ success: true })
+
+    expect(setDoc).toHaveBeenCalledWith(
+      { path: 'user-doc' },
+      { _relationsMigrated: true, _relationsCleanupVersion: 1 },
+      { merge: true }
+    )
+    expect(updateDoc).not.toHaveBeenCalled()
+  })
+
+  it('keeps a failed checkpoint write retryable instead of reporting migration complete', async () => {
+    ;(setDoc as jest.Mock).mockRejectedValue(new Error('firestore/permission-denied'))
+    await expect(
+      migrateUserRelationsArchitecture('reader', { user: { bible: {} } } as never)
+    ).resolves.toEqual({ success: false, error: 'firestore/permission-denied' })
   })
 
   it('upserts source relations before deleting only obsolete derived documents', async () => {
