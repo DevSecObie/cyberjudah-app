@@ -1,0 +1,136 @@
+import {
+  getFirestore,
+  increment as firestoreIncrement,
+  deleteField as firestoreDeleteField,
+  collection as firestoreCollection,
+  doc as firestoreDoc,
+  setDoc,
+  getDoc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  onSnapshot,
+  writeBatch,
+  query,
+  where,
+  orderBy,
+  limit,
+  startAfter,
+  runTransaction,
+  waitForPendingWrites,
+} from '@react-native-firebase/firestore'
+import { getStorage, ref } from '@react-native-firebase/storage'
+import { getLanguage } from '~i18n'
+import { ResourceLanguage, DatabaseId, isSharedDB } from '~helpers/databaseTypes'
+import {
+  BUNDLED_MOBILE_RESOURCE_CATALOG,
+  getMobileResourceCatalogEntry,
+} from '~helpers/mobileResourceCatalog'
+
+import { scopeFirestorePath } from './firestoreScope'
+
+// Firebase instances (modular API)
+export const firebaseDb = getFirestore()
+export const storageRef = ref(getStorage())
+export const increment = firestoreIncrement(1)
+
+// Route root references, including persisted outbox paths, through the same scope.
+// Relative document/collection references are already scoped and must not be rewritten.
+const scopedPath = (parent: unknown, path: string) =>
+  parent === firebaseDb
+    ? scopeFirestorePath(path, process.env.EXPO_PUBLIC_ACCOUNT_SYNC_SCOPE)
+    : path
+const doc: typeof firestoreDoc = ((...args: Parameters<typeof firestoreDoc>) => {
+  const [parent, path, ...segments] = args
+  return firestoreDoc(parent, scopedPath(parent, path), ...segments)
+}) as typeof firestoreDoc
+const collection: typeof firestoreCollection = ((
+  ...args: Parameters<typeof firestoreCollection>
+) => {
+  const [parent, path, ...segments] = args
+  return firestoreCollection(parent, scopedPath(parent, path), ...segments)
+}) as typeof firestoreCollection
+
+// Re-export modular Firestore functions for use in other files
+export {
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  onSnapshot,
+  writeBatch,
+  query,
+  where,
+  orderBy,
+  limit,
+  startAfter,
+  runTransaction,
+  firestoreDeleteField as deleteField,
+  firestoreIncrement,
+  waitForPendingWrites,
+}
+
+export const CDN_URL = 'https://assets.bible-strong.app/'
+export const cdnUrl = (path: string) => `${CDN_URL}${path}`
+
+// French database URLs
+export const databasesRef: Partial<Record<RemoteDatabaseId, string>> =
+  process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+    ? {}
+    : {
+        MHY: getMobileResourceCatalogEntry('database:MHY:fr').url,
+        TRESOR: getMobileResourceCatalogEntry('database:TRESOR:fr').url,
+        DICTIONNAIRE: getMobileResourceCatalogEntry('database:DICTIONNAIRE:fr').url,
+        NAVE: getMobileResourceCatalogEntry('database:NAVE:fr').url,
+        TIMELINE: getMobileResourceCatalogEntry('database:TIMELINE:fr').url,
+      }
+
+// English database URLs
+export const databasesEnRef: Partial<Record<RemoteDatabaseId, string>> =
+  process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+    ? {}
+    : {
+        TRESOR: getMobileResourceCatalogEntry('database:TRESOR:fr').url,
+        DICTIONNAIRE: getMobileResourceCatalogEntry('database:DICTIONNAIRE:en').url,
+        NAVE: getMobileResourceCatalogEntry('database:NAVE:en').url,
+        TIMELINE: getMobileResourceCatalogEntry('database:TIMELINE:en').url,
+      }
+
+// Database IDs that have remote URLs (excludes BIBLES which is local-only)
+type RemoteDatabaseId = Exclude<DatabaseId, 'BIBLES'>
+type DatabasesRef = Partial<Record<RemoteDatabaseId, string>>
+
+// Get database URL for a specific database and language
+export const getDatabaseUrl = (dbId: RemoteDatabaseId, lang: ResourceLanguage): string => {
+  const resourceLang = isSharedDB(dbId) ? 'fr' : lang
+  return getMobileResourceCatalogEntry(`database:${dbId}:${resourceLang}`).url
+}
+
+// Legacy function for backward compatibility
+export const getDatabasesRef = (): DatabasesRef => {
+  if (getLanguage() === 'fr') {
+    return databasesRef
+  }
+
+  return databasesEnRef
+}
+
+// Get all database URLs for a specific language
+export const getDatabasesRefForLang = (lang: ResourceLanguage): DatabasesRef => {
+  if (lang === 'fr') {
+    return databasesRef
+  }
+
+  return databasesEnRef
+}
+
+export const biblesRef: {
+  [version: string]: string
+} = Object.fromEntries(
+  Object.entries(BUNDLED_MOBILE_RESOURCE_CATALOG.resources).flatMap(([id, resource]) =>
+    id.startsWith('bible:') ? [[id.slice('bible:'.length), resource.url]] : []
+  )
+)

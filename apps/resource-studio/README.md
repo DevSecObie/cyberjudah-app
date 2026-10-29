@@ -1,0 +1,503 @@
+# Bible Strong Resource Studio
+
+Resource Studio is the authoring home for Bible Strong resources. It acquires and pins sources,
+transforms and validates editorial content, provides local inspection tools, and generates immutable
+Resource publication bundles with their matching Offline copies. Production import, R2 upload,
+activation, and runtime delivery remain owned by `@bible-strong/resource-service`.
+
+The current workflows cover Bibles, Strong and interlinear data, lexicons, dictionaries, topical and
+timeline resources, cross references, and commentaries. Commentary-specific commands and local
+reader documentation live in [`workflows/commentaries/README.md`](./workflows/commentaries/README.md).
+
+## Setup
+
+```sh
+npm install
+```
+
+## Recommended Workflow
+
+### Versioned Resource publication bundles
+
+Resource Studio is the official producer of the handoff consumed by the
+Bible Strong Resource service. A Bible publication bundle contains the
+canonical import JSON and the exact matching ZIP Offline copy under one
+immutable, content-derived revision. Rights and Online/Offline delivery
+capabilities remain independent and are validated before a bundle is written.
+
+Build the exhaustive ordinary-Bible handoff from the authoring inputs declared in
+`config/ordinary-bible-sources.json` (verse text, historical pericopes) and the words-of-Jesus
+decisions of [`workflows/words-of-jesus`](./workflows/words-of-jesus/README.md):
+
+```sh
+NODE_OPTIONS=--max-old-space-size=8192 npm run resources:publication:bibles -- \
+  --output outputs/releases/ordinary-bible-publications-current \
+  --generated-at 2026-08-16T00:00:00.000Z
+```
+
+This produces exactly 47 version directories. Each contains canonical import JSON whose verses embed
+their headings and words of Jesus, and an Offline copy that zips that canonical JSON alone: no
+pericope or red-word side file is delivered (ADR-0066). A Bible that gains nothing keeps the source
+file readers already hold as its Offline copy, so it is not offered an empty update; as soon as its
+text changes it is delivered as its canonical JSON (`bible-<id>.json` in `bible-<id>.json.zip`), which
+names its own text revision. The delivered catalog,
+`packages/resource-catalog/src/mobile-resource-catalog.json`, says which file readers hold. The build
+fails when a words-of-Jesus decision no longer matches its verse text. Restricted publications declare local-development access
+without enabling public Online delivery.
+
+Sources may be `https://` URLs, local paths or content-addressed R2 locations
+(`r2://<bucket>/revisions/<sha256>/<path>` for published archives, `r2://<bucket>/sources/<sha256>/<path>`
+for authoring inputs). R2 locations are read with the operator's `wrangler` session and their bytes
+are checked against the SHA-256 in the key. `assets.bible-strong.app` remains a read-only store of
+historical inputs; nothing new is uploaded there.
+
+A legacy source key the converter cannot publish fails the build: a block of verses translated as
+one (`"14+EXO"`) is published under its first verse number, and no key is skipped. Rows a source
+files wrongly (a verse holding the next one behind a literal number, or behind a space where another
+edition of the same text ends the verse, a verse cut in two, a run of rows numbered one off, a row
+under another book, a digit printed for a letter) are corrected by the
+reviewed operations of
+`config/ordinary-bible-source-repairs.json`, applied to the parsed source and anchored by hashes of
+the verses they read and write; the source bytes stay untouched and the file holds no Bible text
+([ADR-0075](../../docs/adr/0075-repair-legacy-bible-sources-with-reviewed-anchored-operations.md)).
+Review them from the local source cache, and draft new ones, with:
+
+```sh
+yarn workspace @bible-strong/resource-studio resources:publication:bible-repairs report --version S21
+yarn workspace @bible-strong/resource-studio resources:publication:bible-repairs draft --file draft.json
+```
+
+After adding a repair, carry the words-of-Jesus decisions of that Bible to the repaired text with
+`yarn resources:words-of-jesus carry-repairs --version <V>`, then run `check` and `audit`.
+`--version` of `resources:publication:bibles` takes one Bible or several separated by commas, to
+rebuild only the Bibles a change affects.
+
+Text a source lacks (a chapter, a run of verses, a verse cut in two) is supplied from the provider
+the source came from, as a patched source: the earlier file with the named chapters completed from
+the provider's answers, stored under its own SHA-256. `config/ordinary-bible-source-patches.json`
+records each patch by reference, URL, date and hash, without Bible text, and repairs anchor on the
+patched source
+([ADR-0077](../../docs/adr/0077-complete-legacy-bible-sources-from-their-provider.md)). A chapter
+the provider lacks as well names the other edition of the same text it is read from (`provider`:
+an OSIS file of gratis-bible, a book page of levigilant.com):
+
+```sh
+yarn workspace @bible-strong/resource-studio resources:publication:bible-source-patches fetch
+yarn workspace @bible-strong/resource-studio resources:publication:bible-source-patches draft --file draft.json
+yarn workspace @bible-strong/resource-studio resources:publication:bible-source-patches report
+yarn workspace @bible-strong/resource-studio resources:publication:bible-source-patches build
+```
+
+`fetch` requests only the chapters the patches name, once each and at most one per second, into
+`outputs/bible-sources/provider-cache/`; it stops on any answer that is not the chapter. `build`
+writes each patched source to `outputs/bible-sources/patched/<sha256>/` with two override files
+beside them. The source configuration names uploaded sources only, so until a patched source is in
+R2 every command that reads its Bible fails (`bible-source-patch-pending`) unless it is given the
+local file:
+
+```sh
+yarn resources:words-of-jesus check --text-overrides outputs/bible-sources/patched/text-overrides.json
+NODE_OPTIONS=--max-old-space-size=8192 npm run resources:publication:bibles -- \
+  --output outputs/releases/<release> --generated-at <timestamp> --version NLT,NET \
+  --source-overrides outputs/bible-sources/patched/source-overrides.json
+```
+
+A bundle built that way already names the R2 location of its source. To publish, upload the
+patched sources and point the configuration at them, then rebuild without overrides and compare
+the revisions with the candidate:
+
+```sh
+yarn workspace @bible-strong/resource-studio resources:publication:bible-source-patches upload
+yarn workspace @bible-strong/resource-studio resources:publication:bible-source-patches adopt
+```
+
+`adopt` reads each source back from R2 and proves its SHA-256 before rewriting
+`config/ordinary-bible-sources.json`.
+
+#### Republishing Bibles with their Strong sidecars
+
+1. Check the decisions still anchor to the published texts:
+   `yarn resources:words-of-jesus verify-sources` and `yarn resources:words-of-jesus check`.
+2. Build the ordinary Bibles as above into `<ordinary>`.
+3. Build the Strong sidecar index publications against them:
+   `npm run resources:publication:strong-bibles -- --bible-bundles-dir <ordinary> --output-dir
+   <strong> --generated-at <same timestamp> [--sidecar-overrides overrides.json]`. A sidecar whose
+   Bible only gained presentation (headings, words of Jesus) is re-paired with the new text revision;
+   a changed verse text aborts. When a text only gained spaces (restored note separators),
+   `npm run strong:sidecar:rebase-offsets` first carries the released sidecar to it from an oracle
+   compiled out of the corrected projection, checking every word.
+4. Patch the delivered catalog with the changed archives only:
+   `MOBILE_CATALOG_GENERATED_AT=<newer timestamp> npm run resources:publication:r2 -- catalog-patch
+   --bundles <ordinary> --bundles <strong>`. Each changed entry is computed by the catalog builder
+   from its local archive; every other entry, encrypted copies included, stays untouched. A full
+   `resources:release:mobile` needs every inventory source to be reachable, which commentaries and
+   dictionaries published only to R2 currently are not.
+5. Run the Resource service steps (R2 upload, Neon import, encrypted Offline copies, Worker deploy).
+6. Point the inventory at the published copies:
+   `npm run resources:publication:r2 -- adopt --bundles <ordinary> --bundles <strong>`. Adoption reads
+   each archive back from R2, checks its SHA-256, then rewrites `config/mobile-resource-inventory.json`
+   and drops the obsolete side-file roles from `config/mobile-resource-required-ids.json`.
+
+#### Republishing BHG with its interlinear indexes
+
+No application release is involved: the application reads which BHG is published, and which text
+each index was built for, from the catalog and from the files (ADR-0079).
+
+1. Rebuild the STEP ledger and runtime (`docs/step-interlinear-release.md`). Their
+   `bible-step.json` is the authoring source of BHG: upload `bible-step.json.zip` under
+   `r2://<bucket>/sources/<sha256>/bible-step.json.zip` and point `bible:BHG` of
+   `config/ordinary-bible-sources.json` at it. Before publishing, compare the token ids of the
+   rebuilt indexes with the published ones (ADR-0078).
+2. Build the BHG bundle (`resources:publication:bibles -- --version BHG`) and both index bundles
+   against it (`resources:publication:interlinear-bibles`). A changed BHG is delivered like any
+   other changed Bible, as `bible-bhg.json` in `bibles/bible-bhg.json.zip`. Each index manifest names
+   the text revision and SHA-256 it requires.
+3. Patch the catalog with the three archives **together**:
+   `MOBILE_CATALOG_GENERATED_AT=<newer timestamp> npm run resources:publication:r2 -- catalog-patch
+   --bundles <bhg> --bundles <interlinear>`. The patch writes `textRevision` and `textSha256` on the
+   three entries from the bundles, and refuses a text without the indexes rebuilt for it, or an
+   index without its text (`mobile-catalog-interlinear-text-mismatch`).
+4. Run the Resource service steps. Its publication gate refuses a catalog whose declarations differ
+   from the bundles. Activate the text and both indexes in one publication: between the two, online
+   readers get an interlinear that reports itself temporarily unavailable.
+5. `adopt` as above; it also records the text declarations in the inventory.
+
+`catalog-patch` takes the archive entry from each bundle: an archive whose entry changes name, as BHG
+did when it moved from its flat `bible-step.json` to its canonical JSON, is cataloged under its new
+entry. Application 27.1.1, which compiled in the `bible-step.json` entry, cannot install such a BHG;
+it is no longer supported for BHG (ADR-0079).
+
+After generating a canonical Bible JSON, build the LSG bundle with:
+
+```sh
+npm run resources:publication:bible -- \
+  --canonical outputs/releases/<release>/bibles/bible-lsg.json \
+  --metadata config/resource-publications/lsg.json \
+  --output-dir outputs/publications/lsg-<revision>
+```
+
+The output directory is an explicit repository-to-repository handoff. Pass it
+to Bible Strong without making the Resource service inspect this working tree:
+
+```sh
+RESOURCE_PUBLICATION_BUNDLE=/absolute/path/to/lsg-<revision> yarn resources:dev
+```
+
+Validate a received or archived handoff independently with:
+
+```sh
+npm run resources:publication:bible -- validate \
+  --bundle /absolute/path/to/lsg-<revision>
+```
+
+Publish the French Nave topical resource from its authoritative SQLite source
+with the same handoff contract:
+
+```sh
+npm run resources:publication:nave -- \
+  --sqlite /absolute/path/to/nave-fr.sqlite \
+  --metadata config/resource-publications/nave-fr.json \
+  --output-dir outputs/publications/nave-fr-<revision>
+
+npm run resources:publication:nave -- validate \
+  --bundle /absolute/path/to/nave-fr-<revision>
+```
+
+The Nave producer derives the immutable revision from the ordered topics and
+verse anchors, embeds matching provenance in the Offline SQLite copy, and
+validates canonical-to-SQLite parity before completing the handoff.
+
+Publish all 12 cataloged Strong Bible indexes from the current authoritative
+SQLite archives and pair each one with the exact ordinary-Bible revision:
+
+```sh
+npm run resources:publication:strong-bibles -- \
+  --bible-bundles-dir outputs/releases/ordinary-bible-publications-current \
+  --output-dir outputs/releases/strong-bible-publications-current \
+  --generated-at 2026-08-17T00:00:00.000Z
+
+npm run resources:publication:strong-bibles -- validate \
+  --bundle /absolute/path/to/strong-bible-publications-current/lsg
+```
+
+The producer downloads the exact sources declared by the mobile inventory,
+proves the builder/source/text revision chain, derives a canonical Strong index
+from every SQLite, and validates exact JSON/SQLite parity. Each manifest
+declares its required Bible text revision and SHA-256 plus the Strong lexicon
+module needed for lexical details. It refuses partial catalogs, unknown dataset
+identities, stale Bible dependencies, corrupt SQLite files, and malformed or
+multi-entry ZIP archives.
+
+Publish the two localized BHG/STEP interlinear indexes from the V5 runtime and
+bind them to the exact canonical BHG bundle:
+
+```sh
+npm run resources:publication:interlinear-bibles -- \
+  --fr-sqlite outputs/releases/bible-step-interlinear-runtime-v5/bible-step-interlinear-fr.sqlite \
+  --en-sqlite outputs/releases/bible-step-interlinear-runtime-v5/bible-step-interlinear-en.sqlite \
+  --bible-bundle outputs/releases/ordinary-bible-publications-current/bhg \
+  --output-dir outputs/releases/interlinear-bible-publications-current \
+  --generated-at 2026-08-17T00:00:00.000Z
+```
+
+The producer rewrites only the dependency metadata in a copied SQLite, never
+the source runtime. It derives one content-addressed Resource revision per
+locale, emits the complete normalized token/segment/identity JSON, creates the
+matching single-entry SQLite ZIP, and validates exact JSON/SQLite parity. Both
+manifests require the same ordinary BHG text revision and SHA-256, so an index
+cannot be activated against a different base text.
+
+Publish the complete Strong lexicon as three independently versioned modules:
+
+```sh
+npm run resources:publication:strong-lexicon -- \
+  --source data/dictionaries/strong_lexicon.en-fr.full.production.sqlite \
+  --entities data/entities/bible_entities.production.sqlite \
+  --config config/strong-lexicon-resource-publications.json \
+  --output outputs/publications/strong-lexicon-issue-305 \
+  --generated-at 2026-08-17T00:00:00.000Z
+
+npm run resources:publication:strong-lexicon -- validate \
+  --bundle /absolute/path/to/strong-lexicon-issue-305/core
+```
+
+The production source must contain the bilingual `LexiconNameMeanings` table.
+Rebuild it deterministically from the pinned STEP compiled lexicons before
+packaging:
+
+```sh
+npm run lexicon:name-meanings
+```
+
+Hebrew rows come from `NameMeans`. Greek rows come only from classified
+named-entity `MounceShortDef` values that contain a meaning cue; ordinary word
+and verb definitions are excluded. French translations are deduplicated by
+source hash and retained in
+`config/lexicon-name-meaning-translations.fr.jsonl`, so subsequent builds reuse
+the checked-in editorial artifact without another translation request.
+
+The command emits exactly `core`, `resources`, and `entities`. Each directory
+contains normalized canonical JSON, one matching SQLite ZIP, and a strict
+rights-aware manifest under its own content-derived Resource revision. The
+resources and entities modules declare the exact core revision they extend,
+but remain independently downloadable and replaceable. Generation validates
+SQLite integrity, foreign keys, complete table/count parity, dependency
+metadata, checksums, paths, and the single regular bounded ZIP entry before
+atomically publishing the three-directory handoff. The same validator can be
+run independently against every received module.
+
+The command refuses to replace an existing output directory. Rebuild into a
+new directory for every immutable revision. Production upload or activation is
+not performed by this command. This per-Resource bundle is the canonical
+handoff into PostgreSQL; it does not replace the global mobile release catalog.
+Before any public Offline-copy activation, feed the bundle's exact archive into
+the source override for `resources:release:mobile`, rebuild the exhaustive
+catalog, and publish that catalog last as described below.
+
+### Complete mobile resource release
+
+The mobile release inventory is owned by
+`config/mobile-resource-inventory.json`. It lists every downloadable Bible,
+SQLite database, timeline JSON, Strong sidecar, interlinear index, and modular
+lexicon resource. Every published artifact is a ZIP containing its declared
+entries. Republished Bible artifacts contain the canonical JSON alone and are
+sourced from their R2 copy; artifacts not yet republished still group legacy
+text with pericope and red-word JSON files.
+
+Build a complete candidate and its global catalog with:
+
+```sh
+npm run resources:release:mobile -- \
+  --output-dir outputs/releases/mobile-resources-<revision> \
+  --app-root ../..
+```
+
+When a producer has just generated new local bytes, pass a JSON override map so
+the global release is built from that exact candidate instead of the currently
+deployed object:
+
+```sh
+npm run resources:release:mobile -- \
+  --output-dir outputs/releases/mobile-resources-<revision> \
+  --source-overrides outputs/releases/source-overrides.json \
+  --app-root ../..
+```
+
+The override shape is `{ "bible:NBS": { "canonical": "path/to/bible-nbs.json.zip" } }`.
+A built archive replaces the whole resource: its pericope and red-word roles
+are dropped from that release.
+Every resource-producing release must finish through this global command.
+
+The command downloads the current sources, wraps historical plain JSON/SQLite
+files in deterministic ZIP archives, validates existing archives, and emits
+the canonical `mobile-resource-catalog.json` plus `SHA256SUMS`. Upload that
+exact catalog to `/manifests/mobile-resource-catalog.json` after every ZIP has
+been uploaded and verified. The build fails on duplicate identities,
+duplicate artifact URLs, roles or entries, non-ZIP targets, or an unexpected archive entry. A
+resource publication must update the inventory when its source or artifact
+path changes and rebuild this complete catalog; publishing a resource without
+the matching catalog is incomplete.
+
+The command only creates a candidate. Upload/activation remains a protected
+publication step and must place every candidate file at the catalog's stable
+object path before replacing the global catalog. `--app-root` atomically
+synchronizes the same catalog into `packages/resource-catalog`; omitting it is appropriate
+only for an isolated maker validation build.
+
+Generate the canonical Strong ledger first. This is the production source of
+truth and includes both `reader` and `advanced` views:
+
+```sh
+npm run strong:generate -- --bible nbs
+```
+
+Export either view from the canonical ledger:
+
+```sh
+npm run strong:export -- --bible nbs --view reader
+npm run strong:export -- --bible nbs --view advanced
+```
+
+Evaluate reader-style output against masked gold Strong Bibles:
+
+```sh
+npm run strong:evaluate -- --gold Sg1910 --limit 1000
+npm run strong:evaluate -- --gold Darby --limit 1000
+npm run strong:evaluate -- --gold DarbyR --limit 1000
+```
+
+Report how much of `Sg1910`, `Darby`, and `DarbyR` is represented by the
+canonical ledger:
+
+```sh
+npm run strong:report:references -- --bible nbs
+```
+
+For the nine English SWORD Bibles, the contextual lemma/POS values are refined
+in a separate additive release after STEP reverse-interlinear enrichment:
+
+```sh
+npm run strong:english:lexemes:refine
+```
+
+This command never overwrites its parent release and never publishes an
+indeterminate POS. The complete evidence order, fingerprints, canaries,
+current candidate and regeneration contract are documented in
+[`docs/english-lemma-pos-refinement.md`](docs/english-lemma-pos-refinement.md).
+
+Audit a deterministic 100-Strong sample across KJV and ASV, including changed
+and unchanged occurrences:
+
+```sh
+npm run strong:english:lexemes:audit
+```
+
+The current v18 candidate passes the mechanical and semantic gates on the
+same reproducible 100-Strong KJV/ASV sample. The rejected v10–v17 lineage,
+current metrics, remaining review queue, and reproduction commands are
+documented in
+[`docs/english-lemma-pos-sample-audit.md`](docs/english-lemma-pos-sample-audit.md).
+
+For semantic gaps that remain in the ledger, build a constrained review packet
+before using any LLM. For production-scale review, inspect a stable plan before
+running the transactional batch:
+
+```sh
+npm run strong:review:gaps:batch -- --bible nbs --lexical-report outputs/lexical-candidates/nbs/bible-nbs-lexical-candidates-all.json --output-root outputs/gap-review/nbs/<run> --plan-only
+npm run strong:review:gaps:batch -- --bible nbs --lexical-report outputs/lexical-candidates/nbs/bible-nbs-lexical-candidates-all.json --output-root outputs/gap-review/nbs/<run> --skip-existing
+```
+
+Production application requires the exact same bounded choice from two
+distinct models, the current lexical safety filter, a version-2 contract, and
+the batch write lock/transaction. Direct
+`strong:review:gaps:apply --apply` is intentionally refused outside that batch;
+`--finalize-reference-style` is preview/validation only.
+
+For residual hard verses, use LLM review as a bounded suggestion workflow:
+
+```sh
+npm run strong:review:llm -- --bible nbs --diagnostics outputs/llm-books/nbs/Gen/bible-nbs-strong-diagnostic.hard-verses.json --review outputs/llm-books/nbs/Gen/llm-review-nbs-Gen.json --only Gen
+npm run strong:llm:transfer -- --source Darby --target nbs --only Gen.1 --limit 5
+```
+
+Useful development commands:
+
+```sh
+npm run viewer
+npm run build
+npm run typecheck
+npm run lint
+npm test
+npm run format
+```
+
+## Concepts
+
+There is one intended production artifact:
+
+```text
+outputs/strong/<bible>/bible-<bible>-strong.sqlite
+```
+
+That canonical SQLite ledger records each verse and Strong annotation with
+placement, visibility, source, confidence, diagnostics, and reason.
+
+Use both masked-gold evaluator backends after alignment changes:
+
+```sh
+npm run strong:evaluate -- --gold Sg1910 --limit 1000 --backend diagnostic
+npm run strong:evaluate -- --gold Sg1910 --limit 200 --backend canonical
+```
+
+Two views are derived from it:
+
+- `reader`: readable Strong tagging for normal use;
+- `advanced`: fuller study view with empty, technical, duplicate, and
+  original-complete annotations.
+
+Legacy command aliases were removed. Use the `strong:*` command surface.
+
+## Review
+
+LLM review should not generate a Bible directly. Work from deterministic
+evidence: a hard-verse file, a gap-review packet, or a masked-gold transfer
+experiment. Accepted decisions must be validated and saved as curated overrides.
+
+Plain historical `semantic-refill:llm` and
+`semantic-refill:llm-reference-style` records stay quarantined. Only
+`semantic-refill:llm-consensus-filtered` is eligible for production. To audit
+old two-model artifacts, run `strong:review:gaps:migrate-artifacts` without
+`--apply` first, inspect the report, then explicitly rerun with `--apply`.
+
+`npm run viewer` builds and starts the local UI server. `/viewer/` now reads the
+canonical SQLite ledger by chapter, so it cannot silently fall back to stale
+split JSON. `/viewer/review.html` is a read-only quality cockpit for current
+target drift, witness-review decisions, the stable LLM plan, applied consensus
+overrides, and quarantined history. It distinguishes `accepted-safe` records
+from overrides actually present in production. `/viewer/lexicon.html` keeps the
+FR/EN Strong lexicon. It reads the enriched
+`data/dictionaries/strong_lexicon.en-fr.full.production.sqlite` by default,
+including the bilingual STEP meanings and TFLSJ resources. The historical
+French Strong remains a separate, collapsible comparison sourced from
+`data/dictionaries/strong.legacy.sqlite`. Run `npm run lexicon:v3:enriched` to
+rebuild the enriched database, or set `LEXICON_DB` to test another SQLite. The
+legacy human-approved review form remains available from the
+quality cockpit, clearly separated from the transactional v2 batch.
+
+## Reports
+
+- `reports/strong-diagnostic-report.md`: diagnostic pipeline status and metrics.
+- `reports/strong-gold-evaluation-report.md`: masked-gold evaluation on
+  `Sg1910`, `Darby`, and `DarbyR`.
+- `reports/llm-hard-verse-review.md`: bounded LLM review on true hard verses.
+- `reports/strong-bible-project-history.md`: historical record of the pipeline,
+  including gap-review agent workflows.
+
+## Data
+
+- `data/bibles/`: Bible translations in JSON format.
+- `data/strongs/`: Strong source files in CSV format.
+- `data/dictionaries/`: local Strong/STEP dictionaries.
+
+Generated Bible outputs are written to `outputs/` by default. This directory is
+ignored by Git because generated Strong-tagged Bible text is a local artifact.

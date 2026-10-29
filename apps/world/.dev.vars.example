@@ -1,0 +1,22 @@
+# Server-only keys. Never use a VITE_ variable.
+# Vercel AI Gateway is used only for Jev answer adjudication.
+AI_GATEWAY_API_KEY=
+
+# Administrator identity, also used by the localhost-only dev bridge.
+GUESTBOOK_ADMIN_EMAIL=
+# Generated automatically by yarn dev:world (never put it in VITE_ variables).
+# GUESTBOOK_LOCAL_ADMIN_TOKEN=
+
+# Production Cloudflare Access application settings (both page and API).
+ACCESS_TEAM_DOMAIN=
+ACCESS_AUD=
+
+# Hostinger Mail API credentials (server only, never use VITE_ prefixes).
+HOSTINGER_MAIL_API_TOKEN=
+HOSTINGER_MAILBOX_ID=
+# Notifications require all three settings below as well as Hostinger credentials.
+GUESTBOOK_NOTIFICATION_TO=
+GUESTBOOK_NOTIFICATION_FROM=
+GUESTBOOK_ADMIN_URL=
+
+# Questions come from the shared SQLite GameCatalogue. No Resources API or Gloo key is needed.

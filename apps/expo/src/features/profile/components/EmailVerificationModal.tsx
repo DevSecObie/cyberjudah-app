@@ -1,0 +1,116 @@
+import type { ComponentPropsWithRef as UIComponentProps } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { ActivityIndicator, TouchableOpacity } from 'react-native'
+import { twMerge } from '~common/ui/classNames'
+
+import { SheetHeader, type SheetRef } from '~common/sheet'
+import Sheet from '~common/ModalSheet'
+import type { Theme as AppTheme } from '~themes'
+
+import Box, { VStack } from '~common/ui/Box'
+import { FeatherIcon } from '~common/ui/Icon'
+import Text from '~common/ui/Text'
+import FireAuth from '~helpers/FireAuth'
+
+type EmailVerificationModalProps = {
+  modalRef: React.RefObject<SheetRef | null>
+}
+
+const EmailVerificationModal = ({ modalRef }: EmailVerificationModalProps) => {
+  const { t } = useTranslation()
+  const [isSending, setIsSending] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+
+  // The account is reloaded every 5 seconds only while this sheet is shown, until the address
+  // is verified (the sheet is only offered for an unverified address).
+  useEffect(() => {
+    if (!isOpen) return
+    let verified = false
+    const interval = setInterval(() => {
+      if (verified) return
+      void FireAuth.checkEmailVerification().then(isVerified => {
+        if (!isVerified) return
+        verified = true
+        clearInterval(interval)
+      })
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [isOpen])
+
+  const handleResend = async () => {
+    setIsSending(true)
+    await FireAuth.sendEmailVerification().finally(() => setIsSending(false))
+  }
+
+  return (
+    <Sheet
+      ref={modalRef}
+      header={<SheetHeader title={t('profile.emailNotVerified')} />}
+      onOpenChange={setIsOpen}
+    >
+      <VStack className="overflow-hidden border-continuous gap-[20px] px-[20px] py-[20px]">
+        <Box className="overflow-hidden border-continuous flex-row items-center gap-[12px]">
+          <WarningIcon>
+            <FeatherIcon name="alert-circle" size={24} color="white" />
+          </WarningIcon>
+          <Box className="overflow-hidden border-continuous flex-[1]">
+            <Text className="text-[14px] text-default">{t('profile.emailNotVerifiedDesc')}</Text>
+          </Box>
+        </Box>
+
+        <ResendButton onPress={handleResend} disabled={isSending}>
+          {isSending ? (
+            <ActivityIndicator size="small" color="white" />
+          ) : (
+            <Text className="text-[14px] text-[white] font-bold">
+              {t('profile.resendVerification')}
+            </Text>
+          )}
+        </ResendButton>
+      </VStack>
+    </Sheet>
+  )
+}
+
+const WarningIcon = (
+  componentProps: Omit<UIComponentProps<typeof Box>, 'theme'> & {
+    theme?: AppTheme
+    className?: string
+  }
+) => {
+  const { theme: _themeOverride, className, ...props } = componentProps
+
+  const resolvedClassName = twMerge('bg-quart rounded-full p-[8px]', className)
+  return (
+    <Box
+      {...props}
+      style={[props.style] as UIComponentProps<typeof Box>['style']}
+      className={twMerge('overflow-hidden border-continuous', resolvedClassName)}
+    />
+  )
+}
+
+const ResendButton = (
+  componentProps: Omit<UIComponentProps<typeof TouchableOpacity>, 'theme'> & {
+    theme?: AppTheme
+    className?: string
+  }
+) => {
+  const { theme: _themeOverride, className, ...props } = componentProps
+
+  const resolvedClassName = twMerge(
+    'py-[12px] px-[20px] bg-primary rounded-full items-center',
+    className
+  )
+  return (
+    <TouchableOpacity
+      {...props}
+      className={resolvedClassName}
+      style={[props.style] as UIComponentProps<typeof TouchableOpacity>['style']}
+    />
+  )
+}
+
+export default EmailVerificationModal

@@ -1,0 +1,1489 @@
+[
+  {
+    "id": "bible-interlinear:BHG:en",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-step-interlinear-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/b7d88e7a379f35a2d89b6be63147f56b26357b970708ca2e3e3e188647990732/bibles/bible-step-interlinear-en.sqlite.zip",
+        "entry": "bible-step-interlinear-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "textRevision": "bhg-e15bd9f0f1a91140579c",
+    "textSha256": "e15bd9f0f1a91140579c9eb9c8f4e173b8a4df361859758e0fe252ef55edc107"
+  },
+  {
+    "id": "bible-interlinear:BHG:fr",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-step-interlinear-fr.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/6d4ab0de8d18ea2de88287124c7b43a1cc4284543818ca7e0dfce65aedea8bbf/bibles/bible-step-interlinear-fr.sqlite.zip",
+        "entry": "bible-step-interlinear-fr.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "textRevision": "bhg-e15bd9f0f1a91140579c",
+    "textSha256": "e15bd9f0f1a91140579c9eb9c8f4e173b8a4df361859758e0fe252ef55edc107"
+  },
+  {
+    "id": "bible-strong:ASV",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-asv-strong.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/ea9243d6563d9f8f2c931206af406e4431c2ec3f40452449faee4223529abd75/bibles/bible-asv-strong.sqlite.zip",
+        "entry": "bible-asv-strong.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "bible-strong:BSB",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-bsb-strong.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/c74a95900d68a51cb26d96ee8ceff20ca246fba58e63ac7f6f79bc6394f75a8b/bibles/bible-bsb-strong.sqlite.zip",
+        "entry": "bible-bsb-strong.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "bible-strong:DARBY",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-darby-strong.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/3a5554400fee0ebe323613934cd0377c773c2b5755412e475a7424defd324c83/bibles/bible-darby-strong.sqlite.zip",
+        "entry": "bible-darby-strong.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "bible-strong:DBR",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-dbr-strong.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/59b6bae495d1f871f16a4a71b673b72dce2b2466e4e0c384248d59d31709b229/bibles/bible-dbr-strong.sqlite.zip",
+        "entry": "bible-dbr-strong.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "bible-strong:DBY",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-dby-strong.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/1808547d9a9c73770db8baf5584ff04d08224b87d4b272ad8bd1fabd56351dd2/bibles/bible-dby-strong.sqlite.zip",
+        "entry": "bible-dby-strong.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "bible-strong:KJV",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-kjv-strong.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/cc04e24089093e462327f01625ab127f875309a007085edde7682df965fdf77c/bibles/bible-kjv-strong.sqlite.zip",
+        "entry": "bible-kjv-strong.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "bible-strong:LSG",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-lsg-strong.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/9cb19d6e61a4c7b28890ad5a75e5891b4b1592136a816eadd8e285e2f9a192a4/bibles/bible-lsg-strong.sqlite.zip",
+        "entry": "bible-lsg-strong.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "bible-strong:NASB1995",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-nasb1995-strong.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/947e6d924d35532d3146513f48a2a0db4112f647311f1444877b5da1ab724031/bibles/bible-nasb1995-strong.sqlite.zip",
+        "entry": "bible-nasb1995-strong.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "bible-strong:NASB2020",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-nasb2020-strong.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/61ec91e099b04a568b1d3f5fe1ccf0b1adf5e48ccdaed86c42118669f04932d3/bibles/bible-nasb2020-strong.sqlite.zip",
+        "entry": "bible-nasb2020-strong.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "bible-strong:RLT",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-rlt-strong.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/877c686d82419f4386658153ba6979ea53cab233d1eb530b8c440d5b6d897ac8/bibles/bible-rlt-strong.sqlite.zip",
+        "entry": "bible-rlt-strong.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "bible-strong:RV1895",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-rv1895-strong.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/e6139726ad850dedf2a59a96dc227b7533131987632173f7c8272d773ec24044/bibles/bible-rv1895-strong.sqlite.zip",
+        "entry": "bible-rv1895-strong.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "bible-strong:RWEBSTER",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-rwebster-strong.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/2d0e47112554d5a198b53b7a4372e7b08b411d4316ee6d70400f3278eab0710a/bibles/bible-rwebster-strong.sqlite.zip",
+        "entry": "bible-rwebster-strong.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "bible:AMP",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-amp.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/63444714a34b6299e98c4bd0fc249c1d849b0079fa1e8cc32caef31a35aa9b72/bibles/bible-amp.json.zip",
+        "entry": "bible-amp.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:ASV",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-asv.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/ad67f929ab9f7f58847efd883ff8e395648331cb9b672cd2ffa171a718fae7bb/bibles/bible-asv.json.zip",
+        "entry": "bible-asv.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:BCC1923",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-bcc1923.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/5572566d3cc939543f4e11a37887748b8a05949385cf02ac2bcc94eb21729a1f/bibles/bible-bcc1923.json.zip",
+        "entry": "bible-bcc1923.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:BDS",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-bds.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/13ee63b9c3483aed5a92dbef5484d1de82a256de951465deddf2f87ee4bc4a7a/bibles/bible-bds.json.zip",
+        "entry": "bible-bds.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:BFC",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-bfc.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/199069f5361e4a400e434c51504324bc25155e84446078687f6e11ab8ed875b7/bibles/bible-bfc.json.zip",
+        "entry": "bible-bfc.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:BHG",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-bhg.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/51569685f8f2c86c45333ddf940bd66bcdf11ac1a17b681015e67fc843257f25/bibles/bible-bhg.json.zip",
+        "entry": "bible-bhg.json"
+      }
+    ],
+    "strategy": "sqlite-import",
+    "textRevision": "bhg-e15bd9f0f1a91140579c",
+    "textSha256": "e15bd9f0f1a91140579c9eb9c8f4e173b8a4df361859758e0fe252ef55edc107"
+  },
+  {
+    "id": "bible:BHS",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-hebrew.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/1fdc858fad816433ce0380b2e2cbf9973e4cdaf24ca74b01cb8c1e279ee7e8c2/bibles/bible-hebrew.json.zip",
+        "entry": "bible-hebrew.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:BSB",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-bsb.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/62121054da4f27193d8173f680a945b1ce1436cf2b8aaa8134a25b04aacc23f8/bibles/bible-bsb.json.zip",
+        "entry": "bible-bsb.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:CHU",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-chu.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/23b8318e6c71f1fbbd7fedd5d04869e0c8a6ecca88ff5f495910988af02521ff/bibles/bible-chu.json.zip",
+        "entry": "bible-chu.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:CSB",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-csb.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/add7026a0758d7b5b0f50dca7871457e722543f854bf0f7274e2304de30e44cd/bibles/bible-csb.json.zip",
+        "entry": "bible-csb.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:DARBY",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-darby.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/d95a452ef98999cf04630fc0cba650f41b9fd79facf12bdb65a3980fbf2e17f6/bibles/bible-darby.json.zip",
+        "entry": "bible-darby.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:DBR",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-dbr.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/734a4824f7c98a6467901be083f7733e4f35eac2119d0d24ae61966fc8c13967/bibles/bible-dbr.json.zip",
+        "entry": "bible-dbr.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:DBY",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-dby.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/a5cf1ac6b453d506f91bc4df5e5a566adc68eea1c55ba92134ee68adf2aa2503/bibles/bible-dby.json.zip",
+        "entry": "bible-dby.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:DEL",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-del.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/3860a08c13a61fe7554ada5832a32f341e8afb17a984e9371b4eb96af42e0680/bibles/bible-del.json.zip",
+        "entry": "bible-del.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:EASY",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-easy.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/519568f5cf89996a21833589d594127324ab781dcdee74d56e483231a73472b4/bibles/bible-easy.json.zip",
+        "entry": "bible-easy.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:ESV",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-esv.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/b56c548b9ca50f0b257dbdcb1f604287d016876fa89f8c4692383225a8375776/bibles/bible-esv.json.zip",
+        "entry": "bible-esv.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:FMAR",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-fmar.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/935b1a464fdd494dd6e79c880cd62ec2920aa3a5b9623fd3304c6d81739094a8/bibles/bible-fmar.json.zip",
+        "entry": "bible-fmar.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:FRC97",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-frc97.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/852deecd958e45ce1c6bfd404dc46a531db0b7e21de6d132bf0a444c4e5aff02/bibles/bible-frc97.json.zip",
+        "entry": "bible-frc97.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:GW",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-gw.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/91e25a3715ab233cca63768530cb6b83de64e05b5de1e15c4dccfc963ba2c9eb/bibles/bible-gw.json.zip",
+        "entry": "bible-gw.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:KJF",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-kjf.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/fa4f193750f499198c4cbaf3a7a54c4ad1dc4036ea77bbd5a430768c478696c6/bibles/bible-kjf.json.zip",
+        "entry": "bible-kjf.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:KJV",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-kjv.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/39cb465539995944b70ce8785bfadb00228161648aacbe1513635c4a9947a692/bibles/bible-kjv.json.zip",
+        "entry": "bible-kjv.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:LAU",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-lau.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/6bc27e11b7832766ac0039d1f6df3ae9ad7bf8ed7902a2598bafb29049d2010c/bibles/bible-lau.json.zip",
+        "entry": "bible-lau.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:LSG",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-lsg.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/8dd8d8e2b4de2f786f2624ca442832137916c34bfbe10bf816e17106df3d78be/bibles/bible-lsg.json.zip",
+        "entry": "bible-lsg.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:LXX",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-lxx.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/422c5f9f11a7d520f425814b45e74dcd5f678627b8b28f4d187d53a75bb7717f/bibles/bible-lxx.json.zip",
+        "entry": "bible-lxx.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:LXX_FR",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-lxx-french.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/52985c0a25ccf3685374927874f1844c53b6904e27397126669120495035a961/bibles/bible-lxx-french.json.zip",
+        "entry": "bible-lxx-french.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:NASB1995",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-nasb1995.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/21b1e6358e93c72a70c8a27990f8daef67cfc99a86addbf6877de53174d54b32/bibles/bible-nasb1995.json.zip",
+        "entry": "bible-nasb1995.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:NASB2020",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-nasb2020.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/70af11eec7063b75e27179f650f67ff95698565f3d5d5a3c2a6eb2547517efb8/bibles/bible-nasb2020.json.zip",
+        "entry": "bible-nasb2020.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:NBS",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-nbs.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/4dcec326f60383e02ca67eac4e29474f19d4bc4e93073f2515e73e75072cec3f/bibles/bible-nbs.json.zip",
+        "entry": "bible-nbs.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:NEG79",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-neg79.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/a3d6c7dc6a4534b635ca22cd69ab0fec54cb20e24c45676191f92903641adad0/bibles/bible-neg79.json.zip",
+        "entry": "bible-neg79.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:NET",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-net.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/2e258f686d08968dcae552fba5c267fe2a11db9407ded65e56e098d596b033b7/bibles/bible-net.json.zip",
+        "entry": "bible-net.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:NFC",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-nfc.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/72194461d99a72d4437747a592b92d8250059321dc82d1dd3f60edf0c5fbd436/bibles/bible-nfc.json.zip",
+        "entry": "bible-nfc.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:NIV",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-niv.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/c6e07613016f7323912738eb90a1ac1f4877fc5e48046c597535dece44d596d0/bibles/bible-niv.json.zip",
+        "entry": "bible-niv.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:NKJV",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-nkjv.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/a08d2d557206cba7d0e0f850fc633a0bc5d39ed54c76b6cbd959085a3465f96b/bibles/bible-nkjv.json.zip",
+        "entry": "bible-nkjv.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:NLT",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-nlt.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/f8cb74a706cd7ce96ad4987f75ffe253cd161cdeb20af056b5c18f588b5be27b/bibles/bible-nlt.json.zip",
+        "entry": "bible-nlt.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:NVS78P",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-nvs78p.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/b83f76761c04feb2ef3229c73692490278fd124b7f99bb1fd4f9c76d6d74b3b6/bibles/bible-nvs78p.json.zip",
+        "entry": "bible-nvs78p.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:OST",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-ost.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/f9b867113143a6bb54b1d7df62173fcff3e07db031f5172ba12e03d3a48dac12/bibles/bible-ost.json.zip",
+        "entry": "bible-ost.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:PDV2017",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-pdv2017.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/9b8fa1dde74859fe924e1c867648288e7f36a8f8361515e83fee64041d4d8781/bibles/bible-pdv2017.json.zip",
+        "entry": "bible-pdv2017.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:POV",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-pov.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/889a55d421475237c87925dbc642cfbda3f4260b8f44bb84a2c07642437846d9/bibles/bible-pov.json.zip",
+        "entry": "bible-pov.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:RLT",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-rlt.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/519d50b50238144c8c2e5d6a328e617ed81e55b9d00c172a31ca6232de4db671/bibles/bible-rlt.json.zip",
+        "entry": "bible-rlt.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:RV1895",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-rv1895.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/8ef0887c8bca35d87775bdd94941d0ecfaf04009a6ad4f60a30572ce66edab99/bibles/bible-rv1895.json.zip",
+        "entry": "bible-rv1895.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:RWEBSTER",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-rwebster.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/6f7c909c8d4817064e2b1d03d2eea8e8a34bfa1fcc136ce57e10f70e4efdd121/bibles/bible-rwebster.json.zip",
+        "entry": "bible-rwebster.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:S21",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-s21.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/9879b627da1af08b35267c257bb9a548f335711da089ad7789487d9a1ccd5f59/bibles/bible-s21.json.zip",
+        "entry": "bible-s21.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:SBLGNT",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-greek.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/786024b54c615abf89b87d525f4ff5443ba8ceda7811f3cb5596598ec8eac315/bibles/bible-greek.json.zip",
+        "entry": "bible-greek.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:TLV",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-tlv.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/ce68f23f1c2148bcb581dcf8253e24d8fc2a93d2c7afbae5b583e0488097518d/bibles/bible-tlv.json.zip",
+        "entry": "bible-tlv.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:TR1624",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-TR1624.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/8cf88fb8e65a5ec4b4012780714452003428d014e5c81562fd95705a93f79d6a/bibles/bible-TR1624.json.zip",
+        "entry": "bible-TR1624.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:TR1894",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-TR1894.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/28eb4367e548c6b7e662715c928dd76cf97e38e0e58daef6a0c4ba4c30e03a46/bibles/bible-TR1894.json.zip",
+        "entry": "bible-TR1894.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "bible:VUL",
+    "artifactUrl": "https://assets.bible-strong.app/bibles/bible-vul.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/be85124e5ede35a4fcf21635b6e73015ecba30d52326484b16b07f75b9531011/bibles/bible-vul.json.zip",
+        "entry": "bible-vul.json"
+      }
+    ],
+    "strategy": "sqlite-import"
+  },
+  {
+    "id": "database:abbott:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-abbott-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-abbott-en.sqlite",
+        "entry": "commentary-abbott-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "abbott-en-d7caff0a9e881ac8153c"
+  },
+  {
+    "id": "database:acbc:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-acbc-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-acbc-en.sqlite",
+        "entry": "commentary-acbc-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "acbc-en-2cc740b3a01ad8015e70"
+  },
+  {
+    "id": "database:acbc:fr",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-acbc-fr.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-acbc-fr.sqlite",
+        "entry": "commentary-acbc-fr.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "acbc-fr-279d188d0459a1b82755"
+  },
+  {
+    "id": "database:aquifer-fr:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-aquifer-fr-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-aquifer-fr-en.sqlite",
+        "entry": "commentary-aquifer-fr-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "aquifer-fr-en-958ac7bb5b6dd60ecaa8"
+  },
+  {
+    "id": "database:aquifer-fr:fr",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-aquifer-fr-fr.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-aquifer-fr-fr.sqlite",
+        "entry": "commentary-aquifer-fr-fr.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "aquifer-fr-fr-3f149e17916768ed6ba3"
+  },
+  {
+    "id": "database:barnes:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-barnes-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-barnes-en.sqlite",
+        "entry": "commentary-barnes-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "barnes-en-f43e9cee160451cadcc8"
+  },
+  {
+    "id": "database:barnes:fr",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-barnes-fr.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-barnes-fr.sqlite",
+        "entry": "commentary-barnes-fr.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "barnes-fr-56082eee89615d9fa233"
+  },
+  {
+    "id": "database:bible-annotee:fr",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-bible-annotee-fr.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-bible-annotee-fr.sqlite",
+        "entry": "commentary-bible-annotee-fr.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "bible-annotee-fr-8dd7f948b4c255c8ee6b"
+  },
+  {
+    "id": "database:BOST:fr",
+    "artifactUrl": "https://assets.bible-strong.app/dictionaries/dictionary-bost-fr.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/dictionaries/dictionary-bost-fr.sqlite",
+        "entry": "dictionnaire.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "dictionary-bost-fr-6aab80e0a06bb152e43d"
+  },
+  {
+    "id": "database:burkitt:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-burkitt-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-burkitt-en.sqlite",
+        "entry": "commentary-burkitt-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "burkitt-en-972338770310ff4ae686"
+  },
+  {
+    "id": "database:CALMET:fr",
+    "artifactUrl": "https://assets.bible-strong.app/dictionaries/dictionary-calmet-fr.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/dictionaries/dictionary-calmet-fr.sqlite",
+        "entry": "dictionnaire.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "dictionary-calmet-fr-8c62871c189f48162551"
+  },
+  {
+    "id": "database:calvin:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-calvin-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-calvin-en.sqlite",
+        "entry": "commentary-calvin-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "calvin-en-21a0ee1716d93ab92325"
+  },
+  {
+    "id": "database:catena-aurea:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-catena-aurea-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-catena-aurea-en.sqlite",
+        "entry": "commentary-catena-aurea-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "catena-aurea-en-3a835b1c38b92c3c260c"
+  },
+  {
+    "id": "database:darby-notes:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-darby-notes-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-darby-notes-en.sqlite",
+        "entry": "commentary-darby-notes-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "darby-notes-en-04b8498a650fb1ec5cb2"
+  },
+  {
+    "id": "database:DICTIONNAIRE:en",
+    "artifactUrl": "https://assets.bible-strong.app/databases/en/dictionnaire.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/databases/en/dictionnaire.sqlite",
+        "entry": "dictionnaire.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "database:DICTIONNAIRE:fr",
+    "artifactUrl": "https://assets.bible-strong.app/databases/dictionnaire.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/databases/dictionnaire.sqlite",
+        "entry": "dictionnaire.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "database:douay-rheims-notes:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-douay-rheims-notes-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-douay-rheims-notes-en.sqlite",
+        "entry": "commentary-douay-rheims-notes-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "douay-rheims-notes-en-c9c21659014ff979732c"
+  },
+  {
+    "id": "database:EASTON_WEBSTER:en",
+    "artifactUrl": "https://assets.bible-strong.app/dictionaries/dictionary-easton-webster-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/dictionaries/dictionary-easton-webster-en.sqlite",
+        "entry": "dictionnaire.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "dictionary-easton-webster-en-a30602d83b4a84e776d9"
+  },
+  {
+    "id": "database:egw-writings:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-egw-writings-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-egw-writings-en.sqlite",
+        "entry": "commentary-egw-writings-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "egw-writings-en-d6a3c4a1fdfdba1b9eaa"
+  },
+  {
+    "id": "database:egw-writings:fr",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-egw-writings-fr.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-egw-writings-fr.sqlite",
+        "entry": "commentary-egw-writings-fr.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "egw-writings-fr-79738c095e74ca428cf2"
+  },
+  {
+    "id": "database:family-notes:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-family-notes-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-family-notes-en.sqlite",
+        "entry": "commentary-family-notes-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "family-notes-en-aef67f2db7e1e7b7743a"
+  },
+  {
+    "id": "database:fourfold-gospel:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-fourfold-gospel-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-fourfold-gospel-en.sqlite",
+        "entry": "commentary-fourfold-gospel-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "fourfold-gospel-en-3f3a25af7abf4c9114d1"
+  },
+  {
+    "id": "database:fre-aug:fr",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-fre-aug-fr.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-fre-aug-fr.sqlite",
+        "entry": "commentary-fre-aug-fr.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "fre-aug-fr-7576a02d9f06ef7bc721"
+  },
+  {
+    "id": "database:fre-chry:fr",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-fre-chry-fr.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-fre-chry-fr.sqlite",
+        "entry": "commentary-fre-chry-fr.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "fre-chry-fr-c390dfd5844ba71e0358"
+  },
+  {
+    "id": "database:geneva-notes:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-geneva-notes-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-geneva-notes-en.sqlite",
+        "entry": "commentary-geneva-notes-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "geneva-notes-en-d4039d5aaaadf9639312"
+  },
+  {
+    "id": "database:ISBE:en",
+    "artifactUrl": "https://assets.bible-strong.app/dictionaries/dictionary-isbe-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/dictionaries/dictionary-isbe-en.sqlite",
+        "entry": "dictionnaire.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "dictionary-isbe-en-fbaaa93d38286457cfa8"
+  },
+  {
+    "id": "database:jfb:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-jfb-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-jfb-en.sqlite",
+        "entry": "commentary-jfb-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "jfb-en-26091c1ed3898ec1fbc9"
+  },
+  {
+    "id": "database:kd:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-kd-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-kd-en.sqlite",
+        "entry": "commentary-kd-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "kd-en-f958ec6b51ebe6237ad2"
+  },
+  {
+    "id": "database:king-comments:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-king-comments-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-king-comments-en.sqlite",
+        "entry": "commentary-king-comments-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "king-comments-en-52bf050ec07328457f52"
+  },
+  {
+    "id": "database:LELIEVRE:fr",
+    "artifactUrl": "https://assets.bible-strong.app/dictionaries/dictionary-lelievre-fr.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/dictionaries/dictionary-lelievre-fr.sqlite",
+        "entry": "dictionnaire.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "dictionary-lelievre-fr-2dbdf9b5e684dd81a797"
+  },
+  {
+    "id": "database:lightfoot:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-lightfoot-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-lightfoot-en.sqlite",
+        "entry": "commentary-lightfoot-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "lightfoot-en-a68aa1be42ebe971010e"
+  },
+  {
+    "id": "database:luther:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-luther-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-luther-en.sqlite",
+        "entry": "commentary-luther-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "luther-en-7d77d393614584221c21"
+  },
+  {
+    "id": "database:mhc:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-mhc-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-mhc-en.sqlite",
+        "entry": "commentary-mhc-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "mhc-en-867b788eb7df744a7eeb"
+  },
+  {
+    "id": "database:mhcc:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-mhcc-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-mhcc-en.sqlite",
+        "entry": "commentary-mhcc-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "mhcc-en-1cc6b00b8e3ccc4984bc"
+  },
+  {
+    "id": "database:mhm:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-mhm-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-mhm-en.sqlite",
+        "entry": "commentary-mhm-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "mhm-en-97b92eddc01c632eaae1"
+  },
+  {
+    "id": "database:MHY:fr",
+    "artifactUrl": "https://assets.bible-strong.app/databases/commentaires-mhy.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/databases/commentaires-mhy.sqlite",
+        "entry": "commentaires-mhy.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "mhy-fr-4015a53f64acdc87d37e"
+  },
+  {
+    "id": "database:NAVE:en",
+    "artifactUrl": "https://assets.bible-strong.app/databases/en/nave.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/databases/en/nave.sqlite",
+        "entry": "nave.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "database:NAVE:fr",
+    "artifactUrl": "https://assets.bible-strong.app/databases/nave-fr.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/databases/nave-fr.sqlite",
+        "entry": "nave-fr.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "database:pnt:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-pnt-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-pnt-en.sqlite",
+        "entry": "commentary-pnt-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "pnt-en-21b90b750a3d0bb7a1ee"
+  },
+  {
+    "id": "database:rashi-en:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-rashi-en-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-rashi-en-en.sqlite",
+        "entry": "commentary-rashi-en-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "rashi-en-en-17355a5fb881c0f453e3"
+  },
+  {
+    "id": "database:rwp:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-rwp-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-rwp-en.sqlite",
+        "entry": "commentary-rwp-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "rwp-en-77983d3ebaf62873bed6"
+  },
+  {
+    "id": "database:scofield:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-scofield-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-scofield-en.sqlite",
+        "entry": "commentary-scofield-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "scofield-en-76e78bafe5966b32c2b4"
+  },
+  {
+    "id": "database:sdabc:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-sdabc-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-sdabc-en.sqlite",
+        "entry": "commentary-sdabc-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "sdabc-en-fd98bc9a1715b5bd9280"
+  },
+  {
+    "id": "database:sdabc:fr",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-sdabc-fr.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-sdabc-fr.sqlite",
+        "entry": "commentary-sdabc-fr.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "sdabc-fr-94d373a9f24871402b6e"
+  },
+  {
+    "id": "database:SMITH:en",
+    "artifactUrl": "https://assets.bible-strong.app/dictionaries/dictionary-smith-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/dictionaries/dictionary-smith-en.sqlite",
+        "entry": "dictionnaire.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "dictionary-smith-en-1116731be2ed4d9d7fde"
+  },
+  {
+    "id": "database:TIMELINE:en",
+    "artifactUrl": "https://assets.bible-strong.app/databases/en/bible-timeline-events.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/databases/en/bible-timeline-events.json",
+        "entry": "bible-timeline-events.json"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "database:TIMELINE:fr",
+    "artifactUrl": "https://assets.bible-strong.app/databases/bible-timeline-events.json.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/databases/bible-timeline-events.json",
+        "entry": "bible-timeline-events.json"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "database:treasury-david:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-treasury-david-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-treasury-david-en.sqlite",
+        "entry": "commentary-treasury-david-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "treasury-david-en-95c6e44a33a692ac47c7"
+  },
+  {
+    "id": "database:TRESOR:fr",
+    "artifactUrl": "https://assets.bible-strong.app/databases/commentaires-tresor.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/databases/commentaires-tresor.sqlite",
+        "entry": "commentaires-tresor.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "database:UNFOLDINGWORD_TW:en",
+    "artifactUrl": "https://assets.bible-strong.app/dictionaries/dictionary-unfoldingword-translation-words-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/dictionaries/dictionary-unfoldingword-translation-words-en.sqlite",
+        "entry": "dictionnaire.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "dictionary-unfoldingword-translation-words-en-61f474304e5c228ce37e"
+  },
+  {
+    "id": "database:wesley:en",
+    "artifactUrl": "https://assets.bible-strong.app/commentaries/commentary-wesley-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/commentaries/commentary-wesley-en.sqlite",
+        "entry": "commentary-wesley-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "wesley-en-f31c2f1527686a1593ed"
+  },
+  {
+    "id": "database:WESTPHAL:fr",
+    "artifactUrl": "https://assets.bible-strong.app/dictionaries/dictionary-westphal-fr.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/dictionaries/dictionary-westphal-fr.sqlite",
+        "entry": "dictionnaire.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "dictionary-westphal-fr-1b193470a5d75f75a72d"
+  },
+  {
+    "id": "dictionary-directory",
+    "artifactUrl": "https://assets.bible-strong.app/dictionaries/dictionary-directory.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/dictionaries/dictionary-directory.sqlite",
+        "entry": "dictionary-directory.sqlite"
+      }
+    ],
+    "strategy": "archive-extract",
+    "resourceRevision": "dictionary-directory-1731e1bc9c4b6676be23"
+  },
+  {
+    "id": "strong-lexicon:core",
+    "resourceRevision": "strong-lexicon-core-fe91da3f72fe28da25c60833",
+    "artifactUrl": "https://assets.bible-strong.app/databases/strong_lexicon.core.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/databases/strong_lexicon.core.sqlite.zip",
+        "entry": "strong_lexicon.core.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "strong-lexicon:entities",
+    "resourceRevision": "strong-lexicon-entities-98e0d81b2004d9073eb51d6f",
+    "coreRevision": "strong-lexicon-core-fe91da3f72fe28da25c60833",
+    "artifactUrl": "https://assets.bible-strong.app/databases/bible_entities.production.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/databases/bible_entities.production.sqlite.zip",
+        "entry": "bible_entities.production.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "strong-lexicon:resources",
+    "resourceRevision": "strong-lexicon-resources-4ad1a07442692f44a6babcfe",
+    "coreRevision": "strong-lexicon-core-fe91da3f72fe28da25c60833",
+    "artifactUrl": "https://assets.bible-strong.app/databases/strong_lexicon.resources.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "https://assets.bible-strong.app/databases/strong_lexicon.resources.sqlite.zip",
+        "entry": "strong_lexicon.resources.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "strong-lexicon:simple-en",
+    "resourceRevision": "strong-lexicon-simple-en-784af9ff9fc29bf892cb0b55",
+    "artifactUrl": "https://assets.bible-strong.app/databases/strong_lexicon.simple-en.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/a3007c4054b1dc461dd5d2deb4e94a2859224e633ee3becb806329b263a9e0db/databases/strong_lexicon.simple-en.sqlite.zip",
+        "entry": "strong_lexicon.simple-en.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  },
+  {
+    "id": "strong-lexicon:simple-fr",
+    "resourceRevision": "strong-lexicon-simple-fr-944bd06dc903ffaf83df9b51",
+    "artifactUrl": "https://assets.bible-strong.app/databases/strong_lexicon.simple-fr.sqlite.zip",
+    "sources": [
+      {
+        "role": "canonical",
+        "sourceUrl": "r2://bible-strong-resource-artifacts-prod/revisions/0f0dd7545a43b732760ac49be7ca789a7787e3e9b02c39929b99cb102a84aaae/databases/strong_lexicon.simple-fr.sqlite.zip",
+        "entry": "strong_lexicon.simple-fr.sqlite"
+      }
+    ],
+    "strategy": "archive-extract"
+  }
+]

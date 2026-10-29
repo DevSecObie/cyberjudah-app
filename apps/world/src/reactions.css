@@ -1,0 +1,223 @@
+:root {
+  --world-reactions-bottom: max(94px, calc(env(safe-area-inset-bottom) + 82px));
+}
+.world-action-stack {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 16px;
+  right: max(24px, env(safe-area-inset-right));
+  bottom: var(--world-reactions-bottom);
+  z-index: 31;
+}
+.world-action-stack .reaction-controls {
+  position: relative;
+}
+.world-action-stack .games-launch {
+  position: static;
+}
+.reaction-trigger {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  padding: 4px;
+  border: 2px solid #bfd4d4;
+  border-radius: 20px;
+  background: #fffdf4;
+  box-shadow:
+    0 4px 0 #8daeb0,
+    0 8px 20px #244e5726;
+  cursor: pointer;
+}
+.reaction-trigger[aria-expanded='true'] {
+  background: #dcf1e9;
+}
+.reaction-icon {
+  position: relative;
+  display: block;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+.reaction-icon > * {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.reaction-body {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-blend-mode: multiply;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+}
+.reaction-panel {
+  position: absolute;
+  bottom: 74px;
+  right: 0;
+  width: min(310px, calc(100vw - 32px));
+  padding: 16px;
+  border: 1px solid #c4dbd4;
+  border-radius: 24px;
+  background: #fffdf4;
+  color: #244e57;
+  box-shadow: 0 12px 36px #163f5133;
+}
+.reaction-panel > p {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.reaction-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.reaction-grid button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.reaction-grid button > span:last-child {
+  font-size: 9px;
+  line-height: 1.3;
+}
+.reaction-grid button:hover:enabled {
+  background: #e4efe8;
+}
+.reaction-grid button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.reaction-controls button:focus-visible {
+  outline: 3px solid var(--bs-blue-dark);
+  outline-offset: 3px;
+}
+.reaction-panel > .reaction-unavailable {
+  font-size: 12px;
+  font-weight: 400;
+  margin: 12px 0 0;
+}
+@media (max-width: 600px) {
+  .world-action-stack {
+    right: max(16px, env(safe-area-inset-right));
+  }
+}
+@media (max-height: 480px) {
+  :root {
+    --world-reactions-bottom: max(72px, calc(env(safe-area-inset-bottom) + 60px));
+  }
+  .reaction-panel {
+    padding: 10px;
+    bottom: 68px;
+  }
+}
+
+/* Floating actions under the nearest visitor: same raised look as the reaction trigger,
+   entering and leaving one after the other. */
+.contact-actions {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  display: flex;
+  gap: 8px;
+  pointer-events: none;
+}
+.contact-actions[data-visible='true'] {
+  pointer-events: auto;
+}
+.contact-action {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 3px;
+  border: 2px solid #bfd4d4;
+  border-radius: 16px;
+  background: #fffdf4;
+  color: var(--bs-navy);
+  box-shadow:
+    0 4px 0 #8daeb0,
+    0 8px 20px #244e5726;
+  cursor: pointer;
+  opacity: 0;
+  scale: 0.4;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.contact-action .star-icon {
+  width: 26px;
+  height: 28px;
+}
+.contact-action .reaction-icon {
+  width: 34px;
+  height: 34px;
+}
+.contact-action:not(:disabled):active {
+  translate: 0 3px;
+  box-shadow:
+    0 1px 0 #8daeb0,
+    0 4px 10px #244e5726;
+}
+.contact-actions[data-visible='true'] .contact-action {
+  animation: contact-action-in 480ms var(--juice-spring) both;
+}
+.contact-actions[data-visible='true'] .contact-action:nth-child(2) {
+  animation-delay: 90ms;
+}
+.contact-actions[data-visible='false'] .contact-action {
+  animation: contact-action-out 220ms var(--juice-out) both;
+  animation-delay: 70ms;
+}
+.contact-actions[data-visible='false'] .contact-action:nth-child(2) {
+  animation-delay: 0ms;
+}
+@keyframes contact-action-in {
+  from {
+    opacity: 0;
+    scale: 0.4;
+    translate: 0 -10px;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+  }
+}
+@keyframes contact-action-out {
+  from {
+    opacity: 1;
+    scale: 1;
+  }
+  to {
+    opacity: 0;
+    scale: 0.5;
+    translate: 0 -8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .contact-actions .contact-action {
+    animation: none;
+  }
+  .contact-actions[data-visible='true'] .contact-action {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+.contact-action[hidden] {
+  display: none;
+}

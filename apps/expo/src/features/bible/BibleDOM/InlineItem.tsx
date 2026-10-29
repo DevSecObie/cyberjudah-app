@@ -1,0 +1,62 @@
+import { styled } from 'goober'
+import { RootStyles } from './BibleDOMWrapper'
+import { scaleFontSize } from './scaleFontSize'
+import { referenceHalo } from './referenceHalo'
+import { noSelect } from './utils'
+import { getDisabledStyles } from './disabledStyles'
+
+export const InlineItemContainer = styled('span')<
+  RootStyles & { isButton?: boolean; isDisabled?: boolean }
+>(
+  ({
+    isButton = false,
+    isDisabled = false,
+    settings: { fontSizeScale, theme, colors, fontFamily },
+  }) => ({
+    fontFamily,
+    ...noSelect,
+    color: colors[theme].default,
+    fontSize: scaleFontSize(16, fontSizeScale),
+    lineHeight: scaleFontSize(26, fontSizeScale),
+
+    backgroundColor: colors[theme].reverse,
+    ...referenceHalo(theme),
+    borderRadius: '8px',
+    paddingInlineEnd: '8px',
+    paddingInlineStart: '4px',
+    paddingBlock: '4px',
+    wordBreak: 'break-word',
+    marginInline: '4px',
+    transition: 'opacity 0.2s ease-in-out',
+
+    ...(isButton && {
+      cursor: 'pointer',
+      '&:active': {
+        opacity: 0.6,
+      },
+    }),
+    ...getDisabledStyles(isDisabled),
+  })
+)
+
+export const InlineItemIconWrapper = styled('span')<RootStyles & { isButton?: boolean }>(
+  ({ isButton, settings: { theme, colors, fontFamily } }) => ({
+    fontFamily,
+    borderInlineEnd: `1px solid rgba(0, 0, 0, 0.2)`,
+    paddingBlock: '0px',
+    paddingInline: '4px',
+    marginInlineEnd: '6px',
+    ...(isButton && {
+      cursor: 'pointer',
+      '&:active': {
+        opacity: 0.6,
+      },
+    }),
+  })
+)
+
+export const InlineItemText = styled('span')<RootStyles>(({ settings: { fontFamily } }) => ({
+  fontFamily,
+  pointerEvents: 'none',
+  ...noSelect,
+}))

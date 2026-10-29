@@ -1,0 +1,319 @@
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+body:has(.lab-app) {
+  overflow: auto;
+  background: var(--bs-bg);
+  color: var(--bs-navy);
+}
+.lab-app {
+  display: grid;
+  grid-template-columns: 245px minmax(0, 1fr);
+  min-height: 100dvh;
+  font-family: var(--bs-font);
+}
+.lab-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  overflow: auto;
+  padding: 25px 18px;
+  background: var(--bs-card);
+  color: var(--bs-navy);
+  box-sizing: border-box;
+}
+.lab-brand {
+  display: flex;
+  gap: 10px;
+  color: var(--bs-blue-dark);
+  text-decoration: none;
+  font-size: 24px;
+  font-weight: 500;
+}
+.lab-brand small {
+  display: block;
+  font-size: 11px;
+  color: var(--bs-muted);
+  font-weight: 500;
+  margin-top: 5px;
+}
+.lab-search {
+  display: grid;
+  gap: 8px;
+  font-size: 11px;
+  margin: 25px 0;
+}
+.lab-search input {
+  min-width: 0;
+  border: 1px solid var(--bs-line);
+  border-radius: 9px;
+  background: var(--bs-card);
+  color: var(--bs-card);
+  padding: 11px;
+  font: inherit;
+}
+.lab-sidebar h2 {
+  margin: 22px 0 9px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--bs-muted);
+  text-transform: uppercase;
+}
+.lab-sidebar nav button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-radius: 9px;
+  padding: 10px 12px;
+  background: transparent;
+  color: var(--bs-navy);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.lab-sidebar nav button:hover {
+  background: var(--bs-blue-soft);
+}
+.lab-sidebar nav button[aria-current] {
+  background: var(--bs-blue-soft);
+  color: var(--bs-blue-dark);
+  font-weight: 500;
+}
+.lab-back {
+  display: block;
+  color: var(--bs-blue-dark);
+  margin: 28px 10px;
+  font-size: 12px;
+}
+.lab-main {
+  padding: 28px;
+  min-width: 0;
+}
+.lab-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+}
+.lab-header p {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: var(--bs-muted);
+}
+.lab-header h1 {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: -0.03em;
+}
+.lab-badge {
+  padding: 10px 14px;
+  background: var(--bs-blue-soft);
+  color: var(--bs-teal);
+  border-radius: 20px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.lab-controls,
+.lab-journey,
+.lab-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+  padding: 16px;
+  background: var(--bs-card);
+  border: 1px solid var(--bs-line);
+  border-radius: var(--bs-radius);
+  margin-top: 18px;
+}
+.lab-controls label,
+.lab-journey label {
+  display: grid;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--bs-muted);
+}
+.lab-main select,
+.lab-main button {
+  min-height: 38px;
+  padding: 8px 11px;
+  border: 1px solid var(--bs-line);
+  border-radius: 9px;
+  background: var(--bs-bg);
+  color: var(--bs-blue-dark);
+  font: inherit;
+  font-size: 12px;
+}
+.lab-main button {
+  cursor: pointer;
+  font-weight: 500;
+}
+.lab-main button:hover {
+  background: var(--bs-blue-soft);
+}
+.lab-main button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.lab-main :focus-visible,
+.lab-sidebar :focus-visible {
+  outline: 3px solid var(--bs-blue);
+  outline-offset: 2px;
+}
+.lab-journey {
+  background: var(--bs-blue-soft);
+}
+.lab-journey > span {
+  align-self: center;
+  font-size: 12px;
+}
+.lab-tools {
+  margin-top: 10px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  gap: 8px;
+}
+.lab-tools label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  margin: auto 5px auto 0;
+}
+.lab-tip {
+  font-size: 12px;
+  color: var(--bs-muted);
+  line-height: 1.7;
+  max-width: 850px;
+}
+.lab-stage {
+  display: flex;
+  justify-content: flex-start;
+  overflow: auto;
+  padding: 24px;
+  background: radial-gradient(var(--bs-grey) 1px, transparent 1px);
+  background-size: 18px 18px;
+  border-radius: 20px;
+  border: 1px solid var(--bs-line);
+}
+.lab-stage iframe {
+  display: block;
+  flex-shrink: 0;
+  border: 6px solid var(--bs-navy);
+  border-radius: var(--bs-radius-lg);
+  box-shadow: var(--bs-shadow-float);
+  box-sizing: content-box;
+  background: var(--bs-bg);
+}
+.lab-log {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  align-items: center;
+  padding: 18px 0;
+  font-size: 11px;
+  color: var(--bs-muted);
+}
+.lab-log strong {
+  margin-right: 8px;
+}
+.lab-log span {
+  background: var(--bs-card);
+  border-radius: 8px;
+  padding: 7px 10px;
+}
+.lab-world {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 65%, var(--bs-yellow-soft) 0 15%, transparent 16%),
+    radial-gradient(ellipse at 70% 25%, var(--bs-card) 0 24%, transparent 25%),
+    linear-gradient(155deg, var(--bs-blue-soft), var(--bs-bg));
+}
+.lab-world-label {
+  margin: 20px;
+  font-size: 10px;
+  color: var(--bs-navy);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+}
+.lab-world-hint {
+  position: absolute;
+  top: 45%;
+  left: 15%;
+  width: 65%;
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--bs-muted);
+  text-align: center;
+}
+@media (max-width: 750px) {
+  .lab-app {
+    grid-template-columns: 1fr;
+  }
+  .lab-sidebar {
+    position: relative;
+    height: auto;
+    max-height: 310px;
+  }
+  .lab-sidebar nav {
+    display: flex;
+    gap: 12px;
+    overflow: auto;
+  }
+  .lab-sidebar nav section {
+    min-width: 170px;
+  }
+  .lab-search {
+    margin: 15px 0;
+  }
+  .lab-main {
+    padding: 16px;
+  }
+  .lab-header {
+    align-items: start;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .lab-stage {
+    padding: 12px;
+  }
+}
+.lab-preview-link {
+  align-self: center;
+  padding: 10px;
+  color: var(--bs-blue-dark);
+  font-size: 12px;
+  font-weight: 500;
+}
+.lab-game-station {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  translate: -50% 0;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  border: 0;
+  background: none;
+  color: var(--bs-navy);
+  font: inherit;
+  cursor: pointer;
+  width: 230px;
+}
+.lab-game-station img {
+  object-fit: contain;
+  filter: drop-shadow(0 8px 8px color-mix(in srgb, var(--bs-navy) 25%, transparent));
+}
+.lab-game-station strong {
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--bs-yellow);
+  border: 1px solid var(--bs-yellow);
+}

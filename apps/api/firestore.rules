@@ -1,0 +1,111 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+    function owns(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+    function validConversation() {
+      return request.resource.data.keys().hasAll([
+          'schemaVersion', 'title', 'createdAt', 'updatedAt', 'messageCount'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'schemaVersion', 'title', 'createdAt', 'updatedAt', 'messageCount', 'memory'
+        ])
+        && request.resource.data.schemaVersion == 1
+        && request.resource.data.title is string
+        && request.resource.data.title.size() <= 120
+        && request.resource.data.createdAt is int
+        && request.resource.data.updatedAt is int
+        && request.resource.data.messageCount is int
+        && request.resource.data.messageCount >= 0
+        && request.resource.data.messageCount <= 300;
+    }
+    function validMessage(message, role) {
+      return message is map
+        && message.keys().hasAll(['id', 'role', 'text', 'state', 'createdAt'])
+        && message.keys().hasOnly([
+          'id', 'role', 'text', 'state', 'createdAt', 'context', 'widgets', 'sources', 'routing',
+          'tools'
+        ])
+        && message.id is string
+        && message.id.size() > 0
+        && message.id.size() <= 100
+        && message.role == role
+        && message.text is string
+        && message.text.size() <= 60000
+        && (role != 'user' || message.text.size() <= 5000)
+        && message.createdAt is int
+        && ((role == 'user' && message.state == 'complete')
+          || (role == 'assistant' && message.state in ['complete', 'interrupted', 'error']))
+        && (!('widgets' in message) || (message.widgets is list && message.widgets.size() <= 6))
+        && (!('sources' in message) || (message.sources is list && message.sources.size() <= 6))
+        && (!('routing' in message) || (message.routing is list && message.routing.size() <= 3))
+        && (!('tools' in message) || (message.tools is list && message.tools.size() <= 6));
+    }
+    function validTurn() {
+      return request.resource.data.keys().hasAll(['schemaVersion', 'createdAt', 'user', 'assistant'])
+        && request.resource.data.keys().hasOnly(['schemaVersion', 'createdAt', 'user', 'assistant'])
+        && request.resource.data.schemaVersion == 1
+        && request.resource.data.createdAt is int
+        && validMessage(request.resource.data.user, 'user')
+        && validMessage(request.resource.data.assistant, 'assistant');
+    }
+    match /stats/{document=**} {
+      allow read: if true;
+    }
+    match /studies/{studyId} {
+      function ownsStudy(study) {
+        return signedIn() && study.user.id == request.auth.uid;
+      }
+      // A published study is a public page. Only its author lists studies (the app queries
+      // `user.id == uid`), so nobody can enumerate other accounts' studies.
+      allow get: if resource.data.published == true || ownsStudy(resource.data);
+      allow list: if ownsStudy(resource.data);
+      allow create: if ownsStudy(request.resource.data);
+      allow update: if ownsStudy(resource.data) && ownsStudy(request.resource.data);
+      allow delete: if ownsStudy(resource.data);
+    }
+    match /users/{userId} {
+      allow read, delete: if owns(userId);
+      // `subscription` belongs to the server: clients never set or change it.
+      allow create: if owns(userId) && request.resource.data.get('subscription', null) == null;
+      allow update: if owns(userId)
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['subscription']);
+    }
+    match /users/{userId}/{collectionName}/{document=**} {
+      allow read, write: if owns(userId) && collectionName != 'assistantConversations';
+    }
+    match /users/{userId}/assistantConversations/{conversationId} {
+      allow read, delete: if owns(userId);
+      allow create, update: if owns(userId) && validConversation();
+    }
+    match /users/{userId}/assistantConversations/{conversationId}/turns/{turnId} {
+      allow read, delete: if owns(userId);
+      allow create, update: if owns(userId) && validTurn();
+    }
+    match /users-status/{userId} {
+      allow read, write: if owns(userId);
+    }
+    match /commentaries-FR/{commentaryId} {
+      allow read: if true;
+    }
+    match /changelog/{changelog} {
+      allow read: if true;
+    }
+    match /verse-commentaries/{document=**} {
+      allow read: if true;
+    }
+    match /plans/{document=**} {
+      allow read: if true;
+      // The app counts a download with increment(1), signed in or not: guests add plans too.
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['downloads'])
+        && request.resource.data.downloads == resource.data.get('downloads', 0) + 1;
+    }
+    match /events/{document=**} {
+      allow read: if signedIn();
+    }
+  }
+}

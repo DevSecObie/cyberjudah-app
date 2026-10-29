@@ -1,0 +1,243 @@
+/* eslint-disable import/first */
+
+const mockGetLocalResourceAvailability = jest.fn()
+const mockUsesCanonicalBibleExtras = jest.fn()
+const mockVersionHasPericope = jest.fn()
+const mockVersionHasRedWords = jest.fn()
+const mockGetBibleVersionMetadata = jest.fn()
+
+jest.mock('../resourceAvailability', () => ({
+  getLocalResourceAvailability: (...args: unknown[]) => mockGetLocalResourceAvailability(...args),
+}))
+jest.mock('~helpers/strongBiblePublications', () => ({
+  usesCanonicalBibleExtras: (...args: unknown[]) => mockUsesCanonicalBibleExtras(...args),
+}))
+jest.mock('~helpers/pericopes', () => ({
+  versionHasPericope: (...args: unknown[]) => mockVersionHasPericope(...args),
+}))
+jest.mock('~helpers/redWords', () => ({
+  versionHasRedWords: (...args: unknown[]) => mockVersionHasRedWords(...args),
+}))
+jest.mock('~helpers/biblesDb', () => ({
+  getBibleVersionMetadata: (...args: unknown[]) => mockGetBibleVersionMetadata(...args),
+}))
+jest.mock('~helpers/getBiblePericope', () => jest.fn())
+jest.mock('~helpers/loadRedWords', () => ({ loadRedWords: jest.fn() }))
+jest.mock('~helpers/loadTresorReferences', () => jest.fn())
+
+import {
+  createHttpBibleReadingResourceAccess,
+  createHybridBibleReadingResourceAccess,
+  localBibleReadingResourceAccess,
+} from '../bibleReadingResourceAccess'
+
+describe('Bible reading secondary-resource availability', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockUsesCanonicalBibleExtras.mockReturnValue(false)
+    mockVersionHasPericope.mockReturnValue(true)
+    mockVersionHasRedWords.mockReturnValue(true)
+    mockGetBibleVersionMetadata.mockResolvedValue({ version: 'NBS', schemaVersion: 0 })
+  })
+
+  it.each([4, 5])(
+    'reads pericopes and red words from a schema %i canonical install without side files',
+    async schemaVersion => {
+      mockGetBibleVersionMetadata.mockResolvedValue({ version: 'NBS', schemaVersion })
+      mockGetLocalResourceAvailability.mockResolvedValue({
+        status: 'available',
+        resource: { kind: 'bible', versionId: 'NBS' },
+      })
+
+      await expect(
+        localBibleReadingResourceAccess.getPericopeAvailability?.('NBS')
+      ).resolves.toEqual({ status: 'available' })
+      await expect(
+        localBibleReadingResourceAccess.getRedWordsAvailability?.('NBS')
+      ).resolves.toEqual({ status: 'available' })
+      expect(mockGetLocalResourceAvailability).toHaveBeenCalledTimes(1)
+      expect(mockGetLocalResourceAvailability).toHaveBeenCalledWith({
+        kind: 'bible',
+        versionId: 'NBS',
+      })
+    }
+  )
+
+  it('keeps probing the legacy pericope file of a legacy install', async () => {
+    mockGetLocalResourceAvailability.mockResolvedValue({
+      status: 'available',
+      resource: { kind: 'bible-pericope', versionId: 'NBS' },
+    })
+
+    await expect(localBibleReadingResourceAccess.getPericopeAvailability?.('NBS')).resolves.toEqual(
+      { status: 'available' }
+    )
+    expect(mockGetLocalResourceAvailability).toHaveBeenCalledWith({
+      kind: 'bible-pericope',
+      versionId: 'NBS',
+    })
+  })
+
+  it('recovers a missing canonical pericope index through the parent Bible Offline copy', async () => {
+    mockUsesCanonicalBibleExtras.mockReturnValue(true)
+    mockGetLocalResourceAvailability.mockResolvedValue({
+      status: 'missing',
+      resource: { kind: 'bible', versionId: 'LSG' },
+    })
+
+    await expect(localBibleReadingResourceAccess.getPericopeAvailability?.('LSG')).resolves.toEqual(
+      {
+        status: 'unavailable',
+        reason: 'offline-copy-required',
+        recoveryIdentity: { kind: 'bible', versionId: 'LSG' },
+      }
+    )
+  })
+
+  it('reports invalid legacy presentation data without hiding it as empty content', async () => {
+    mockGetLocalResourceAvailability.mockResolvedValue({
+      status: 'invalid',
+      resource: { kind: 'bible-pericope', versionId: 'NBS' },
+    })
+
+    await expect(localBibleReadingResourceAccess.getPericopeAvailability?.('NBS')).resolves.toEqual(
+      {
+        status: 'unavailable',
+        reason: 'invalid-offline-copy',
+        recoveryIdentity: { kind: 'bible', versionId: 'NBS' },
+      }
+    )
+  })
+
+  it('recovers missing red-letter presentation through the parent Bible bundle', async () => {
+    mockGetLocalResourceAvailability.mockResolvedValue({
+      status: 'missing',
+      resource: { kind: 'bible-red-words', versionId: 'NBS' },
+    })
+
+    await expect(localBibleReadingResourceAccess.getRedWordsAvailability?.('NBS')).resolves.toEqual(
+      {
+        status: 'unavailable',
+        reason: 'offline-copy-required',
+        recoveryIdentity: { kind: 'bible', versionId: 'NBS' },
+      }
+    )
+  })
+
+  it('loads a canonical pericope index through HTTP when the local copy is absent', async () => {
+    const fetcher = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        resource: { kind: 'bible-text', versionId: 'LSG', revision: 'lsg-text-r1' },
+        verses: [
+          {
+            book: 1,
+            chapter: 1,
+            verse: 1,
+            headings: [
+              {
+                offset: 0,
+                order: 0,
+                kind: 'pericope',
+                type: 'section',
+                text: 'Creation',
+                markup: '<h3>Creation</h3>',
+              },
+            ],
+          },
+        ],
+      }),
+    })
+    const access = createHttpBibleReadingResourceAccess({
+      baseUrl: 'http://127.0.0.1:8787/',
+      fetcher,
+      isOnline: async () => true,
+    })
+
+    await expect(access.loadPericope('LSG')).resolves.toEqual({
+      1: { 1: { 1: { h3: 'Creation' } } },
+    })
+  })
+
+  it('rejects a malformed pericope response instead of trusting the network payload', async () => {
+    const access = createHttpBibleReadingResourceAccess({
+      baseUrl: 'http://127.0.0.1:8787',
+      fetcher: jest.fn().mockResolvedValue({ ok: true, json: async () => ({ verses: 'bad' }) }),
+      isOnline: async () => true,
+    })
+
+    await expect(access.loadPericope('LSG')).rejects.toThrow()
+  })
+
+  it('prefers an installed pericope and restores HTTP fallback after removal', async () => {
+    let installed = true
+    const local = {
+      ...localBibleReadingResourceAccess,
+      getPericopeAvailability: async () =>
+        installed
+          ? ({ status: 'available' } as const)
+          : ({
+              status: 'unavailable',
+              reason: 'offline-copy-required',
+              recoveryIdentity: { kind: 'bible', versionId: 'LSG' },
+            } as const),
+      loadPericope: jest.fn().mockResolvedValue({ local: {} }),
+    }
+    const online = {
+      getPericopeAvailability: async () => ({ status: 'available' }) as const,
+      loadPericope: jest.fn().mockResolvedValue({ remote: {} }),
+    }
+    const hybrid = createHybridBibleReadingResourceAccess({
+      local,
+      online,
+      remotelyReadableVersions: new Set(['LSG']),
+      isOnline: async () => true,
+    })
+
+    await expect(hybrid.loadPericope('LSG')).resolves.toEqual({ local: {} })
+    installed = false
+    await expect(hybrid.loadPericope('LSG')).resolves.toEqual({ remote: {} })
+  })
+})
+
+describe('shared cross-reference availability', () => {
+  it.each(['fr', 'en'] as const)(
+    'allows online access with a %s interface and no Offline copy',
+    async language => {
+      const online = createHttpBibleReadingResourceAccess({
+        baseUrl: 'https://example.test',
+        isOnline: async () => true,
+      })
+      const access = createHybridBibleReadingResourceAccess({
+        local: {
+          ...localBibleReadingResourceAccess,
+          getTresorAvailability: async () => ({
+            status: 'unavailable',
+            reason: 'offline-copy-required',
+            recoveries: ['acquire-offline-copy'],
+          }),
+        },
+        online,
+        remotelyReadableVersions: new Set(),
+        isOnline: async () => true,
+      })
+      await expect(online.getTresorAvailability?.(language)).resolves.toEqual({
+        status: 'available',
+      })
+      await expect(access.getTresorAvailability?.(language)).resolves.toEqual({
+        status: 'available',
+      })
+    }
+  )
+
+  it('still requires an Offline copy when disconnected', async () => {
+    const online = createHttpBibleReadingResourceAccess({
+      baseUrl: 'https://example.test',
+      isOnline: async () => false,
+    })
+    await expect(online.getTresorAvailability?.('en')).resolves.toMatchObject({
+      status: 'unavailable',
+      reason: 'offline-copy-required',
+    })
+  })
+})

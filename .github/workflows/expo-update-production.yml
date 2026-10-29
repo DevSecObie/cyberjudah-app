@@ -1,0 +1,55 @@
+name: Publish Expo Production Update
+
+# Manual only: an update reaches the readers who look for one in the settings, see ADR-0085.
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+        description: What the update changes (defaults to the last commit)
+        required: false
+        type: string
+
+concurrency:
+  group: expo-update-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish-update:
+    name: Publish update (production)
+    if: github.repository == 'smontlouis/bible-strong' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check for secrets
+        run: |
+          if [ -z "${{ secrets.OTA_PUBLISH_TOKEN }}" ] || [ -z "${{ secrets.SENTRY_AUTH_TOKEN }}" ]; then
+            echo "Add OTA_PUBLISH_TOKEN and SENTRY_AUTH_TOKEN repository secrets before publishing production updates."
+            exit 1
+          fi
+
+      - name: Check out production source
+        uses: actions/checkout@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Publish production update and upload sourcemaps
+        env:
+          OTA_PUBLISH_TOKEN: ${{ secrets.OTA_PUBLISH_TOKEN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          UPDATE_MESSAGE: ${{ inputs.message }}
+        run: |
+          message="${UPDATE_MESSAGE:-$(git log -1 --pretty=%s)} (${GITHUB_SHA::7})"
+          yarn workspace @bible-strong/expo update:production --message "$message"

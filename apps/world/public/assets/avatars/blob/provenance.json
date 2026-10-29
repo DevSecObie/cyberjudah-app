@@ -1,0 +1,15 @@
+{
+  "source": "Pencil native vector bodies with separate editable eyes",
+  "frames": 24,
+  "columns": 8,
+  "rows": 3,
+  "frameSize": 256,
+  "frameRate": 24,
+  "idleFrame": null,
+  "originY": {
+    "down": 0.9548611111111112,
+    "up": 0.9548611111111112,
+    "right": 0.9732142857142857
+  },
+  "left": "Mirror right"
+}

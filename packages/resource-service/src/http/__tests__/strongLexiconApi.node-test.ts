@@ -1,0 +1,358 @@
+import assert from 'node:assert/strict'
+import { describe, it } from 'node:test'
+
+import { Effect } from 'effect'
+
+import { encodeStrongLexiconPageCursor } from '@bible-strong/resource-domain/resource-page-cursor'
+
+import {
+  ActiveStrongLexiconPublicationUnavailable,
+  StrongLexiconEntityNotFound,
+  StrongLexiconEntryNotFound,
+  type StrongLexiconRepositoryService,
+} from '../../domain/strongLexicon'
+import { makeResourceWebHandler } from '../app'
+
+const revision = 'strong-lexicon-core-test'
+const searchEntry = {
+  id: 3056,
+  stepCode: 'G3056',
+  classicStrong: 'G3056',
+  language: 'greek' as const,
+  original: 'λόγος',
+  transliteration: 'logos',
+  gloss: 'parole',
+}
+const entity = {
+  id: 1,
+  uniqueName: 'Adam@Gen.2.19-Jud',
+  strongCodes: ['H0120'],
+  name: 'Adam',
+  category: 'person',
+  type: 'Male',
+  description: 'Premier homme',
+  shortDescription: 'Premier homme',
+  summaryHtml: '<p>Adam</p>',
+  brief: 'Adam',
+  articleHtml: '<p>Adam</p>',
+  relations: [],
+}
+let lastListInput: Parameters<StrongLexiconRepositoryService['listEntries']>[0] | undefined
+let entryReads = 0
+
+const repository: StrongLexiconRepositoryService = {
+  getModuleState: moduleId =>
+    Effect.succeed({ moduleId, status: 'available', revision: `${moduleId}-r1` }),
+  findEntry: input =>
+    ((entryReads += 1), input.reference === 'absent')
+      ? Effect.fail(new StrongLexiconEntryNotFound(input))
+      : Effect.succeed({
+          revision,
+          value: {
+            ...searchEntry,
+            selectedIdentity: { kind: 'strong', code: 'G3056' },
+            eStrong: 'G3056',
+            dStrong: 'G3056 =',
+            baseCode: 3056,
+            pronunciation: 'log-os',
+            definitionHtml: '<p>parole</p>',
+            morphology: { code: 'G:N-M', meaning: 'nom grec' },
+            relations: [],
+            resources: [],
+            lsjAbsent: false,
+            entity,
+            modules: {
+              resources: {
+                status: 'available',
+                moduleId: 'resources',
+                revision: 'resources-r1',
+                schemaVersion: 2,
+              },
+              entities: {
+                status: 'available',
+                moduleId: 'entities',
+                revision: 'entities-r1',
+                schemaVersion: 2,
+              },
+            },
+          },
+        }),
+  findNumberSenses: input =>
+    Effect.succeed({
+      revision: 'number-senses-r1',
+      value: {
+        classicStrong: input.number.toUpperCase(),
+        senses: [
+          { ...searchEntry, detailedDefinitionHtml: '<p>parole</p>', entityBrief: 'Adam' },
+          searchEntry,
+        ],
+      },
+    }),
+  listEntries: input => {
+    lastListInput = input
+    return Effect.succeed({
+      revision,
+      value: { entries: [searchEntry], nextCursor: 'next-page' },
+    })
+  },
+  findRandom: () => Effect.succeed({ revision, value: [searchEntry] }),
+  findMorphologies: input =>
+    Effect.succeed({ revision, value: input.codes.map(code => ({ code, meaning: 'nom grec' })) }),
+  findEntity: input =>
+    input.uniqueName === 'absent'
+      ? Effect.fail(new StrongLexiconEntityNotFound(input))
+      : Effect.succeed({ revision: 'entities-r1', value: entity }),
+  findChapterEntities: () =>
+    Effect.succeed({
+      revision: 'entities-r1',
+      value: [
+        {
+          uniqueName: entity.uniqueName,
+          name: entity.name,
+          category: 'person',
+          type: entity.type,
+          verses: [1],
+        },
+      ],
+    }),
+}
+
+const request = (path: string) =>
+  new Request(`http://localhost${path}`, {
+    headers: { 'x-request-id': 'strong-lexicon-request-123' },
+  })
+
+describe('v1 Strong lexicon API', () => {
+  it('forwards the lightweight projection and isolates its ETag from full entries', async () => {
+    const contents: (string | undefined)[] = []
+    const web = makeResourceWebHandler(undefined, undefined, {
+      strongLexicon: {
+        ...repository,
+        findEntry: input => {
+          contents.push(input.content)
+          return repository.findEntry(input)
+        },
+      },
+    })
+    try {
+      const full = await web.handler(request('/v1/strong-lexicon/entries/G3056?language=fr'))
+      const definitions = await web.handler(
+        request('/v1/strong-lexicon/entries/G3056?language=fr&content=definitions')
+      )
+      assert.equal(full.status, 200)
+      assert.equal(definitions.status, 200)
+      assert.deepEqual(contents, [undefined, 'definitions'])
+      assert.ok(full.headers.get('etag'))
+      assert.notEqual(full.headers.get('etag'), definitions.headers.get('etag'))
+    } finally {
+      await web.dispose()
+    }
+  })
+
+  it('forwards the simple level and locale across every lexical read', async () => {
+    const calls: { language: string; level?: string }[] = []
+    const simpleRepository: StrongLexiconRepositoryService = {
+      ...repository,
+      findEntry: input => {
+        calls.push(input)
+        return repository.findEntry(input)
+      },
+      findEntryCards: input => {
+        calls.push(input)
+        return Effect.succeed([])
+      },
+      listEntries: input => {
+        calls.push(input)
+        return repository.listEntries(input)
+      },
+      findRandom: input => {
+        calls.push(input)
+        return repository.findRandom(input)
+      },
+      findMorphologies: input => {
+        calls.push(input)
+        return repository.findMorphologies(input)
+      },
+    }
+    const web = makeResourceWebHandler(undefined, undefined, { strongLexicon: simpleRepository })
+    try {
+      for (const language of ['fr', 'en']) {
+        const paths = [
+          `entries/G3056?language=${language}`,
+          `entries/batch?language=${language}&identities=strong%3AG3056`,
+          `entries?language=${language}&search=love`,
+          `random?language=${language}&lexicalLanguage=greek`,
+          `morphologies?language=${language}&codes=G%3AN-M`,
+        ]
+        for (const path of paths) {
+          const response = await web.handler(request(`/v1/strong-lexicon/${path}&level=simple`))
+          assert.equal(response.status, 200, await response.clone().text())
+          assert.equal(calls.at(-1)?.level, 'simple')
+          assert.equal(calls.at(-1)?.language, language)
+        }
+        const module = await web.handler(request(`/v1/strong-lexicon/modules/simple-${language}`))
+        assert.equal(module.status, 200)
+      }
+      assert.equal(calls.length, 10)
+    } finally {
+      await web.dispose()
+    }
+  })
+
+  it('loads multiple identities through one batch endpoint', async () => {
+    entryReads = 0
+    let batchReads = 0
+    const batchRepository: StrongLexiconRepositoryService = {
+      ...repository,
+      findEntryCards: () => {
+        batchReads += 1
+        return Effect.succeed([])
+      },
+    }
+    const web = makeResourceWebHandler(undefined, undefined, { strongLexicon: batchRepository })
+    try {
+      const response = await web.handler(
+        request(
+          '/v1/strong-lexicon/entries/batch?language=fr&identities=strong%3AG3056%2Cstrong%3Aabsent'
+        )
+      )
+      assert.equal(response.status, 200, await response.clone().text())
+      assert.equal(batchReads, 1)
+      assert.equal(entryReads, 0)
+      assert.equal(((await response.json()) as { entries: unknown[] }).entries.length, 0)
+    } finally {
+      await web.dispose()
+    }
+  })
+
+  it('serves the senses of a classical number with what tells each apart', async () => {
+    const web = makeResourceWebHandler(undefined, undefined, { strongLexicon: repository })
+    try {
+      const response = await web.handler(
+        request('/v1/strong-lexicon/numbers/g3056/senses?language=fr')
+      )
+      assert.equal(response.status, 200, await response.clone().text())
+      assert.equal(response.headers.get('x-resource-revision'), 'number-senses-r1')
+      assert.ok(response.headers.get('etag'))
+      assert.deepEqual(await response.json(), {
+        resource: { revision: 'number-senses-r1' },
+        classicStrong: 'G3056',
+        senses: [
+          { ...searchEntry, detailedDefinitionHtml: '<p>parole</p>', entityBrief: 'Adam' },
+          // A sense the detailed lexicon says nothing more about is its row alone.
+          searchEntry,
+        ],
+      })
+
+      // A number is written without a sense suffix, and a language is required.
+      for (const path of [
+        '/v1/strong-lexicon/numbers/G3056A/senses?language=fr',
+        '/v1/strong-lexicon/numbers/3056/senses?language=fr',
+        '/v1/strong-lexicon/numbers/G3056/senses',
+      ]) {
+        assert.equal((await web.handler(request(path))).status, 400, path)
+      }
+    } finally {
+      await web.dispose()
+    }
+  })
+
+  it('serves module, entry, browse, random, morphology, entity, and chapter contracts', async () => {
+    lastListInput = undefined
+    const web = makeResourceWebHandler(undefined, undefined, { strongLexicon: repository })
+    try {
+      const cursor = encodeStrongLexiconPageCursor({ gloss: 'parole', baseCode: 3056, id: 3056 })
+      const paths = [
+        '/v1/strong-lexicon/modules/core',
+        '/v1/strong-lexicon/entries/G3056?language=fr',
+        `/v1/strong-lexicon/entries?language=fr&search=parole&limit=10&cursor=${cursor}`,
+        '/v1/strong-lexicon/random?language=fr&lexicalLanguage=greek',
+        '/v1/strong-lexicon/morphologies?language=fr&codes=G%3AN-M',
+        '/v1/strong-lexicon/entities/Adam%40Gen.2.19-Jud?language=fr',
+        '/v1/strong-lexicon/entities/chapters/Gen/1?language=fr',
+      ]
+      for (const path of paths) {
+        const response = await web.handler(request(path))
+        assert.equal(response.status, 200, `${path}: ${await response.clone().text()}`)
+        assert.equal(response.headers.get('x-request-id'), 'strong-lexicon-request-123')
+      }
+      assert.equal(
+        (lastListInput as { cursor?: string } | undefined)?.cursor,
+        JSON.stringify({ gloss: 'parole', baseCode: 3056, id: 3056 })
+      )
+      const page = await web.handler(
+        request('/v1/strong-lexicon/entries?language=fr&prefix=p&limit=10')
+      )
+      assert.equal(((await page.json()) as { nextCursor?: string }).nextCursor, 'next-page')
+    } finally {
+      await web.dispose()
+    }
+  })
+
+  it('lists every entry only when the request asks for all identities', async () => {
+    const web = makeResourceWebHandler(undefined, undefined, { strongLexicon: repository })
+    const identitiesAskedBy = async (query: string) => {
+      lastListInput = undefined
+      const response = await web.handler(request(`/v1/strong-lexicon/entries?language=fr${query}`))
+      return {
+        status: response.status,
+        identities: (lastListInput as { identities?: string } | undefined)?.identities,
+      }
+    }
+    try {
+      assert.deepEqual(await identitiesAskedBy(''), { status: 200, identities: undefined })
+      assert.deepEqual(await identitiesAskedBy('&identities=unified'), {
+        status: 200,
+        identities: 'unified',
+      })
+      assert.deepEqual(await identitiesAskedBy('&identities=all&prefix=d'), {
+        status: 200,
+        identities: 'all',
+      })
+      assert.deepEqual(await identitiesAskedBy('&identities=every'), {
+        status: 400,
+        identities: undefined,
+      })
+    } finally {
+      await web.dispose()
+    }
+  })
+
+  it('rejects malformed page cursors before reaching the repository', async () => {
+    const web = makeResourceWebHandler(undefined, undefined, { strongLexicon: repository })
+    try {
+      const response = await web.handler(
+        request('/v1/strong-lexicon/entries?language=fr&cursor=not-a-cursor')
+      )
+      assert.equal(response.status, 400)
+    } finally {
+      await web.dispose()
+    }
+  })
+
+  it('keeps missing and unavailable modules distinct', async () => {
+    const unavailable: StrongLexiconRepositoryService = {
+      ...repository,
+      findEntry: () =>
+        Effect.fail(new ActiveStrongLexiconPublicationUnavailable({ moduleId: 'core' })),
+    }
+    const web = makeResourceWebHandler(undefined, undefined, { strongLexicon: unavailable })
+    try {
+      const missing = await web.handler(request('/v1/strong-lexicon/entities/absent?language=fr'))
+      assert.equal(missing.status, 404)
+      assert.equal(
+        ((await missing.json()) as { code: string }).code,
+        'STRONG_LEXICON_ENTITY_NOT_FOUND'
+      )
+
+      const inactive = await web.handler(request('/v1/strong-lexicon/entries/G3056?language=fr'))
+      assert.equal(inactive.status, 503)
+      assert.equal(
+        ((await inactive.json()) as { code: string }).code,
+        'STRONG_LEXICON_PUBLICATION_INACTIVE'
+      )
+    } finally {
+      await web.dispose()
+    }
+  })
+})

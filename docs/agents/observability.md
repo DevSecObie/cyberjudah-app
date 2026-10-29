@@ -1,0 +1,137 @@
+# Observability
+
+## Local Startup Signals
+
+The root app is `app/_layout.tsx`. Startup work includes i18n setup, splash handling, Redux persist rehydration, database state provider setup, migration hooks, remote config, Sentry init, and deferred modal mounting.
+
+Development builds also emit structured agent-readable events to the Metro/native console with the `[AgentLog]` prefix. The payload after the prefix is JSON.
+
+Use the explicit `appLogger` helper instead of monkey-patching global `console`. Console output from dependencies, WebViews, and React Native internals is too noisy to treat as trusted observability. Promote important app events into `appLogger` progressively.
+
+Before a debugging session, clear local captured logs:
+
+```bash
+yarn agents:logs:clear
+```
+
+Start Expo with automatic session capture when you need queryable logs:
+
+```bash
+yarn agents:start:logged
+```
+
+This runs `yarn start` and writes the full Expo output to `.scratch/logs/session-*.log` while keeping the terminal interactive. Useful queries during or after a captured session:
+
+```bash
+yarn agents:logs:all
+yarn agents:logs:errors
+yarn agents:logs:startup
+yarn agents:logs:navigation
+```
+
+In a dev runtime, recent events are also buffered on `globalThis.__BIBLE_STRONG_AGENT_LOGS__` for debugger inspection.
+
+Useful startup log prefixes include:
+
+- `[AgentLog]`
+- `[Navigation]`
+- `[Common]`
+- `[InitHooks]`
+- `[DBManager]`
+- `[BiblesDB]`
+- `[BibleMigration]`
+- `[DB Migration]`
+- `[Storage]`
+- `[RemoteConfig]`
+
+Current structured `[AgentLog]` areas include startup, navigation, Redux, ErrorBoundary crashes, SQLite/database operations, Bible DOM WebView mount/dispatch, and SQLite search.
+
+## Resource Source Logs
+
+Development builds emit `[ResourceSource]` after successful resource reads. Bible, dictionaries,
+Strong, Nave, interlinear, timeline, reading resources, and commentaries use the same format:
+`[ResourceSource] Commentary · ONLINE · loadResourceChapter · barnes · fr · 1 · 1`.
+`OFFLINE` identifies an installed copy, `ONLINE` a remote read, and `CACHE` a persistent commentary
+index cache. Mixed commentary selections report each resource's actual source separately. Failed
+reads do not emit a success log, and commentary content is never included. Logs describe reads;
+reopening content already held in the UI query cache may not trigger another read or log.
+
+## Error Capture
+
+- Sentry is initialized in `app/_layout.tsx` with `EXPO_PUBLIC_SENTRY_DSN`. From 28.0 the apps use the client key `28.0+`; the `Default` key is left to 27.x and earlier builds, and is meant to be deactivated once 28.0 has replaced them.
+- Error-event sampling is `1.0`: bugs are never sampled. `src/helpers/sentryEventFilter.ts` (`beforeSend`) then trims handled errors that are not bugs:
+  - each handled failure (area, event, and error code, or the message when there is no code) is sent at most once per launch; later ones stay as breadcrumbs;
+  - cancelled requests (`RESOURCE_REQUEST_ABORTED`, `AbortError`) are never sent;
+  - expected conditions (offline, temporary unavailability, request and download timeouts, a full disk, a first account sync slower than 15 seconds, App Check failures) are sent for 5% of launches, tagged `diagnostic.sample_rate` — multiply their counts by 20. This applies to the `startup` area too, migrations included;
+  - crashes are never sampled away, nor is any other startup failure. Responses of the Resource API keep their own `resource_api.protected_request_failed` report.
+- Native download errors are classified before they are reported (`src/helpers/resourceDeviceCondition.ts`): Android's `FileSystemLegacyModule` and iOS's `ERR_FILESYSTEM_CANNOT_DOWNLOAD` become `RESOURCE_OFFLINE`, `RESOURCE_DOWNLOAD_TIMEOUT` or `RESOURCE_STORAGE_FULL`, with the native message kept after the code.
+- A rejected Expo native call ("Call to function 'X' has been rejected") gets its own fingerprint: one Sentry issue per function, cause and `diagnostic.event`. Without it, every such rejection shares the CodedError stack and lands in one issue (BIBLE-STRONG-HXR mixed seven problems).
+- Default PII collection is disabled. The authenticated Sentry user is limited to the Firebase user ID and email; diagnostic contexts must not include profile data or user-generated content.
+- The root UI is wrapped with `Sentry.wrap`.
+- `src/common/ErrorBoundary.tsx` captures render crashes and shows a fallback.
+- `appLogger.captureError(area, event, error, context)` is the standard capture boundary for handled failures. It adds stable tags, sanitized technical context, and the preceding `appLogger` breadcrumbs.
+- `appLogger.error` and `appLogger.warn` add breadcrumbs only. Use them for recoverable intermediate attempts; use `captureError` once when an operation finally fails or a sensitive recovery path is degraded.
+- Additional Sentry capture points exist around database, WebView, sync, audio, notes, links, and backup flows.
+- Protected artifact downloads validate the HTTP status before checksum verification. A first `401` is retried once with a forced App Check refresh; a persistent refusal is captured as `resource_artifact.http_failed` with the status, Worker request ID, retry flag, and non-secret token-shape diagnostics. Never interpret an archive checksum mismatch as an authentication failure.
+- Native Resource App Check callers share an in-flight SDK request. After a failure, new calls fail with that same error during a demand-driven cooldown (2, 4, 8, 16, then at most 30 seconds). No background retry is scheduled; SDK token caching, expiry and provider backoff still apply. Forced refreshes also respect cooldown and cannot reuse an in-flight non-forced lookup as their final result.
+- `resource_app_check.token_failed` is captured once per failed SDK acquisition, not once per waiting caller. Its context includes `consecutiveFailures`, `retryAfterMs` (the app cooldown, not the provider's retry deadline), and the sanitized `initialFailure` from the current failure sequence. A successful acquisition clears this sequence. Use `initialFailure` to find a refusal hidden by later native `Too many attempts` errors; the latter alone does not prove a quota breach or a failed device-integrity verdict.
+
+Safe diagnostic context includes migration/step/resource/version IDs, error codes, retry counts, durations, HTTP status, lifecycle phase, and boolean capability flags. Never attach tokens, authorization headers, signed URL query strings, Redux/MMKV payloads, notes, highlights, studies, search text, verse contents, full Firebase profiles, or raw native/WebView event payloads. The logger sanitizes common sensitive keys and values as a second line of defense; callers are still responsible for sending only the minimum technical context needed to diagnose the failure.
+
+## Common Debug Targets
+
+- Agent-readable log helper: `src/helpers/agentObservability.ts`
+- Local log query script: `scripts/agents-log-session.mjs`
+- App startup and provider tree: `app/_layout.tsx`
+- Error boundary: `src/common/ErrorBoundary.tsx`
+- Firebase helpers: `src/helpers/firebase.ts`
+- Redux store and persistence: `src/redux/store.ts`
+- Firestore sync: `src/redux/firestoreMiddleware.ts`
+- SQLite/database access: `src/helpers/sqlite.ts`, `src/helpers/databases.ts`, `src/helpers/biblesDb.ts`
+- Bible WebView wrapper: `src/features/bible/BibleDOM/BibleDOMWrapper.tsx`
+- Studies editor WebView: `src/features/studies/StudiesDOM/StudiesDomWrapper.tsx`
+- Audio footer/runtime: `src/features/bible/footer/`
+
+## Local Debugging Notes
+
+- Development navigation logs appear under `[Navigation]`.
+- Many storage and migration paths log to the Metro/native console.
+- WebView-heavy Bible and studies features may fail independently of the React Native shell; inspect both native logs and WebView wrapper logs.
+- Remote config failures are intentionally filtered in Sentry via `src/helpers/ignoreSentryErrors.ts`; expected conditions and repeats via `src/helpers/sentryEventFilter.ts`.
+
+## Reporting Failures
+
+When reporting a failure, include:
+
+- platform and device/simulator;
+- command used (`yarn start`, `yarn ios`, `yarn android`, build script, or smoke path);
+- environment file/profile used;
+- first error stack or visible ErrorBoundary text;
+- relevant log prefixes before the failure.
+
+## Domain Quality Metrics
+
+Run:
+
+```bash
+yarn agents:quality
+```
+
+This generates:
+
+- `docs/agents/quality-score.md` for human and agent review.
+- `.scratch/quality/quality.json` for scripts or agent queries.
+
+The score is directional. It combines static signals such as feature tests, smoke-path mapping, feature README presence, console calls, `any`, TODO/FIXME markers, eslint disables, and sensitive-domain classification.
+
+PR gates run:
+
+```bash
+yarn agents:quality:check
+```
+
+The default minimum is `5/10`, which catches newly very-low-readiness domains without blocking the current brownfield baseline. To test a stricter threshold locally:
+
+```bash
+yarn agents:quality:check --min-score=7
+```

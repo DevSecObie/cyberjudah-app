@@ -1,0 +1,97 @@
+{
+  "apps/expo/src/features/onboarding/abel/SceneActionButton.tsx": {
+    "radius": 0,
+    "shadow": 1,
+    "ground": 0
+  },
+  "apps/expo/src/features/onboarding/abel/scenes/GenesisSourceCard.tsx": {
+    "radius": 0,
+    "shadow": 1,
+    "ground": 0
+  },
+  "apps/expo/src/features/onboarding/abel/scenes/NoteCard.tsx": {
+    "radius": 0,
+    "shadow": 1,
+    "ground": 0
+  },
+  "apps/expo/src/features/onboarding/abel/scenes/SceneFourOccurrences.tsx": {
+    "radius": 1,
+    "shadow": 4,
+    "ground": 0
+  },
+  "apps/expo/src/features/onboarding/abel/scenes/SceneOneVerseHighlight.tsx": {
+    "radius": 0,
+    "shadow": 4,
+    "ground": 0
+  },
+  "apps/expo/src/features/onboarding/abel/scenes/SceneSevenReturnToVerse.tsx": {
+    "radius": 0,
+    "shadow": 2,
+    "ground": 0
+  },
+  "apps/expo/src/features/onboarding/abel/scenes/SceneSixRelations.tsx": {
+    "radius": 0,
+    "shadow": 2,
+    "ground": 0
+  },
+  "apps/expo/src/features/onboarding/abel/scenes/SceneThreeStrong.tsx": {
+    "radius": 0,
+    "shadow": 4,
+    "ground": 0
+  },
+  "apps/expo/src/features/onboarding/abel/scenes/SceneTwoLexique.tsx": {
+    "radius": 0,
+    "shadow": 1,
+    "ground": 0
+  },
+  "apps/expo/src/features/onboarding/abel/VerseCard.tsx": {
+    "radius": 0,
+    "shadow": 2,
+    "ground": 0
+  },
+  "apps/expo/src/features/onboarding/AbelOnboarding.tsx": {
+    "radius": 2,
+    "shadow": 2,
+    "ground": 0
+  },
+  "apps/expo/src/features/onboarding/components/OfflineResourceFolderBadge.tsx": {
+    "radius": 1,
+    "shadow": 0,
+    "ground": 0
+  },
+  "apps/expo/src/features/onboarding/components/OfflineResourceFolderItems.tsx": {
+    "radius": 0,
+    "shadow": 1,
+    "ground": 0
+  },
+  "apps/expo/src/features/onboarding/components/OfflineSetupResourceOption.tsx": {
+    "radius": 3,
+    "shadow": 0,
+    "ground": 0
+  },
+  "apps/expo/src/features/onboarding/components/OfflineSetupReviewHeader.tsx": {
+    "radius": 1,
+    "shadow": 0,
+    "ground": 0
+  },
+  "apps/expo/src/features/onboarding/components/OfflineSetupReviewSheet.tsx": {
+    "radius": 3,
+    "shadow": 1,
+    "ground": 0
+  },
+  "apps/expo/src/features/onboarding/DownloadResources.tsx": {
+    "radius": 4,
+    "shadow": 2,
+    "ground": 0
+  },
+  "apps/expo/src/features/onboarding/ResourceItem.tsx": {
+    "radius": 1,
+    "shadow": 0,
+    "ground": 0
+  },
+  "apps/expo/src/features/onboarding/SelectResources.tsx": {
+    "radius": 0,
+    "shadow": 1,
+    "ground": 0
+  }
+}

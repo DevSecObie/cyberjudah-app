@@ -1,0 +1,242 @@
+import { ExpoConfig, ConfigContext } from 'expo/config'
+
+const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+
+const APP_VERSION = '28.0.1'
+// Patch releases share a runtime and receive the same OTA updates. Any native change must
+// ship in a new major or minor version, which creates a new runtime.
+const [majorVersion, minorVersion] = APP_VERSION.split('.')
+const RUNTIME_VERSION = `${majorVersion}.${minorVersion}`
+
+// Icon fonts built into the Android app. Loaded at run time, a font file an update copied can
+// be empty on disk, and every icon of that family stays blank. Each family is named as
+// @expo/vector-icons checks it with Font.isLoaded, so the icons never load it again. The plugin
+// resolves the path as a module when it is not a file of the project.
+const vectorIconFont = (fontFamily: string, file: string) => ({
+  fontFamily,
+  fontDefinitions: [
+    {
+      path: `@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/${file}`,
+      weight: 400,
+    },
+  ],
+})
+
+// The families of public pages a link opens in the application.
+const PUBLIC_RESOURCE_PATHS = [
+  '/bible/',
+  '/strong/',
+  '/dictionary/',
+  '/nave/',
+  '/commentary/',
+  '/timeline/',
+]
+
+export default ({ config }: ConfigContext): ExpoConfig => ({
+  ...config,
+  name: process.env.APP_NAME ?? 'dev - Bible Strong',
+  description: isCyberJudah
+    ? 'CyberJudah Bible reading and study'
+    : 'Bible strong for french people',
+  slug: isCyberJudah ? 'cyberjudah' : 'bible-strong',
+  scheme: isCyberJudah ? 'cyberjudah-staging' : 'biblestrong',
+  primaryColor: '#ffffff',
+  githubUrl: isCyberJudah
+    ? 'https://github.com/DevSecObie/cyberjudah-app'
+    : 'https://github.com/bulby97/bible-strong',
+  platforms: ['ios', 'android', 'web'],
+  version: APP_VERSION,
+  orientation: 'default',
+  icon: './assets/images/icon-2.png',
+  userInterfaceStyle: 'automatic',
+
+  android: {
+    versionCode: 514,
+    package: isCyberJudah ? 'io.cyberjudah.app' : 'com.smontlouis.biblestrong',
+    googleServicesFile: isCyberJudah
+      ? 'firebase/cyberjudah/google-services.json'
+      : (process.env.ANDROID_GOOGLE_SERVICES_FILE ?? 'firebase/dev/google-services.json'),
+    adaptiveIcon: {
+      foregroundImage: './assets/images/foreground-image.png',
+      backgroundImage: './assets/images/background-image.png',
+      monochromeImage: './assets/images/icon_notification.png',
+    },
+    // Deep linking: Android App Links. Only the resources the application shows (ADR-0082):
+    // the home of the site, its legal pages and shared studies stay in the browser.
+    intentFilters: [
+      {
+        action: 'VIEW',
+        autoVerify: true,
+        data: PUBLIC_RESOURCE_PATHS.map(pathPrefix => ({
+          scheme: 'https',
+          host: isCyberJudah ? 'cyberjudah.io' : 'bible-strong.app',
+          pathPrefix,
+        })),
+        category: ['BROWSABLE', 'DEFAULT'],
+      },
+    ],
+  },
+  ios: {
+    ...(isCyberJudah && process.env.CYBERJUDAH_APPLE_TEAM_ID
+      ? { appleTeamId: process.env.CYBERJUDAH_APPLE_TEAM_ID }
+      : {}),
+    bundleIdentifier:
+      process.env.BUNDLE_IDENTIFIER ??
+      (isCyberJudah ? 'io.cyberjudah.app.dev' : 'com.smontlouis.biblestrong.dev'),
+    buildNumber: '301',
+    googleServicesFile: isCyberJudah
+      ? './firebase/cyberjudah/GoogleService-Info.plist'
+      : (process.env.IOS_GOOGLE_SERVICES_FILE ?? './firebase/dev/GoogleService-Info.plist'),
+    userInterfaceStyle: 'automatic',
+    supportsTablet: true,
+    infoPlist: {
+      UIBackgroundModes: ['audio'],
+      NSAppTransportSecurity: {
+        NSExceptionDomains: {
+          'timeline.biblehistory.com': {
+            NSExceptionAllowsInsecureHTTPLoads: true,
+          },
+        },
+      },
+      ITSAppUsesNonExemptEncryption: false,
+      CFBundleAllowMixedLocalizations: true,
+      CFBundleLocalizations: ['en', 'fr'],
+      CFBundleDevelopmentRegion: 'en',
+    },
+
+    entitlements: {
+      'com.apple.developer.applesignin': ['Default'],
+      'com.apple.developer.devicecheck.appattest-environment': 'production',
+    },
+    // Deep linking: iOS Universal Links
+    associatedDomains: [isCyberJudah ? 'applinks:cyberjudah.io' : 'applinks:bible-strong.app'],
+  },
+  web: {
+    bundler: 'metro',
+    output: 'single',
+    favicon: './assets/images/icon-2.png',
+  },
+  plugins: [
+    'expo-sharing',
+    'expo-router',
+    'expo-asset',
+    'expo-image',
+    'expo-sqlite',
+    'expo-audio',
+    // CocoaPods, not SPM: RNFirebase 26 rejects SPM with our static frameworks linkage.
+    ['@react-native-firebase/app', { ios: { disableSPM: true } }],
+    './plugins/withFirebaseAppCheckSwiftBridge.js',
+    // Offline-copy keys come from BIBLE_STRONG_ARCHIVE_KEYS in the build environment (ADR-0065).
+    './plugins/withBibleStrongArchiveKeys.js',
+    '@react-native-firebase/app-check',
+    '@react-native-firebase/auth',
+    [
+      'expo-build-properties',
+      {
+        ios: {
+          deploymentTarget: '16.4',
+          useFrameworks: 'static',
+          forceStaticLinking: [
+            'RNFBApp',
+            'RNFBAppCheck',
+            'RNFBAuth',
+            'RNFBFirestore',
+            'RNFBConfig',
+            'RNFBStorage',
+          ],
+        },
+        android: {
+          targetSdkVersion: 36,
+          usesCleartextTraffic: true,
+          extraMavenRepos: ['../../node_modules/@notifee/react-native/android/libs'],
+        },
+      },
+    ],
+    [
+      'expo-font',
+      {
+        fonts: ['./src/assets/fonts/LiterataBook-Regular.otf'],
+        android: {
+          fonts: [
+            vectorIconFont('feather', 'Feather.ttf'),
+            vectorIconFont('ionicons', 'Ionicons.ttf'),
+          ],
+        },
+      },
+    ],
+    [
+      'expo-document-picker',
+      {
+        iCloudContainerEnvironment: 'Production',
+      },
+    ],
+    [
+      '@sentry/react-native/expo',
+      {
+        organization: 'sevn-apps',
+        project: 'bible-strong',
+      },
+    ],
+    ['./plugins/gradleProperties.js'],
+    [
+      './plugins/withAndroidUsesFeature.js',
+      {
+        name: 'android.hardware.microphone',
+        attributes: {
+          required: 'false',
+        },
+      },
+    ],
+    [
+      'expo-splash-screen',
+      {
+        image: './assets/images/splash.png',
+        imageWidth: 200,
+        backgroundColor: '#ffffff',
+        dark: {
+          image: './assets/images/splash-dark.png',
+          imageWidth: 200,
+          backgroundColor: '#0F2132',
+        },
+      },
+    ],
+    ['@react-native-google-signin/google-signin'],
+    // Pages run under the navigation bar; the system scrim over its three-button form showed as a
+    // band over the canvas. SystemBars styles the buttons with the theme instead.
+    ['react-native-edge-to-edge', { android: { enforceNavigationBarContrast: false } }],
+  ],
+  extra: {
+    resourceApiUrl: process.env.EXPO_PUBLIC_RESOURCE_API_URL,
+    resourceArtifactBaseUrl: process.env.EXPO_PUBLIC_RESOURCE_ARTIFACT_BASE_URL,
+    eas: {
+      projectId: isCyberJudah ? undefined : 'fdf72b90-346b-11e9-ad9a-255491359311',
+    },
+    ethern: {
+      projectId: isCyberJudah ? undefined : 'ccb42b86-1286-4ca0-99bd-929b7ce418c1',
+    },
+  },
+  // Our own update server (Open OTA on Cloudflare), see docs/adr/0085. The address, the channel
+  // and the certificate are native settings: changing any of them needs a new build.
+  updates: {
+    enabled: !isCyberJudah,
+    url: isCyberJudah ? undefined : 'https://updates.bible-strong.app/manifest',
+    checkAutomatically: 'NEVER',
+    // Only builds with a channel (staging, production) receive updates. A development client
+    // with the certificate would also demand a signed manifest from Metro.
+    ...(!isCyberJudah &&
+      process.env.EAS_BUILD_CHANNEL && {
+        codeSigningCertificate: './certs/certificate.pem',
+        codeSigningMetadata: {
+          keyid: 'main',
+          alg: 'rsa-v1_5-sha256',
+        },
+      }),
+    requestHeaders: {
+      'expo-channel-name': process.env.EAS_BUILD_CHANNEL,
+    },
+  },
+  experiments: {
+    reactCompiler: true,
+  },
+  runtimeVersion: RUNTIME_VERSION,
+})

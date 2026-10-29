@@ -1,0 +1,81 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: pr-checks-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  javascript:
+    name: Typecheck, lint, test, format
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      RESOURCE_DATABASE_URL: postgresql://bible_strong:bible_strong@127.0.0.1:54329/bible_strong
+      RESOURCE_EXTERNAL_POSTGRES: '1'
+
+    services:
+      postgres:
+        image: pgvector/pgvector:pg17
+        env:
+          POSTGRES_DB: bible_strong
+          POSTGRES_USER: bible_strong
+          POSTGRES_PASSWORD: bible_strong
+        ports:
+          - 54329:5432
+        options: >-
+          --health-cmd "pg_isready -U bible_strong -d bible_strong"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Typecheck
+        run: yarn typecheck
+
+      - name: Resource architecture
+        run: yarn resources:architecture:check
+
+      - name: Resource migrations
+        run: yarn resources:migrate
+
+      - name: Resource service tests
+        run: yarn resources:test
+
+      - name: Resource PostgreSQL integration tests
+        run: yarn resources:test:integration
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Test
+        run: yarn test
+
+      - name: Format check
+        run: yarn format:check
+
+      - name: Agent domain quality check
+        run: yarn agents:quality:check
+
+      - name: Agent architecture check
+        run: yarn agents:architecture:check

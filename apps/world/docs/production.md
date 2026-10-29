@@ -1,0 +1,120 @@
+# World production deployment
+
+The Worker and its built assets share `world.bible-strong.app`. The guestbook admin
+is `/admin` (`/admin/` and the old `/admin-guestbook` remain compatible). Vite uses
+root-relative asset URLs so the trailing slash also loads correctly.
+
+## Stand display
+
+Open `https://world.bible-strong.app/?stand` to display a prominent banner centered at
+the bottom, with a QR code and a French or English invitation
+to explore on a phone. On touchscreens it sits above the movement controls. The presence of
+the `stand` parameter enables it (including `?stand=true`); remove the parameter to
+hide it. The QR code links to `https://world.bible-strong.app` without the parameter.
+Its static SVG is served with the app, without an external QR service.
+
+Stand mode also keeps the visible world's animations running when the browser
+window loses focus, while cancelling movement input. Normal mode still pauses
+animations on blur. Hidden tabs and minimized windows remain paused; browsers
+may suspend rendering there. Dialog pauses and reduced-motion preferences still
+apply in both modes.
+
+Regenerate the asset when changing the destination:
+
+```bash
+npx --yes --package qrcode qrcode -t svg -o apps/world/public/assets/world-qr.svg 'https://world.bible-strong.app'
+```
+
+### Stand scans
+
+Valence 1876's stand (`/valence-1876?stand`) shows a QR code of `https://world.bible-strong.app/scan`.
+The Worker counts the scan in the `ScanCounter` Durable Object and redirects at once to
+`/valence-1876`; the address written under the code stays `/valence-1876`, so typed visits are
+not counted. A scan is a GET; a visitor is a SHA-256 of the network address and the browser
+with a random salt of the day, deleted the next day: no address is stored, and a person counts
+once a day. Days and hours are in Europe/Paris.
+
+The counts are at `https://world.bible-strong.app/admin/scans`, behind the same Access
+application as the guestbook admin (it covers `/admin*`); the page refreshes every minute.
+Another stand gets its own scan address in `SCAN_ROUTES` (`server/scans.ts`). Regenerate the
+Valence code with:
+
+```bash
+npx --yes --package qrcode qrcode -t svg -q 2 -o apps/world/public/valence-1876/qr.svg 'https://world.bible-strong.app/scan'
+```
+
+## Development tools
+
+Editor controls, panels, the navigation editor chunk, the diagnostic UI and `?debug`
+activation are gated by Vite's compile-time `import.meta.env.DEV`. The production
+bundle has no editor save URLs. Saved project documents remain public read-only
+assets because the scene needs them. Production ignores local editor drafts.
+Vite's `configureServer` save handlers are development-only and are not part of the
+Worker. The Worker intercepts `/__study-world/*` and returns 404 for every method.
+
+Build and run `node scripts/check-production-build.mjs` from this workspace to verify
+the public artifact. Test the built Worker with isolated local persistence before deploy.
+
+## Hosting and access
+
+Wrangler's custom domain is `world.bible-strong.app`; workers.dev and version preview
+URLs are disabled. Configure Cloudflare Access before enabling production notifications:
+
+- One self-hosted Access application covering `/admin`, `/admin/*`,
+  `/admin-guestbook`, and `/api/guestbook/admin` on the world domain.
+- An Allow policy for the owner email only, with email one-time-code login.
+- Set `ACCESS_TEAM_DOMAIN`, `ACCESS_AUD`, and `GUESTBOOK_ADMIN_EMAIL` on the Worker.
+- Set `AI_GATEWAY_API_KEY`, `HOSTINGER_MAIL_API_TOKEN`, `HOSTINGER_MAILBOX_ID`,
+  `GUESTBOOK_NOTIFICATION_TO`, `GUESTBOOK_NOTIFICATION_FROM` and
+  `GUESTBOOK_ADMIN_URL=https://world.bible-strong.app/admin` as server settings.
+- Never upload `GUESTBOOK_LOCAL_ADMIN_TOKEN` to production.
+
+Without Access configuration, admin requests fail closed with 401. Local configuration
+and successful local email tests do not provision these production settings.
+See [guestbook operations](guestbook.md) for delivery and authentication details.
+
+## Deployment status — 2026-09-21
+
+The application is deployed on the custom domain. HTTPS assets, `/health`, guestbook
+reads and the multiplayer WebSocket were checked live. Editor write routes return
+404 and unauthenticated admin routes return 401. The six server secrets for Jev,
+Hostinger and the owner/sender/recipient identities have been installed; the local
+admin bypass token was not uploaded.
+
+Cloudflare Access is configured with application `3149cd6f-cad0-4f62-a875-856421d1c8fa`
+and an owner-only email policy. It covers `world.bible-strong.app/admin*` and
+`world.bible-strong.app/api/guestbook/admin*`, accepts only email one-time PIN,
+and uses a 24-hour session. `ACCESS_TEAM_DOMAIN` and `ACCESS_AUD` are installed
+on the Worker. Public pages and guestbook reads return 200; all admin entry points
+redirect to Access. The owner confirmed that the admin login works.
+
+`GUESTBOOK_ADMIN_URL=https://world.bible-strong.app/admin` is now installed, enabling
+Hostinger notifications to the configured owner address. Previously queued messages
+resume on their next durable alarm (up to one hour after an unconfigured attempt).
+New messages schedule an alarm within one second; actual delivery depends on the
+mail provider. The Hostinger transport was tested earlier; no synthetic public
+guestbook message was created during activation.
+
+## Automatic deployment
+
+`.github/workflows/world-production.yml` tests, builds and deploys World on every
+push to `master` (and supports manual dispatch). It uses the existing repository
+secret `CLOUDFLARE_WEB_API_TOKEN`, then checks `/health`. Production build validation
+rejects editor chunks, diagnostic controls and editor write URLs. Worker secrets
+are configured separately and preserved by deployment.
+
+### Ambient avatars
+
+Normal and stand modes fill the central plaza with up to five local ambient avatars, minus
+other real visitors in the room (the visitor's own avatar is excluded). Bots appear
+one at a time and fade out as visitors arrive, preferring off-screen departures.
+They gradually return when visitors leave. A temporary connection failure keeps
+the last known population target until presence is synchronized again.
+
+Their walkable navigation contains only the central island (`land-0`) and its
+obstacles: no bridges or outer islands. They choose varied short walks around
+the plaza, at different speeds, interspersed with pauses. Nearby emojis receive
+up to two delayed replies, with a cooldown. Local emoji interaction also works
+offline. Bots never join the multiplayer room, count as connected people, appear
+in invitation lists, or participate in games. Only the emoji action is shown
+when the closest avatar is a bot. No URL parameter is required.

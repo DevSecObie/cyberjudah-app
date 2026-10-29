@@ -1,0 +1,181 @@
+import { DomUtils, parseDocument } from 'htmlparser2'
+import { hasChildren, isComment, isTag, isText, type AnyNode } from 'domhandler'
+import type { MixedStyleDeclaration } from '@native-html/render'
+import { scaleFontSize } from '~features/bible/BibleDOM/scaleFontSize'
+import { scaleLineHeight } from '~features/bible/BibleDOM/scaleLineHeight'
+import { webFontFamily } from '~helpers/webFontFamily'
+
+export type ReadingTypography = { fontFamily: string; fontSize: number; lineHeight: number }
+export type ReadingColors = { background: string; text: string; link: string; emphasis: string }
+export type HtmlEngine = 'native' | 'dom'
+export const getReadingTypography = (
+  fontFamily: string,
+  scale: number,
+  lineHeight: 'small' | 'normal' | 'large'
+): ReadingTypography => ({
+  fontFamily,
+  fontSize: Number.parseFloat(scaleFontSize(19, scale)),
+  lineHeight: Number.parseFloat(scaleLineHeight(32, lineHeight, scale)),
+})
+export const defaultReadingTypography = getReadingTypography('Literata Book', 0, 'normal')
+
+const blockedTags = new Set([
+  'script',
+  'style',
+  'iframe',
+  'object',
+  'embed',
+  'link',
+  'meta',
+  'base',
+  'form',
+  'svg',
+  'math',
+])
+/** Classes of the blocks that open and close a text, whose outer margins a card drops. */
+export const readingEdgeClasses = { first: 'reading-first', last: 'reading-last' } as const
+
+// Marks the first (or last) block of a text and, inside it, its own first (or last) block: the
+// margins of all of them would otherwise stack at the edge of the card.
+const markEdge = (nodes: AnyNode[], className: string, fromEnd: boolean) => {
+  const edge = (fromEnd ? [...nodes].reverse() : nodes).find(
+    node => !isComment(node) && !(isText(node) && !node.data.trim())
+  )
+  if (!edge || !isTag(edge)) return
+  edge.attribs.class = [edge.attribs.class, className].filter(Boolean).join(' ')
+  markEdge(edge.children, className, fromEnd)
+}
+
+/**
+ * One HTML contract for both engines: preserve text/links, discard active markup and inline
+ * styles. `trimEdges` marks the opening and closing blocks with `readingEdgeClasses`.
+ */
+export function cleanReadingHTML(html: string, { trimEdges = false } = {}): string {
+  const document = parseDocument(html)
+  const clean = (nodes: AnyNode[]) => {
+    for (const node of [...nodes]) {
+      // Compatibility with published commentary containing double-encoded NBSPs.
+      // The parser has decoded one layer; repair only spaces in text nodes.
+      if (isText(node)) {
+        node.data = node.data.replace(/&(?:nbsp|#0*160|#x0*a0);/giu, '\u00a0')
+      }
+      if (isTag(node)) {
+        if (blockedTags.has(node.name)) {
+          DomUtils.removeElement(node)
+          continue
+        }
+        for (const [key, value] of Object.entries(node.attribs)) {
+          const name = key.toLowerCase()
+          if (
+            name.startsWith('on') ||
+            ['srcdoc', 'style', 'id'].includes(name) ||
+            (['href', 'src', 'xlink:href'].includes(name) &&
+              /^(javascript|vbscript|data):/i.test(value.replace(/[\s\u0000-\u001f]/g, '')))
+          )
+            delete node.attribs[key]
+        }
+      }
+      if (hasChildren(node)) clean(node.children)
+    }
+  }
+  clean(document.children)
+  const body = DomUtils.findOne(node => node.name === 'body', document.children, true)
+  const root = body ?? document
+  if (trimEdges) {
+    markEdge(root.children, readingEdgeClasses.first, false)
+    markEdge(root.children, readingEdgeClasses.last, true)
+  }
+  return DomUtils.getInnerHTML(root)
+}
+
+export function readingHtmlStyles(
+  typography: ReadingTypography,
+  colors: ReadingColors
+): Record<string, MixedStyleDeclaration> {
+  const paragraph = { marginTop: typography.fontSize, marginBottom: typography.fontSize }
+  return {
+    p: paragraph,
+    a: { color: colors.link, textDecorationLine: 'underline', textDecorationColor: colors.link },
+    strong: { color: colors.emphasis, fontWeight: 'bold' },
+    b: { color: colors.emphasis, fontWeight: 'bold' },
+    bold: { color: colors.emphasis, fontWeight: 'bold' },
+    em: { fontStyle: 'italic' },
+    i: { fontStyle: 'italic' },
+    ul: { marginTop: 0, marginBottom: 0, paddingLeft: 0, listStyleType: 'none' },
+    ol: { ...paragraph, paddingLeft: typography.fontSize * 2 },
+    h1: {
+      fontSize: typography.fontSize * 2,
+      lineHeight: typography.lineHeight * 2,
+      fontWeight: 'bold',
+      ...paragraph,
+    },
+    h2: {
+      fontSize: typography.fontSize * 1.5,
+      lineHeight: typography.lineHeight * 1.5,
+      fontWeight: 'bold',
+      ...paragraph,
+    },
+    h3: {
+      fontSize: typography.fontSize * 1.17,
+      lineHeight: typography.lineHeight * 1.17,
+      fontWeight: 'bold',
+      ...paragraph,
+    },
+    blockquote: { ...paragraph, marginLeft: 24, marginRight: 24 },
+  }
+}
+
+// Average glyph width of the reading fonts, relative to the font size.
+const AVERAGE_CHAR_WIDTH_RATIO = 0.5
+
+/** Rough height of rendered HTML, reserved before the DOM engine reports its measured size. */
+export function estimateReadingHtmlHeight(
+  html: string,
+  typography: ReadingTypography,
+  width: number
+): number {
+  const charsPerLine = Math.max(
+    1,
+    Math.floor(width / (typography.fontSize * AVERAGE_CHAR_WIDTH_RATIO))
+  )
+  const lines = html
+    .replace(/<\/(p|li|h[1-6]|div|blockquote)>|<br\s*\/?>/giu, '\n')
+    .replace(/<[^>]*>/gu, '')
+    .replace(/&[a-z0-9#]+;/giu, ' ')
+    .split('\n')
+    .map(block => block.trim())
+    .filter(Boolean)
+    .reduce((total, block) => total + Math.ceil(block.length / charsPerLine), 0)
+  const paragraphs = html.match(/<p[\s>]/giu)?.length ?? 0
+  return Math.ceil(lines * typography.lineHeight + paragraphs * typography.fontSize)
+}
+
+export function readingHtmlCSS(
+  typography: ReadingTypography,
+  colors: ReadingColors,
+  selector = '.editorial-html'
+): string {
+  const rules = readingHtmlStyles(typography, colors)
+  return Object.entries(rules)
+    .map(([tag, styles]) => {
+      const declarations = Object.entries(styles)
+        .map(([key, value]) => {
+          const property = key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)
+          return `${property}: ${typeof value === 'number' ? `${value}px` : value}`
+        })
+        .join('; ')
+      return `${selector} ${tag} { ${declarations}; }`
+    })
+    .concat(
+      `${selector} .${readingEdgeClasses.first} { margin-top: 0; }`,
+      `${selector} .${readingEdgeClasses.last} { margin-bottom: 0; }`
+    )
+    .join('\n')
+}
+
+/** The native engine's counterpart of the edge rules of `readingHtmlCSS`. */
+export const readingEdgeStyles = {
+  [readingEdgeClasses.first]: { marginTop: 0 },
+  [readingEdgeClasses.last]: { marginBottom: 0 },
+}
+export { webFontFamily }

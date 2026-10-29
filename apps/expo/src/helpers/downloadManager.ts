@@ -1,0 +1,445 @@
+import * as FileSystem from 'expo-file-system/legacy'
+import { AppState, AppStateStatus } from 'react-native'
+import { onlineManager } from '@tanstack/react-query'
+import { getDefaultStore } from 'jotai/vanilla'
+
+import {
+  downloadItemStatesAtom,
+  isQueueProcessingAtom,
+  type DownloadItem,
+  type DownloadItemState,
+  type DownloadStatus,
+} from '~state/downloadQueue'
+import { bibleDataRefreshSignalAtom } from '~state/app'
+import { storage } from '~helpers/storage'
+import { getDownloadQueueDecision } from '~helpers/downloadQueueScheduling'
+import { reconcileResourceInstallationJournal } from '~helpers/resourceInstallationJournal'
+import { installManagedResource } from '~helpers/managedResourceInstallation'
+import { refreshPersistedDownloadItem } from '~helpers/persistedDownloadItem'
+import { completeDownloadPlan } from '~helpers/downloadItemFactory'
+import { appLogger } from '~helpers/agentObservability'
+import { isStorageFullError } from '~helpers/resourceDeviceCondition'
+import { offlineResourceRegistry } from '~features/resources/resourceAvailability'
+import { isInterlinearCapableBibleVersion } from '~helpers/interlinearBiblePublications'
+import { isStrongCapableBibleVersion } from '~helpers/strongBiblePublications'
+
+const PERSIST_KEY = 'downloadQueue'
+const MAX_RETRIES = 2
+const PERSIST_DEBOUNCE_MS = 2000
+
+// A full disk stays full and a refused combination stays refused: downloading the archive
+// again would fail the same way.
+const deterministicFailurePattern =
+  /_INCOMPATIBLE\b|:(?:core-missing|incompatible)$|SCHEMA_MISMATCH/
+const isWorthRetrying = (error: unknown) =>
+  !isStorageFullError(error) &&
+  !(error instanceof Error && deterministicFailurePattern.test(error.message))
+
+// Technical facts an install error carries for its report (revisions, not content).
+const errorDiagnostic = (error: unknown): Record<string, unknown> => {
+  const diagnostic =
+    error && typeof error === 'object' && 'diagnostic' in error ? error.diagnostic : undefined
+  return diagnostic && typeof diagnostic === 'object' ? { ...diagnostic } : {}
+}
+
+const isInstalledAtCatalogRevision = (resourceId: string) => {
+  const entry = offlineResourceRegistry.get(resourceId)
+  return entry?.availability.status === 'available' && !entry.updateAvailable
+}
+
+// ---------------------------------------------------------------------------
+// DownloadManager — singleton
+// ---------------------------------------------------------------------------
+
+class DownloadManager {
+  private jotaiStore = getDefaultStore()
+  private persistTimer: ReturnType<typeof setTimeout> | null = null
+  private currentResumable: FileSystem.DownloadResumable | null = null
+  private cancelledIds = new Set<string>()
+  private isProcessing = false
+
+  constructor() {
+    // Persist immediately when app goes to background
+    AppState.addEventListener('change', this.handleAppStateChange)
+    onlineManager.subscribe(isOnline => {
+      if (isOnline) void this.processQueue()
+    })
+  }
+
+  // -----------------------------------------------------------------------
+  // Public API
+  // -----------------------------------------------------------------------
+
+  /** Add items to the queue. Deduplicates by id. Starts processing. */
+  enqueue(requestedItems: DownloadItem[]): void {
+    const states = new Map(this.jotaiStore.get(downloadItemStatesAtom))
+    this.queueWithDependencies(states, requestedItems)
+    this.jotaiStore.set(downloadItemStatesAtom, states)
+    this.schedulePersist()
+    this.processQueue()
+  }
+
+  /** Cancel a specific download. */
+  cancel(itemId: string): void {
+    this.cancelledIds.add(itemId)
+
+    // If this is the currently downloading item, pause the resumable
+    const states = this.jotaiStore.get(downloadItemStatesAtom)
+    const state = states.get(itemId)
+    if (state && (state.status === 'downloading' || state.status === 'inserting')) {
+      this.currentResumable?.pauseAsync().catch(() => {})
+    }
+
+    this.updateItemStatus(itemId, 'cancelled')
+    this.schedulePersist()
+  }
+
+  /** Cancel all active downloads. */
+  cancelAll(): void {
+    const states = this.jotaiStore.get(downloadItemStatesAtom)
+    for (const [id, state] of states) {
+      if (
+        state.status === 'queued' ||
+        state.status === 'downloading' ||
+        state.status === 'inserting'
+      ) {
+        this.cancelledIds.add(id)
+        this.updateItemStatus(id, 'cancelled')
+      }
+    }
+    this.currentResumable?.pauseAsync().catch(() => {})
+    this.schedulePersist()
+  }
+
+  /** Retry a failed item, and the failed or cancelled dependency that blocked it. */
+  retry(itemId: string): void {
+    const states = new Map(this.jotaiStore.get(downloadItemStatesAtom))
+    const state = states.get(itemId)
+    if (!state || state.status !== 'failed') return
+
+    const items = [refreshPersistedDownloadItem(state.item)]
+    const dependency = state.item.dependsOnId ? states.get(state.item.dependsOnId) : undefined
+    if (dependency && (dependency.status === 'failed' || dependency.status === 'cancelled')) {
+      items.unshift(refreshPersistedDownloadItem(dependency.item))
+    }
+    this.queueWithDependencies(states, items)
+    this.jotaiStore.set(downloadItemStatesAtom, states)
+    this.schedulePersist()
+    this.processQueue()
+  }
+
+  /** Retry all failed items. */
+  retryAllFailed(): void {
+    const states = new Map(this.jotaiStore.get(downloadItemStatesAtom))
+    const failedItems = Array.from(states.values())
+      .filter(state => state.status === 'failed')
+      .map(state => refreshPersistedDownloadItem(state.item))
+
+    if (failedItems.length > 0) {
+      this.queueWithDependencies(states, failedItems)
+      this.jotaiStore.set(downloadItemStatesAtom, states)
+      this.schedulePersist()
+      this.processQueue()
+    }
+  }
+
+  /** Restore queue from persisted state (call at app startup). */
+  async restore(): Promise<void> {
+    await reconcileResourceInstallationJournal()
+    try {
+      const raw = storage.getString(PERSIST_KEY)
+      if (!raw) return
+
+      const persisted: DownloadItemState[] = JSON.parse(raw)
+      const states = new Map(this.jotaiStore.get(downloadItemStatesAtom))
+
+      for (const itemState of persisted) {
+        if (
+          itemState.status === 'queued' ||
+          itemState.status === 'downloading' ||
+          itemState.status === 'inserting' ||
+          itemState.status === 'failed'
+        ) {
+          states.set(itemState.item.id, {
+            ...itemState,
+            item: refreshPersistedDownloadItem(itemState.item),
+            status:
+              itemState.status === 'downloading' || itemState.status === 'inserting'
+                ? 'queued'
+                : itemState.status,
+            downloadProgress: 0,
+            insertProgress: 0,
+          })
+        }
+      }
+
+      if (states.size > 0) {
+        // Items queued by an older version may lack a dependency it did not know about.
+        this.queueWithDependencies(
+          states,
+          Array.from(states.values())
+            .filter(state => state.status === 'queued')
+            .map(state => state.item)
+        )
+        this.jotaiStore.set(downloadItemStatesAtom, states)
+        this.processQueue()
+      }
+    } catch (e) {
+      appLogger.captureError('download', 'queue.restore_failed', e)
+      console.error('[DownloadManager] Failed to restore queue:', e)
+    }
+  }
+
+  /** Remove completed and cancelled items from state. */
+  clearCompleted(): void {
+    const states = new Map(this.jotaiStore.get(downloadItemStatesAtom))
+
+    for (const [id, state] of states) {
+      if (state.status === 'completed' || state.status === 'cancelled') {
+        states.delete(id)
+      }
+    }
+
+    this.jotaiStore.set(downloadItemStatesAtom, states)
+    this.schedulePersist()
+  }
+
+  /** Queues items with what they need to install first (see `completeDownloadPlan`). */
+  private queueWithDependencies(
+    states: Map<string, DownloadItemState>,
+    requestedItems: DownloadItem[]
+  ): void {
+    for (const item of completeDownloadPlan(requestedItems, { isInstalledAtCatalogRevision })) {
+      const existing = states.get(item.id)
+      if (existing?.status === 'downloading' || existing?.status === 'inserting') continue
+      if (existing?.status === 'queued') {
+        if (item.dependsOnId && item.dependsOnId !== existing.item.dependsOnId) {
+          states.set(item.id, {
+            ...existing,
+            item: { ...existing.item, dependsOnId: item.dependsOnId },
+          })
+        }
+        continue
+      }
+
+      this.cancelledIds.delete(item.id)
+      states.set(item.id, { item, status: 'queued', downloadProgress: 0, insertProgress: 0 })
+    }
+  }
+
+  // -----------------------------------------------------------------------
+  // Queue processor — sequential (MAX_CONCURRENT = 1)
+  // -----------------------------------------------------------------------
+
+  private async processQueue(): Promise<void> {
+    if (this.isProcessing) return
+    this.isProcessing = true
+    this.jotaiStore.set(isQueueProcessingAtom, true)
+
+    try {
+      while (true) {
+        const states = this.jotaiStore.get(downloadItemStatesAtom)
+        const { next, blocked } = getDownloadQueueDecision(states, onlineManager.isOnline())
+        if (blocked) {
+          const dependency = blocked.item.dependsOnId
+            ? states.get(blocked.item.dependsOnId)
+            : undefined
+          // The dependency's own failure is already reported: this one is only its consequence.
+          appLogger.warn('download', 'queue.dependency_failed', {
+            resourceId: blocked.item.id,
+            dependencyResourceId: blocked.item.dependsOnId,
+            dependencyStatus: dependency?.status,
+          })
+          if (dependency?.status === 'cancelled') {
+            this.updateItemStatus(blocked.item.id, 'cancelled')
+          } else {
+            this.updateItemStatus(
+              blocked.item.id,
+              'failed',
+              dependency?.error ?? `Dependency failed: ${blocked.item.dependsOnId}`
+            )
+          }
+          continue
+        }
+
+        if (!next) break
+
+        await this.processItem(next)
+      }
+    } finally {
+      this.isProcessing = false
+      this.jotaiStore.set(isQueueProcessingAtom, false)
+    }
+  }
+
+  private async processItem(itemState: DownloadItemState): Promise<void> {
+    const { item } = itemState
+
+    // Check if cancelled before starting
+    if (this.cancelledIds.has(item.id)) {
+      this.cancelledIds.delete(item.id)
+      return
+    }
+
+    try {
+      this.updateItemStatus(item.id, 'downloading')
+
+      await installManagedResource(item, {
+        onDownloadProgress: progress => this.updateItemProgress(item.id, progress, 0),
+        onInsertProgress: progress => this.updateItemProgress(item.id, 1, progress),
+        onStatusInserting: () => this.updateItemStatus(item.id, 'inserting'),
+        onResumable: resumable => {
+          this.currentResumable = resumable
+        },
+        isCancelled: () => this.cancelledIds.has(item.id),
+      })
+      this.updateItemStatus(item.id, 'completed')
+
+      offlineResourceRegistry.markInstalled(item.id)
+      // An index is matched against the installed text: a new text asks for a new verdict.
+      if (item.type === 'bible' && isInterlinearCapableBibleVersion(item.versionId)) {
+        for (const language of ['fr', 'en'] as const) {
+          offlineResourceRegistry.invalidate({
+            kind: 'interlinear-index',
+            versionId: item.versionId,
+            language,
+          })
+        }
+      }
+      if (item.type === 'bible' && isStrongCapableBibleVersion(item.versionId)) {
+        offlineResourceRegistry.invalidate({
+          kind: 'strong-bible-index',
+          versionId: item.versionId,
+        })
+      }
+
+      // Signal to BibleViewer instances to reload verses (a version they
+      // were trying to display may now be available).
+      if (
+        item.type === 'bible' ||
+        item.type === 'bible-strong-sidecar' ||
+        item.type === 'bible-interlinear-sidecar' ||
+        item.type === 'strong-lexicon-module'
+      ) {
+        this.jotaiStore.set(bibleDataRefreshSignalAtom, (c: number) => c + 1)
+      }
+    } catch (e) {
+      const errorMessage = e instanceof Error ? e.message : String(e)
+
+      if (errorMessage === 'CANCELLED' || this.cancelledIds.has(item.id)) {
+        this.cancelledIds.delete(item.id)
+        this.updateItemStatus(item.id, 'cancelled')
+        return
+      }
+
+      console.error(`[DownloadManager] Failed ${item.id}:`, e)
+
+      // Auto-retry up to MAX_RETRIES
+      const states = new Map(this.jotaiStore.get(downloadItemStatesAtom))
+      const current = states.get(item.id)
+      if (current && current.item.retryCount < MAX_RETRIES && isWorthRetrying(e)) {
+        appLogger.warn('download', 'resource.retry_scheduled', {
+          resourceId: item.id,
+          resourceType: item.type,
+          retryCount: current.item.retryCount + 1,
+          error: e,
+        })
+        states.set(item.id, {
+          ...current,
+          item: { ...current.item, retryCount: current.item.retryCount + 1 },
+          status: 'queued',
+          downloadProgress: 0,
+          insertProgress: 0,
+          error: undefined,
+        })
+        this.jotaiStore.set(downloadItemStatesAtom, states)
+      } else {
+        appLogger.captureError('download', 'resource.install_failed', e, {
+          resourceId: item.id,
+          resourceType: item.type,
+          retryCount: current?.item.retryCount ?? item.retryCount,
+          ...errorDiagnostic(e),
+        })
+        this.updateItemStatus(item.id, 'failed', errorMessage || 'Unknown error')
+      }
+    }
+
+    this.schedulePersist()
+  }
+
+  // -----------------------------------------------------------------------
+  // State helpers
+  // -----------------------------------------------------------------------
+
+  private updateItemStatus(itemId: string, status: DownloadStatus, error?: string): void {
+    const states = new Map(this.jotaiStore.get(downloadItemStatesAtom))
+    const current = states.get(itemId)
+    if (!current) return
+
+    states.set(itemId, { ...current, status, error })
+    this.jotaiStore.set(downloadItemStatesAtom, states)
+  }
+
+  private updateItemProgress(
+    itemId: string,
+    downloadProgress: number,
+    insertProgress: number
+  ): void {
+    const states = new Map(this.jotaiStore.get(downloadItemStatesAtom))
+    const current = states.get(itemId)
+    if (!current) return
+
+    states.set(itemId, { ...current, downloadProgress, insertProgress })
+    this.jotaiStore.set(downloadItemStatesAtom, states)
+  }
+
+  // -----------------------------------------------------------------------
+  // Persistence (MMKV) — debounced
+  // -----------------------------------------------------------------------
+
+  private schedulePersist(): void {
+    if (this.persistTimer) clearTimeout(this.persistTimer)
+    this.persistTimer = setTimeout(() => this.persistNow(), PERSIST_DEBOUNCE_MS)
+  }
+
+  private persistNow(): void {
+    try {
+      const states = this.jotaiStore.get(downloadItemStatesAtom)
+      const toPersist = Array.from(states.values()).flatMap(state => {
+        if (state.status === 'queued' || state.status === 'failed') return [state]
+        if (state.status === 'downloading' || state.status === 'inserting') {
+          return [
+            {
+              ...state,
+              status: 'queued' as const,
+              downloadProgress: 0,
+              insertProgress: 0,
+            },
+          ]
+        }
+        return []
+      })
+      storage.set(PERSIST_KEY, JSON.stringify(toPersist))
+    } catch (e) {
+      appLogger.captureError('download', 'queue.persist_failed', e)
+      console.error('[DownloadManager] Persist failed:', e)
+    }
+  }
+
+  private handleAppStateChange = (state: AppStateStatus): void => {
+    if (state === 'background') {
+      // Persist immediately on background
+      if (this.persistTimer) {
+        clearTimeout(this.persistTimer)
+        this.persistTimer = null
+      }
+      this.persistNow()
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Export singleton
+// ---------------------------------------------------------------------------
+
+export const downloadManager = new DownloadManager()

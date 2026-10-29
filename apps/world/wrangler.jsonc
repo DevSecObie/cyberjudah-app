@@ -1,0 +1,44 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "bible-strong-world",
+  "main": "server/index.ts",
+  "compatibility_date": "2026-09-01",
+  "durable_objects": {
+    "bindings": [
+      { "name": "WorldRoom", "class_name": "WorldRoom" },
+      { "name": "Guestbook", "class_name": "Guestbook" },
+      { "name": "GameCatalogue", "class_name": "GameCatalogue" },
+      { "name": "ScanCounter", "class_name": "ScanCounter" },
+    ],
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["WorldRoom"] },
+    { "tag": "v2", "new_sqlite_classes": ["Guestbook"] },
+    { "tag": "v3", "new_sqlite_classes": ["GameCatalogue"] },
+    { "tag": "v4", "new_sqlite_classes": ["ScanCounter"] },
+  ],
+  "build": {
+    "command": "node scripts/build-game-catalogue.mjs",
+    "watch_dir": ["question-bank", "who-bank"],
+  },
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": [
+      "/parties/*",
+      "/api/*",
+      "/admin",
+      "/admin/*",
+      "/admin-guestbook",
+      "/__study-world/*",
+      "/health",
+      "/scan",
+    ],
+  },
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "world.bible-strong.app", "custom_domain": true }],
+  "vars": { "ALLOWED_ORIGINS": "https://world.bible-strong.app" },
+  "observability": { "enabled": true },
+}

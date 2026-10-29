@@ -1,0 +1,482 @@
+import { REACTION_COOLDOWN_MS } from '../src/reactions'
+import type { GameCatalogueEnv } from './games/catalogue'
+export { GameCatalogue } from './games/catalogue'
+import { WorldGames } from './games/room'
+import type { GameAIEnv } from './games/ai'
+import { authenticateAdmin, validAdminMutation } from './guestbook-auth'
+import { GUESTBOOK_INSTANCE, routeGuestbook, type GuestbookEnv } from './guestbook'
+export { Guestbook } from './guestbook'
+import { SCAN_INSTANCE, SCAN_ROUTES, scanReport, type ScanEnv } from './scans'
+export { ScanCounter } from './scans'
+import navigationJson from '../public/navigation/archipelago.json'
+import valenceNavigationJson from '../public/valence-1876/navigation.json'
+import valenceLayoutJson from '../public/valence-1876/layout.json'
+import { parseNavigation } from '../src/navigation-document'
+import { chooseCentralSpawn } from '../src/multiplayer-spawn'
+import { parseLayout, VALENCE_NAVIGATION } from '../src/valence/valence-documents'
+import { tileNavigation } from '../src/valence/navigation-tiles'
+import { chooseValenceSpawn } from '../src/valence/valence-spawn'
+import { Server, routePartykitRequest, type Connection } from 'partyserver'
+import {
+  MAX_PLAYERS,
+  ROOMS,
+  VALENCE_ROOM,
+  isOutdatedJoin,
+  parseClientMessage,
+  type Player,
+  type ServerMessage,
+} from '../src/multiplayer-protocol'
+
+const navigation = parseNavigation(navigationJson)
+const valenceNavigation = tileNavigation(parseNavigation(valenceNavigationJson, VALENCE_NAVIGATION))
+const valenceArrival = (({ spawn: [x, y] }) => ({ x, y }))(parseLayout(valenceLayoutJson))
+
+const RESUME_TTL = 24 * 60 * 60 * 1000
+/** A hidden tab stops sending heartbeats; its avatar leaves after this, and resumes later. */
+const HIDDEN_TTL = 30 * 60 * 1000
+type SavedSession = { player: Player; expires: number; lastReaction?: number }
+type Session = {
+  player: Player | null
+  lastSeen: number
+  /** Connection time: a socket that never joins expires even if it keeps pinging. */
+  since?: number
+  /** Movement sequence last written to the resume snapshot. */
+  savedSeq?: number
+  window: number
+  messages: number
+  resumeToken?: string
+  hidden?: boolean
+  gameHistoryId?: string
+  lastReaction?: number
+  lastGameAction?: number
+  /** A stand screen: it receives the room's presence and reactions, but is never a visitor. */
+  watching?: boolean
+}
+interface Env extends GuestbookEnv, GameAIEnv, GameCatalogueEnv, ScanEnv {
+  WorldRoom: DurableObjectNamespace<WorldRoom>
+  ALLOWED_ORIGINS?: string
+  ASSETS: Fetcher
+}
+
+export class WorldRoom extends Server<Env> {
+  static options = { hibernate: true }
+  /** Valence 1876 shares presence and reactions, but has no Bible games. */
+  private get hasGames() {
+    return this.name !== VALENCE_ROOM
+  }
+  private gameService?: WorldGames
+  private get games() {
+    return (this.gameService ??= new WorldGames(
+      this.ctx,
+      this.env,
+      () =>
+        [...this.getConnections<Session>()].flatMap(c =>
+          c.state?.player && c.readyState === 1
+            ? [
+                {
+                  id: c.state.player.id,
+                  historyId: c.state.gameHistoryId,
+                  profile: c.state.player.profile,
+                  x: c.state.player.pose.x,
+                  y: c.state.player.pose.y,
+                  present: !c.state.hidden,
+                },
+              ]
+            : []
+        ),
+      (id, snapshot, error) => {
+        for (const c of this.getConnections<Session>())
+          if (c.state?.player?.id === id && c.readyState === 1)
+            c.send(
+              JSON.stringify({
+                type: 'games',
+                snapshot,
+                ...(error ? { error } : {}),
+              } satisfies ServerMessage)
+            )
+      }
+    ))
+  }
+  private pending = new Map<string, Player>()
+  private flushTimer: ReturnType<typeof setTimeout> | undefined
+  private queue(player: Player) {
+    this.pending.set(player.id, player)
+    if (this.flushTimer !== undefined) return
+    // Coalesce concurrent movement into one frame, instead of N² tiny socket writes.
+    this.flushTimer = setTimeout(() => {
+      this.flushTimer = undefined
+      const players = [...this.pending.values()]
+      this.pending.clear()
+      if (players.length)
+        this.publish(JSON.stringify({ type: 'frame', players } satisfies ServerMessage))
+    }, 50)
+  }
+  /** Presence goes to admitted visitors and stand screens, never to sockets that have not joined. */
+  private publish(message: string, except?: string) {
+    for (const peer of this.getConnections<Session>())
+      if (peer.id !== except && peer.readyState === 1 && (peer.state?.player || peer.state?.watching))
+        peer.send(message)
+  }
+  private saved(player: Player, lastReaction?: number): SavedSession {
+    return {
+      player: { ...player, pose: { ...player.pose, moving: false } },
+      expires: Date.now() + RESUME_TTL,
+      ...(lastReaction !== undefined ? { lastReaction } : {}),
+    }
+  }
+  async onConnect(connection: Connection<Session>) {
+    if ([...this.getConnections()].filter(c => c.readyState === 1).length > MAX_PLAYERS + 16) {
+      connection.send(JSON.stringify({ type: 'full' } satisfies ServerMessage))
+      connection.close(4008, 'Room full')
+      return
+    }
+    const now = Date.now()
+    connection.setState({ player: null, lastSeen: now, since: now, window: now, messages: 0 })
+    const alarm = await this.ctx.storage.getAlarm()
+    if (alarm === null || alarm > now + 30_000) await this.ctx.storage.setAlarm(now + 30_000)
+  }
+  async onMessage(connection: Connection<Session>, raw: string | ArrayBuffer) {
+    const session = connection.state
+    if (!session) return
+    const now = Date.now()
+    const messages = now - session.window >= 1000 ? 1 : session.messages + 1
+    if (messages > 40) {
+      this.remove(connection)
+      connection.close(4009, 'Too many messages')
+      return
+    }
+    const message = typeof raw === 'string' ? parseClientMessage(raw) : null
+    if (!message) {
+      this.remove(connection)
+      if (typeof raw === 'string' && isOutdatedJoin(raw)) {
+        // Tell the page to reload instead of letting it reconnect forever.
+        connection.send(JSON.stringify({ type: 'outdated' } satisfies ServerMessage))
+        connection.close(4003, 'Outdated client')
+      } else connection.close(4002, 'Invalid message')
+      return
+    }
+    const next: Session = {
+      ...session,
+      lastSeen: now,
+      window: now - session.window >= 1000 ? now : session.window,
+      messages,
+    }
+    if (message.type === 'reaction') {
+      const allowed =
+        session.player &&
+        !session.hidden &&
+        now - (session.lastReaction ?? -Infinity) >= REACTION_COOLDOWN_MS
+      connection.setState({ ...next, ...(allowed ? { lastReaction: now } : {}) })
+      if (allowed) {
+        const frame = JSON.stringify({
+          type: 'reaction',
+          id: session.player!.id,
+          reaction: message.reaction,
+        } satisfies ServerMessage)
+        // Only admitted visitors and stand screens receive reactions; never persist or replay them.
+        for (const peer of this.getConnections<Session>())
+          if (peer.readyState === 1 && (peer.state?.player || peer.state?.watching) && !peer.state.hidden)
+            peer.send(frame)
+      }
+      return
+    }
+    if (message.type === 'game' && session.player && !this.hasGames) {
+      connection.setState(next)
+      return
+    }
+    if (message.type === 'game' && session.player) {
+      const presenceOnly =
+        message.command.action === 'pause-solo' || message.command.action === 'resume-solo'
+      if (!presenceOnly && now - (session.lastGameAction ?? 0) < 250) {
+        // Refused commands still count toward the 40 messages per second limit.
+        connection.setState(next)
+        connection.send(
+          JSON.stringify({ type: 'game-error', error: 'rate_limited' } satisfies ServerMessage)
+        )
+        return
+      }
+      connection.setState({ ...next, lastGameAction: presenceOnly ? session.lastGameAction : now })
+      this.games.command(session.player.id, message.command)
+      return
+    }
+    if (message.type === 'ping') {
+      connection.setState(next)
+      connection.send(JSON.stringify({ type: 'pong' } satisfies ServerMessage))
+      return
+    }
+    if (message.type === 'watch' && !session.player && !session.watching) {
+      // A stand screen sees everyone already here, then follows the room like a visitor would,
+      // without a place, a position or a count of its own.
+      connection.setState({ ...next, watching: true })
+      const players = [...this.getConnections<Session>()].flatMap(c => (c.state?.player ? [c.state.player] : []))
+      connection.send(JSON.stringify({ type: 'watching', players } satisfies ServerMessage))
+      return
+    }
+    if (message.type === 'join' && !session.player && !session.watching) {
+      // Serialize resume/arrival against close callbacks and other join attempts.
+      await this.ctx.blockConcurrencyWhile(async () => {
+        const previous = message.resumeToken
+          ? [...this.getConnections<Session>()].find(
+              c =>
+                c.id !== connection.id &&
+                c.state?.resumeToken === message.resumeToken &&
+                c.state?.player
+            )
+          : undefined
+        const saved = message.resumeToken
+          ? await this.ctx.storage.get<SavedSession>(`resume:${message.resumeToken}`)
+          : undefined
+        const restored =
+          previous?.state?.player ?? (saved && saved.expires > now ? saved.player : null)
+        const occupied = [...this.getConnections<Session>()].flatMap(c =>
+          c.state?.player ? [c.state.player.pose] : []
+        )
+        if (occupied.length - (previous ? 1 : 0) >= MAX_PLAYERS) {
+          connection.send(JSON.stringify({ type: 'full' } satisfies ServerMessage))
+          connection.close(4008, 'Room full')
+          return
+        }
+        const spawn =
+          restored?.pose ??
+          (this.hasGames
+            ? chooseCentralSpawn(navigation)
+            : chooseValenceSpawn(valenceNavigation, valenceArrival))
+        if (!spawn) {
+          connection.send(JSON.stringify({ type: 'full' } satisfies ServerMessage))
+          connection.close(4008, 'No free arrival position')
+          return
+        }
+        next.resumeToken = restored ? message.resumeToken! : crypto.randomUUID()
+        next.gameHistoryId = message.gameHistoryId ?? previous?.state?.gameHistoryId
+        // The reaction cooldown follows the identity, not the transport.
+        const lastReaction = previous?.state?.lastReaction ?? (restored ? saved?.lastReaction : undefined)
+        if (lastReaction !== undefined) next.lastReaction = lastReaction
+        next.player = {
+          id: restored?.id ?? crypto.randomUUID(),
+          profile: message.profile,
+          pose: { ...spawn, dx: restored?.pose.dx ?? 0, dy: restored?.pose.dy ?? 1, moving: false },
+          seq: restored ? restored.seq + 1 : 0,
+        }
+        if (previous?.state) {
+          // Retire the old transport without publishing a departure for the resumed avatar.
+          previous.setState({ ...previous.state, player: null })
+          previous.close(4001, 'Session resumed')
+        }
+        next.savedSeq = next.player.seq
+        connection.setState(next)
+        // Keep a resume snapshot while connected: a deploy or eviction may drop sockets
+        // without running the close handler, and visitors must keep their identity.
+        await this.ctx.storage.put(
+          `resume:${next.resumeToken}`,
+          this.saved(next.player, next.lastReaction)
+        )
+        const players = [...this.getConnections<Session>()].flatMap(c =>
+          c.state?.player ? [c.state.player] : []
+        )
+        connection.send(
+          JSON.stringify({
+            type: 'welcome',
+            id: next.player.id,
+            spawn: next.player.pose,
+            players,
+            resumeToken: next.resumeToken,
+          } satisfies ServerMessage)
+        )
+        if (this.hasGames) this.games.presence(next.player.id, true)
+        this.pending.delete(next.player.id)
+        this.publish(
+          JSON.stringify({ type: 'player', player: next.player } satisfies ServerMessage),
+          connection.id
+        )
+      })
+      return
+    } else if (session.player && message.type === 'visibility') {
+      next.hidden = message.hidden
+      connection.setState(next)
+      if (this.hasGames) this.games.presence(session.player.id, !message.hidden)
+      return
+    } else if (session.player && message.type === 'move') {
+      if (message.seq <= session.player.seq) {
+        connection.setState(next)
+        return
+      }
+      next.player = { ...session.player, pose: message.pose, seq: message.seq }
+      connection.setState(next)
+    } else if (session.player && message.type === 'activity') {
+      next.player = { ...session.player, activity: message.activity }
+      connection.setState(next)
+    } else if (session.player && message.type === 'profile') {
+      next.player = { ...session.player, profile: message.profile }
+      connection.setState(next)
+    } else {
+      connection.setState(next)
+      return
+    }
+    this.queue(next.player!)
+  }
+  private remove(connection: Connection<Session>) {
+    const session = connection.state
+    if (!session?.player) return
+    if (session.resumeToken)
+      this.ctx.waitUntil(
+        this.ctx.storage.put(
+          `resume:${session.resumeToken}`,
+          this.saved(session.player, session.lastReaction)
+        )
+      )
+    const id = session.player.id
+    if (this.hasGames) this.games.presence(id, false)
+    this.pending.delete(id)
+    connection.setState({ ...session, player: null })
+    this.publish(JSON.stringify({ type: 'leave', id } satisfies ServerMessage), connection.id)
+  }
+  onClose(connection: Connection<Session>) {
+    this.remove(connection)
+  }
+  onError(connection: Connection<Session>) {
+    this.remove(connection)
+    connection.close(1011, 'Connection error')
+  }
+  async onAlarm() {
+    let active = false
+    const now = Date.now()
+    const snapshots: Record<string, SavedSession> = {}
+    for (const connection of this.getConnections<Session>()) {
+      const session = connection.state
+      if (
+        !session ||
+        (!session.player && !session.watching && now - (session.since ?? session.lastSeen) > 10_000) ||
+        now - session.lastSeen >
+          (session.player ? (session.hidden ? HIDDEN_TTL : 45_000) : session.watching ? 45_000 : 10_000)
+      ) {
+        this.remove(connection)
+        connection.close(4000, 'Session expired')
+        continue
+      }
+      active = true
+      const { player, resumeToken } = session
+      if (player && resumeToken && session.savedSeq !== player.seq) {
+        snapshots[`resume:${resumeToken}`] = this.saved(player, session.lastReaction)
+        connection.setState({ ...session, savedSeq: player.seq })
+      }
+    }
+    const keys = Object.keys(snapshots)
+    for (let i = 0; i < keys.length; i += 128)
+      await this.ctx.storage.put(
+        Object.fromEntries(keys.slice(i, i + 128).map(key => [key, snapshots[key]]))
+      )
+    // Bounded sweep: expired snapshots are removed a batch at a time.
+    const saved = await this.ctx.storage.list<SavedSession>({ prefix: 'resume:', limit: 512 })
+    const expired = [...saved].filter(([, value]) => value.expires <= now).map(([key]) => key)
+    for (let i = 0; i < expired.length; i += 128)
+      await this.ctx.storage.delete(expired.slice(i, i + 128))
+    const gameWake = this.hasGames ? this.games.tick() : null
+    if (active || saved.size > expired.length || gameWake !== null)
+      await this.ctx.storage.setAlarm(
+        Math.min(gameWake ?? Infinity, Date.now() + (active ? 30_000 : 60 * 60 * 1000))
+      )
+  }
+}
+
+export default {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const url = new URL(request.url)
+    if (url.pathname.startsWith('/__study-world/'))
+      return new Response('Not found', { status: 404 })
+    const adminPage = ['/admin', '/admin/', '/admin-guestbook'].includes(url.pathname)
+    if (url.pathname === '/health') return Response.json({ ok: true })
+    // A stand's QR code: the scan is counted on the side, the phone goes on at once.
+    const scanTarget = Object.hasOwn(SCAN_ROUTES, url.pathname) ? SCAN_ROUTES[url.pathname] : null
+    if (scanTarget) {
+      if (request.method === 'GET') {
+        const client = `${request.headers.get('CF-Connecting-IP') ?? ''} ${request.headers.get('User-Agent') ?? ''}`
+        const counter = env.ScanCounter.get(env.ScanCounter.idFromName(SCAN_INSTANCE))
+        ctx.waitUntil(counter.record(scanTarget, client, Date.now()).catch(() => undefined))
+      }
+      return new Response(null, {
+        status: 302,
+        headers: { Location: scanTarget, 'Cache-Control': 'no-store' },
+      })
+    }
+    const origin = request.headers.get('Origin')
+    const allowed = [url.origin, ...(env.ALLOWED_ORIGINS ?? '').split(',').map(s => s.trim())]
+    if (origin && !allowed.includes(origin)) return new Response('Forbidden', { status: 403 })
+    if (url.pathname === '/admin/scans') {
+      const headers = { 'Cache-Control': 'no-store' }
+      if (!(await authenticateAdmin(request, env)))
+        return Response.json({ error: 'unauthorized' }, { status: 401, headers })
+      const counter = env.ScanCounter.get(env.ScanCounter.idFromName(SCAN_INSTANCE))
+      return new Response(scanReport(await counter.stats(), Date.now()), {
+        headers: { ...headers, 'Content-Type': 'text/html; charset=utf-8' },
+      })
+    }
+    if (adminPage || url.pathname === '/api/guestbook/admin') {
+      const actor = await authenticateAdmin(request, env)
+      if (!actor)
+        return Response.json(
+          { error: 'unauthorized' },
+          { status: 401, headers: { 'Cache-Control': 'no-store' } }
+        )
+      if (adminPage) return env.ASSETS.fetch(request)
+      const stub = env.Guestbook.get(env.Guestbook.idFromName(GUESTBOOK_INSTANCE))
+      const reply = (body: unknown, status = 200) =>
+        Response.json(body, { status, headers: { 'Cache-Control': 'no-store' } })
+      if (request.method === 'GET') {
+        const cursor = Number(url.searchParams.get('cursor') ?? Number.MAX_SAFE_INTEGER)
+        const filter = url.searchParams.get('filter') ?? 'all'
+        const id = url.searchParams.get('message') ?? undefined
+        if (
+          !Number.isSafeInteger(cursor) ||
+          cursor < 1 ||
+          !['all', 'visible', 'removed'].includes(filter) ||
+          (id && !/^[0-9a-f-]{36}$/i.test(id))
+        )
+          return reply({ error: 'invalid' }, 400)
+        return reply(await stub.adminList(cursor, filter as 'all' | 'visible' | 'removed', id))
+      }
+      if (request.method !== 'POST') return reply({ error: 'method' }, 405)
+      if (!validAdminMutation(request)) return reply({ error: 'forbidden' }, 403)
+      try {
+        const data = (await request.json()) as { id?: unknown; removed?: unknown }
+        if (
+          typeof data.id !== 'string' ||
+          !/^[0-9a-f-]{36}$/i.test(data.id) ||
+          typeof data.removed !== 'boolean'
+        )
+          return reply({ error: 'invalid' }, 400)
+        return (await stub.adminSetVisibility(data.id, data.removed, actor))
+          ? reply({ ok: true })
+          : reply({ error: 'not_found' }, 404)
+      } catch {
+        return reply({ error: 'invalid' }, 400)
+      }
+    }
+    if (url.pathname === '/api/guestbook') {
+      if (request.method === 'OPTIONS')
+        return new Response(null, {
+          status: 204,
+          headers: {
+            'Access-Control-Allow-Origin': origin || url.origin,
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            Vary: 'Origin',
+          },
+        })
+      const result = await routeGuestbook(request, env)
+      const response = new Response(result.body, result)
+      response.headers.set('Access-Control-Allow-Origin', origin || url.origin)
+      response.headers.set('Vary', 'Origin')
+      return response
+    }
+    if (!ROOMS.some(room => url.pathname === `/parties/world-room/${room}`))
+      return new Response('Not found', { status: 404 })
+    if (request.headers.get('Upgrade')?.toLowerCase() !== 'websocket')
+      return new Response('WebSocket required', { status: 426 })
+    // Connection routing identifiers are generated here, never trusted from the URL.
+    url.searchParams.set('_pk', crypto.randomUUID())
+    return (
+      (await routePartykitRequest(new Request(url, request), env)) ??
+      new Response('Not found', { status: 404 })
+    )
+  },
+} satisfies ExportedHandler<Env>

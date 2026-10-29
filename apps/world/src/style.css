@@ -1,0 +1,548 @@
+@import './tokens.css';
+@import './buttons.css';
+@font-face {
+  font-family: Pulp;
+  src: url('/assets/pulp-regular.otf');
+  font-weight: 400;
+}
+@font-face {
+  font-family: Pulp;
+  src: url('/assets/pulp-medium.otf');
+  font-weight: 500 800;
+}
+:root {
+  font-family: var(--bs-font);
+  color: var(--bs-navy);
+  background: #fff;
+  font-synthesis: none;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+input,
+textarea,
+[contenteditable]:not([contenteditable='false']) {
+  -webkit-user-select: text;
+  user-select: text;
+}
+button,
+select {
+  font: inherit;
+  color: inherit;
+}
+button {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+button:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--bs-blue);
+  outline-offset: 3px;
+}
+.world-shell {
+  position: relative;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  isolation: isolate;
+}
+.world-canvas {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+}
+.world-canvas canvas {
+  display: block;
+}
+
+.world-header {
+  position: absolute;
+  top: max(20px, env(safe-area-inset-top));
+  left: 24px;
+  right: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  pointer-events: none;
+}
+.world-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bs-card);
+  border: 1px solid var(--bs-line);
+  padding: 12px 18px;
+  border-radius: 18px;
+  box-shadow: var(--bs-shadow-float);
+}
+.world-brand strong {
+  display: block;
+  font-size: 18px;
+  font-weight: 500;
+}
+.world-brand small {
+  display: block;
+  font-size: 11px;
+  margin-top: 2px;
+  opacity: 0.7;
+}
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 2px solid var(--bs-line-strong);
+  border-radius: 50%;
+  color: var(--bs-blue);
+  font-size: 22px;
+}
+.brand-mark::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: currentColor;
+}
+select {
+  pointer-events: auto;
+  border: 1px solid var(--bs-line);
+  background: var(--bs-card);
+  border-radius: 12px;
+  padding: 10px;
+}
+.journey-pill {
+  position: absolute;
+  top: max(24px, env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bs-navy);
+  color: #fff;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 18px;
+  border-radius: 40px;
+  font-size: 13px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.live-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--bs-yellow);
+  border-radius: 50%;
+}
+.journey-count {
+  opacity: 0.6;
+  border-left: 1px solid #ffffff33;
+  padding-left: 10px;
+}
+.camera-controls {
+  position: absolute;
+  right: 24px;
+  top: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.camera-controls button {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  line-height: 1;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--bs-line);
+  border-radius: 13px;
+  font-size: 23px;
+  background: var(--bs-card);
+  box-shadow: var(--bs-shadow-float);
+}
+.camera-controls button[aria-pressed='true'] {
+  background: var(--bs-navy);
+  color: #fff;
+}
+.world-bottom {
+  position: absolute;
+  bottom: max(42px, calc(env(safe-area-inset-bottom) + 32px));
+  left: 22px;
+  right: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  pointer-events: none;
+  gap: 20px;
+}
+.joystick-zone {
+  visibility: hidden;
+  position: relative;
+  width: 152px;
+  height: 152px;
+  flex-shrink: 0;
+  touch-action: none;
+  pointer-events: none;
+  user-select: none;
+}
+@media (hover: none) and (pointer: coarse) {
+  .joystick-zone {
+    visibility: visible;
+    pointer-events: auto;
+  }
+}
+.joystick-caption {
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 10px;
+  background: var(--bs-card);
+  border-radius: 20px;
+  padding: 4px 8px;
+  pointer-events: none;
+}
+.companion-controls {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 10px;
+}
+.avatar-choices {
+  display: flex;
+  gap: 4px;
+  padding: 5px;
+  background: var(--bs-card);
+  border-radius: 28px;
+}
+.avatar-choices button {
+  border: 1px solid transparent;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  padding: 5px;
+  background: transparent;
+}
+.avatar-choices button[aria-pressed='true'] {
+  background: var(--bs-blue-soft);
+  border-color: var(--bs-blue);
+}
+.avatar-choices img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+/* Raised rounded square, like the reaction and contact buttons, kept blue. */
+.discover-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  border: 2px solid var(--bs-button-edge-blue);
+  border-radius: 18px;
+  background: var(--bs-blue);
+  color: #fff;
+  box-shadow:
+    0 4px 0 var(--bs-button-edge-blue),
+    0 8px 20px rgba(89, 131, 240, 0.35);
+  opacity: 0;
+  scale: 0.65;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 180ms ease,
+    scale 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    visibility 0s 220ms;
+}
+.discover-button[data-visible='true'] {
+  opacity: 1;
+  scale: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
+}
+.discover-button svg {
+  width: 25px;
+  height: 25px;
+}
+/* The portal to Valence 1876 shows the colours of the world it leads to. */
+.discover-button[data-island='portal'] {
+  --bs-button-edge-blue: #5a3b20;
+  border-radius: 4px;
+  background: #8b5e30;
+  color: #fff7e3;
+  box-shadow:
+    0 4px 0 #5a3b20,
+    0 8px 22px rgba(139, 94, 48, 0.45);
+}
+.discover-button[data-visible='true']:hover {
+  scale: 1.06;
+}
+.discover-button[data-visible='true']:active {
+  /* `translate` positions the button from the scene; press through `transform` instead. */
+  scale: 1;
+  transform: translateY(3px);
+  box-shadow:
+    0 1px 0 var(--bs-button-edge-blue),
+    0 4px 10px rgba(89, 131, 240, 0.35);
+}
+.discover-button:focus-visible {
+  outline: 3px solid var(--bs-yellow);
+  outline-offset: 7px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .discover-button {
+    transition: none;
+    scale: 1;
+  }
+}
+.world-footer {
+  position: absolute;
+  bottom: max(9px, env(safe-area-inset-bottom));
+  left: 24px;
+  right: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+}
+.footer-actions {
+  margin-left: auto;
+}
+.world-footer span,
+.world-footer button {
+  background: var(--bs-card);
+  border: 1px solid var(--bs-line);
+  border-radius: 8px;
+  color: var(--bs-muted);
+  padding: 4px 7px;
+}
+.world-debug {
+  position: absolute;
+  right: 80px;
+  top: 100px;
+  background: #102934e8;
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+  font: 11px monospace;
+  pointer-events: none;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.modal-scrim {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  background: var(--bs-backdrop);
+  backdrop-filter: blur(6px);
+  z-index: 10;
+}
+.world-shell.is-loading > :not(.world-canvas):not(.loading) {
+  visibility: hidden;
+}
+.resource-card {
+  background: var(--bs-bg);
+  border-radius: 28px;
+  width: min(380px, calc(100vw - 36px));
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 15px 60px #112e4840;
+}
+.resource-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 22px;
+  margin: 0 auto 20px;
+  display: grid;
+  place-items: center;
+  font-size: 36px;
+  color: white;
+}
+.resource-card small {
+  opacity: 0.7;
+}
+.resource-card h1 {
+  font-size: 26px;
+  margin: 14px 0;
+  font-weight: 500;
+}
+.resource-card p {
+  font-size: 14px;
+  line-height: 1.6;
+}
+.resource-card button {
+  background: var(--bs-blue);
+  color: #fff;
+  border: 0;
+  border-radius: 14px;
+  padding: 12px 28px;
+  margin-top: 12px;
+}
+@media (max-width: 600px) {
+  .world-header {
+    top: max(12px, env(safe-area-inset-top));
+    left: 12px;
+    right: 12px;
+  }
+  .world-brand {
+    padding: 9px 12px;
+    gap: 8px;
+  }
+  .world-brand strong {
+    font-size: 15px;
+  }
+  .world-brand small {
+    font-size: 10px;
+  }
+  .journey-pill {
+    top: max(82px, calc(env(safe-area-inset-top) + 66px));
+    font-size: 12px;
+    padding: 9px 14px;
+  }
+  .camera-controls {
+    right: 12px;
+    top: 132px;
+    gap: 6px;
+  }
+  .camera-controls button {
+    width: 38px;
+    height: 38px;
+  }
+  .world-bottom {
+    left: 4px;
+    right: 12px;
+    gap: 8px;
+  }
+  .discover-button {
+    width: 48px;
+    height: 48px;
+  }
+  .world-footer {
+    left: 12px;
+    right: 12px;
+  }
+  .world-debug {
+    right: 60px;
+    top: 127px;
+  }
+}
+@media (max-height: 500px) {
+  .world-brand small,
+  .joystick-caption {
+    display: none;
+  }
+  .world-bottom {
+    bottom: 25px;
+  }
+  .camera-controls {
+    top: 68px;
+    flex-direction: row;
+  }
+  .joystick-zone {
+    width: 132px;
+    height: 132px;
+  }
+}
+
+.diagnostic-filters {
+  position: absolute;
+  z-index: 15;
+  left: 12px;
+  top: 88px;
+  width: min(240px, calc(100vw - 100px));
+  max-height: min(45vh, 330px);
+  overflow: auto;
+  margin: 0;
+  padding: 10px;
+  border: 1px solid #526c75;
+  border-radius: 12px;
+  background: #142b39ed;
+  color: white;
+  font-size: 12px;
+  pointer-events: auto;
+}
+.diagnostic-filters legend {
+  padding: 3px 7px;
+  background: #142b39;
+  border-radius: 5px;
+}
+.diagnostic-filter-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.diagnostic-filter-actions button {
+  padding: 4px 12px;
+  border: 1px solid #78929b;
+  border-radius: 6px;
+  color: white;
+  background: #284450;
+  cursor: pointer;
+}
+.diagnostic-filter-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 10px;
+}
+.diagnostic-filter-options label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  min-height: 24px;
+}
+.diagnostic-filter-options input {
+  accent-color: #7fe2bf;
+}
+
+.world-presence {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  max-width: 240px;
+  margin-top: 8px;
+  padding: 7px 10px;
+  border: 1px solid var(--bs-line);
+  border-radius: 14px;
+  background: var(--bs-card);
+  color: var(--bs-navy);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.presence-dot {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 50%;
+  background: var(--bs-yellow);
+}
+.world-presence[data-state='online'] .presence-dot {
+  background: var(--bs-teal);
+}
+.world-presence button {
+  border: 0;
+  padding: 2px;
+  color: inherit;
+  background: none;
+  text-decoration: underline;
+  cursor: pointer;
+}

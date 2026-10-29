@@ -1,0 +1,7 @@
+segmentation-qa/
+art-workbench/
+
+.wrangler/
+.dev.vars
+.dev.vars.*
+!.dev.vars.example

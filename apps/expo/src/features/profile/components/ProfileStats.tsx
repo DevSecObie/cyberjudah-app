@@ -1,0 +1,202 @@
+import * as Icon from '~common/ui/classNameIcons'
+import { titleFontStyle } from '~themes/styleValues'
+import type { ComponentPropsWithRef as UIComponentProps } from 'react'
+import React from 'react'
+import { useTranslation } from 'react-i18next'
+import { ActivityIndicator } from 'react-native'
+import { useSelector } from 'react-redux'
+import { twMerge } from '~common/ui/classNames'
+
+import type { Theme as AppTheme } from '~themes'
+import { useTheme } from '~themes/ThemeProvider'
+import { resolveUniverseColors } from '~themes/universeColors'
+import { type PersonalContent, personalContentIcons } from '~common/personalContent'
+
+import Link from '~common/Link'
+import Box, { HStack, VStack } from '~common/ui/Box'
+import Card from '~common/ui/Card'
+import { ListSectionTitle } from '~common/ui/ListSection'
+import Text from '~common/ui/Text'
+import { toast } from '~helpers/toast'
+import useLogin from '~helpers/useLogin'
+import { RootState } from '~redux/modules/reducer'
+import { useHomeLayout } from '~features/home/homeLayout'
+
+/** Home content width from which the six cards fit on a single row. */
+const HOME_SINGLE_ROW_CONTENT = 680
+
+/**
+ * Six cards, each with its colored icon above the count, on two rows of three. `home`: no outer
+ * inset (aligned with the home section titles) and, when the home is wide enough, a single row of
+ * six. Otherwise (profile): a titled group.
+ */
+const ProfileStats = ({ home = false }: { home?: boolean }) => {
+  const { t } = useTranslation()
+  const theme = useTheme()
+  const { isLogged } = useLogin()
+  const singleRow = useHomeLayout().content >= HOME_SINGLE_ROW_CONTENT && home
+
+  const highlights = useSelector(
+    (state: RootState) =>
+      Object.keys(state.user.bible.highlights).length +
+      Object.keys(state.user.bible.wordAnnotations || {}).length
+  )
+  const notes = useSelector((state: RootState) => Object.keys(state.user.bible.notes).length)
+  const studies = useSelector((state: RootState) => Object.keys(state.user.bible.studies).length)
+  const tags = useSelector((state: RootState) => Object.keys(state.user.bible.tags).length)
+  const bookmarks = useSelector(
+    (state: RootState) => Object.keys(state.user.bible.bookmarks || {}).length
+  )
+  const links = useSelector((state: RootState) => Object.keys(state.user.bible.links || {}).length)
+  const sync = useSelector((state: RootState) => state.user.sync)
+  const isSyncing = (collections: (keyof RootState['user']['sync']['loaded'])[]) =>
+    Boolean(sync?.isLoading) && collections.some(collection => !sync?.loaded?.[collection])
+
+  return (
+    <Box className={home ? '' : 'mx-[20px] mb-[22px]'}>
+      {!home && <ListSectionTitle>{t('profile.stats')}</ListSectionTitle>}
+      <VStack
+        className={twMerge('overflow-hidden border-continuous gap-[10px]', home && 'px-[20px]')}
+      >
+        {sync?.isLoading && (
+          <HStack className="overflow-hidden border-continuous items-center gap-[8px]">
+            <ActivityIndicator size="small" color={theme.colors.primary} />
+            <Text className="text-[12px] text-grey">{t('profileStats.syncingData')}</Text>
+          </HStack>
+        )}
+        <Box className={singleRow ? 'flex-row gap-[10px]' : 'gap-[10px]'}>
+          <HStack
+            className={twMerge(
+              'overflow-hidden border-continuous gap-[10px]',
+              singleRow && 'flex-1'
+            )}
+          >
+            <StatCard route="Highlights">
+              <StatValue
+                content="highlights"
+                count={highlights}
+                isLoading={isSyncing(['highlights', 'wordAnnotations'])}
+              />
+              <Text className="text-[12px] text-grey" numberOfLines={1}>
+                {isSyncing(['highlights', 'wordAnnotations']) && highlights === 0
+                  ? t('profileStats.syncing')
+                  : t('surbrillance', { count: highlights })}
+              </Text>
+            </StatCard>
+
+            <StatCard route="Bookmarks">
+              <StatValue
+                content="bookmarks"
+                count={bookmarks}
+                isLoading={isSyncing(['bookmarks'])}
+              />
+              <Text className="text-[12px] text-grey" numberOfLines={1}>
+                {isSyncing(['bookmarks']) && bookmarks === 0
+                  ? t('profileStats.syncing')
+                  : t('marque-page', { count: bookmarks })}
+              </Text>
+            </StatCard>
+
+            <StatCard route="BibleVerseNotes">
+              <StatValue content="notes" count={notes} isLoading={isSyncing(['notes'])} />
+              <Text className="text-[12px] text-grey" numberOfLines={1}>
+                {isSyncing(['notes']) && notes === 0
+                  ? t('profileStats.syncing')
+                  : t('note', { count: notes })}
+              </Text>
+            </StatCard>
+          </HStack>
+
+          <HStack
+            className={twMerge(
+              'overflow-hidden border-continuous gap-[10px]',
+              singleRow && 'flex-1'
+            )}
+          >
+            <StatCard
+              {...(isLogged
+                ? { route: 'Studies' as const }
+                : { onPress: () => toast.info(t('study.loginRequired')) })}
+            >
+              {!isLogged && (
+                <Box
+                  className="overflow-hidden border-continuous absolute top-[8px] right-[8px]"
+                  pointerEvents="none"
+                >
+                  <Icon.Feather name="lock" size={12} color={theme.colors.grey} />
+                </Box>
+              )}
+              <StatValue content="study" count={studies} isLoading={isSyncing(['studies'])} />
+              <Text className="text-[12px] text-grey" numberOfLines={1}>
+                {isSyncing(['studies']) && studies === 0
+                  ? t('profileStats.syncing')
+                  : t('étude', { count: studies })}
+              </Text>
+            </StatCard>
+
+            <StatCard route="BibleVerseLinks">
+              <StatValue content="links" count={links} isLoading={isSyncing(['links'])} />
+              <Text className="text-[12px] text-grey" numberOfLines={1}>
+                {isSyncing(['links']) && links === 0
+                  ? t('profileStats.syncing')
+                  : t('lien', { count: links })}
+              </Text>
+            </StatCard>
+
+            <StatCard route="Tags">
+              <StatValue content="tags" count={tags} isLoading={isSyncing(['tags'])} />
+              <Text className="text-[12px] text-grey" numberOfLines={1}>
+                {isSyncing(['tags']) && tags === 0
+                  ? t('profileStats.syncing')
+                  : t('étiquette', { count: tags })}
+              </Text>
+            </StatCard>
+          </HStack>
+        </Box>
+      </VStack>
+    </Box>
+  )
+}
+
+const StatValue = ({
+  content,
+  count,
+  isLoading,
+}: {
+  content: PersonalContent
+  count: number
+  isLoading: boolean
+}) => {
+  const theme = useTheme()
+  const color = resolveUniverseColors(theme.colors, content).foreground
+
+  return (
+    <VStack className="items-start gap-[8px]">
+      <Icon.Feather name={personalContentIcons[content]} size={20} color={color} />
+      {isLoading && count === 0 ? (
+        <ActivityIndicator size="small" color={theme.colors.primary} />
+      ) : (
+        <Text className="text-[22px] leading-[26px]" style={titleFontStyle(theme)}>
+          {count}
+        </Text>
+      )}
+    </VStack>
+  )
+}
+
+const StatCard = (
+  componentProps: Omit<UIComponentProps<typeof Link>, 'theme'> & {
+    theme?: AppTheme
+    className?: string
+  }
+) => {
+  const { theme: _themeOverride, className, ...props } = componentProps
+
+  return (
+    <Card className="flex-[1]">
+      <Link {...props} className={twMerge('flex-[1] px-[12px] py-[14px] gap-[8px]', className)} />
+    </Card>
+  )
+}
+
+export default ProfileStats
