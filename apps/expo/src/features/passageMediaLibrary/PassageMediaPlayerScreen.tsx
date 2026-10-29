@@ -22,6 +22,7 @@ import useLanguage from '~helpers/useLanguage'
 import { useQuery } from '@tanstack/react-query'
 import { getCommentaryBibleViewRoute } from '~features/commentaries/commentaryReferenceNavigation'
 import ClassNotesView from './ClassNotesView'
+import ClassNotesPdfButton from '~features/notesExport/ClassNotesPdfButton'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import { CLASS_SEEK_PREFIX, getCachedClassById, loadClassNotes } from './cyberJudahClasses'
 const YOUTUBE_PLAYER_BASE_URL =
@@ -58,7 +59,11 @@ const PassageMediaPlayerScreen = () => {
   return (
     <FormSheetScreen isFormSheet={IS_FORM_SHEET}>
       <Box className="overflow-hidden border-continuous flex-[1] bg-reverse">
-        <Header background title={item?.title ?? t('passageMediaLibrary.playerTitle')} />
+        <Header
+          background
+          title={item?.title ?? t('passageMediaLibrary.playerTitle')}
+          rightComponent={notesPath ? <ClassNotesPdfButton notesPath={notesPath} /> : undefined}
+        />
         {item ? (
           <>
             <Box className="items-center px-[16px] pt-[16px] pb-[12px] bg-reverse border-b-[1px] border-border">

@@ -2521,6 +2521,7 @@ __metadata:
     deprecated-react-native-prop-types: "npm:^4.0.0"
     dotenv-cli: "npm:^11.0.0"
     effect: "npm:3.22.1"
+    entities: "npm:^6.0.1"
     eslint: "npm:^9"
     eslint-config-expo: "npm:~57.0.2"
     eslint-config-prettier: "npm:^9"
@@ -2570,9 +2571,11 @@ __metadata:
     lottie-react-native: "npm:~7.3.8"
     lucide-react: "npm:^1.47.0"
     lunr-languages: "npm:^1.9.0"
+    marked: "npm:^17.0.6"
     metro: "patch:metro@npm%3A0.84.5#~/.yarn/patches/metro-npm-0.84.5-9aabe2ab0f.patch"
     metro-cache: "npm:0.84.5"
     motion: "npm:^13.0.0"
+    pdf-lib: "npm:^1.17.1"
     postinstall-postinstall: "npm:^2.1.0"
     pressto: "npm:^0.6.0"
     prettier: "npm:^3.8.1"
@@ -2784,7 +2787,6 @@ __metadata:
     copy-to-clipboard: "npm:^3.3.3"
     date-fns: "npm:^2.29.3"
     firebase: "npm:^8.1.1"
-    firebaseui: "npm:^4.7.1"
     framer-motion: "npm:^11.0.3"
     gsap: "npm:^3.15.0"
     harfbuzzjs: "npm:0.10.0"
@@ -8663,6 +8665,24 @@ __metadata:
     "@parcel/watcher-win32-x64":
       optional: true
   checksum: 10c0/0d6799bdf7d59a1ab5e4a79859035f387a66078586d9543eef0b9bd01c9d61cebe3b64eb96f0bd1f8bf50f07ed7266a1628604b66dc63025a3cee19be2e60d65
+  languageName: node
+  linkType: hard
+
+"@pdf-lib/standard-fonts@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@pdf-lib/standard-fonts@npm:1.0.0"
+  dependencies:
+    pako: "npm:^1.0.6"
+  checksum: 10c0/c683adfb764cd235a8370a0c1d5a8d7e90e3499ad33cdecfb92e4d48b0d36cfd038e3a875ebd0937a5646ee1578d793ab98f9c374be360c9a05d2699c1caedf4
+  languageName: node
+  linkType: hard
+
+"@pdf-lib/upng@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@pdf-lib/upng@npm:1.0.1"
+  dependencies:
+    pako: "npm:^1.0.10"
+  checksum: 10c0/9c300c513c1089e561c0cccac01f396a24efb9b0e9c922a39248cb09dfced70c05b9facdfce11a7f22cbedb4129593630a18111b90a57ef34ea4c3df98f2ac1d
   languageName: node
   linkType: hard
 
@@ -17517,13 +17537,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dialog-polyfill@npm:^0.4.7":
-  version: 0.4.10
-  resolution: "dialog-polyfill@npm:0.4.10"
-  checksum: 10c0/6c91bd23086303e5ee45b59ab0736436b7486a1985a3f1a560ae5495f41cc44f6b4e19333f0c3c18a6f0bffb7712d82b9107e313de5e7140ef4645b81f6fd088
-  languageName: node
-  linkType: hard
-
 "dicer@npm:0.2.5":
   version: 0.2.5
   resolution: "dicer@npm:0.2.5"
@@ -17969,7 +17982,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"entities@npm:^6.0.0, entities@npm:~6.0.1":
+"entities@npm:^6.0.0, entities@npm:^6.0.1, entities@npm:~6.0.1":
   version: 6.0.1
   resolution: "entities@npm:6.0.1"
   checksum: 10c0/ed836ddac5acb34341094eb495185d527bd70e8632b6c0d59548cbfa23defdbae70b96f9a405c82904efa421230b5b3fd2283752447d737beffd3f3e6ee74414
@@ -20441,18 +20454,6 @@ __metadata:
     "@firebase/storage": "npm:0.7.1"
     "@firebase/util": "npm:1.3.0"
   checksum: 10c0/45dd3c84b0f190e01446fe92071e4e49a4880d14d64420942b2bc190f0e2441bbc38c0450dea13acceef8c3481a697f7b9f483209b43d5dda463e60ebb822d8a
-  languageName: node
-  linkType: hard
-
-"firebaseui@npm:^4.7.1":
-  version: 4.8.1
-  resolution: "firebaseui@npm:4.8.1"
-  dependencies:
-    dialog-polyfill: "npm:^0.4.7"
-    material-design-lite: "npm:^1.2.0"
-  peerDependencies:
-    firebase: ">=8.2.4"
-  checksum: 10c0/a8c4d063f75741e7b4b54a84da6f310c431f8b390eaeed988fe31893dc981615e302ec0c1eea43407b74fa638d5c3ca44d2d93e874d3171a976c2c0cea70d36b
   languageName: node
   linkType: hard
 
@@ -24716,7 +24717,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:^17.0.1":
+"marked@npm:^17.0.1, marked@npm:^17.0.6":
   version: 17.0.6
   resolution: "marked@npm:17.0.6"
   bin:
@@ -24739,13 +24740,6 @@ __metadata:
     "@types/minimatch": "npm:^3.0.3"
     minimatch: "npm:^3.0.2"
   checksum: 10c0/409aad220000e2041672f900883ec66ffdd04814b133b428a8d35e055495fc09bb9024ca6ad7a63ebe6ed9e480e01db02c3edf3587ae1ba2627727a3d896ff96
-  languageName: node
-  linkType: hard
-
-"material-design-lite@npm:^1.2.0":
-  version: 1.3.0
-  resolution: "material-design-lite@npm:1.3.0"
-  checksum: 10c0/cbe7c9c540a23f3913fddfa292ae5df607441cc47353bafe90bce8d279ba47e3e881548db30a44f1fddbabba9b2c51a8bd6a06c866a99725e8cdd5dd10978b5d
   languageName: node
   linkType: hard
 
@@ -27143,7 +27137,7 @@ multer@emadalam/multer:
   languageName: node
   linkType: hard
 
-"pako@npm:~1.0.2":
+"pako@npm:^1.0.10, pako@npm:^1.0.11, pako@npm:^1.0.6, pako@npm:~1.0.2":
   version: 1.0.11
   resolution: "pako@npm:1.0.11"
   checksum: 10c0/86dd99d8b34c3930345b8bbeb5e1cd8a05f608eeb40967b293f72fe469d0e9c88b783a8777e4cc7dc7c91ce54c5e93d88ff4b4f060e6ff18408fd21030d9ffbe
@@ -27413,6 +27407,18 @@ multer@emadalam/multer:
   version: 2.0.1
   resolution: "pathval@npm:2.0.1"
   checksum: 10c0/460f4709479fbf2c45903a65655fc8f0a5f6d808f989173aeef5fdea4ff4f303dc13f7870303999add60ec49d4c14733895c0a869392e9866f1091fa64fd7581
+  languageName: node
+  linkType: hard
+
+"pdf-lib@npm:^1.17.1":
+  version: 1.17.1
+  resolution: "pdf-lib@npm:1.17.1"
+  dependencies:
+    "@pdf-lib/standard-fonts": "npm:^1.0.0"
+    "@pdf-lib/upng": "npm:^1.0.1"
+    pako: "npm:^1.0.11"
+    tslib: "npm:^1.11.1"
+  checksum: 10c0/a9489a402880dacd1389a3e14ff8f6139d58e3bc82f26b0fcbd0798b841aee6ccb7fcfab0992b574e57b40404ced0330a7170b3c6467363461a9df5d9daec489
   languageName: node
   linkType: hard
 
@@ -29896,11 +29902,11 @@ multer@emadalam/multer:
 
 "rn-fetch-blob@patch:rn-fetch-blob@npm%3A0.12.0#~/.yarn/patches/rn-fetch-blob-npm-0.12.0-cf02e3c544.patch":
   version: 0.12.0
-  resolution: "rn-fetch-blob@patch:rn-fetch-blob@npm%3A0.12.0#~/.yarn/patches/rn-fetch-blob-npm-0.12.0-cf02e3c544.patch::version=0.12.0&hash=9ac8ae"
+  resolution: "rn-fetch-blob@patch:rn-fetch-blob@npm%3A0.12.0#~/.yarn/patches/rn-fetch-blob-npm-0.12.0-cf02e3c544.patch::version=0.12.0&hash=0fc8dd"
   dependencies:
     base-64: "npm:0.1.0"
     glob: "npm:7.0.6"
-  checksum: 10c0/778e98a7fd79fa259b9815408a808b928bda0c1240b6e8986d465fa177abd4a57612bf1e4a78535f4ccab86adfc093305c13dc3d083d5765c4012e55300e2fc7
+  checksum: 10c0/4f584ccfe351ec09906b8ec80600b85bfb1f744e8c9eccb5e508cf2881e215ab957ff4444d4fcbf59f4ace7b7094ea7479bff6630d1dac4b1ee0acc67e504f04
   languageName: node
   linkType: hard
 
@@ -32325,7 +32331,7 @@ multer@emadalam/multer:
   languageName: node
   linkType: hard
 
-"tslib@npm:^1.13.0, tslib@npm:^1.8.1":
+"tslib@npm:^1.11.1, tslib@npm:^1.13.0, tslib@npm:^1.8.1":
   version: 1.14.1
   resolution: "tslib@npm:1.14.1"
   checksum: 10c0/69ae09c49eea644bc5ebe1bca4fa4cc2c82b7b3e02f43b84bd891504edf66dbc6b2ec0eef31a957042de2269139e4acff911e6d186a258fb14069cd7f6febce2

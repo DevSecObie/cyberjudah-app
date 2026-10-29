@@ -33,6 +33,7 @@ import { toast } from '~helpers/toast'
 import useCurrentThemeSelector from '~helpers/useCurrentThemeSelector'
 import verseToReference from '~helpers/verseToReference'
 import { getNoteTitle } from '~helpers/getNoteTitle'
+import { useExportPersonalNotes } from '~features/notesExport/useExportPersonalNotes'
 import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
 import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
 import { RootState } from '~redux/modules/reducer'
@@ -301,16 +302,18 @@ const NoteDetailTabScreen = ({
     setEditorResetKey(key => key + 1)
   }
 
+  const notesPdf = useExportPersonalNotes()
+
   const shareNote = async () => {
     if (!currentNote) return
     try {
-      const message = `
-Note pour ${reference}
-
-${getNoteTitle(currentNote, '')}
-
-${currentNote.description}
-      `
+      const message = [
+        t('notesExport.noteFor', { reference }),
+        getNoteTitle(currentNote, ''),
+        currentNote.description,
+      ]
+        .filter(Boolean)
+        .join('\n\n')
       Share.share({ message })
     } catch (e) {
       toast.error(t('Erreur lors du partage.'))
@@ -405,6 +408,7 @@ ${currentNote.description}
               actions={
                 [
                   { id: 'share', title: t('Partager'), image: 'square.and.arrow.up' },
+                  { id: 'pdf', title: t('notesExport.savePdf'), image: 'doc.richtext' },
                   { id: 'edit', title: t('Éditer'), image: 'pencil' },
                   { id: 'tags', title: t('Éditer les tags'), image: 'tag' },
                   noteEndpoint
@@ -427,6 +431,16 @@ ${currentNote.description}
                 switch (nativeEvent.event) {
                   case 'share':
                     shareNote()
+                    break
+                  case 'pdf':
+                    notesPdf.exportPdf([
+                      {
+                        title: getNoteTitle(currentNote, ''),
+                        reference: reference ?? '',
+                        date: currentNote.date,
+                        text: currentNote.description,
+                      },
+                    ])
                     break
                   case 'edit':
                     onEditNote()

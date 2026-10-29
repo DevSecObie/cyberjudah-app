@@ -20,6 +20,10 @@ import { endpointIdentity, type RelationEndpoint } from '~features/studyRelation
 import { createNoteEndpoint } from '~features/studyRelations/endpoints'
 import { useOpenEntityRelations } from '~features/studyRelations/useOpenEntityRelations'
 import BibleNoteItem from '../bible/BibleNoteItem'
+import { ActivityIndicator } from 'react-native'
+import Link from '~common/Link'
+import { FeatherIcon } from '~common/ui/Icon'
+import { useExportPersonalNotes } from '~features/notesExport/useExportPersonalNotes'
 import NotesSettingsModal from './NotesSettingsModal'
 import { useEntityListQueryFilters } from '~common/EntityListQueryFilters'
 import { queryEntityList, type EntityListSort } from '~features/entityListQuery/entityListQuery'
@@ -114,11 +118,29 @@ const AllNotesTabScreen = ({ hasBackButton }: AllNotesTabScreenProps) => {
     selectedChip ? Boolean(s.note.tags?.[selectedChip.id]) : true
   )
   const filteredNotes = queryEntityList(taggedNotes, queryState)
+  const notesPdf = useExportPersonalNotes()
+  // The notes the list shows, in its order: a search or a tag narrows what is exported.
+  const exportNotes = () =>
+    notesPdf.exportPdf(
+      filteredNotes.map(row => ({
+        title: row.title,
+        reference: row.reference,
+        date: row.date,
+        text: row.description,
+      }))
+    )
   return (
     <Container>
       <FiltersHeader
         title={t('Notes')}
         hasBackButton={hasBackButton}
+        rightComponent={
+          filteredNotes.length ? (
+            <Link accessibilityLabel={t('notesExport.exportAll')} onPress={exportNotes} padding>
+              {notesPdf.busy ? <ActivityIndicator /> : <FeatherIcon name="share" size={20} />}
+            </Link>
+          ) : undefined
+        }
         onReset={() => setQueryState(defaultNotesListQueryState)}
         filters={[
           ...queryFilters.filters,
