@@ -162,9 +162,10 @@ db.exec('COMMIT')
 db.exec('VACUUM')
 db.close()
 
+// The app accepts only a regular-file entry (zipArchiveValidation): mark it as one.
 execFileSync('python3', [
   '-c',
-  `import zipfile,sys,pathlib\np=pathlib.Path(sys.argv[1])\nwith zipfile.ZipFile(str(p)+'.zip','w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as z:\n info=zipfile.ZipInfo(p.name,(2026,10,25,0,0,0)); info.compress_type=zipfile.ZIP_DEFLATED; z.writestr(info,p.read_bytes())`,
+  `import zipfile,sys,pathlib\np=pathlib.Path(sys.argv[1])\nwith zipfile.ZipFile(str(p)+'.zip','w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as z:\n info=zipfile.ZipInfo(p.name,(2026,10,25,0,0,0)); info.compress_type=zipfile.ZIP_DEFLATED; info.external_attr=0o100644<<16; z.writestr(info,p.read_bytes())`,
   join(output, file),
 ])
 const data = await readFile(join(output, file)),

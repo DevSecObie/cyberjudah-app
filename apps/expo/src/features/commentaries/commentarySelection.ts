@@ -9,10 +9,18 @@ export const LEGACY_COMMENTARY_SELECTION_STORAGE_KEY = 'commentarySelection.v1'
 export type CommentaryProjectionId = `${string}:${ResourceLanguage}`
 export type CommentarySelectionState = CommentaryProjectionId[]
 
-export const DEFAULT_COMMENTARY_SELECTIONS: Record<ResourceLanguage, CommentarySelectionState> = {
-  fr: ['barnes:fr', 'acbc:fr', 'mhy-fr:fr'],
-  en: ['barnes:en', 'acbc:en', 'mhcc:en'],
-}
+const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+
+/** CyberJudah publishes one commentary, its teachings, and every reader starts with it. */
+export const CYBERJUDAH_TEACHINGS: CommentaryProjectionId = 'cyberjudah:en'
+
+export const DEFAULT_COMMENTARY_SELECTIONS: Record<ResourceLanguage, CommentarySelectionState> =
+  isCyberJudah
+    ? { fr: [CYBERJUDAH_TEACHINGS], en: [CYBERJUDAH_TEACHINGS] }
+    : {
+        fr: ['barnes:fr', 'acbc:fr', 'mhy-fr:fr'],
+        en: ['barnes:en', 'acbc:en', 'mhcc:en'],
+      }
 
 export const createCommentaryProjectionId = (
   resourceId: string,
@@ -52,7 +60,9 @@ export const normalizeCommentarySelection = (value: unknown): CommentarySelectio
     result.push(projection.projectionId)
     if (result.length === MAX_SELECTED_COMMENTARIES) break
   }
-  return result
+  // A selection saved by a build without the CyberJudah catalog (303) holds only Bible
+  // Strong's commentaries, which normalize away here: the teachings come back.
+  return isCyberJudah && !result.length ? getDefaultCommentarySelection() : result
 }
 
 export const migrateCommentarySelectionState = (value: unknown): CommentarySelectionState => {
