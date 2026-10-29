@@ -102,11 +102,6 @@ describe('WebFireAuth auth-state cleanup', () => {
   })
 })
 
-jest.mock('../cyberJudahAccount', () => ({
-  restoreCyberJudahSession: jest.fn(async () => undefined),
-  endCyberJudahSession: jest.fn(async () => undefined),
-}))
-
 describe('WebFireAuth account-switch races', () => {
   const reader = (uid: string) => ({
     uid,
@@ -191,13 +186,23 @@ it('keeps the Firebase display name when Apple and a legacy profile have blank n
   )
 })
 
-it('signs Firebase out even if the Telegram logout service is unreachable', async () => {
-  const { endCyberJudahSession } = await import('../cyberJudahAccount')
-  const { signOut } = await import('firebase/auth')
+it('uses only Firebase for startup and logout, without exchanging a Telegram session', async () => {
+  const { signOut, signInWithCustomToken } = await import('firebase/auth')
   const { WebFireAuth } = await import('../FireAuth.web')
-  jest.mocked(endCyberJudahSession).mockRejectedValueOnce(new Error('offline'))
-  const auth = new WebFireAuth()
-  await auth.init(jest.fn(), jest.fn(), jest.fn(), jest.fn(), jest.fn(), {} as never)
-  await auth.logout()
-  expect(signOut).toHaveBeenCalled()
+  const originalFetch = global.fetch
+  const fetchSpy = jest.fn()
+  global.fetch = fetchSpy
+  jest.mocked(signInWithCustomToken).mockClear()
+  try {
+    const auth = new WebFireAuth()
+    const onError = jest.fn()
+    await auth.init(jest.fn(), onError, jest.fn(), jest.fn(), jest.fn(), {} as never)
+    await auth.logout()
+    expect(signOut).toHaveBeenCalled()
+    expect(signInWithCustomToken).not.toHaveBeenCalled()
+    expect(fetchSpy).not.toHaveBeenCalled()
+    expect(onError).not.toHaveBeenCalled()
+  } finally {
+    global.fetch = originalFetch
+  }
 })

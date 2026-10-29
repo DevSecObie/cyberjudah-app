@@ -17,9 +17,7 @@ const ProfileActions = () => {
   const passwordModalRef = useRef<SheetRef>(null)
   const deleteAccountModalRef = useRef<SheetRef>(null)
 
-  const canConnectTelegram =
-    process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah' &&
-    process.env.EXPO_PUBLIC_ACCOUNT_SYNC_SCOPE === 'staging'
+  const showConnectedAccounts = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
   const isEmailProvider = user.provider === 'password'
 
   const promptLogout = async () => {
@@ -35,7 +33,7 @@ const ProfileActions = () => {
 
   return (
     <Box>
-      {canConnectTelegram && <ConnectedAccounts />}
+      {showConnectedAccounts && <ConnectedAccounts />}
       {(isEmailProvider || Platform.OS !== 'web') && (
         <ListSection title={t('profile.accountSettings')}>
           {isEmailProvider && (

@@ -1,15 +1,23 @@
 import React, { act } from 'react'
 import { create, type ReactTestRenderer } from 'react-test-renderer'
-import type { AccountConnections } from '~helpers/accountConnections'
+import type { ConnectedProvider } from '~helpers/accountConnections'
 import ConnectedAccounts from '../ConnectedAccounts'
 
 let mockUid = 'first'
-const mockLoad = jest.fn<Promise<AccountConnections | null>, unknown[]>()
-const mockConnect = jest.fn()
-jest.mock('react-native', () => ({ AppState: { addEventListener: () => ({ remove: jest.fn() }) } }))
+let mockProviders: ConnectedProvider[] = []
+let mockRefresh: (() => void) | undefined
+let mockForeground: ((state: string) => void) | undefined
+jest.mock('react-native', () => ({
+  AppState: {
+    addEventListener: (_event: string, callback: (state: string) => void) => {
+      mockForeground = callback
+      return { remove: jest.fn() }
+    },
+  },
+}))
 jest.mock('expo-router', () => ({
   useFocusEffect: (callback: () => () => void) => {
-    const React = require('react')
+    const React = jest.requireActual<typeof import('react')>('react')
     React.useEffect(callback, [callback])
   },
 }))
@@ -17,11 +25,14 @@ jest.mock('~helpers/useLogin', () => ({
   __esModule: true,
   default: () => ({ user: { id: mockUid } }),
 }))
-jest.mock('~helpers/cyberJudahAccount', () => ({ connectTelegramAccount: () => mockConnect() }))
 jest.mock('~helpers/accountConnections', () => ({
-  connectedProviders: () => [],
-  loadAccountConnections: (...args: unknown[]) => mockLoad(...args),
-  subscribeAccountConnections: () => () => undefined,
+  connectedProviders: () => mockProviders,
+  subscribeAccountConnections: (callback: () => void) => {
+    mockRefresh = callback
+    return () => {
+      mockRefresh = undefined
+    }
+  },
 }))
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }))
 jest.mock('~common/ui/Icon', () => ({ FeatherIcon: 'FeatherIcon', IonIcon: 'IonIcon' }))
@@ -31,13 +42,14 @@ jest.mock('~common/ui/ListSection', () => ({
   ListRow: 'ListRow',
 }))
 
-describe('Connected account rows', () => {
+describe('Standalone connected account rows', () => {
   let renderer: ReactTestRenderer
   beforeEach(() => {
     Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true })
     mockUid = 'first'
-    mockLoad.mockReset()
-    mockConnect.mockReset()
+    mockProviders = []
+    mockRefresh = undefined
+    mockForeground = undefined
   })
   afterEach(() => act(() => renderer?.unmount()))
   const rows = () =>
@@ -48,74 +60,44 @@ describe('Connected account rows', () => {
     })
   }
 
-  it('shows the verified provider emails and Telegram name without offering another link', async () => {
-    mockLoad.mockResolvedValue({
-      uid: 'first',
-      providers: [
-        { id: 'apple.com', email: 'apple@example.test' },
-        { id: 'google.com', email: 'google@example.test' },
-      ],
-      telegram: { status: 'connected', label: '@reader' },
-    })
+  it('shows verified Apple, Google and email providers using existing list rows, with no Telegram action', async () => {
+    mockProviders = [
+      { id: 'apple.com', email: 'apple@example.test' },
+      { id: 'google.com', email: 'google@example.test' },
+      { id: 'password', email: 'email@example.test' },
+    ]
     await render()
     expect(rows().map(row => [row.label, row.description])).toEqual([
       ['Apple', 'apple@example.test'],
       ['Google', 'google@example.test'],
-      ['Telegram', '@reader'],
+      ['profile.connectedAccounts.email', 'email@example.test'],
     ])
-    expect(rows()[2].onPress).toBeUndefined()
-    expect(rows()[2].accessibilityLabel).toContain('profile.connectedAccounts.connected')
+    expect(rows().every(row => !row.onPress && row.hasChevron === false)).toBe(true)
   })
 
-  it('discards a previous account response after the displayed account changes', async () => {
-    let finish!: (result: AccountConnections) => void
-    mockLoad.mockImplementationOnce(
-      () =>
-        new Promise(resolve => {
-          finish = resolve
-        })
-    )
+  it('replaces the old provider display when the active account changes', async () => {
+    mockProviders = [{ id: 'apple.com', email: 'old@example.test' }]
     await render()
     mockUid = 'second'
-    mockLoad.mockResolvedValue({
-      uid: 'second',
-      providers: [{ id: 'google.com', email: 'new@example.test' }],
-      telegram: { status: 'not-connected' },
-    })
+    mockProviders = [{ id: 'google.com', email: 'new@example.test' }]
     await act(async () => {
       renderer.update(<ConnectedAccounts />)
     })
-    await act(async () => {
-      finish({
-        uid: 'first',
-        providers: [{ id: 'apple.com', email: 'old@example.test' }],
-        telegram: { status: 'connected', label: '@old' },
-      })
-    })
-    expect(rows().map(row => row.description)).toEqual([
-      'new@example.test',
-      'profile.connectedAccounts.notConnected',
-    ])
-    expect(mockLoad.mock.calls[0][1]).toEqual(expect.objectContaining({ aborted: true }))
+    expect(rows().map(row => row.description)).toEqual(['new@example.test'])
   })
 
-  it('retries a failed check without starting a new account link', async () => {
-    mockLoad.mockResolvedValueOnce({
-      uid: 'first',
-      providers: [],
-      telegram: { status: 'unavailable' },
-    })
+  it('refreshes providers after authentication changes and returning to the app', async () => {
     await render()
-    expect(rows()[0].description).toBe('profile.connectedAccounts.unavailable')
-    mockLoad.mockResolvedValueOnce({
-      uid: 'first',
-      providers: [],
-      telegram: { status: 'connected' },
-    })
+    expect(rows()).toHaveLength(0)
+    mockProviders = [{ id: 'apple.com', email: 'reader@example.test' }]
     await act(async () => {
-      rows()[0].onPress()
+      mockRefresh?.()
     })
-    expect(mockConnect).not.toHaveBeenCalled()
-    expect(rows()[0].description).toBe('profile.connectedAccounts.connected')
+    expect(rows().map(row => row.label)).toEqual(['Apple'])
+    mockProviders = [{ id: 'password', email: 'reader@example.test' }]
+    await act(async () => {
+      mockForeground?.('active')
+    })
+    expect(rows().map(row => row.label)).toEqual(['profile.connectedAccounts.email'])
   })
 })
