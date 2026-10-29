@@ -70,6 +70,18 @@ describe('CyberJudah People module', () => {
     expect(createHash('sha256').update(bytes).digest('hex')).toBe(entry.archiveSha256)
   })
 
+  // 304 refused the download with STRONG_LEXICON_ARCHIVE_ENTRY_TYPE_INVALID.
+  it('passes the archive check the app runs before installing', () => {
+    const { validateBoundedZipArchive } = jest.requireActual('../zipArchiveValidation')
+    expect(() =>
+      validateBoundedZipArchive(new Uint8Array(readFileSync(archive)), {
+        entry: entry.entry,
+        archiveBytes: entry.archiveBytes,
+        contentBytes: entry.contentBytes,
+      })
+    ).not.toThrow()
+  })
+
   it('passes the app validation without a Strong lexicon core', async () => {
     process.env.EXPO_PUBLIC_RESOURCE_PROFILE = 'cyberjudah'
     const { adapter } = openArchive()
