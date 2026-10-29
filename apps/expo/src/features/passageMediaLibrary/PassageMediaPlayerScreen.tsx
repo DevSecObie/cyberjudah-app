@@ -1,19 +1,21 @@
-import { resolveFontFamily, titleFontStyle } from '~themes/styleValues'
+import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { useLocalSearchParams } from 'expo-router'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useWindowDimensions } from 'react-native'
 import YoutubePlayer from '~helpers/react-native-youtube-iframe'
+import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes'
 import Header from '~common/Header'
 import Box, { VStack } from '~common/ui/Box'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
 import ScrollView from '~common/ui/ScrollView'
-import { radii } from '~common/ui/surfaces'
 import Text from '~common/ui/Text'
 import { formatPassageMediaDuration, getPassageMediaById } from '~features/bible/passageMedia'
 import { IS_FORM_SHEET } from '~helpers/constants'
 import useLanguage from '~helpers/useLanguage'
+const YOUTUBE_PLAYER_BASE_URL =
+  'https://lonelycpp.github.io/react-native-youtube-iframe/iframe_v2.html'
 
 const PassageMediaPlayerScreen = () => {
   const stylingTheme = useStylingTheme()
@@ -33,11 +35,11 @@ const PassageMediaPlayerScreen = () => {
   const playerHeight = (playerWidth * 9) / 16
 
   return (
-    <FormSheetScreen className="bg-canvas" isFormSheet={IS_FORM_SHEET}>
-      <Box className="overflow-hidden border-continuous flex-[1] bg-canvas">
-        <Header title={item?.title ?? t('passageMediaLibrary.playerTitle')} />
+    <FormSheetScreen isFormSheet={IS_FORM_SHEET}>
+      <Box className="overflow-hidden border-continuous flex-[1] bg-reverse">
+        <Header background title={item?.title ?? t('passageMediaLibrary.playerTitle')} />
         <ScrollView
-          backgroundColor="canvas"
+          backgroundColor="lightGrey"
           contentInsetAdjustmentBehavior="automatic"
           contentContainerStyle={{ alignItems: 'center', paddingHorizontal: 16, paddingTop: 24 }}
         >
@@ -47,8 +49,17 @@ const PassageMediaPlayerScreen = () => {
               style={{ width: playerWidth }}
             >
               <Box
-                className="border-continuous overflow-hidden rounded-[16px] bg-surface"
-                style={{ width: playerWidth, height: playerHeight }}
+                className="border-continuous overflow-hidden rounded-[14px] border-[1px] border-border bg-light-grey"
+                style={{
+                  width: playerWidth,
+                  height: playerHeight,
+                  shadowColor: 'rgb(89,131,240)',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 7,
+                  elevation: 1,
+                  overflow: 'visible',
+                }}
               >
                 <YoutubePlayer
                   height={playerHeight}
@@ -58,12 +69,21 @@ const PassageMediaPlayerScreen = () => {
                   onError={error => setPlayerError(error || 'unknown')}
                   onReady={() => setPlayerError(undefined)}
                   initialPlayerParams={{ rel: false }}
-                  viewContainerStyle={{ borderRadius: radii.card, overflow: 'hidden' }}
-                  webViewStyle={{ borderRadius: radii.card, overflow: 'hidden' }}
+                  webViewProps={{
+                    onShouldStartLoadWithRequest: (request: ShouldStartLoadRequest) => {
+                      const url = request.mainDocumentURL || request.url
+                      return url === 'about:blank' || url.startsWith(YOUTUBE_PLAYER_BASE_URL)
+                    },
+                  }}
+                  viewContainerStyle={{ borderRadius: 14, overflow: 'hidden' }}
+                  webViewStyle={{ borderRadius: 14, overflow: 'hidden' }}
                 />
               </Box>
               <VStack className="overflow-hidden border-continuous gap-[7px] px-[2px]">
-                <Text className="text-[22px] leading-[28px]" style={titleFontStyle(stylingTheme)}>
+                <Text
+                  className="text-[22px] leading-[28px]"
+                  style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+                >
                   {item.title}
                 </Text>
                 <Text

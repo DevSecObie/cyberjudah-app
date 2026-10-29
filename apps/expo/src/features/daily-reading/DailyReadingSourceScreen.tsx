@@ -9,13 +9,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import Header from '~common/Header'
 import Link from '~common/Link'
 import type { OnlinePlan } from '~common/types'
-import Border from '~common/ui/Border'
-import Box, { usePageBottomInset } from '~common/ui/Box'
+import Box from '~common/ui/Box'
 import Button from '~common/ui/Button'
 import Container from '~common/ui/Container'
 import { FeatherIcon } from '~common/ui/Icon'
 import { pageContentStyle } from '~common/ui/PageContent'
-import Radio from '~common/ui/Radio'
 import Text from '~common/ui/Text'
 import { useFireStorage } from '~features/plans/plan.hooks'
 import { getEditorialKind } from '~features/plans/readingCalendar'
@@ -43,7 +41,7 @@ const CollectionCard = ({
   const { t } = useTranslation()
   const { choose, pending, error } = useCollectionChoice(collection)
   return (
-    <Box className="px-[20px] py-[10px]">
+    <Box className="bg-reverse border-b border-border px-[16px] py-[10px]">
       <Box className="flex-row items-center gap-[8px]">
         <Link
           onPress={onPress}
@@ -82,7 +80,15 @@ const CollectionCard = ({
             if (!selected) void choose()
           }}
         >
-          {pending ? <ActivityIndicator /> : <Radio selected={selected} size={22} />}
+          {pending ? (
+            <ActivityIndicator />
+          ) : (
+            <FeatherIcon
+              name={selected ? 'check-circle' : 'circle'}
+              color={selected ? 'primary' : 'grey'}
+              size={22}
+            />
+          )}
         </Link>
       </Box>
       {error && (
@@ -94,9 +100,6 @@ const CollectionCard = ({
   )
 }
 
-// Starts where the row's text starts: its margin, the 44pt thumbnail and the gap after it.
-const SourceSeparator = () => <Border className="ml-[76px]" />
-
 type SourceItem =
   | { id: 'standalone'; kind: 'standalone' }
   | { id: string; kind: 'collection'; collection: OnlinePlan }
@@ -104,7 +107,6 @@ type SourceItem =
 const DailyReadingSourceScreen = ({ embedded = false }: { embedded?: boolean }) => {
   const Layout = embedded ? Box : Container
   const { t, i18n } = useTranslation()
-  const bottomInset = usePageBottomInset()
   const router = useRouter()
   const { collectionId, language } = useLocalSearchParams<{
     collectionId?: string
@@ -141,7 +143,7 @@ const DailyReadingSourceScreen = ({ embedded = false }: { embedded?: boolean }) 
   ]
 
   useEffect(() => {
-    dispatch(fetchPlans({ reuseRecent: true }))
+    dispatch(fetchPlans())
   }, [dispatch])
 
   const sections: { key: string; title?: string; data: SourceItem[] }[] = [
@@ -189,36 +191,38 @@ const DailyReadingSourceScreen = ({ embedded = false }: { embedded?: boolean }) 
       )}
       <SectionList<SourceItem>
         style={{ flex: 1 }}
-        contentContainerStyle={[pageContentStyle, { paddingBottom: 24 + bottomInset }]}
+        contentContainerStyle={[pageContentStyle, { paddingBottom: 24 }]}
         sections={sections}
         stickySectionHeadersEnabled
         keyExtractor={item => item.id}
         initialNumToRender={24}
-        // A continuous list on the page ground: sticky titles mask the rows under them.
         renderSectionHeader={({ section }) =>
           section.title ? (
-            <Box className="bg-reverse px-[20px] pt-[20px] pb-[8px]">
-              <Text accessibilityRole="header" className="text-[13px] text-grey">
+            <Box className="min-h-[40px] px-[16px] justify-center bg-light-grey border-b border-border">
+              <Text accessibilityRole="header" className="text-grey text-[14px] font-bold">
                 {section.title}
               </Text>
             </Box>
           ) : null
         }
-        ItemSeparatorComponent={SourceSeparator}
         renderItem={({ item }) =>
           item.kind === 'standalone' ? (
             <Link
               accessibilityRole="radio"
               accessibilityState={{ checked: !selectedId }}
               onPress={() => dispatch(setDailyMeditation(null))}
-              className="flex-row items-center px-[20px] py-[10px] gap-[12px] min-h-[64px]"
+              className="flex-row items-center bg-reverse border-b border-border px-[16px] py-[10px] gap-[12px] min-h-[64px]"
             >
               <Box className="bg-light-grey rounded-[8px] w-[44px] h-[44px] items-center justify-center">
                 <FeatherIcon name="sun" size={22} color="primary" />
               </Box>
               <Text className="text-default text-[16px] flex-1">{t('dailyReading.default')}</Text>
               <Box className="w-[44px] h-[44px] items-center justify-center">
-                <Radio selected={!selectedId} size={22} />
+                <FeatherIcon
+                  name={!selectedId ? 'check-circle' : 'circle'}
+                  color={!selectedId ? 'primary' : 'grey'}
+                  size={22}
+                />
               </Box>
             </Link>
           ) : (

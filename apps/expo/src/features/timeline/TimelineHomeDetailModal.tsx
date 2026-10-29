@@ -1,5 +1,5 @@
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
-import { titleFontStyle } from '~themes/styleValues'
+import { resolveFontFamily } from '~themes/styleValues'
 import React from 'react'
 import { type SheetRef, SheetScrollView } from '~common/sheet'
 import Sheet from '~common/ContextualPanel/ContextualSheet'
@@ -69,7 +69,10 @@ const TimelineHomeDetailModal = ({ modalRef, inline = false }: Props) => {
               </Trans>
             )}
           </Paragraph>
-          <Text className="mt-[20px] text-[24px]" style={titleFontStyle(stylingTheme)}>
+          <Text
+            className="mt-[20px] text-[24px]"
+            style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+          >
             {t('Questions fréquentes')}
           </Text>
         </Box>
@@ -79,7 +82,10 @@ const TimelineHomeDetailModal = ({ modalRef, inline = false }: Props) => {
               <Accordion
                 key={item.title}
                 title={
-                  <Text className="text-[18px]" style={titleFontStyle(stylingTheme)}>
+                  <Text
+                    className="text-[18px]"
+                    style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+                  >
                     {item.title}
                   </Text>
                 }
@@ -93,7 +99,10 @@ const TimelineHomeDetailModal = ({ modalRef, inline = false }: Props) => {
             <>
               <Accordion
                 title={
-                  <Text className="text-[18px]" style={titleFontStyle(stylingTheme)}>
+                  <Text
+                    className="text-[18px]"
+                    style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+                  >
                     {t("Qu'est-ce que la chronologie biblique ?")}
                   </Text>
                 }
@@ -121,7 +130,10 @@ Chacune de ces sections est divisée en périodes plus spécifiques pour facilit
               </Accordion>
               <Accordion
                 title={
-                  <Text className="text-[18px]" style={titleFontStyle(stylingTheme)}>
+                  <Text
+                    className="text-[18px]"
+                    style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+                  >
                     {t(
                       'Comment avez-vous déterminé les dates, en particulier la date de création ?'
                     )}
@@ -161,7 +173,10 @@ Il y a des preuves que c’est ainsi que les Juifs ont compris ce passage. Josè
               </Accordion>
               <Accordion
                 title={
-                  <Text className="text-[18px]" style={titleFontStyle(stylingTheme)}>
+                  <Text
+                    className="text-[18px]"
+                    style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+                  >
                     {t('Quelles sont vos principales sources pour la chronologie ?')}
                   </Text>
                 }
@@ -199,7 +214,10 @@ Il y a des preuves que c’est ainsi que les Juifs ont compris ce passage. Josè
               </Accordion>
               <Accordion
                 title={
-                  <Text className="text-[18px]" style={titleFontStyle(stylingTheme)}>
+                  <Text
+                    className="text-[18px]"
+                    style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+                  >
                     {t('Prévoyez-vous la date du retour du Christ ?')}
                   </Text>
                 }

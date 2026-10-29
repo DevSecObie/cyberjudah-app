@@ -1,5 +1,5 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai/react'
-import React, { useEffect, useEffectEvent, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PrimitiveAtom } from 'jotai/vanilla'
 import TrackPlayer, {
@@ -171,8 +171,6 @@ const useLoadSound = ({
 
   // Only generate tracks for the current book (not all 1189 chapters)
   const tracks = getBookTracks(version, book, t, coverage)
-  // The effects below load and skip with the tracks and chapter of the render that ran them.
-  const getChapterTracks = useEffectEvent(() => ({ tracks, chapter }))
 
   useEffect(() => {
     return () => {
@@ -187,7 +185,6 @@ const useLoadSound = ({
   // Audio init on version or book change
   useEffect(() => {
     let cancelled = false
-    const current = getChapterTracks()
     ;(async () => {
       try {
         await ensureTrackPlayerSetup()
@@ -217,8 +214,8 @@ const useLoadSound = ({
           },
         })
 
-        await TrackPlayer.add(current.tracks)
-        const trackIndex = current.tracks.findIndex(track => track.chapter === current.chapter)
+        await TrackPlayer.add(tracks)
+        const trackIndex = tracks.findIndex(track => track.chapter === chapter)
         if (trackIndex !== -1) {
           await TrackPlayer.skip(trackIndex)
         }
@@ -231,6 +228,7 @@ const useLoadSound = ({
     return () => {
       cancelled = true
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [version, book.Numero])
 
   // Skip to track on chapter change
@@ -243,9 +241,8 @@ const useLoadSound = ({
       return
     }
 
-    const current = getChapterTracks()
     ;(async () => {
-      const trackIndex = current.tracks.findIndex(track => track.chapter === current.chapter)
+      const trackIndex = tracks.findIndex(track => track.chapter === chapter)
       if (trackIndex === -1) return
       try {
         await TrackPlayer.skip(trackIndex)
@@ -258,6 +255,7 @@ const useLoadSound = ({
         console.log('[Bible] Silent catch')
       }
     })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [book.Numero, chapter, isSetup, version])
 
   return {

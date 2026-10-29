@@ -1,13 +1,11 @@
 import { twMerge } from '~common/ui/classNames'
 
 import React from 'react'
-import { StyleSheet } from 'react-native'
 import PageContent from '~common/ui/PageContent'
 import Back from '~common/Back'
 import Box, { HStack, VStack } from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import { FeatherIcon } from './ui/Icon'
-import { useWorkspaceHeaderInset } from '~features/app-switcher/workspaceHeaderInset'
 interface Props {
   maxWidth?: number
   background?: boolean
@@ -38,16 +36,18 @@ const Header = ({
   children,
   ...props
 }: Props) => {
-  const workspaceHeaderInset = useWorkspaceHeaderInset()
   return (
     <Box
       {...props}
       testID="workspace-page-header"
       className={twMerge(
-        'overflow-hidden border-continuous border-separator',
-        background ? 'bg-reverse' : ''
+        'overflow-hidden border-continuous border-border',
+        twMerge(
+          background ? 'bg-reverse' : '',
+          'border-border',
+          'overflow-hidden border-continuous border-b-[1px]'
+        )
       )}
-      style={{ borderBottomWidth: StyleSheet.hairlineWidth, paddingLeft: workspaceHeaderInset }}
     >
       <PageContent style={maxWidth ? { maxWidth } : undefined}>
         <Box

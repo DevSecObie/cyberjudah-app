@@ -24,7 +24,6 @@ import InlineSheetContent from '~common/ContextualPanel/InlineSheetContent'
 import HeaderContent from '~common/ContextualPanel/HeaderContent'
 import { useTheme } from '~themes/ThemeProvider'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { staticResourceQueryOptions } from '~helpers/queryOptions'
 import { useAtomValue } from 'jotai/react'
 import {
   Fragment,
@@ -500,7 +499,6 @@ const SearchSelectionSheet = ({
     initialPageParam: undefined as string | undefined,
     getNextPageParam: page => page.nextCursor,
     enabled: shouldLoadStrongTargets,
-    ...staticResourceQueryOptions,
   })
   const strongResults: StrongLexiconSearchResult[] = shouldLoadStrongTargets
     ? (strongQuery.data?.pages.flatMap(page => page.entries) ?? [])
@@ -543,7 +541,6 @@ const SearchSelectionSheet = ({
     initialPageParam: undefined as string | undefined,
     getNextPageParam: page => page.nextCursor,
     enabled: shouldLoadNaveTargets,
-    ...staticResourceQueryOptions,
   })
   const naveResults: NaveRow[] =
     shouldLoadNaveTargets && naveQuery.data ? naveQuery.data.pages.flatMap(page => page.topics) : []
@@ -579,7 +576,6 @@ const SearchSelectionSheet = ({
     initialPageParam: undefined as string | undefined,
     getNextPageParam: page => page.nextCursor,
     enabled: shouldLoadDictionaryTargets,
-    ...staticResourceQueryOptions,
   })
   const dictionaryResults: DictionaryRow[] =
     shouldLoadDictionaryTargets && dictionaryQuery.data

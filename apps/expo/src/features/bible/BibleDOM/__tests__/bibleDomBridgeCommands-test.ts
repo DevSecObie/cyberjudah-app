@@ -1,4 +1,4 @@
-import { NAVIGATE_TO_BIBLE_NOTE, NAVIGATE_TO_PERICOPE, TOGGLE_SELECTED_VERSE } from '../dispatch'
+import { NAVIGATE_TO_BIBLE_NOTE, NAVIGATE_TO_PERICOPE } from '../dispatch'
 import {
   decodeBibleDOMBridgeAction,
   getCanonicalBibleNotePayload,
@@ -8,24 +8,11 @@ import {
   getStringPayload,
   getStudyRelationsModalTarget,
   getToastPayload,
-  getPayloadVersion,
   getVerseIdsPayload,
-  getVerseSelectionPayload,
   routeBibleDOMBridgeAction,
 } from '../bibleDomBridgeCommands'
 
 describe('Bible DOM bridge', () => {
-  it('reads the verse a reader tapped, with its version in parallel reading', () => {
-    expect(getVerseSelectionPayload('1-1-1')).toEqual({ verseKey: '1-1-1' })
-    expect(getVerseSelectionPayload({ verseKey: '1-1-1', version: 'KJV' })).toEqual({
-      verseKey: '1-1-1',
-      version: 'KJV',
-    })
-    expect(getVerseSelectionPayload({ version: 'KJV' })).toBeUndefined()
-    expect(getPayloadVersion({ version: 'KJV' })).toBe('KJV')
-    expect(getPayloadVersion({})).toBeUndefined()
-  })
-
   it('parses primitive string and number payloads conservatively', () => {
     expect(getStringPayload('note-1')).toBe('note-1')
     expect(getStringPayload({ value: 'note-1' })).toBeUndefined()
@@ -139,26 +126,6 @@ describe('Bible DOM bridge', () => {
       )
     ).resolves.toBe('blocked')
     expect(handle).not.toHaveBeenCalled()
-  })
-
-  it('blocks personal data commands aimed at a version shown only in an interlinear presentation', async () => {
-    const handle = jest.fn(async () => undefined)
-    const options = { personalBibleDataEnabled: true, interlinearReadingVersions: ['DBY'], handle }
-
-    await expect(
-      routeBibleDOMBridgeAction(
-        { type: TOGGLE_SELECTED_VERSE, payload: { verseKey: '1-2-2', version: 'DBY' } },
-        options
-      )
-    ).resolves.toBe('blocked')
-    expect(handle).not.toHaveBeenCalled()
-
-    const textColumnAction = {
-      type: TOGGLE_SELECTED_VERSE,
-      payload: { verseKey: '1-2-2', version: 'LSG' },
-    }
-    await expect(routeBibleDOMBridgeAction(textColumnAction, options)).resolves.toBe('handled')
-    expect(handle).toHaveBeenCalledWith(textColumnAction)
   })
 
   it('routes a recognized reading command through the injected native handler', async () => {

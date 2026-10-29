@@ -1,5 +1,4 @@
 import ReadingReminders from '~features/daily-reading/ReadingReminders'
-import AssistantLauncher from '~features/study-assistant/AssistantLauncher'
 import WorkspaceLayout from '~features/app-switcher/WorkspaceLayout'
 import { SheetProvider } from '~common/sheet'
 import { trackAnalyticsScreen } from '~helpers/analytics'
@@ -8,8 +7,7 @@ import * as Sentry from '@sentry/react-native'
 import { Stack, useLocalSearchParams, usePathname, useSegments } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
-import { Platform } from 'react-native'
-import { runAfterInteractions } from '~helpers/runAfterInteractions'
+import { InteractionManager, Platform } from 'react-native'
 import { RootSiblingParent } from 'react-native-root-siblings'
 import { useKeepAwake } from 'expo-keep-awake'
 import TrackPlayer from 'react-native-track-player'
@@ -34,7 +32,6 @@ import { Theme } from '~themes/index'
 import { PlaybackService } from '../../../playbackService'
 import { downloadManager } from '~helpers/downloadManager'
 import { loadMobileResourceCatalog } from '~helpers/mobileResourceCatalog'
-import { useAutomaticUpdates } from '~helpers/useAutomaticUpdates'
 import { offlineResourceRegistry } from '~features/resources/resourceAvailability'
 import DeferredVerseOfTheDayPrefetch from '~features/home/DeferredVerseOfTheDayPrefetch'
 
@@ -71,7 +68,7 @@ const DeferredModals = () => {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const handle = runAfterInteractions(() => setMounted(true))
+    const handle = InteractionManager.runAfterInteractions(() => setMounted(true))
     return () => handle.cancel()
   }, [])
 
@@ -131,17 +128,11 @@ type FullAppRuntimeProps = {
   theme: Theme
 }
 
-const AutomaticUpdates = () => {
-  useAutomaticUpdates()
-  return null
-}
-
 const FullAppRuntime = ({ theme }: FullAppRuntimeProps) => {
-  // On Android the activity can be gone when the root unmounts; releasing the lock then rejects.
-  useKeepAwake(undefined, { suppressDeactivateWarnings: true })
+  useKeepAwake()
 
   useEffect(() => {
-    runAfterInteractions(() => {
+    InteractionManager.runAfterInteractions(() => {
       TrackPlayer.registerPlaybackService(() => PlaybackService)
     })
   }, [])
@@ -196,9 +187,7 @@ const FullAppRuntime = ({ theme }: FullAppRuntimeProps) => {
                         />
                       </Stack>
                     </WorkspaceLayout>
-                    <AssistantLauncher />
                     <ThemedToaster />
-                    <AutomaticUpdates />
                     <DeferredModals />
                   </StrongAudioProvider>
                 </BookSelectorSheetProvider>

@@ -1,5 +1,5 @@
 import { goBackOrHome } from '~navigation/goBackOrHome'
-import { titleFontStyle } from '~themes/styleValues'
+import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import React, { useEffect } from 'react'
 import Text from '~common/ui/Text'
@@ -16,23 +16,24 @@ const LoginScreen = () => {
   const stylingTheme = useStylingTheme()
 
   const router = useRouter()
-  const { isLogged, isSessionLost } = useLogin()
+  const { isLogged } = useLogin()
   const { t } = useTranslation()
-  // A lost session still shows the account: the screen stays until the reader signs in again.
-  const isSignedIn = isLogged && !isSessionLost
 
   useEffect(() => {
-    if (isSignedIn) {
+    if (isLogged) {
       goBackOrHome(router)
     }
-  }, [isSignedIn, router])
+  }, [isLogged, router])
 
   return (
-    <Container className="bg-canvas">
+    <Container>
       <Header hasBackButton title={t('Se connecter')} />
-      <ScrollView backgroundColor="canvas">
+      <ScrollView>
         <Box className="overflow-hidden border-continuous p-[20px] web:w-full web:max-w-[500px] web:self-center">
-          <Text className="text-[30px] mb-[30px]" style={titleFontStyle(stylingTheme)}>
+          <Text
+            className="text-[30px] mb-[30px]"
+            style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+          >
             {t('Bienvenue !')}
           </Text>
           <Paragraph className="mb-[10px]" scaleLineHeight={-2}>

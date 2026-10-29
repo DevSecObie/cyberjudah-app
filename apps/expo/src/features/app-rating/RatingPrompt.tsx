@@ -1,4 +1,3 @@
-import { radii } from '~common/ui/surfaces'
 import { TouchableOpacity } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { SheetView, type SheetRef } from '~common/sheet'
@@ -43,7 +42,7 @@ const RatingPrompt = ({ modalRef, onClose }: Props) => {
       detachedOffset={insets.bottom + 50}
       dismissible={false}
       detached={true}
-      cornerRadius={radii.sheet}
+      cornerRadius={30}
     >
       <SheetView>
         <Box className="overflow-hidden border-continuous p-[20px] pt-[30px] pb-[30px]">

@@ -5,7 +5,6 @@ import { styled } from 'goober'
 import { Bookmark, Verse as TVerse } from '~common/types'
 import { HighlightsObj } from '~redux/modules/user'
 import {
-  ColumnTextModeControls,
   ParallelVerse,
   PericopeChapter,
   RootStyles,
@@ -14,22 +13,27 @@ import {
   WebViewProps,
 } from './BibleDOMWrapper'
 import { ParallelDisplayMode } from 'src/state/tabs'
-import Verse, { type VerseContentProps } from './Verse'
-import ParallelVerseRow from './ParallelVerseRow'
-import { PericopeHeaders, getPericopeVerse } from './PericopeHeaders'
+import ExternalIcon from './ExternalIcon'
+import Verse from './Verse'
+import { scaleFontSize } from './scaleFontSize'
 import type { CrossVersionAnnotation } from '~redux/selectors/bible'
+import {
+  getCanonicalBibleHeadingReferences,
+  type CanonicalBibleHeading,
+} from '~helpers/canonicalBibleHeadings'
+import { OPEN_CANONICAL_BIBLE_REFERENCE } from './dispatch'
+import { useDispatch } from './DispatchProvider'
+import { useTranslations } from './TranslationsContext'
 import {
   createVerseKey,
   getAdjacentFocusVerses,
   getFadePosition,
   getFocusVerseNumbers,
-  getParallelChapterRows,
-  type ParallelChapterRow,
+  getParallelVerseRows,
   getTaggedVersesByLastVerse,
   getVersesWithWordAnnotations,
   shouldRenderVerseInFocusedContext,
 } from './verseRenderingModel'
-import type { VerseTarget } from './AnnotationMode/verseTargets'
 import type { ResolvedPassageMediaChapter } from '../passageMedia'
 import type { PassageMediaGallerySection } from './passageMediaGallery'
 
@@ -42,6 +46,49 @@ const Span = styled('span')({
   zIndex: 1,
 })
 
+const H1 = styled('h1')<RootStyles>(({ settings: { fontSizeScale, fontFamily } }) => ({
+  fontFamily,
+  fontSize: scaleFontSize(28, fontSizeScale),
+  textAlign: 'start',
+  position: 'relative',
+  zIndex: 1,
+}))
+
+const H2 = styled('h2')<RootStyles>(({ settings: { fontSizeScale, fontFamily } }) => ({
+  fontFamily,
+  fontSize: scaleFontSize(24, fontSizeScale),
+  textAlign: 'start',
+  position: 'relative',
+  zIndex: 1,
+}))
+
+const H3 = styled('h3')<RootStyles>(({ settings: { fontSizeScale, fontFamily } }) => ({
+  fontFamily,
+  fontSize: scaleFontSize(20, fontSizeScale),
+  textAlign: 'start',
+  position: 'relative',
+  zIndex: 1,
+}))
+
+const H4 = styled('h4')<RootStyles>(({ settings: { fontSizeScale, fontFamily } }) => ({
+  fontFamily,
+  fontSize: scaleFontSize(18, fontSizeScale),
+  textAlign: 'start',
+  position: 'relative',
+  zIndex: 1,
+}))
+
+// ============================================================================
+// HELPERS
+// ============================================================================
+
+const getPericopeVerse = (pericopeChapter: PericopeChapter, verse: number) => {
+  if (pericopeChapter && pericopeChapter[verse]) {
+    return pericopeChapter[verse]
+  }
+  return {}
+}
+
 // ============================================================================
 // COMPONENT
 // ============================================================================
@@ -50,12 +97,8 @@ export interface UnifiedVersesRendererProps {
   inlineCommentaries?: WebViewProps['inlineCommentaries']
   verses: TVerse[]
   parallelVerses: ParallelVerse[]
-  // Versions shown in an interlinear presentation: their columns show no personal Bible data
-  interlinearReadingVersions?: readonly string[]
   focusVerses: WebViewProps['focusVerses']
   selectedVerses: { [key: string]: boolean }
-  // The version the selected verses belong to
-  selectedVersesVersion: string
   highlightedVerses: HighlightsObj
   settings: RootStyles['settings']
   verseToScroll: number | undefined
@@ -64,8 +107,6 @@ export interface UnifiedVersesRendererProps {
   version: string
   interlinearMode?: WebViewProps['interlinearMode']
   pericopeChapter: PericopeChapter
-  // Section headings of the parallel versions
-  parallelPericopeChapters?: Record<string, PericopeChapter | undefined>
   isSelectionMode: WebViewProps['isSelectionMode']
   selectedCode: WebViewProps['selectedCode']
   isHebreu: boolean
@@ -81,8 +122,8 @@ export interface UnifiedVersesRendererProps {
   navigateToPericope: () => void
   // Annotation mode props
   annotationMode?: boolean
-  // Currently touched verse, in its version (for visual feedback)
-  touchedVerse?: VerseTarget | null
+  // Currently touched verse key (for visual feedback)
+  touchedVerseKey?: string | null
   // Verses with tagged items count (for showing tags indicator with count)
   taggedVersesInChapter?: Record<number, number>
   // Verses with non-highlight tags (for showing tags indicator when tagsDisplay is 'inline')
@@ -93,22 +134,135 @@ export interface UnifiedVersesRendererProps {
   columnWidth?: number
   // Display mode for parallel verses (horizontal = side by side, vertical = stacked)
   parallelDisplayMode?: ParallelDisplayMode
-  // Parallel reading: the Strong and interlinear segments of each version's chip, main first
-  columnTextModeControls?: ColumnTextModeControls[]
-  // Red words of every version on screen
-  redWordsByVersion: Record<string, Record<string, { start: number; end: number }[]> | null>
+  // Red words data
+  redWords?: Record<string, { start: number; end: number }[]> | null
   passageMediaAfterVerses: ResolvedPassageMediaChapter['afterVerses']
   passageMediaGallerySections: PassageMediaGallerySection[]
+}
+
+/**
+ * Renders pericope headers (h1-h4) for a verse.
+ * In normal mode, only canonical verse references and the external icon are clickable.
+ * In annotation mode, headers are plain text.
+ */
+function PericopeHeaders({
+  pericope,
+  headings,
+  settings,
+  annotationMode,
+  navigateToPericope,
+}: {
+  pericope: ReturnType<typeof getPericopeVerse>
+  headings?: CanonicalBibleHeading[]
+  settings: RootStyles['settings']
+  annotationMode?: boolean
+  navigateToPericope: () => void
+}): JSX.Element | null {
+  const { h1, h2, h3, h4 } = pericope
+  const dispatch = useDispatch()
+  const translations = useTranslations()
+  if (!h1 && !h2 && !h3 && !h4) return null
+
+  const renderHeadingContent = (text: string) => {
+    if (annotationMode) return text
+
+    const canonicalHeading = headings?.find(heading => heading.text.trim() === text)
+    if (!canonicalHeading) return text
+
+    const references = getCanonicalBibleHeadingReferences(canonicalHeading)
+    if (!references.length) return text
+
+    let cursor = 0
+    return (
+      <>
+        {references.map(reference => {
+          const before = text.slice(cursor, reference.start)
+          cursor = reference.end
+          return (
+            <span key={`${reference.start}-${reference.osis}`}>
+              {before}
+              <a
+                href={`#${reference.osis}`}
+                style={{
+                  color: settings.colors[settings.theme].primary,
+                  textDecoration: 'underline',
+                }}
+                onClick={event => {
+                  event.preventDefault()
+                  event.stopPropagation()
+                  dispatch({
+                    type: OPEN_CANONICAL_BIBLE_REFERENCE,
+                    payload: reference.osis,
+                  })
+                }}
+              >
+                {reference.text}
+              </a>
+            </span>
+          )
+        })}
+        {text.slice(cursor)}
+      </>
+    )
+  }
+
+  const renderExternalButton = () => (
+    <button
+      type="button"
+      aria-label={translations.pericopeIndex}
+      onClick={navigateToPericope}
+      style={{
+        appearance: 'none',
+        background: 'transparent',
+        border: 0,
+        cursor: 'pointer',
+        margin: 0,
+        padding: 0,
+      }}
+    >
+      <ExternalIcon style={{ marginLeft: 10, verticalAlign: 'middle' }} />
+    </button>
+  )
+  const stopHeadingClick = (event: React.MouseEvent<HTMLHeadingElement>) => {
+    event.stopPropagation()
+  }
+
+  return (
+    <>
+      {h1 && (
+        <H1 settings={settings} data-ignore-verse-touch onClick={stopHeadingClick}>
+          {renderHeadingContent(h1)}
+          {!annotationMode && renderExternalButton()}
+        </H1>
+      )}
+      {h2 && (
+        <H2 settings={settings} data-ignore-verse-touch onClick={stopHeadingClick}>
+          {renderHeadingContent(h2)}
+          {!annotationMode && renderExternalButton()}
+        </H2>
+      )}
+      {h3 && (
+        <H3 settings={settings} data-ignore-verse-touch onClick={stopHeadingClick}>
+          {renderHeadingContent(h3)}
+          {!annotationMode && renderExternalButton()}
+        </H3>
+      )}
+      {h4 && (
+        <H4 settings={settings} data-ignore-verse-touch onClick={stopHeadingClick}>
+          {renderHeadingContent(h4)}
+          {!annotationMode && renderExternalButton()}
+        </H4>
+      )}
+    </>
+  )
 }
 
 export function UnifiedVersesRenderer({
   inlineCommentaries,
   verses,
   parallelVerses,
-  interlinearReadingVersions = [],
   focusVerses,
   selectedVerses,
-  selectedVersesVersion,
   highlightedVerses,
   settings,
   verseToScroll,
@@ -117,7 +271,6 @@ export function UnifiedVersesRenderer({
   version,
   interlinearMode,
   pericopeChapter,
-  parallelPericopeChapters,
   isSelectionMode,
   selectedCode,
   isHebreu,
@@ -132,13 +285,13 @@ export function UnifiedVersesRenderer({
   versesWithAnnotationNotes,
   navigateToPericope,
   annotationMode,
-  touchedVerse,
+  touchedVerseKey,
   taggedVersesInChapter,
   versesWithNonHighlightTags,
+  columnCount = 1,
   columnWidth = 75,
   parallelDisplayMode = 'horizontal',
-  columnTextModeControls,
-  redWordsByVersion,
+  redWords,
   passageMediaAfterVerses,
   passageMediaGallerySections,
 }: UnifiedVersesRendererProps) {
@@ -149,33 +302,21 @@ export function UnifiedVersesRenderer({
   // Calculate adjacent verses for fade effect in focused context mode
   const adjacentVerses = getAdjacentFocusVerses(focusVersesNumeric)
 
+  // Pre-compute whether verses are selected (avoids Object.keys() per iteration)
+  const hasSelectedVerses = Object.keys(selectedVerses).length > 0
+
   // Pre-compute tagged verses lookup: O(m) once instead of O(n*m) per verse
   const taggedVersesByLastVerse = getTaggedVersesByLastVerse(taggedVerses)
 
   // Pre-compute which verses have word annotations: O(a*r) once instead of O(n*a*r)
   const versesWithWordAnnotationsByKey = getVersesWithWordAnnotations(wordAnnotations, version)
-  const parallelVersesWithWordAnnotations = isParallelVerse
-    ? parallelVerses.map(parallel => ({
-        version: parallel.id,
-        verseKeys: getVersesWithWordAnnotations(wordAnnotations, parallel.id),
-      }))
-    : []
-  const pericopeByVersion: Record<string, PericopeChapter | undefined> = {
-    ...parallelPericopeChapters,
-    [version]: pericopeChapter,
-  }
-  const redWords = redWordsByVersion[version]
-
-  const chapterRows: ParallelChapterRow[] = isParallelVerse
-    ? getParallelChapterRows(verses, parallelVerses, version, interlinearMode)
-    : verses.map(verse => ({ verse, rows: [] }))
 
   return (
     <>
       {!annotationMode && !(isPassagePreview && isContextFocused) && (
         <InlineCommentaryChips chips={inlineCommentaries?.introduction} settings={settings} />
       )}
-      {chapterRows.map(({ verse, rows: parallelVerse }) => {
+      {verses.map((verse, i) => {
         if (verse.Verset == 0) return null
 
         const { Livre, Chapitre, Verset } = verse
@@ -202,92 +343,9 @@ export function UnifiedVersesRenderer({
         const relationCount = relationItemsCount[Verset]
         const relationItems = relationItemsText[Verset]
         const otherVersionAnnotations = wordAnnotationsInOtherVersions?.[verseKey]
-        const touchedCell = touchedVerse?.verseKey === verseKey ? touchedVerse : null
-        const isTouched = touchedCell?.version === version
-        const selectedVersion = selectedVerses[verseKey] ? selectedVersesVersion : null
+        const isTouched = touchedVerseKey === verseKey
 
-        // Parallel reading, reading and annotation alike: every version of the verse.
-        if (isParallelVerse) {
-          const isFocused = focusVersesNumeric
-            ? focusVersesNumeric.includes(verseNumber)
-            : undefined
-          const fadePosition = annotationMode
-            ? undefined
-            : getFadePosition(verseNumber, isContextFocused, adjacentVerses)
-          if (
-            !annotationMode &&
-            !shouldRenderVerseInFocusedContext({
-              verseNumber,
-              isContextFocused,
-              hasFocusVerses: Boolean(focusVerses),
-              isFocused,
-              fadePosition,
-            })
-          ) {
-            return null
-          }
-
-          const highlight = annotationMode ? undefined : highlightedVerses[verseKey]
-          const verseContent: VerseContentProps = {
-            verse,
-            settings,
-            isSelectionMode: annotationMode ? undefined : isSelectionMode,
-            annotationMode,
-            bookmark,
-            relationCount,
-            relationItems,
-            taggedItemsCount: taggedVersesInChapter?.[verseNumber] || 0,
-            tag,
-            otherVersionAnnotations,
-            passageMedia: passageMediaAfterVerses[verseNumber],
-            passageMediaGallerySections,
-          }
-
-          return (
-            <Span key={verseKey}>
-              <ParallelVerseRow
-                verse={verse}
-                cells={parallelVerse}
-                interlinearReadingVersions={interlinearReadingVersions}
-                displayMode={parallelDisplayMode}
-                textModeControls={columnTextModeControls}
-                columnWidth={columnWidth}
-                settings={settings}
-                isHebreu={isHebreu}
-                selectedCode={annotationMode ? null : selectedCode}
-                isSelectionMode={annotationMode ? undefined : isSelectionMode}
-                annotationMode={Boolean(annotationMode)}
-                selectedVersion={annotationMode ? null : selectedVersion}
-                touchedCell={touchedCell}
-                highlightedColor={
-                  highlight?.color as
-                    | keyof RootStyles['settings']['colors'][keyof RootStyles['settings']['colors']]
-                    | undefined
-                }
-                isVerseToScroll={!annotationMode && !isContextFocused && verseToScroll == Verset}
-                isFocused={annotationMode ? undefined : isFocused}
-                fadePosition={fadePosition}
-                pericopeByVersion={pericopeByVersion}
-                navigateToPericope={navigateToPericope}
-                redWordsByVersion={redWordsByVersion}
-                versionsWithWordAnnotations={
-                  new Set([
-                    ...(versesWithWordAnnotationsByKey.has(verseKey) ? [version] : []),
-                    ...parallelVersesWithWordAnnotations
-                      .filter(parallel => parallel.verseKeys.has(verseKey))
-                      .map(parallel => parallel.version),
-                  ])
-                }
-                verseContent={verseContent}
-                commentaryChips={
-                  annotationMode ? undefined : inlineCommentaries?.afterVerses[verseNumber]
-                }
-              />
-            </Span>
-          )
-        }
-
-        // In annotation mode, use simplified rendering (no interlinear, etc.)
+        // In annotation mode, use simplified rendering (no parallel, interlinear, etc.)
         if (annotationMode) {
           return (
             <Span key={verseKey}>
@@ -304,6 +362,7 @@ export function UnifiedVersesRenderer({
                 verse={verse}
                 settings={settings}
                 isSelected={false}
+                isSelectedMode={false}
                 isSelectionMode={undefined}
                 highlightedColor={undefined}
                 annotationNotesCount={annotationNotesCount}
@@ -344,7 +403,7 @@ export function UnifiedVersesRenderer({
           return null
         }
 
-        const isSelected = selectedVersion === version
+        const isSelected = Boolean(selectedVerses[verseKey])
         const isHighlighted = Boolean(highlightedVerses[verseKey])
         const highlightedColor = isHighlighted
           ? (highlightedVerses[verseKey]
@@ -352,6 +411,10 @@ export function UnifiedVersesRenderer({
           : undefined
 
         const isVerseToScroll = !isContextFocused && verseToScroll == Verset
+        const parallelVerse = isParallelVerse
+          ? getParallelVerseRows(i, parallelVerses, verse, version, interlinearMode)
+          : []
+
         const hasWordAnnotations = versesWithWordAnnotationsByKey.has(verseKey)
 
         return (
@@ -368,8 +431,11 @@ export function UnifiedVersesRenderer({
               version={version}
               interlinearMode={interlinearMode}
               verse={verse}
+              isParallelVerse={isParallelVerse}
+              parallelVerse={parallelVerse}
               settings={settings}
               isSelected={isSelected}
+              isSelectedMode={hasSelectedVerses}
               isSelectionMode={isSelectionMode}
               highlightedColor={highlightedColor}
               annotationNotesCount={annotationNotesCount}
@@ -388,6 +454,9 @@ export function UnifiedVersesRenderer({
               annotationMode={annotationMode}
               taggedItemsCount={taggedVersesInChapter?.[verseNumber] || 0}
               hasNonHighlightTags={versesWithNonHighlightTags?.[verseNumber]}
+              columnCount={columnCount}
+              columnWidth={columnWidth}
+              parallelDisplayMode={parallelDisplayMode}
               redWords={redWords}
               passageMedia={passageMediaAfterVerses[verseNumber]}
               passageMediaGallerySections={passageMediaGallerySections}

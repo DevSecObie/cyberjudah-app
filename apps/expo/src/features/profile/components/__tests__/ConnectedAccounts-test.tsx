@@ -36,11 +36,15 @@ jest.mock('~helpers/accountConnections', () => ({
 }))
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }))
 jest.mock('~common/ui/Icon', () => ({ FeatherIcon: 'FeatherIcon', IonIcon: 'IonIcon' }))
-jest.mock('~common/ui/ListSection', () => ({
+jest.mock('~common/ui/SectionCard', () => ({
   __esModule: true,
-  default: 'ListSection',
-  ListRow: 'ListRow',
+  default: 'SectionCard',
+  SectionCardHeader: 'SectionCardHeader',
 }))
+
+jest.mock('~common/ui/CardLinkItem', () => ({ __esModule: true, default: 'CardLinkItem' }))
+jest.mock('~common/ui/Box', () => ({ __esModule: true, default: 'Box' }))
+jest.mock('~common/ui/Text', () => ({ __esModule: true, default: 'Text' }))
 
 describe('Standalone connected account rows', () => {
   let renderer: ReactTestRenderer
@@ -53,7 +57,14 @@ describe('Standalone connected account rows', () => {
   })
   afterEach(() => act(() => renderer?.unmount()))
   const rows = () =>
-    renderer.root.findAll(item => String(item.type) === 'ListRow').map(item => item.props)
+    renderer.root
+      .findAll(item => String(item.type) === 'CardLinkItem')
+      .map(item => ({
+        onPress: item.props.onPress,
+        route: item.props.route,
+        label: item.findAll(child => String(child.type) === 'Text')[0]?.props.children,
+        description: item.findAll(child => String(child.type) === 'Text')[1]?.props.children,
+      }))
   const render = async () => {
     await act(async () => {
       renderer = create(<ConnectedAccounts />)
@@ -72,7 +83,7 @@ describe('Standalone connected account rows', () => {
       ['Google', 'google@example.test'],
       ['profile.connectedAccounts.email', 'email@example.test'],
     ])
-    expect(rows().every(row => !row.onPress && row.hasChevron === false)).toBe(true)
+    expect(rows().every(row => !row.onPress && !row.route)).toBe(true)
   })
 
   it('replaces the old provider display when the active account changes', async () => {

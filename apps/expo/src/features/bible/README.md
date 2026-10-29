@@ -72,8 +72,9 @@ BibleScreen/
 │   │   └── ReverseInterlinearVerse
 │   └── BibleFooter        # Contrôles audio et navigation
 ├── Selectors/             # Composants de sélection
-│   ├── BookSelectorSheet
-│   └── VersionSelectorSheet
+│   ├── BookSelector
+│   ├── ChapterSelector
+│   └── VerseSelector
 ├── Modals/                # Interfaces modales
 │   ├── BibleParamsModal
 │   └── SelectedVersesModal
@@ -81,7 +82,7 @@ BibleScreen/
     ├── BibleLinkScreen
     ├── NoteDetailTabScreen
     ├── CompareVersesScreen
-    ├── HistoryScreen (features/history)
+    ├── HistoryScreen
     └── PericopeScreen
 ```
 

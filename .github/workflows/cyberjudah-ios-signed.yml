@@ -2,7 +2,7 @@ name: CyberJudah signed iPhone staging build
 on:
   workflow_dispatch:
   push:
-    branches: [codex/ios-signing-setup]
+    branches: [codex/bible-strong-mobile-release]
 permissions:
   contents: read
 concurrency:

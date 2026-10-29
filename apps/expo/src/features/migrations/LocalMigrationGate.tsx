@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ActivityIndicator, ScrollView, View } from 'react-native'
 import type { TFunction } from 'i18next'
-import Box, { HStack, VStack, usePageBottomInset } from '~common/ui/Box'
+import Box, { HStack, VStack } from '~common/ui/Box'
 import Button from '~common/ui/Button'
 import Container from '~common/ui/Container'
 import { FeatherIcon } from '~common/ui/Icon'
@@ -155,7 +155,6 @@ const LocalMigrationGate = ({
   isLikelyOffline = isLikelyOfflineAfterFailure,
 }: LocalMigrationGateProps) => {
   const { t, i18n } = useTranslation()
-  const bottomInset = usePageBottomInset()
   const [startupDisposition] = useState(() => {
     try {
       return orchestrator.getStartupDisposition(context)
@@ -370,7 +369,7 @@ const LocalMigrationGate = ({
           flexGrow: 1,
           paddingHorizontal: 24,
           paddingTop: 32,
-          paddingBottom: 32 + bottomInset,
+          paddingBottom: 32,
         }}
         bounces={false}
       >

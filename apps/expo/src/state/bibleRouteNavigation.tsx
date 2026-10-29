@@ -8,11 +8,7 @@ import type { StrongMode } from '~helpers/strongBiblePublications'
 export type BibleRouteNavigationAdapter = {
   openChapter: (book: Book, chapter: number) => void
   replaceWithChapter: (book: Book, chapter: number) => void
-  /** With `interlinear`, the version opens in its interlinear presentation when it has one. */
-  changeVersion: (
-    version: string,
-    options?: { interlinear?: boolean; interlinearLocale?: ResourceLanguage }
-  ) => void
+  changeVersion: (version: string) => void
   changeStrongMode: (mode: StrongMode) => void
   /**
    * Moves to the route of an interlinear display when one exists. Returns false when the

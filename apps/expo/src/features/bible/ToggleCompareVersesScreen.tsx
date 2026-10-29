@@ -1,6 +1,5 @@
 import React from 'react'
 import { useSelector, useDispatch, shallowEqual } from 'react-redux'
-import { usePageBottomInset } from '~common/ui/Box'
 import Container from '~common/ui/Container'
 import { toggleCompareVersion } from '~redux/modules/user'
 import { versions } from '~helpers/bibleVersions'
@@ -17,7 +16,6 @@ const ToggleCompareVersesScreen = () => {
   const dispatch = useDispatch<AppDispatch>()
   const { t } = useTranslation()
   const offlineDetails = useBibleOfflineDetails()
-  const bottomInset = usePageBottomInset()
   const versionCatalog = useVersionCatalog(
     Object.values(versions).filter(version => !version.hidden),
     { resetSearchOnFocus: true }
@@ -35,7 +33,6 @@ const ToggleCompareVersesScreen = () => {
         grouping={versionCatalog.grouping}
         query={versionCatalog.query}
         openStyleInfo={versionCatalog.openStyleInfo}
-        bottomInset={bottomInset}
         scrollToTopKey={`${versionCatalog.focusKey}:${versionCatalog.filterKey}`}
         renderItem={({ item }) => (
           <VersionSelectorItem

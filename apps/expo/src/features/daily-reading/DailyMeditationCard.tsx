@@ -17,7 +17,6 @@ import Box from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import Paragraph from '~common/ui/Paragraph'
 import { FeatherIcon } from '~common/ui/Icon'
-import { radii } from '~common/ui/surfaces'
 import { useDailyMeditation, useLocalReadingDate } from './useDailyMeditation'
 
 export interface DailyMeditationCardProps {
@@ -64,27 +63,30 @@ const DailyMeditationCard = ({
       className={
         desktop
           ? 'flex-1 p-[24px] pb-[12px]'
-          : 'overflow-hidden border-continuous px-[20px] rounded-[24px] bg-surface py-[20px]'
+          : 'overflow-hidden border-continuous px-[20px] rounded-[30px] bg-reverse py-[20px]'
       }
       style={desktop ? style : { height: 280 }}
     >
       <Box
-        className={`flex-row items-center justify-between gap-[12px] ${desktop ? 'flex-wrap' : ''}`}
+        dataSet={desktop ? { 'home-verse-header': '' } : undefined}
+        className="flex-row items-center justify-between gap-[12px]"
       >
-        <Text className="text-grey text-[12px] font-medium uppercase tracking-[1.5px]">
-          {addDay === 0
-            ? t('dailyReading.meditationOfTheDay')
-            : dayLabels[-addDay]
-              ? t(dayLabels[-addDay])
-              : date}
+        <Text
+          className={
+            desktop
+              ? 'text-primary font-bold text-[12px] uppercase tracking-[1.5px]'
+              : 'text-grey font-bold text-[14px]'
+          }
+        >
+          {dayLabels[-addDay] ? t(dayLabels[-addDay]) : date}
         </Text>
         {navigation}
         <Link
           onPress={() => router.push('/daily-reading')}
+          size={44}
           accessibilityLabel={t('dailyReading.change')}
-          className="min-h-[44px] justify-center"
         >
-          <Text className="text-link font-bold text-[13px]">{t('dailyReading.changeShort')}</Text>
+          <FeatherIcon name="sliders" size={18} color="grey" />
         </Link>
       </Box>
       {opening ? (
@@ -100,7 +102,7 @@ const DailyMeditationCard = ({
             style={{
               fontFamily,
               fontWeight: 'normal',
-              ...(desktop ? { fontSize: 20, lineHeight: 30, maxWidth: 600 } : {}),
+              ...(desktop ? { fontSize: 23, lineHeight: 34, maxWidth: 600 } : {}),
             }}
           >
             {opening.quote.replace(/\n+/g, ' ')}
@@ -126,14 +128,14 @@ const DailyMeditationCard = ({
           <Text className="text-grey">
             {isOffline ? t('dailyReading.offlineContent') : t('dailyReading.downloadError')}
           </Text>
-          <Text className="text-link mt-[8px]">{t('dailyReading.retry')}</Text>
+          <Text className="text-primary mt-[8px]">{t('dailyReading.retry')}</Text>
         </Link>
       ) : lookup ? (
         <Box className="gap-[8px] mt-[12px]">
           <Text className="text-grey">{t('dailyReading.noEntry')}</Text>
           {onFallback && (
             <Link onPress={onFallback} className="py-[12px]">
-              <Text className="text-link font-bold">{t('dailyReading.fallback')}</Text>
+              <Text className="text-primary font-bold">{t('dailyReading.fallback')}</Text>
             </Link>
           )}
         </Box>
@@ -182,7 +184,7 @@ const DailyMeditationCard = ({
               <Image
                 source={{ uri: cover }}
                 contentFit="cover"
-                style={{ width: 24, height: 24, borderRadius: radii.mark }}
+                style={{ width: 24, height: 24, borderRadius: 5 }}
                 accessibilityIgnoresInvertColors
               />
             )}

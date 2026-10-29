@@ -8,12 +8,12 @@ import { type SheetRef } from '~common/sheet'
 import ParamsModal from '~features/plans/PlanSliceScreen/ParamsModal'
 import ReadingDatePicker from './ReadingDatePicker'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { ActivityIndicator, Platform, ScrollView, Share, StyleSheet } from 'react-native'
+import { ActivityIndicator, Platform, ScrollView, Share } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import Header from '~common/Header'
 import ContextualMenu from '~common/ContextualPanel/ContextualMenu'
 import Link from '~common/Link'
-import Box, { usePageBottomInset } from '~common/ui/Box'
+import Box from '~common/ui/Box'
 import Button from '~common/ui/Button'
 import Container from '~common/ui/Container'
 import Text from '~common/ui/Text'
@@ -22,7 +22,6 @@ import { READING_TEXT_MAX_WIDTH } from '~common/readingLayout'
 import { getMeditationTitle, toCivilDate, isCivilDate } from '~features/plans/readingCalendar'
 import { useReadingContent, useLocalReadingDate } from './useDailyMeditation'
 import { resolveMeditationReading } from './resolveMeditationReading'
-import { useRecordHistory } from '~features/history/useRecordHistory'
 
 interface MeditationReaderProps {
   assistantScope?: string
@@ -54,26 +53,12 @@ export const MeditationReader = ({
   const cover = useFireStorage(collection?.image)
   const reading = resolved?.reading
   useAssistantResourceContext(assistantScope, editorialContext(collection, reading))
-  const readingTitle = reading && getMeditationTitle(reading)
-  useRecordHistory(
-    collection && reading && readingTitle
-      ? {
-          type: 'meditation',
-          collectionId,
-          readingId: reading.id,
-          title: readingTitle,
-          collectionTitle: collection.title,
-          readingDate: resolved?.date,
-        }
-      : null
-  )
   const date =
     resolved?.date ??
     (!readingId ? (requestedDate && isCivilDate(requestedDate) ? requestedDate : today) : undefined)
   const { t } = useTranslation()
   const router = useRouter()
   const paramsSheet = useRef<SheetRef>(null)
-  const bottomInset = usePageBottomInset()
   const changeDate = (next: string) => {
     if (onDateChange) onDateChange(next)
     else router.setParams({ date: next, readingId: undefined })
@@ -149,15 +134,14 @@ export const MeditationReader = ({
           maxWidth: wide ? 940 : READING_TEXT_MAX_WIDTH + 40,
           alignSelf: 'center',
           padding: wide ? 32 : 20,
-          paddingBottom: 64 + bottomInset,
+          paddingBottom: 64,
         }}
       >
         <Box className={wide ? 'flex-row items-start gap-[40px]' : 'gap-[28px]'}>
           <Box
             className={
-              wide ? 'w-[176px] shrink-0 border-separator pr-[24px] gap-[24px]' : 'gap-[20px]'
+              wide ? 'w-[176px] shrink-0 border-r border-border pr-[24px] gap-[24px]' : 'gap-[20px]'
             }
-            style={wide ? { borderRightWidth: StyleSheet.hairlineWidth } : undefined}
           >
             {isWeb && (
               <Link
@@ -182,7 +166,7 @@ export const MeditationReader = ({
                   />
                 )}
                 <Box className="min-h-[44px] flex-row items-center gap-[8px] flex-1">
-                  <Text className="text-link text-[14px] flex-1">
+                  <Text className="text-primary text-[14px] flex-1">
                     {collection?.title ?? t('dailyReading.collection')}
                   </Text>
                   <FeatherIcon name="chevron-right" size={18} color="primary" />
@@ -193,18 +177,17 @@ export const MeditationReader = ({
               <Box
                 className={
                   wide
-                    ? 'border-separator pt-[20px] gap-[12px]'
+                    ? 'border-t border-border pt-[20px] gap-[12px]'
                     : isWeb
-                      ? 'flex-row items-center justify-between border-separator pt-[16px]'
+                      ? 'flex-row items-center justify-between border-t border-border pt-[16px]'
                       : 'flex-row items-center justify-between'
                 }
-                style={wide || isWeb ? { borderTopWidth: StyleSheet.hairlineWidth } : undefined}
               >
                 {!wide && (
                   <Link
                     size={36}
                     hitSlop={4}
-                    className="bg-light-grey rounded-full"
+                    className="bg-light-grey rounded-[18px]"
                     accessibilityLabel={t('dailyReading.previous')}
                     onPress={() => move(-1)}
                   >
@@ -226,7 +209,7 @@ export const MeditationReader = ({
                       hitSlop={4}
                       accessibilityLabel={t('dailyReading.previous')}
                       onPress={() => move(-1)}
-                      className="bg-light-grey rounded-full"
+                      className="bg-light-grey rounded-[18px]"
                     >
                       <FeatherIcon name="chevron-left" size={20} color="primary" />
                     </Link>
@@ -235,7 +218,7 @@ export const MeditationReader = ({
                       hitSlop={4}
                       accessibilityLabel={t('dailyReading.next')}
                       onPress={() => move(1)}
-                      className="bg-light-grey rounded-full"
+                      className="bg-light-grey rounded-[18px]"
                     >
                       <FeatherIcon name="chevron-right" size={20} color="primary" />
                     </Link>
@@ -244,7 +227,7 @@ export const MeditationReader = ({
                   <Link
                     size={36}
                     hitSlop={4}
-                    className="bg-light-grey rounded-full"
+                    className="bg-light-grey rounded-[18px]"
                     accessibilityLabel={t('dailyReading.next')}
                     onPress={() => move(1)}
                   >

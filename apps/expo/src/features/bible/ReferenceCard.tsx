@@ -1,5 +1,5 @@
+import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme, useTheme } from '~themes/ThemeProvider'
-import { titleFontStyle } from '~themes/styleValues'
 import React from 'react'
 import { ActivityIndicator, ScrollView } from 'react-native'
 import { useQuery } from '@tanstack/react-query'
@@ -61,7 +61,7 @@ const ReferenceItem = ({ reference, version }: { reference: string; version: Ver
               disabled={verseQuery.isFetching}
               onPress={() => void verseQuery.refetch()}
             >
-              <Text className="text-link">
+              <Text className="text-primary">
                 {t(verseQuery.isFetching ? 'Chargement...' : 'Réessayer')}
               </Text>
             </TouchableBox>
@@ -85,7 +85,10 @@ const ReferenceItem = ({ reference, version }: { reference: string; version: Ver
       }}
     >
       <Box className="overflow-hidden border-continuous mb-[30px]">
-        <Text className="text-[14px]" style={titleFontStyle(stylingTheme)}>
+        <Text
+          className="text-[14px]"
+          style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+        >
           {Verse.title}
         </Text>
         <Paragraph scale={-2} scaleLineHeight={-1}>
@@ -207,7 +210,7 @@ const References = ({
           <Text
             className="text-[20px] mb-[5px] text-light-primary"
             key={ref}
-            style={titleFontStyle(stylingTheme)}
+            style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
           >
             {splittedRef}
           </Text>

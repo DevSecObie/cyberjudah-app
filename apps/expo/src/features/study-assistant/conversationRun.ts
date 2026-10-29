@@ -1,4 +1,3 @@
-import generateUUID from '~helpers/generateUUID'
 import { prepareMemory, type Compactor } from './conversationMemory'
 import type {
   StudyWidget,
@@ -28,7 +27,6 @@ export async function runConversation({
   preferences,
   question,
   context,
-  retryOf,
   controller,
   request,
   compact,
@@ -45,8 +43,6 @@ export async function runConversation({
   >
   question: string
   context: ReadingContext | null
-  /** The failed question being asked again: its saved exchange is replaced, not repeated. */
-  retryOf?: Pick<LocalMessage, 'id'>
   controller: AbortController
   compact?: Compactor
   request: ConversationRequest
@@ -60,8 +56,7 @@ export async function runConversation({
   const timestamp = Date.now(),
     snapshot = context ? { ...context } : undefined
   const user: LocalMessage = {
-    // An exchange is stored under its question's identity: keeping it overwrites the failure.
-    id: retryOf?.id ?? generateUUID(),
+    id: crypto.randomUUID(),
     role: 'user',
     text: question,
     state: 'complete',
@@ -69,7 +64,7 @@ export async function runConversation({
     createdAt: timestamp,
   }
   const answer: LocalMessage = {
-    id: generateUUID(),
+    id: crypto.randomUUID(),
     role: 'assistant',
     text: '',
     state: 'streaming',

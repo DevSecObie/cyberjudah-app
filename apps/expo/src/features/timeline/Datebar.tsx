@@ -1,11 +1,9 @@
-import { resolveThemeColor, titleFontStyle } from '~themes/styleValues'
+import { resolveThemeColor, resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import React from 'react'
-import { Platform } from 'react-native'
 import { SharedValue, useAnimatedStyle } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Box, { AnimatedBox } from '~common/ui/Box'
-import { floatingShadow } from '~common/ui/surfaces'
 import Text from '~common/ui/Text'
 import { offset } from './constants'
 import { useTimelineTranslation } from './useTimelineLanguage'
@@ -35,19 +33,22 @@ const Datebar = ({
 
   return (
     <AnimatedBox
-      className="overflow-hidden border-continuous flex-row absolute left-[0px] h-[25px] bg-surface-raised"
+      className="overflow-hidden border-continuous flex-row absolute left-[0px] h-[25px] bg-reverse"
       style={[
         {
           paddingLeft: offset,
           width: width,
           bottom: useSafeAreaInsets().bottom,
-          // The bar spans the whole period (up to ~14,000pt): Android, which never drew its
-          // shadow, is spared a blurred layer of that size.
-          ...(Platform.OS !== 'android' && floatingShadow),
+          shadowColor: 'rgb(89,131,240)',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 7,
+          elevation: 1,
           overflow: 'visible',
         },
         useAnimatedStyle(() => ({
           transform: [{ translateX: x.get() }],
+          elevation: 0,
         })),
       ]}
     >
@@ -56,12 +57,12 @@ const Datebar = ({
           className="overflow-hidden border-continuous w-[100px] left-[-50px] items-center justify-end"
           key={value}
         >
-          <Box className="overflow-hidden border-continuous p-[5px] mb-[3px]">
+          <Box className="overflow-hidden border-continuous p-[5px] rounded-[3px] mb-[3px]">
             <Text
               className="font-bold text-[10px]"
               style={{
                 color: resolveThemeColor(stylingTheme, color) || stylingTheme.colors.default,
-                ...titleFontStyle(stylingTheme),
+                fontFamily: resolveFontFamily(stylingTheme.fontFamily.title),
               }}
             >
               {usesCyberJudahEditorial() || value < 2020 ? Math.abs(value) : t('Futur')}

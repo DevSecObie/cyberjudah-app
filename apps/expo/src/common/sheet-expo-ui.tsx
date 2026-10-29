@@ -8,7 +8,7 @@ import {
   BottomSheetTextInput,
   BottomSheetView,
   type BottomSheetMethods,
-} from '~common/vaulBottomSheet'
+} from '@expo/ui/community/bottom-sheet'
 import { FlashList, type FlashListProps } from '@shopify/flash-list'
 import React, { forwardRef } from 'react'
 import {
@@ -39,9 +39,7 @@ import type {
 } from '~common/sheet'
 import Box, { FadingText, TouchableBox } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
-import { floatingShadow } from '~common/ui/surfaces'
 import Text from '~common/ui/Text'
-import { WithoutWorkspaceHeaderInset } from '~features/app-switcher/workspaceHeaderInset'
 
 type SheetContextValue = {
   footerHeight: number
@@ -184,10 +182,6 @@ const Sheet = forwardRef<SheetRef, SheetProps>((props, ref) => {
       resizeTo: snapPoint =>
         sheetRef.current?.snapToIndex(findSnapPointIndex(snapPoints, snapPoint)),
       dismiss: () => dismiss(),
-      dismissThen: action => {
-        dismiss()
-        action()
-      },
       close: () => dismiss(),
       forceClose: () => dismiss(true),
     }
@@ -229,7 +223,7 @@ const Sheet = forwardRef<SheetRef, SheetProps>((props, ref) => {
             paddingRight: 0,
             marginLeft: 'auto',
             marginRight: 'auto',
-            ...floatingShadow,
+            boxShadow: '0 -4px 24px rgba(0, 0, 0, 0.10), 0 -1px 4px rgba(0, 0, 0, 0.04)',
             ...(webContainerBounds
               ? {
                   '--bible-selection-left': `${webContainerBounds.left}px`,
@@ -258,11 +252,9 @@ const Sheet = forwardRef<SheetRef, SheetProps>((props, ref) => {
             />
           </>
         )}
-        <WithoutWorkspaceHeaderInset>
-          {renderedHeader}
-          {children}
-          {renderedFooter}
-        </WithoutWorkspaceHeaderInset>
+        {renderedHeader}
+        {children}
+        {renderedFooter}
       </BottomSheetModal>
     </SheetContext.Provider>
   )

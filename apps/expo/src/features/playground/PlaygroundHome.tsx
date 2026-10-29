@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router'
-import { titleFontStyle } from '~themes/styleValues'
+import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme, useTheme } from '~themes/ThemeProvider'
 import { Feather } from '@expo/vector-icons'
 import { useTranslation } from 'react-i18next'
@@ -51,8 +51,11 @@ const PlaygroundLink = ({ description, eyebrow, icon, onPress, title }: Playgrou
             <Feather name={icon} size={21} color={theme.colors.reverse} />
           </Box>
           <VStack className="overflow-hidden border-continuous flex-[1] gap-[3px]">
-            <Text className="text-link text-[10px] font-bold uppercase">{eyebrow}</Text>
-            <Text className="text-[19px] leading-[24px]" style={titleFontStyle(stylingTheme)}>
+            <Text className="text-primary text-[10px] font-bold uppercase">{eyebrow}</Text>
+            <Text
+              className="text-[19px] leading-[24px]"
+              style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+            >
               {title}
             </Text>
           </VStack>
@@ -114,7 +117,10 @@ const PlaygroundHome = ({
               </Text>
             </HStack>
             <VStack className="overflow-hidden border-continuous gap-[10px]">
-              <Text className="text-[36px] leading-[42px]" style={titleFontStyle(stylingTheme)}>
+              <Text
+                className="text-[36px] leading-[42px]"
+                style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+              >
                 {t('playground.title')}
               </Text>
               <Text className="text-grey text-[16px] leading-[24px]">

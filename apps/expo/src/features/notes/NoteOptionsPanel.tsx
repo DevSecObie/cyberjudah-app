@@ -48,7 +48,8 @@ export default function NoteOptionsPanel({ noteId, title }: { noteId: string; ti
                 icon="file-text"
                 label={t('Voir la note')}
                 onPress={() => {
-                  nav.closeThen(() => push({ pathname: '/note', params: { noteId } }))
+                  nav.close()
+                  push({ pathname: '/note', params: { noteId } })
                 }}
               />
               {verseKeys.length > 0 && (
@@ -56,12 +57,11 @@ export default function NoteOptionsPanel({ noteId, title }: { noteId: string; ti
                   icon="book-open"
                   label={t('Voir dans la Bible')}
                   onPress={() => {
-                    nav.closeThen(() =>
-                      push({
-                        pathname: '/bible-view',
-                        params: getBibleViewParamsForVerseKeys(verseKeys, version),
-                      })
-                    )
+                    nav.close()
+                    push({
+                      pathname: '/bible-view',
+                      params: getBibleViewParamsForVerseKeys(verseKeys, version),
+                    })
                   }}
                 />
               )}
@@ -69,17 +69,16 @@ export default function NoteOptionsPanel({ noteId, title }: { noteId: string; ti
                 icon="external-link"
                 label={t('tab.openInNewTab')}
                 onPress={() => {
-                  nav.closeThen(() =>
-                    openTab(
-                      {
-                        id: 'notes-' + generateUUID(),
-                        type: 'notes',
-                        title,
-                        isRemovable: true,
-                        data: { noteId },
-                      },
-                      { autoRedirect: true }
-                    )
+                  nav.close()
+                  openTab(
+                    {
+                      id: 'notes-' + generateUUID(),
+                      type: 'notes',
+                      title,
+                      isRemovable: true,
+                      data: { noteId },
+                    },
+                    { autoRedirect: true }
                   )
                 }}
               />

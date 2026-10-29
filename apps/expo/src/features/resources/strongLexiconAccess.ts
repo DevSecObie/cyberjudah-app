@@ -43,7 +43,6 @@ import {
 import { resolveHybridResourceSource } from './hybridResourcePolicy'
 import { ResourceAccessError, resourceAccessErrorFromHttpResponse } from './resourceAccessError'
 import { normalizeBibleSearchText } from '~helpers/bibleSearchInput'
-import { canonicalListParameter } from '~helpers/canonicalListParameter'
 
 export type {
   StrongLexiconChapterEntity,
@@ -1210,8 +1209,6 @@ type HttpStrongLexiconAccessOptions = {
   baseUrl: string
   fetcher?: typeof fetch
   isOnline: () => Promise<boolean>
-  /** Explains a request that failed without a response; defaults to the online gate. */
-  isOfflineFailure?: () => Promise<boolean>
   timeoutMs?: number
 }
 
@@ -1234,7 +1231,6 @@ export const createHttpStrongLexiconAccess = ({
   baseUrl,
   fetcher = fetch,
   isOnline,
-  isOfflineFailure = async () => !(await isOnline()),
   timeoutMs = 10_000,
   level = 'detailed',
 }: HttpStrongLexiconAccessOptions): StrongLexiconAccess => {
@@ -1272,7 +1268,7 @@ export const createHttpStrongLexiconAccess = ({
       if (signal?.aborted) throw error
       if (error instanceof ResourceAccessError) throw error
       throw new ResourceAccessError(
-        (await isOfflineFailure()) ? 'NETWORK_OFFLINE' : 'TEMPORARY_UNAVAILABLE'
+        (await isOnline()) ? 'TEMPORARY_UNAVAILABLE' : 'NETWORK_OFFLINE'
       )
     } finally {
       clearTimeout(timeout)
@@ -1360,10 +1356,9 @@ export const createHttpStrongLexiconAccess = ({
       }))
       const params = new URLSearchParams({
         language,
-        // Cards are matched back to each identity below: the list is sent as a set.
-        identities: canonicalListParameter(
-          normalizedIdentities.map(identity => `${identity.kind}:${identity.code}`)
-        ).join(','),
+        identities: normalizedIdentities
+          .map(identity => `${identity.kind}:${identity.code}`)
+          .join(','),
       })
       const response = await get(
         `/v1/strong-lexicon/entries/batch?${params}`,
@@ -1397,21 +1392,12 @@ export const createHttpStrongLexiconAccess = ({
       }))
     },
     async loadMorphologies(codes, language) {
-      // The server ignores blank codes and answers each code once, under the code requested.
-      const requestedCodes = codes.map(code => code.trim()).filter(Boolean)
-      if (!requestedCodes.length) return []
+      if (!codes.length) return []
       const response = await get(
-        `/v1/strong-lexicon/morphologies?${languageQuery(language)}&codes=${encodeURIComponent(canonicalListParameter(requestedCodes).join(','))}`,
+        `/v1/strong-lexicon/morphologies?${languageQuery(language)}&codes=${encodeURIComponent(codes.join(','))}`,
         StrongLexiconMorphologyResponseDto
       )
-      // Back in the order and with the repetitions of the request.
-      const morphologiesByCode = new Map(
-        response.morphologies.map(morphology => [morphology.code, morphology])
-      )
-      return requestedCodes.flatMap(code => {
-        const morphology = morphologiesByCode.get(code)
-        return morphology ? [morphology] : []
-      })
+      return [...response.morphologies]
     },
     async loadEntity(uniqueName, language) {
       try {
@@ -1429,11 +1415,7 @@ export const createHttpStrongLexiconAccess = ({
       const bookCode = getTipnrBookCode(book)
       if (!bookCode) return []
       const query = new URLSearchParams({ language })
-      // The server reads the codes as a set.
-      const requestedCodes = canonicalListParameter(
-        strongCodes.map(code => code.trim()).filter(Boolean)
-      )
-      if (requestedCodes.length) query.set('strongCodes', requestedCodes.join(','))
+      if (strongCodes.length) query.set('strongCodes', strongCodes.join(','))
       const response = await get(
         `/v1/strong-lexicon/entities/chapters/${bookCode}/${chapter}?${query}`,
         StrongLexiconChapterEntitiesResponseDto

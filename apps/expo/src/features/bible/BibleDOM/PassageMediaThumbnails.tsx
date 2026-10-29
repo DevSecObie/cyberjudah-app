@@ -1,6 +1,5 @@
 import { LayoutGroup, m, useMotionValue, useReducedMotion } from 'motion/react'
 import { useEffect, useId, useRef, useState, type CSSProperties } from 'react'
-import { radii } from '~common/ui/surfaces'
 import type { ResolvedPassageMedia } from '../passageMedia'
 import type { RootStyles } from './BibleDOMWrapper'
 import { getDisabledStyles } from './disabledStyles'
@@ -15,6 +14,7 @@ import { registerVisibleScrollEffect } from './visibleScrollEffects'
 type Props = RootStyles & {
   items: ResolvedPassageMedia[]
   placement: 'introduction' | 'inline' | 'chapter-resources'
+  isParallel?: boolean
   isDisabled?: boolean
   isCompact?: boolean
   blockMargin?: CSSProperties['margin']
@@ -24,6 +24,7 @@ type Props = RootStyles & {
 const INLINE_THUMBNAIL = {
   height: 25,
   aspectRatio: 1.3,
+  parallelScale: 0.75,
   containerScale: 0.7,
   margin: 2,
 }
@@ -69,6 +70,7 @@ const PassageMediaThumbnails = ({
   items,
   placement,
   settings,
+  isParallel,
   isDisabled = false,
   isCompact = false,
   blockMargin,
@@ -126,7 +128,8 @@ const PassageMediaThumbnails = ({
         ? COMPACT_INTRODUCTION_THUMBNAIL
         : INTRODUCTION_THUMBNAIL
       : CHAPTER_RESOURCES_THUMBNAIL
-  const inlineCardHeight = INLINE_THUMBNAIL.height
+  const inlineCardHeight =
+    INLINE_THUMBNAIL.height * (isParallel ? INLINE_THUMBNAIL.parallelScale : 1)
   const inlineCardWidth = inlineCardHeight * INLINE_THUMBNAIL.aspectRatio
   const cardHeight = isInline
     ? scaleFontSize(inlineCardHeight, settings.fontSizeScale)
@@ -212,8 +215,8 @@ const PassageMediaThumbnails = ({
                 boxSizing: 'border-box',
                 placeSelf: 'center',
                 border: `2px solid ${colors.reverse}`,
-                // Set in a verse, a thumbnail is a mark; elsewhere, a tile
-                borderRadius: isInline && !isCompact ? radii.mark : radii.tile,
+                borderRadius: isCompact ? 7 : isInline ? 5 : 9,
+                boxShadow: '0 2px 7px rgba(0, 0, 0, 0.22)',
                 x: transform.x,
                 rotate: transform.rotate,
                 transformOrigin: 'center',

@@ -29,20 +29,13 @@ type EditingColor =
   | { type: 'custom'; color: CustomColor }
 
 type Props = {
-  /** The desktop selection menu lines the circles up compactly instead of across the screen. */
-  compact?: boolean
   selectedVerseHighlightColor: string | null
   addHighlight: (color: string) => void
   removeHighlight: () => void
   onClose?: () => void
 }
 
-const ColorCirclesBar = ({
-  compact,
-  selectedVerseHighlightColor,
-  addHighlight,
-  removeHighlight,
-}: Props) => {
+const ColorCirclesBar = ({ selectedVerseHighlightColor, addHighlight, removeHighlight }: Props) => {
   const dispatch = useDispatch()
   const setColorPickerModal = useSetAtom(colorPickerModalAtom)
   const modalRef = useRef<SheetRef>(null)
@@ -140,8 +133,7 @@ const ColorCirclesBar = ({
         onLongPress={handleLongPress}
         showAddButton
         onAddPress={handleOpenColorPicker}
-        layout={compact ? 'grid' : 'scroll'}
-        circleSize={compact ? 22 : undefined}
+        layout="scroll"
       />
 
       <ColorEditModal

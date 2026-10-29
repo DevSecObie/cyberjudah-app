@@ -9,15 +9,13 @@ import { useEntityListQueryFilters } from '~common/EntityListQueryFilters'
 import type { EntityListSort } from '~features/entityListQuery/entityListQuery'
 import Link from '~common/Link'
 import Border from '~common/ui/Border'
-import Box, { usePageBottomInset, VStack } from '~common/ui/Box'
+import Box, { VStack } from '~common/ui/Box'
 import FlatList from '~common/ui/FlatList'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
-import { FeatherIcon } from '~common/ui/Icon'
-import IconTile, { ICON_TILE_SIZE } from '~common/ui/IconTile'
+import { IonIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
 import { selectSortedBookmarks } from '~redux/selectors/bookmarks'
 import type { Bookmark } from '~common/types'
-import { personalContentIcons } from '~common/personalContent'
 import books from '~assets/bible_versions/books-desc'
 import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
 import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
@@ -35,9 +33,6 @@ const formatReference = (bookmark: Bookmark): string => {
   return `${bookName} ${bookmark.chapter}:${verse}`
 }
 
-/** Where the row's text starts, after its 20pt gutter, its icon tile and the gap. */
-const TEXT_INSET = 20 + ICON_TILE_SIZE + 12
-
 type BookmarkItemProps = {
   item: Bookmark
   onNavigate: (bookmark: Bookmark) => void
@@ -51,20 +46,18 @@ const BookmarkItem = ({ item, onNavigate }: BookmarkItemProps) => {
       <Box className="overflow-hidden border-continuous flex-row py-[10px] pl-[20px] pr-[0px] items-center">
         <Link onPress={() => onNavigate(item)} style={{ flex: 1 }}>
           <Box className="overflow-hidden border-continuous flex-row items-center">
-            <IconTile tint={item.color}>
-              <FeatherIcon name={personalContentIcons.bookmarks} size={16} color={item.color} />
-            </IconTile>
-            <VStack className="overflow-hidden border-continuous gap-[2px] flex-[1] ml-[12px]">
-              <Text className="text-[15px] font-semibold" numberOfLines={1}>
+            <IonIcon name="bookmark" size={20} color={item.color} />
+            <VStack className="overflow-hidden border-continuous gap-[4px] flex-[1] ml-[10px]">
+              <Text className="font-bold" numberOfLines={1}>
                 {item.name}
               </Text>
-              <Text className="text-[13px] text-grey">{reference}</Text>
+              <Text className="text-[14px]">{reference}</Text>
             </VStack>
           </Box>
         </Link>
         <BookmarkOptionsPanel bookmark={item} onNavigate={() => onNavigate(item)} />
       </Box>
-      <Border style={{ marginLeft: TEXT_INSET }} />
+      <Border className="mx-[20px]" />
     </Box>
   )
 }
@@ -79,7 +72,6 @@ const BookmarksScreen = ({ isFormSheet = false }: BookmarksScreenProps) => {
   const canGoBackInStack = useCanGoBackInStack()
   const hasBackButton = isFormSheet ? canGoBackInStack : true
   const bookmarks = useSelector(selectSortedBookmarks)
-  const bottomInset = usePageBottomInset()
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<EntityListSort>('newest')
   const queryFilters = useEntityListQueryFilters({
@@ -132,7 +124,7 @@ const BookmarksScreen = ({ isFormSheet = false }: BookmarksScreenProps) => {
               <BookmarkItem item={item} onNavigate={handleNavigate} />
             )}
             keyExtractor={(item: Bookmark) => item.id}
-            contentContainerStyle={{ paddingBottom: 70 + bottomInset }}
+            contentContainerStyle={{ paddingBottom: 70 }}
           />
         ) : (
           <Empty

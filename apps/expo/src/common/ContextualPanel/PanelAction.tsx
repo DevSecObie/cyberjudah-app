@@ -11,7 +11,6 @@ export default function PanelAction({
   destructive,
   disabled,
   nested,
-  selected,
   onPress,
 }: {
   label: string
@@ -19,8 +18,6 @@ export default function PanelAction({
   destructive?: boolean
   disabled?: boolean
   nested?: boolean
-  /** Web: the current choice, set apart from the others. */
-  selected?: boolean
   onPress: () => void
 }) {
   if (Platform.OS !== 'web' && icon && !disabled) {
@@ -38,18 +35,18 @@ export default function PanelAction({
     <TouchableBox
       className={
         Platform.OS === 'web'
-          ? `w-full flex-row items-center gap-3 p-3 rounded-lg${selected ? ' bg-opacity5' : ''}`
+          ? 'w-full flex-row items-center gap-3 p-3 rounded-lg'
           : 'w-full flex-row items-center p-[20px] border-b-[1px] border-border'
       }
       accessibilityRole="button"
       disabled={disabled}
-      accessibilityState={{ disabled: !!disabled, selected: !!selected }}
+      accessibilityState={{ disabled: !!disabled }}
       style={{ opacity: disabled ? 0.5 : 1 }}
       onPress={onPress}
     >
       {icon && <FeatherIcon name={icon} size={17} color={destructive ? 'quart' : 'default'} />}
       <Text
-        className={`flex-1 ${Platform.OS === 'web' ? 'text-[14px]' : 'text-[16px]'} ${destructive ? 'text-quart' : selected ? 'text-link font-bold' : 'text-default'}`}
+        className={`flex-1 ${Platform.OS === 'web' ? 'text-[14px]' : 'text-[16px]'} ${destructive ? 'text-quart' : 'text-default'}`}
       >
         {label}
       </Text>

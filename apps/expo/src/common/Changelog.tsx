@@ -1,7 +1,8 @@
 import distanceInWords from 'date-fns/formatDistance'
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import { useEffect, useRef } from 'react'
-import { Platform, View } from 'react-native'
+import * as NativeUI from 'react-native'
+import { Platform } from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
 import { SheetHeader, SheetScrollView, type SheetRef } from '~common/sheet'
@@ -44,20 +45,20 @@ const getTagColor = (type: LogType) => {
 }
 
 export const ChangelogTag = (
-  componentProps: Omit<UIComponentProps<typeof View>, keyof { type: LogType } | 'theme'> &
+  componentProps: Omit<UIComponentProps<typeof NativeUI.View>, keyof { type: LogType } | 'theme'> &
     Omit<{ type: LogType }, 'theme'> & { theme?: AppTheme; className?: string }
 ) => {
   const { theme: _themeOverride, className, ...props } = componentProps
 
   const { type } = props
-  const resolvedClassName = twMerge('ml-[10px] p-[3px] rounded-[4px]', className)
+  const resolvedClassName = twMerge('ml-[10px] p-[3px] rounded-[3px]', className)
   return (
-    <View
+    <NativeUI.View
       {...props}
       className={resolvedClassName}
       style={
         [{ backgroundColor: getTagColor(type) }, props.style] as UIComponentProps<
-          typeof View
+          typeof NativeUI.View
         >['style']
       }
     />

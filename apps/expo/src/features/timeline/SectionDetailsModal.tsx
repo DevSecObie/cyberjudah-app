@@ -1,4 +1,4 @@
-import { resolveThemeColor, titleFontStyle } from '~themes/styleValues'
+import { resolveThemeColor, resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import React from 'react'
 import { type SheetRef, SheetScrollView } from '~common/sheet'
@@ -10,7 +10,6 @@ import { useTranslation } from 'react-i18next'
 import InlineLink from '~common/InlineLink'
 import Box from '~common/ui/Box'
 import Paragraph from '~common/ui/Paragraph'
-import { radii } from '~common/ui/surfaces'
 import Text from '~common/ui/Text'
 import useTimelineLanguage from './useTimelineLanguage'
 import { getLegacyLocalizedField } from '~helpers/languageUtils'
@@ -64,31 +63,48 @@ const SectionDetailsModal = ({
               : 'overflow-hidden border-continuous flex-[1] items-center justify-center px-[50px] py-[60px]'
           }
         >
-          <Text className="text-[20px]" style={titleFontStyle(stylingTheme)}>
+          <Text
+            className="text-[20px]"
+            style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+          >
             {getLegacyLocalizedField(lang, { fr: sectionTitle, en: sectionTitleEn })}
           </Text>
 
-          <Text className="py-[30px] text-[35px] text-center" style={titleFontStyle(stylingTheme)}>
+          <Text
+            className="py-[30px] text-[35px] text-center"
+            style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+          >
             {getLegacyLocalizedField(lang, { fr: title, en: titleEn }).toUpperCase()}
           </Text>
 
           <Box className="overflow-hidden border-continuous">
             <Box className="overflow-hidden border-continuous h-[2px] bg-default" />
 
-            <Text className="py-[3px] text-center" style={titleFontStyle(stylingTheme)}>
+            <Text
+              className="py-[3px] text-center"
+              style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+            >
               {getLegacyLocalizedField(lang, { fr: subTitle, en: subTitleEn })}
             </Text>
             <Box className="overflow-hidden border-continuous h-[2px] bg-default" />
           </Box>
           <Box
-            className="overflow-hidden border-continuous flex-row mt-[50px] rounded-[12px]"
-            style={{ width: imageWidth }}
+            className="overflow-hidden border-continuous flex-row mt-[50px] rounded-[10px]"
+            style={{
+              width: imageWidth,
+              shadowColor: 'rgb(89,131,240)',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 7,
+              elevation: 1,
+              overflow: 'visible',
+            }}
           >
             <Image
               style={{
                 width: imageWidth,
                 ...(isWeb ? { aspectRatio: 1 } : { height: width }),
-                borderRadius: radii.control,
+                borderRadius: 10,
               }}
               source={{
                 uri: image,
@@ -96,8 +112,16 @@ const SectionDetailsModal = ({
             />
           </Box>
           <Box
-            className="overflow-hidden border-continuous w-[50px] h-[10px] rounded-full my-[50px]"
-            style={{ backgroundColor: resolveThemeColor(stylingTheme, color) }}
+            className="overflow-hidden border-continuous w-[50px] h-[10px] rounded-[10px] my-[50px]"
+            style={{
+              backgroundColor: resolveThemeColor(stylingTheme, color),
+              shadowColor: 'rgb(89,131,240)',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 7,
+              elevation: 1,
+              overflow: 'visible',
+            }}
           />
           <Paragraph>
             {getLegacyLocalizedField(lang, { fr: description, en: descriptionEn })}

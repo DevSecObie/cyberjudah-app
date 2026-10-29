@@ -291,11 +291,11 @@ const ResourcesModal = ({
   }
 
   const theme = useTheme()
-  const ResourceShell = inline ? ResourceSidebarContent : Sheet
+  const Container = inline ? ResourceSidebarContent : Sheet
 
   return (
     <>
-      <ResourceShell
+      <Container
         ref={resourceModalRef}
         snapPoints={[1]}
         footer={footerRenderer}
@@ -330,7 +330,7 @@ const ResourcesModal = ({
             />
           </View>
         )}
-      </ResourceShell>
+      </Container>
       <CompareVersionSelectorSheet sheetRef={compareVersionSelectorRef} />
       <CommentarySelectorSheet sheetRef={commentarySelectorRef} />
       <StrongBibleSourceSheet
@@ -490,8 +490,7 @@ const ResourceSidebarContent = ({
       />
       <Box className="flex-1 min-h-0 overflow-hidden">{children}</Box>
       {Footer && (
-        // The bar of resource types sits on the canvas of the resources above it.
-        <Box className="bg-canvas pt-[12px] pb-[12px]">
+        <Box className="bg-light-grey pt-[12px] pb-[12px]">
           <Footer />
         </Box>
       )}

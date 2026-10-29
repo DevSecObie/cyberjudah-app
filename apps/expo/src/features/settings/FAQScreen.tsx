@@ -1,18 +1,13 @@
+import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
-import { titleFontStyle } from '~themes/styleValues'
 import { colorWithOpacity } from '~themes/colorValues'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Linking } from 'react-native'
 import Header from '~common/Header'
 import { LinkBox } from '~common/Link'
 import Box, { HStack, TouchableBox } from '~common/ui/Box'
-import Button from '~common/ui/Button'
-import Card from '~common/ui/Card'
 import { FeatherIcon } from '~common/ui/Icon'
 import Container from '~common/ui/Container'
-import IconTile from '~common/ui/IconTile'
-import ListSection, { ListRow } from '~common/ui/ListSection'
 import Paragraph from '~common/ui/Paragraph'
 import ScrollView from '~common/ui/ScrollView'
 import Text from '~common/ui/Text'
@@ -24,7 +19,7 @@ const FAQScreen = () => {
   const [expandedId, setExpandedId] = useState<string | null>('availability')
   const [contentWidth, setContentWidth] = useState(0)
   const wide = contentWidth >= 900
-  const titleStyle = titleFontStyle(stylingTheme)
+  const titleStyle = { fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }
   const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
   const entries = [
     {
@@ -127,121 +122,122 @@ const FAQScreen = () => {
     return entry ? [entry] : []
   })
 
-  const selectCategory = (item: (typeof categories)[number]) => {
-    setCategoryId(item.id)
-    setExpandedId(item.entries[0])
-  }
-
   return (
-    <Container className="bg-canvas">
+    <Container>
       <Header hasBackButton title="FAQ" />
-      <ScrollView backgroundColor="canvas" contentContainerStyle={{ maxWidth: 1120 }}>
+      <ScrollView contentContainerStyle={{ maxWidth: 1120 }}>
         <Box
           onLayout={event => setContentWidth(event.nativeEvent.layout.width)}
-          className={wide ? 'pb-[40px]' : 'pb-[32px]'}
+          className={wide ? 'px-[32px] pt-[20px] pb-[40px]' : 'px-[20px] pb-[32px]'}
         >
-          <Box className="px-[24px] mb-[28px]">
-            <Text
-              accessibilityRole="header"
-              className={wide ? 'text-[36px] mb-[12px]' : 'text-[28px] mb-[8px]'}
-              style={titleStyle}
+          <Text
+            accessibilityRole="header"
+            className={wide ? 'text-[36px] mb-[16px]' : 'text-[28px] mb-[12px]'}
+            style={titleStyle}
+          >
+            {t('faq.title')}
+          </Text>
+          <Paragraph className="text-grey max-w-[720px] mb-[36px]" scale={-1}>
+            {t('faq.intro')}
+          </Paragraph>
+          <Box className={wide ? 'flex-row items-start gap-[36px]' : 'gap-[28px]'}>
+            <Box
+              className={
+                wide
+                  ? 'w-[220px] shrink-0 border-r border-border pr-[20px]'
+                  : 'border-b border-border pb-[20px]'
+              }
             >
-              {t('faq.title')}
-            </Text>
-            <Paragraph className="text-grey max-w-[720px]" scale={-1}>
-              {t('faq.intro')}
-            </Paragraph>
-          </Box>
-          <Box className={wide ? 'flex-row items-start' : undefined}>
-            {wide ? (
-              <ListSection title={t('faq.browse')} className="w-[300px] shrink-0 mr-0">
-                {categories.map(item => {
-                  const selected = item.id === categoryId
-                  return (
-                    <ListRow
-                      key={item.id}
-                      label={item.label}
-                      description={item.summary}
-                      hasChevron={false}
-                      accessibilityState={{ selected }}
-                      onPress={() => selectCategory(item)}
-                      labelClassName={selected ? 'text-link font-bold' : 'font-bold'}
-                    />
-                  )
-                })}
-              </ListSection>
-            ) : (
-              <HStack className="flex-wrap gap-[8px] px-[20px] mb-[28px]">
+              <Text className="text-grey text-[12px] uppercase tracking-[1.2px] mb-[16px]">
+                {t('faq.browse')}
+              </Text>
+              <Box className={wide ? 'gap-[12px]' : 'flex-row flex-wrap gap-[8px]'}>
                 {categories.map(item => {
                   const selected = item.id === categoryId
                   return (
                     <TouchableBox
                       key={item.id}
+                      accessibilityRole="button"
                       accessibilityLabel={item.label}
                       accessibilityState={{ selected }}
-                      onPress={() => selectCategory(item)}
+                      onPress={() => {
+                        setCategoryId(item.id)
+                        setExpandedId(item.entries[0])
+                      }}
                       className={
-                        selected
-                          ? 'rounded-full px-[16px] py-[9px]'
-                          : 'rounded-full px-[16px] py-[9px] bg-surface'
+                        wide
+                          ? 'border-l-[3px] py-[14px] pl-[16px] gap-[6px]'
+                          : 'border rounded-[12px] px-[14px] py-[12px]'
                       }
-                      style={
-                        selected
-                          ? { backgroundColor: colorWithOpacity(stylingTheme.colors.primary, 0.14) }
-                          : undefined
-                      }
+                      style={{
+                        borderColor: selected ? stylingTheme.colors.primary : 'transparent',
+                        backgroundColor:
+                          !wide && selected
+                            ? colorWithOpacity(stylingTheme.colors.primary, 0.08)
+                            : undefined,
+                      }}
                     >
                       <Text
-                        className={selected ? 'text-link font-bold text-[14px]' : 'text-[14px]'}
+                        className="font-bold text-[15px]"
+                        style={{ color: selected ? stylingTheme.colors.primary : undefined }}
                       >
                         {item.label}
                       </Text>
+                      {wide && <Text className="text-grey text-[13px]">{item.summary}</Text>}
                     </TouchableBox>
                   )
                 })}
-              </HStack>
-            )}
-            <Box className="flex-1 min-w-0">
-              <Box className="px-[24px] mb-[16px]">
-                <Text
-                  accessibilityRole="header"
-                  className={wide ? 'text-[28px] mb-[8px]' : 'text-[22px] mb-[6px]'}
-                  style={titleStyle}
-                >
-                  {category.title}
-                </Text>
-                <Paragraph className="text-grey" scale={-1}>
-                  {category.description}
-                </Paragraph>
               </Box>
-              <ListSection>
+            </Box>
+            <Box className="flex-1 min-w-0 w-full">
+              <HStack className="items-center gap-[8px] mb-[20px]">
+                <Text className="text-grey text-[13px]">FAQ /</Text>
+                <Text className="text-primary text-[13px]">{category.label}</Text>
+              </HStack>
+              <Text
+                accessibilityRole="header"
+                className={wide ? 'text-[30px] mb-[14px]' : 'text-[24px] mb-[12px]'}
+                style={titleStyle}
+              >
+                {category.title}
+              </Text>
+              <Paragraph className="text-grey mb-[24px]" scale={-1}>
+                {category.description}
+              </Paragraph>
+              <Box className="gap-[12px] border-t border-border pt-[24px]">
                 {questions.map(entry => {
                   const expanded = entry.id === expandedId
                   return (
-                    <Box key={entry.id}>
+                    <Box
+                      key={entry.id}
+                      className="border border-border rounded-[14px] overflow-hidden"
+                    >
                       <TouchableBox
+                        accessibilityRole="button"
                         accessibilityLabel={entry.question}
                         accessibilityState={{ expanded }}
                         aria-expanded={expanded}
                         onPress={() => setExpandedId(expanded ? null : entry.id)}
-                        className="flex-row items-center gap-[12px] px-[14px] py-[14px]"
+                        className="flex-row items-center gap-[16px] px-[20px] py-[18px]"
                       >
-                        <Text className="flex-1 text-[15px] font-bold">{entry.question}</Text>
+                        <Text className="flex-1 text-[16px] font-bold">{entry.question}</Text>
                         <FeatherIcon
                           name={expanded ? 'chevron-up' : 'chevron-down'}
-                          size={18}
+                          size={20}
                           color="grey"
                         />
                       </TouchableBox>
                       {expanded && (
-                        <Box className="px-[14px] pb-[16px]">
+                        <Box className="px-[20px] pb-[20px]">
                           <Paragraph scale={-1}>{entry.answer}</Paragraph>
                           {entry.link && (
                             <LinkBox
                               href={entry.link.href}
-                              className="mt-[10px] py-[6px] self-start flex-row items-center gap-[6px]"
+                              className="mt-[12px] py-[8px] self-start flex-row items-center gap-[8px]"
                             >
-                              <Text className="text-link font-bold shrink">{entry.link.label}</Text>
+                              <Text className="text-primary font-bold shrink">
+                                {entry.link.label}
+                              </Text>
                               <FeatherIcon name="arrow-up-right" size={16} color="primary" />
                             </LinkBox>
                           )}
@@ -250,38 +246,39 @@ const FAQScreen = () => {
                     </Box>
                   )
                 })}
-              </ListSection>
-              <Card
-                className="mx-[20px] p-[16px] gap-[16px]"
-                style={{
-                  flexDirection: wide ? 'row' : 'column',
-                  alignItems: wide ? 'center' : undefined,
-                }}
-              >
-                <HStack className="flex-1 items-center gap-[12px]">
-                  <IconTile tint="primary" size={40}>
-                    <FeatherIcon name="life-buoy" size={20} color="primary" />
-                  </IconTile>
-                  <Box className="flex-1 gap-[2px]">
-                    <Text className="font-bold text-[16px]">{t('faq.needHelp')}</Text>
-                    <Text className="text-grey text-[14px]">{t('faq.contactDescription')}</Text>
-                  </Box>
-                </HStack>
-                <Button
-                  onPress={() => Linking.openURL('mailto:stephane@lestudio316.com')}
-                  rightIcon={
-                    <FeatherIcon
-                      name="arrow-right"
-                      size={16}
-                      color="white"
-                      style={{ marginLeft: 8 }}
-                    />
-                  }
-                  style={{ paddingLeft: 20, paddingRight: 20 }}
+              </Box>
+              <Box className="border-t border-border mt-[28px] pt-[24px]">
+                <Box
+                  className="border border-border rounded-[16px] bg-light-grey p-[20px] gap-[16px]"
+                  style={{
+                    flexDirection: wide ? 'row' : 'column',
+                    alignItems: wide ? 'center' : undefined,
+                  }}
                 >
-                  {t('faq.contact')}
-                </Button>
-              </Card>
+                  <HStack className="flex-1 items-start gap-[14px]">
+                    <Box
+                      className="rounded-full p-[10px]"
+                      style={{
+                        backgroundColor: colorWithOpacity(stylingTheme.colors.primary, 0.08),
+                      }}
+                    >
+                      <FeatherIcon name="life-buoy" size={24} color="primary" />
+                    </Box>
+                    <Box className="flex-1 gap-[6px]">
+                      <Text className="font-bold text-[17px]">{t('faq.needHelp')}</Text>
+                      <Text className="text-grey text-[14px]">{t('faq.contactDescription')}</Text>
+                    </Box>
+                  </HStack>
+                  <LinkBox
+                    href="mailto:stephane@lestudio316.com"
+                    className="self-end flex-row items-center gap-[10px] border border-primary rounded-[10px] px-[16px] py-[12px]"
+                    style={{ alignSelf: wide ? 'center' : 'flex-end' }}
+                  >
+                    <Text className="text-primary font-bold text-[14px]">{t('faq.contact')}</Text>
+                    <FeatherIcon name="arrow-right" size={16} color="primary" />
+                  </LinkBox>
+                </Box>
+              </Box>
             </Box>
           </Box>
         </Box>

@@ -5,7 +5,6 @@ import { View } from 'react-native'
 import type { HTMLViewLinkPayload } from './htmlContentTypes'
 import {
   cleanReadingHTML,
-  readingEdgeStyles,
   readingHtmlStyles,
   type ReadingColors,
   type ReadingTypography,
@@ -15,18 +14,15 @@ export default function StylizedHTMLViewNative({
   html,
   typography,
   colors,
-  trimEdges = false,
   onLinkClicked,
 }: {
   html: string
   typography: ReadingTypography
   colors: ReadingColors
-  /** Drops the outer margins of the opening and closing blocks, for a text set in a card. */
-  trimEdges?: boolean
   onLinkClicked: (payload: HTMLViewLinkPayload) => void
 }) {
   const [width, setWidth] = useState(0)
-  const content = cleanReadingHTML(html, { trimEdges })
+  const content = cleanReadingHTML(html)
   return (
     <View
       style={{ alignSelf: 'stretch' }}
@@ -41,7 +37,6 @@ export default function StylizedHTMLViewNative({
           source={{ html: content }}
           baseStyle={{ ...typography, color: colors.text }}
           tagsStyles={readingHtmlStyles(typography, colors)}
-          classesStyles={readingEdgeStyles}
           enableUserAgentStyles={false}
           enableExperimentalMarginCollapsing
           defaultTextProps={{ selectable: true, allowFontScaling: false }}

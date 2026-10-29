@@ -1,6 +1,6 @@
 import * as Icon from '@expo/vector-icons'
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
-import { TouchableOpacity } from 'react-native'
+import * as NativeUI from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
 import type { Theme as AppTheme, Theme } from '~themes'
@@ -9,7 +9,7 @@ import { useTheme as useAppTheme } from '~themes/ThemeProvider'
 import Text from '~common/ui/Text'
 
 const Touchable = (
-  componentProps: Omit<UIComponentProps<typeof TouchableOpacity>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof NativeUI.TouchableOpacity>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
@@ -18,16 +18,16 @@ const Touchable = (
 
   const { disabled } = props
   const resolvedClassName = twMerge(
-    'flex-row items-center justify-center mr-[10px] bg-light-primary h-[30px] px-[10px] rounded-full',
+    'flex-row items-center justify-center mr-[10px] bg-light-primary h-[30px] px-[10px] rounded-[20px]',
     className
   )
   return (
-    <TouchableOpacity
+    <NativeUI.TouchableOpacity
       {...props}
       className={resolvedClassName}
       style={
         [{ opacity: disabled ? 0.3 : 1 }, props.style] as UIComponentProps<
-          typeof TouchableOpacity
+          typeof NativeUI.TouchableOpacity
         >['style']
       }
     />
@@ -103,7 +103,7 @@ export default ({ onPress, color, isSelected, size = 17, label, disabled, name }
           disabled={disabled}
         />
       )}
-      {label && <Text className="text-[13px] text-link">{label}</Text>}
+      {label && <Text className="text-[13px] text-primary">{label}</Text>}
     </Touchable>
   )
 }

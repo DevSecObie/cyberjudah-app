@@ -30,8 +30,11 @@ const DownloadSubsectionHeader = ({
 
   return (
     <Box
-      className="border-continuous overflow-hidden min-h-[48px] flex-row items-center"
-      style={{ paddingHorizontal: DOWNLOAD_LIST_LAYOUT.cardPaddingHorizontal }}
+      className="border-continuous overflow-hidden min-h-[48px] flex-row items-center bg-light-grey border-b-[1px] border-border"
+      style={{
+        paddingLeft: DOWNLOAD_LIST_LAYOUT.subsectionPaddingLeft,
+        paddingRight: DOWNLOAD_LIST_LAYOUT.subsectionPaddingRight,
+      }}
     >
       <TouchableOpacity
         accessibilityLabel={t('accessibility.selectAllInSection', { section: title })}
@@ -47,7 +50,7 @@ const DownloadSubsectionHeader = ({
           justifyContent: 'center',
         }}
       >
-        <Checkbox checked={allSelected} size={22} />
+        <Checkbox checked={allSelected} variant="icon" size={22} />
       </TouchableOpacity>
       <TouchableOpacity
         accessibilityLabel={title}
@@ -58,7 +61,7 @@ const DownloadSubsectionHeader = ({
         style={{ flex: 1 }}
       >
         <Box className="overflow-hidden border-continuous flex-row items-center">
-          <Text className="text-[15px] font-bold">{title}</Text>
+          <Text className="text-[16px]">{title}</Text>
           <EaseView
             animate={{ rotate: isCollapsed ? 0 : 90 }}
             transition={{
@@ -68,10 +71,10 @@ const DownloadSubsectionHeader = ({
             }}
             style={{ marginLeft: 6, width: 18, height: 18 }}
           >
-            <FeatherIcon name="chevron-right" size={18} color="grey" />
+            <FeatherIcon name="chevron-right" size={18} color="tertiary" />
           </EaseView>
           <Box className="overflow-hidden border-continuous flex-[1]" />
-          <Text className="text-[13px] text-grey">
+          <Text className="text-[12px] text-tertiary">
             {downloadedCount}/{totalCount}
           </Text>
         </Box>

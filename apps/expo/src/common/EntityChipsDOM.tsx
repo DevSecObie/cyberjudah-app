@@ -1,4 +1,3 @@
-import { radii } from '~common/ui/surfaces'
 import type { EntityChip } from './entityChips'
 
 // Serializable metadata shared by the Bible and study DOM documents.
@@ -45,7 +44,7 @@ export default function EntityChipsDOM({
             alignItems: 'center',
             gap: 4,
             border: 0,
-            borderRadius: radii.pill,
+            borderRadius: 20,
             padding: '4px 8px',
             color,
             backgroundColor,

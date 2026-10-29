@@ -27,7 +27,8 @@ const AudioSpeedButton = (props: AudioSpeedButtonProps) => {
     ;(async () => {
       setRate(await TrackPlayer.getRate())
     })()
-  }, [setRate])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const onChange = async (value: string) => {
     setRate(Number(value))
@@ -44,7 +45,9 @@ const AudioSpeedButton = (props: AudioSpeedButtonProps) => {
       choices={choices}
       customRender={
         <AudioChip isActive={isActive} {...props}>
-          <Text className={twMerge(isActive ? 'text-link' : 'text-grey', 'font-bold text-[10px]')}>
+          <Text
+            className={twMerge(isActive ? 'text-primary' : 'text-grey', 'font-bold text-[10px]')}
+          >
             {rate}x
           </Text>
         </AudioChip>

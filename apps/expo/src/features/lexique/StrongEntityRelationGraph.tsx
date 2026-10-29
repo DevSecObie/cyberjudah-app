@@ -4,7 +4,7 @@ import { useTheme } from '~themes/ThemeProvider'
 import { AnimatePresence } from '@alloc/moti'
 import React, { useEffect, useEffectEvent, useLayoutEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ActivityIndicator, Pressable, StyleSheet } from 'react-native'
+import { ActivityIndicator, Image, Pressable } from 'react-native'
 import Svg, { Line } from 'react-native-svg'
 import { useQueryClient } from '@tanstack/react-query'
 import { scheduleOnRN } from 'react-native-worklets'
@@ -36,17 +36,14 @@ import {
   getStrongEntityRelationPage,
   splitStrongEntityRelations,
 } from './strongEntityPresentation'
-import { getEntityAvatarRadius } from './entityPortraits'
-import StrongEntityAvatar from './StrongEntityAvatar'
+import { getStrongEntityAvatarSource } from './strongEntityAvatars'
 import { getGraphScenePositionIndexes, GRAPH_POSITION_INDEXES } from './strongEntityGraphLayout'
 import { useStrongLexiconLanguage } from './useStrongLexiconLanguage'
 const GRAPH_HEIGHT = 410
 const CENTER_Y = 188
 const CENTER_NODE_SIZE = 82
-const CENTER_AVATAR_SIZE = 76
 const CENTER_LABEL_WIDTH = 120
 const SATELLITE_NODE_SIZE = 58
-const SATELLITE_AVATAR_SIZE = 54
 const SATELLITE_WIDTH = 92
 const CAMERA_RELATION_MIN_SCALE = 0.3
 const PAGINATION_ENTRY_DELAY = 200
@@ -527,16 +524,12 @@ const getAvatarBorderStyle = (
 }
 
 const EntityGraphNode = ({
-  uniqueName,
-  seed,
   category,
   type,
   center = false,
   avatarProgress,
   avatarRole,
 }: {
-  uniqueName?: string
-  seed: string
   category?: string
   type?: string
   center?: boolean
@@ -556,19 +549,14 @@ const EntityGraphNode = ({
       className={twMerge(
         'overflow-hidden border-continuous',
         twMerge(
-          center ? 'bg-light-primary' : 'bg-canvas',
+          center ? 'bg-light-primary' : 'bg-light-grey',
           center ? 'border-primary' : 'border-border',
           'overflow-visible items-center justify-center'
         )
       )}
       style={[
         {
-          // Concentric with the avatar inside it
-          borderRadius:
-            getEntityAvatarRadius(center ? CENTER_AVATAR_SIZE : SATELLITE_AVATAR_SIZE) +
-            (center
-              ? (CENTER_NODE_SIZE - CENTER_AVATAR_SIZE) / 2
-              : (SATELLITE_NODE_SIZE - SATELLITE_AVATAR_SIZE) / 2),
+          borderRadius: center ? CENTER_NODE_SIZE / 2 : SATELLITE_NODE_SIZE / 2,
           borderWidth: center ? 2 : 1,
           ...((center ? CENTER_NODE_SIZE : SATELLITE_NODE_SIZE)
             ? {
@@ -580,19 +568,15 @@ const EntityGraphNode = ({
         avatarStyle,
       ]}
     >
-      <StrongEntityAvatar
-        uniqueName={uniqueName}
-        seed={seed}
-        category={category ?? 'other'}
-        type={type ?? 'Other'}
-        size={center ? CENTER_AVATAR_SIZE : SATELLITE_AVATAR_SIZE}
+      <Image
+        source={getStrongEntityAvatarSource(category ?? 'other', type ?? 'Other')}
+        style={{ width: center ? 76 : 54, height: center ? 76 : 54 }}
       />
     </AnimatedBox>
   )
 }
 
 const GraphSatelliteContent = ({
-  uniqueName,
   name,
   category,
   type,
@@ -605,7 +589,6 @@ const GraphSatelliteContent = ({
   disabled,
   onPress,
 }: {
-  uniqueName?: string
   name: string
   category?: string
   type?: string
@@ -643,8 +626,6 @@ const GraphSatelliteContent = ({
         }}
       >
         <EntityGraphNode
-          uniqueName={uniqueName}
-          seed={name}
           category={category}
           type={type}
           avatarProgress={avatarProgress}
@@ -662,7 +643,7 @@ const GraphSatelliteContent = ({
             {displayName}
           </Text>
           <HStack
-            className="overflow-hidden border-continuous bg-canvas rounded-[12px] px-[7px] py-[3px] mt-[3px] items-center gap-[3px]"
+            className="overflow-hidden border-continuous bg-light-grey rounded-[12px] px-[7px] py-[3px] mt-[3px] items-center gap-[3px]"
             style={{ maxWidth: SATELLITE_WIDTH }}
           >
             <IonIcon name={visual.icon} color={visual.color} size={10} />
@@ -676,7 +657,7 @@ const GraphSatelliteContent = ({
         </VStack>
         {back && (
           <Box
-            className="overflow-hidden border-continuous w-[20px] h-[20px] absolute rounded-full bg-canvas items-center justify-center"
+            className="overflow-hidden border-continuous w-[20px] h-[20px] absolute rounded-[20px] bg-light-grey items-center justify-center"
             style={getBackIndicatorPosition(positionIndex ?? 0)}
           >
             <FeatherIcon name="chevron-left" color="primary" size={14} />
@@ -919,7 +900,7 @@ const GraphPageButton = ({
     style={pressedOpacityStyle}
   >
     <Box
-      className="overflow-hidden border-continuous rounded-full bg-canvas items-center justify-center"
+      className="overflow-hidden border-continuous rounded-[16px] bg-light-grey items-center justify-center"
       style={{ opacity: disabled ? 0.4 : 1, width: 32, height: 32 }}
     >
       <FeatherIcon name={icon} color="primary" size={18} />
@@ -956,7 +937,7 @@ const GraphHistoryButton = ({
       style={pressedOpacityStyle}
     >
       <Box
-        className="overflow-hidden border-continuous rounded-full bg-canvas items-center justify-center"
+        className="overflow-hidden border-continuous rounded-[16px] bg-light-grey items-center justify-center"
         style={{ width: 32, height: 32 }}
       >
         {loading ? (
@@ -990,8 +971,7 @@ const GraphFooter = ({
 
   return (
     <HStack
-      className="border-continuous overflow-hidden items-center justify-center py-[6px] gap-[12px] relative border-separator"
-      style={{ borderTopWidth: StyleSheet.hairlineWidth }}
+      className="border-continuous overflow-hidden items-center justify-center py-[6px] gap-[12px] relative border-t-[1px] border-border"
       accessibilityLabel={t('strongDetail.entity.graphPage', {
         current: pageIndex + 1,
         count: pageCount,
@@ -1090,8 +1070,6 @@ const GraphCenterNode = ({
             })}
           >
             <EntityGraphNode
-              uniqueName={entity.uniqueName}
-              seed={entity.name}
               category={entity.category}
               type={entity.type}
               center
@@ -1118,7 +1096,7 @@ const GraphCenterNode = ({
                 accessibilityLabel={t('strongDetail.entity.viewProfile')}
                 style={pressedOpacityStyle}
               >
-                <HStack className="overflow-hidden border-continuous bg-canvas rounded-[12px] px-[7px] py-[3px] mt-[3px] items-center gap-[2px]">
+                <HStack className="overflow-hidden border-continuous bg-light-grey rounded-[12px] px-[7px] py-[3px] mt-[3px] items-center gap-[2px]">
                   <Text className="text-tertiary text-[9px] font-bold">
                     {t('strongDetail.entity.viewProfile')}
                   </Text>
@@ -1174,7 +1152,6 @@ const GraphRelationNodeView = ({
         exitRole={getRelationExitRole(uniqueName, exit)}
       >
         <GraphSatelliteContent
-          uniqueName={uniqueName}
           name={relation.targetName}
           category={relation.targetCategory}
           type={relation.targetType}
@@ -1235,7 +1212,6 @@ const GraphPreviousNode = ({
         exitRole={getPreviousExitRole(entity.uniqueName, exit)}
       >
         <GraphSatelliteContent
-          uniqueName={entity.uniqueName}
           name={entity.name}
           category={entity.category}
           type={entity.type}
@@ -1680,7 +1656,7 @@ export const StrongEntityRelationGraph = ({
 
   return (
     <VStack
-      className="border-continuous overflow-visible rounded-[16px] bg-surface"
+      className="border-continuous overflow-visible border-[1px] border-border rounded-[20px] bg-reverse"
       pointerEvents={isResetting ? 'none' : 'auto'}
     >
       <Box

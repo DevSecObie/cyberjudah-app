@@ -20,7 +20,6 @@ import books from '~assets/bible_versions/books-desc'
 import Box, { TouchableBox } from '~common/ui/Box'
 import { FeatherIcon, IonIcon } from '~common/ui/Icon'
 import { getBookmarkVerse } from './bookmarkVerse'
-import { StyleSheet } from 'react-native'
 
 export function useBibleBookmarkScreens(
   book: number,
@@ -41,7 +40,7 @@ export function useBibleBookmarkScreens(
   const passageHeader = (
     <Box className="flex-row items-center gap-2 px-3 pt-1 pb-3">
       <IonIcon name="bookmark-outline" size={16} color="primary" />
-      <Text className="text-[13px] font-bold text-link">{destination}</Text>
+      <Text className="text-[13px] font-bold text-primary">{destination}</Text>
       <Text className="text-[12px] text-tertiary">{version}</Text>
     </Box>
   )
@@ -91,7 +90,7 @@ export function useBibleBookmarkScreens(
                   <Box className="w-8 h-8 rounded-lg bg-reverse items-center justify-center">
                     <FeatherIcon name="plus" size={18} color="primary" />
                   </Box>
-                  <Text className="flex-1 font-bold text-[14px] text-link">
+                  <Text className="flex-1 font-bold text-[14px] text-primary">
                     {t('Créer un nouveau marque-page')}
                   </Text>
                   <FeatherIcon name="chevron-right" size={16} color="primary" />
@@ -101,10 +100,7 @@ export function useBibleBookmarkScreens(
               )}
             </Box>
             {bookmarks.length > 0 && (
-              <Box
-                className="flex-row items-center gap-3 px-3 pt-3 pb-2 border-separator"
-                style={{ borderTopWidth: StyleSheet.hairlineWidth }}
-              >
+              <Box className="flex-row items-center gap-3 px-3 pt-3 pb-2 border-t border-border">
                 <Text className="flex-1 text-[12px] text-tertiary">
                   {t('Déplacer un marque-page existant')}
                 </Text>

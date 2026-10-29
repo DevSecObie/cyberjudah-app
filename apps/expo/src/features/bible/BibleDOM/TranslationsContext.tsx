@@ -7,9 +7,6 @@ export interface BibleDOMTranslations {
   parallelChapterNotFound: string
   parallelLoadError: string
   exitFocus: string
-  // Parallel column titles: their Strong and interlinear buttons
-  chooseStrongDisplay: string
-  originalTextOptions: string
   // Error/download state
   resourceFailureDetails: Record<ResourceFailurePresentation['detailKey'], string>
   goToDownloads: string
@@ -31,14 +28,6 @@ export interface BibleDOMTranslations {
     introduction: string
     passages: string
     chapterResources: string
-  }
-  // Opening of the chapter, above the text
-  chapterOpening: {
-    bookName: string
-    chapter: string
-    psalm: string
-    /** The book's title in a Hebrew, Greek or Latin version's own language. */
-    originalTitle: { title: string; lang: string; dir: 'rtl' | 'ltr' } | null
   }
 }
 

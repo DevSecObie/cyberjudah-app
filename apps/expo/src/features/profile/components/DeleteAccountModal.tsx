@@ -129,7 +129,7 @@ const StyledInput = (
   const { theme: _themeOverride, className, ...props } = componentProps
 
   const resolvedClassName = twMerge(
-    'text-default h-[48px] border-border border-[2px] rounded-[12px] px-[15px] text-[16px]',
+    'bg-light-grey rounded-[10px] px-[15px] py-[14px] text-[16px] text-default',
     className
   )
   return (

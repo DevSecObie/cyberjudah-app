@@ -1,4 +1,3 @@
-import { StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import type { Plan, ReadingSlice } from '~common/types'
@@ -40,7 +39,7 @@ export default function MeditationContent({
       </Text>
       {opening && (
         <Box className="gap-[16px]">
-          <Text className="text-grey text-[12px] font-medium uppercase tracking-[1.5px]">
+          <Text className="text-primary text-[11px] font-bold uppercase tracking-[1.5px]">
             {t('dailyReading.verseHeading')}
           </Text>
           <ReferenceParagraph
@@ -55,7 +54,7 @@ export default function MeditationContent({
               planLanguage={language}
               scale={-1}
               style={{ fontFamily }}
-              className="text-link"
+              className="text-primary"
             >
               {opening.reference}
             </ReferenceParagraph>
@@ -66,11 +65,8 @@ export default function MeditationContent({
         </Box>
       )}
       {body.length > 0 && (
-        <Box
-          className="border-separator pt-[28px] gap-[20px]"
-          style={{ borderTopWidth: StyleSheet.hairlineWidth }}
-        >
-          <Text className="text-grey text-[12px] font-medium uppercase tracking-[1.5px]">
+        <Box className="border-t border-border pt-[28px] gap-[20px]">
+          <Text className="text-primary text-[11px] font-bold uppercase tracking-[1.5px]">
             {t('dailyReading.meditationHeading')}
           </Text>
           {body.map((slice, index) =>

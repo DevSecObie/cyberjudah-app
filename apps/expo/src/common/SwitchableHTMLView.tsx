@@ -56,7 +56,7 @@ export default function SwitchableHTMLView({
   const colors = {
     background: theme.colors.reverse,
     text: theme.colors.default,
-    link: theme.colors.link,
+    link: theme.colors.primary,
     emphasis: theme.colors.quart,
   }
   const onLink = (payload: HTMLViewLinkPayload) => {
@@ -81,7 +81,6 @@ export default function SwitchableHTMLView({
           html={value}
           typography={typography}
           colors={colors}
-          trimEdges={!padded}
           onLinkClicked={onLink}
         />
       ) : (
@@ -102,7 +101,6 @@ export default function SwitchableHTMLView({
             typography={typography}
             colors={colors}
             padded={false}
-            trimEdges={!padded}
             onLinkClicked={async payload => {
               onLink(payload)
             }}

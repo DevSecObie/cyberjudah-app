@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { keyframes, styled } from 'goober'
+import { styled } from 'goober'
 
 import {
   NAVIGATE_TO_BIBLE_VERSE_DETAIL,
@@ -21,6 +21,7 @@ import { RootState } from '~redux/modules/reducer'
 import { useDispatch } from './DispatchProvider'
 import { Bookmark, SelectedCode, StudyNavigateBibleType, Verse as TVerse } from '~common/types'
 import { RootStyles, TaggedVerse, VerseRelationItem } from './BibleDOMWrapper'
+import { ParallelDisplayMode } from 'src/state/tabs'
 import { BibleStrongRef } from './BibleStrongReference'
 import { verseToRedWords } from './verseToRedWords'
 import { ContainerText, resolveHighlightInfo } from './ContainerText'
@@ -32,6 +33,7 @@ import { isDarkTheme } from './utils'
 import StructuredInterlinearVerse from './StructuredInterlinearVerse'
 import ReverseInterlinearVerse from './ReverseInterlinearVerse'
 import VerseTags from './VerseTags'
+import { BibleError } from '~helpers/bibleErrors'
 import { useTranslations } from './TranslationsContext'
 import {
   getRelationItemNavigationActions,
@@ -51,11 +53,17 @@ import type { ResolvedPassageMedia } from '../passageMedia'
 import PassageMediaThumbnails from './PassageMediaThumbnails'
 import type { PassageMediaGallerySection } from './passageMediaGallery'
 
-const VerseText = styled('span')<RootStyles>(({ settings: { fontSizeScale, lineHeight } }) => ({
-  fontSize: getBibleTextFontSize(fontSizeScale),
-  lineHeight: scaleLineHeight(32, lineHeight, fontSizeScale),
-  whiteSpace: 'pre-line',
-}))
+const VerseText = styled('span')<RootStyles & { isParallel?: boolean }>(
+  ({ isParallel, settings: { fontSizeScale, lineHeight } }) => ({
+    fontSize: getBibleTextFontSize(Boolean(isParallel), fontSizeScale),
+    lineHeight: scaleLineHeight(isParallel ? 26 : 32, lineHeight, fontSizeScale),
+    '@media (min-width: 768px)': {
+      fontSize: getBibleTextFontSize(false, fontSizeScale),
+      lineHeight: scaleLineHeight(32, lineHeight, fontSizeScale),
+    },
+    whiteSpace: 'pre-line',
+  })
+)
 
 const NumberText = styled<
   RootStyles & { isFocused?: boolean; highlightBg?: string; highlightColor?: string }
@@ -115,9 +123,11 @@ const CanonicalNoteButton = styled('button')<RootStyles & { isDisabled?: boolean
 
 const Wrapper = styled('span')<
   RootStyles & {
+    isSelectedMode?: boolean
+    isSelected?: boolean
     fadePosition?: 'top' | 'bottom'
   }
->(({ settings: { textDisplay }, fadePosition }) => ({
+>(({ settings: { textDisplay, theme, colors }, isSelectedMode, isSelected, fadePosition }) => ({
   display: textDisplay,
   transition: 'opacity 0.3s ease',
   position: 'relative',
@@ -129,6 +139,11 @@ const Wrapper = styled('span')<
         containIntrinsicSize: 'auto 80px',
       }
     : {}),
+  ...(isSelectedMode && !isSelected
+    ? {
+        opacity: 0.3,
+      }
+    : {}),
   ...(fadePosition
     ? {
         pointerEvents: 'none',
@@ -137,29 +152,49 @@ const Wrapper = styled('span')<
     : {}),
 }))
 
-// Stands in for the text of a verse a version omits in parallel display
-const MissingVerseText = styled('span')<RootStyles>(({ settings: { theme, colors } }) => ({
-  color: colors[theme].grey,
-}))
+const ParallelError = styled('div')<RootStyles>(
+  ({ settings: { theme, colors, fontFamily, fontSizeScale } }) => ({
+    fontFamily,
+    fontSize: scaleFontSize(13, fontSizeScale),
+    color: colors[theme].darkGrey,
+    padding: '8px',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    lineHeight: 1.4,
+  })
+)
 
-const loadingPulse = keyframes`
-  from { opacity: 1; }
-  to { opacity: 0.5; }
-`
+// Version title for vertical display mode (matches header VersionTitle style)
+const VerticalVersionTitle = styled('div')<RootStyles>(
+  ({ settings: { fontSizeScale, fontFamily, colors, theme } }) => ({
+    fontFamily,
+    fontWeight: 'bold',
+    fontSize: scaleFontSize(14, fontSizeScale),
+    display: 'inline-block',
+    color: colors[theme].default,
+    backgroundColor: colors[theme].reverse,
+    boxShadow: isDarkTheme(theme)
+      ? `0 0 10px 0 rgba(255, 255, 255, 0.1)`
+      : `0 0 10px 0 rgba(0, 0, 0, 0.2)`,
+    borderRadius: '8px',
+    paddingInlineEnd: '8px',
+    paddingInlineStart: '8px',
+    paddingBlock: '4px',
+    marginTop: '8px',
+    marginBottom: '4px',
+    cursor: 'pointer',
+    '&:active': {
+      opacity: 0.6,
+    },
+  })
+)
 
-// A version still loading: the text of the main version, invisible, gives its lines their shape
-const LoadingVerseText = styled('span')<RootStyles>(({ settings: { theme, colors } }) => ({
-  color: 'transparent',
+// Separator between verse groups in vertical mode
+const VerseGroupSeparator = styled('div')<RootStyles>(({ settings: { theme, colors } }) => ({
+  height: '1px',
   backgroundColor: colors[theme].border,
-  borderRadius: '4px',
-  boxDecorationBreak: 'clone',
-  WebkitBoxDecorationBreak: 'clone',
-  userSelect: 'none',
-  WebkitUserSelect: 'none',
-  animation: `${loadingPulse} 0.9s ease-in-out infinite alternate`,
-  '@media (prefers-reduced-motion: reduce)': {
-    animation: 'none',
-  },
+  marginTop: '40px',
+  marginBottom: '40px',
 }))
 
 const DARK_THEMES = new Set(['dark', 'black', 'mauve', 'night'])
@@ -168,10 +203,28 @@ const getRedColor = (settings: RootState['user']['bible']['settings']): string =
   return DARK_THEMES.has(settings.theme) ? '#FF6B6B' : '#CC0000'
 }
 
+/**
+ * Resolves a BibleError to its user-facing translation string.
+ */
+function getParallelErrorMessage(
+  error: BibleError,
+  translations: ReturnType<typeof useTranslations>
+): string {
+  switch (error.type) {
+    case 'BIBLE_NOT_FOUND':
+      return translations.parallelVersionNotFound
+    case 'CHAPTER_NOT_FOUND':
+      return translations.parallelChapterNotFound
+    default:
+      return translations.parallelLoadError
+  }
+}
+
 const getVerseText = ({
   verse,
   version,
   annotationMode,
+  isParallel,
   selectedCode,
   settings,
   redWords,
@@ -181,6 +234,7 @@ const getVerseText = ({
   verse: TVerse
   version: string
   annotationMode: boolean
+  isParallel?: boolean
   selectedCode: SelectedCode | null
   settings: RootState['user']['bible']['settings']
   redWords?: Record<string, { start: number; end: number }[]> | null
@@ -206,6 +260,7 @@ const getVerseText = ({
       version,
       chapter: verse.Chapitre,
       verse: verse.Verset,
+      isParallel,
       isDisabled: annotationMode,
       selectedCode,
       settings,
@@ -231,6 +286,7 @@ const renderCanonicalPresentation = (
     version: string
     chapter: string | number
     verse: string | number
+    isParallel?: boolean
     isDisabled: boolean
     selectedCode: SelectedCode | null
     settings: RootState['user']['bible']['settings']
@@ -251,11 +307,11 @@ const renderCanonicalPresentation = (
           version={options.version}
           identities={node.identities}
           morphologies={node.morphologies}
-          transliterations={node.transliterations}
           occurrenceId={`${options.book}:${options.chapter}:${options.verse}:${options.version}:${key}`}
           word={node.word}
           chapter={options.chapter}
           verse={options.verse}
+          isParallel={options.isParallel}
           isDisabled={options.isDisabled}
           selectedCode={options.selectedCode}
           settings={options.settings}
@@ -359,8 +415,6 @@ const renderCanonicalPresentation = (
     }
   })
 
-type HighlightColor = keyof RootStyles['settings']['colors'][keyof RootStyles['settings']['colors']]
-
 // Keep background highlights off the verse text when word annotations or
 // the translated Strong presentation add their own inline decorations.
 const getNumberHighlight = ({
@@ -369,7 +423,7 @@ const getNumberHighlight = ({
   isStrongModeVerse,
   settings,
 }: {
-  highlightedColor?: HighlightColor
+  highlightedColor?: keyof RootStyles['settings']['colors'][keyof RootStyles['settings']['colors']]
   hasWordAnnotations?: boolean
   isStrongModeVerse?: boolean
   settings: RootState['user']['bible']['settings']
@@ -381,14 +435,6 @@ const getNumberHighlight = ({
     return { show: false }
   }
 
-  return getVerseNumberHighlight(highlightedColor, settings)
-}
-
-/** The colors of a verse number that carries the verse highlight. */
-export const getVerseNumberHighlight = (
-  highlightedColor: HighlightColor,
-  settings: RootState['user']['bible']['settings']
-): { show: boolean; bg?: string; color?: string } => {
   const { theme, colors, customHighlightColors, defaultColorTypes } = settings
   const highlightInfo = resolveHighlightInfo(
     highlightedColor,
@@ -408,209 +454,17 @@ export const getVerseNumberHighlight = (
   }
 }
 
-// ============================================================================
-// VERSE-LEVEL CONTENT
-// What belongs to the verse whatever its version: shown once per verse, inside the verse
-// when one version is read, in the row of the verse when several are.
-// ============================================================================
-
-export interface VerseContentProps {
-  verse: TVerse
-  settings: RootState['user']['bible']['settings']
-  isSelectionMode: StudyNavigateBibleType | undefined
-  annotationMode?: boolean
-  bookmark?: Bookmark
-  relationCount?: number
-  relationItems?: VerseRelationItem[]
-  taggedItemsCount?: number
-  tag: TaggedVerse | undefined
-  otherVersionAnnotations?: CrossVersionAnnotation[]
-  passageMedia?: ResolvedPassageMedia[]
-  passageMediaGallerySections: PassageMediaGallerySection[]
-}
-
-const getVerseKey = ({ Livre, Chapitre, Verset }: TVerse) => `${Livre}-${Chapitre}-${Verset}`
-
-/** Bookmark, relation count and tag count, shown next to the verse number. */
-export const VerseMarkers = ({
-  verse,
-  settings,
-  isSelectionMode,
-  annotationMode = false,
-  bookmark,
-  relationCount,
-  taggedItemsCount = 0,
-}: VerseContentProps) => {
-  const dispatch = useDispatch()
-
-  const openBookmarkModal = () => {
-    if (bookmark) {
-      dispatch({
-        type: OPEN_BOOKMARK_MODAL,
-        payload: bookmark,
-      })
-    }
-  }
-
-  const navigateToVerseStudyRelations = (relationItem?: VerseRelationItem) => {
-    dispatch({
-      type: NAVIGATE_TO_VERSE_STUDY_RELATIONS,
-      payload: getVerseStudyRelationsPayload(getVerseKey(verse), relationItem),
-    })
-  }
-
-  const navigateToVerseTags = () => {
-    dispatch({
-      type: OPEN_VERSE_TAGS_MODAL,
-      payload: getVerseKey(verse),
-    })
-  }
-
-  return (
-    <>
-      {bookmark && !isSelectionMode && (
-        <BookmarkIcon
-          settings={settings}
-          color={bookmark.color}
-          onClick={openBookmarkModal}
-          isDisabled={annotationMode}
-        />
-      )}
-      {relationCount &&
-        (settings.relationsDisplay || 'inline') !== 'inline' &&
-        !isSelectionMode && (
-          <RelationsCount
-            settings={settings}
-            onClick={navigateToVerseStudyRelations}
-            count={relationCount}
-            isDisabled={annotationMode}
-          />
-        )}
-      {taggedItemsCount > 0 && settings.tagsDisplay !== 'inline' && !isSelectionMode && (
-        <TagsIndicator
-          count={taggedItemsCount}
-          settings={settings}
-          onClick={navigateToVerseTags}
-          isDisabled={annotationMode}
-        />
-      )}
-    </>
-  )
-}
-
-export const hasVerseMarkers = ({
-  settings,
-  isSelectionMode,
-  bookmark,
-  relationCount,
-  taggedItemsCount = 0,
-}: VerseContentProps) =>
-  !isSelectionMode &&
-  Boolean(
-    bookmark ||
-    (relationCount && (settings.relationsDisplay || 'inline') !== 'inline') ||
-    (taggedItemsCount > 0 && settings.tagsDisplay !== 'inline')
-  )
-
-export const VersePassageMedia = ({
-  settings,
-  annotationMode = false,
-  passageMedia,
-  passageMediaGallerySections,
-}: VerseContentProps) =>
-  passageMedia ? (
-    <PassageMediaThumbnails
-      items={passageMedia}
-      gallerySections={passageMediaGallerySections}
-      placement="inline"
-      settings={settings}
-      isDisabled={annotationMode}
-    />
-  ) : null
-
-/** What follows the verse text: annotations in other versions, inline tags and relations. */
-export const VerseEndContent = ({
-  verse,
-  settings,
-  isSelectionMode,
-  annotationMode = false,
-  relationItems,
-  tag,
-  otherVersionAnnotations,
-}: VerseContentProps) => {
-  const dispatch = useDispatch()
-
-  const navigateToRelationItem = (item: VerseRelationItem) => {
-    getRelationItemNavigationActions(getVerseKey(verse), item).forEach(action => {
-      dispatch(action)
-    })
-  }
-
-  const openCrossVersionModal = () => {
-    if (otherVersionAnnotations && otherVersionAnnotations.length > 0) {
-      dispatch({
-        type: OPEN_CROSS_VERSION_MODAL,
-        payload: {
-          verseKey: getVerseKey(verse),
-          versions: otherVersionAnnotations,
-        },
-      })
-    }
-  }
-
-  return (
-    <>
-      {otherVersionAnnotations && otherVersionAnnotations.length > 0 && !isSelectionMode && (
-        <VersionAnnotationIndicator
-          versions={otherVersionAnnotations}
-          settings={settings}
-          onClick={openCrossVersionModal}
-          isDisabled={annotationMode}
-        />
-      )}
-      {tag && settings.tagsDisplay === 'inline' && (
-        <VerseTags settings={settings} tag={tag} isDisabled={annotationMode} />
-      )}
-      {relationItems &&
-        (settings.relationsDisplay || 'inline') === 'inline' &&
-        !isSelectionMode && (
-          <RelationsText
-            settings={settings}
-            onClick={navigateToRelationItem}
-            relationItems={relationItems}
-            isDisabled={annotationMode}
-          />
-        )}
-    </>
-  )
-}
-
-export const hasVerseEndContent = ({
-  settings,
-  isSelectionMode,
-  relationItems,
-  tag,
-  otherVersionAnnotations,
-  passageMedia,
-}: VerseContentProps) =>
-  Boolean(passageMedia?.length) ||
-  Boolean(tag && settings.tagsDisplay === 'inline') ||
-  (!isSelectionMode &&
-    (Boolean(otherVersionAnnotations?.length) ||
-      Boolean(relationItems?.length && (settings.relationsDisplay || 'inline') === 'inline')))
-
 interface Props {
   verse: TVerse
+  isSelectedMode: boolean
   isSelectionMode: StudyNavigateBibleType | undefined
   settings: RootState['user']['bible']['settings']
-  // Empty row of a version that omits this verse in parallel display
-  isMissingVerse?: boolean
-  // Parallel display: the version's chapter is still loading, the cell shows this text's shape
-  loadingPlaceholderText?: string
-  // One version of a parallel row: the row carries the verse anchor and the verse-level content
-  isParallelCell?: boolean
-  // Vertical parallel display: the verse group header shows the number
-  hideNumber?: boolean
+  parallelVerse?: {
+    version: string
+    verse: TVerse
+    error?: BibleError
+    interlinearMode?: InterlinearMode
+  }[]
   isSelected: boolean
   highlightedColor?: keyof RootStyles['settings']['colors'][keyof RootStyles['settings']['colors']]
   annotationNotesCount?: number
@@ -618,12 +472,12 @@ interface Props {
   relationCount?: number
   relationItems?: VerseRelationItem[]
   version: string
-  // Parallel reading: the column the version is shown in, since a version can be shown twice
-  column?: number
   interlinearMode?: InterlinearMode
   isHebreu: boolean
   selectedCode: SelectedCode | null
   isFocused?: boolean
+  isParallel?: boolean
+  isParallelVerse?: boolean
   tag: TaggedVerse | undefined
   bookmark?: Bookmark
   fadePosition?: 'top' | 'bottom'
@@ -638,6 +492,12 @@ interface Props {
   taggedItemsCount?: number
   // Prop indicating if this verse has non-highlight tags (for conditional display)
   hasNonHighlightTags?: boolean
+  // Number of columns for parallel verse display (1 = single version, 2+ = parallel)
+  columnCount?: number
+  // Width of each column in parallel mode (percentage: 75 or 50)
+  columnWidth?: number
+  // Display mode for parallel verses (horizontal = side by side, vertical = stacked)
+  parallelDisplayMode?: ParallelDisplayMode
   // Red words data
   redWords?: Record<string, { start: number; end: number }[]> | null
   passageMedia?: ResolvedPassageMedia[]
@@ -646,6 +506,7 @@ interface Props {
 
 const Verse = ({
   verse,
+  parallelVerse,
   isSelected,
   highlightedColor,
   annotationNotesCount,
@@ -655,15 +516,13 @@ const Verse = ({
   relationItems,
   isSelectionMode,
   version,
-  column,
   interlinearMode,
   isHebreu,
   selectedCode,
+  isSelectedMode,
   isFocused,
-  isMissingVerse = false,
-  loadingPlaceholderText,
-  isParallelCell = false,
-  hideNumber = false,
+  isParallel,
+  isParallelVerse,
   tag,
   bookmark,
   fadePosition,
@@ -672,12 +531,72 @@ const Verse = ({
   isTouched = false,
   annotationMode = false,
   taggedItemsCount = 0,
+  columnCount = 1,
+  columnWidth = 75,
+  parallelDisplayMode = 'horizontal',
   redWords,
   passageMedia,
   passageMediaGallerySections,
 }: Props) => {
   const dispatch = useDispatch()
   const translations = useTranslations()
+
+  const navigateToVerseTags = () => {
+    const { Livre, Chapitre, Verset } = verse
+    dispatch({
+      type: OPEN_VERSE_TAGS_MODAL,
+      payload: `${Livre}-${Chapitre}-${Verset}`,
+    })
+  }
+
+  const navigateToBibleVerseDetail = (additionnalParams = {}) => {
+    dispatch({
+      type: NAVIGATE_TO_BIBLE_VERSE_DETAIL,
+      params: {
+        ...additionnalParams,
+        verse,
+      },
+    })
+  }
+
+  const openBookmarkModal = () => {
+    if (bookmark) {
+      dispatch({
+        type: OPEN_BOOKMARK_MODAL,
+        payload: bookmark,
+      })
+    }
+  }
+
+  const navigateToVerseStudyRelations = (relationItem?: VerseRelationItem) => {
+    const { Livre, Chapitre, Verset } = verse
+    const verseKey = `${Livre}-${Chapitre}-${Verset}`
+    dispatch({
+      type: NAVIGATE_TO_VERSE_STUDY_RELATIONS,
+      payload: getVerseStudyRelationsPayload(verseKey, relationItem),
+    })
+  }
+
+  const navigateToRelationItem = (item: VerseRelationItem) => {
+    const { Livre, Chapitre, Verset } = verse
+    const verseKey = `${Livre}-${Chapitre}-${Verset}`
+    getRelationItemNavigationActions(verseKey, item).forEach(action => {
+      dispatch(action)
+    })
+  }
+
+  const openCrossVersionModal = () => {
+    if (otherVersionAnnotations && otherVersionAnnotations.length > 0) {
+      const { Livre, Chapitre, Verset } = verse
+      dispatch({
+        type: OPEN_CROSS_VERSION_MODAL,
+        payload: {
+          verseKey: `${Livre}-${Chapitre}-${Verset}`,
+          versions: otherVersionAnnotations,
+        },
+      })
+    }
+  }
 
   const isStrongModeVerse = Boolean(verse.StrongSpans)
   const isStrongVersion = isStrongModeVerse || Boolean(verse.ReverseInterlinearSpans)
@@ -686,6 +605,7 @@ const Verse = ({
     verse,
     version,
     annotationMode,
+    isParallel,
     selectedCode,
     settings,
     redWords,
@@ -715,21 +635,6 @@ const Verse = ({
     settings,
   })
 
-  const verseContent: VerseContentProps = {
-    verse,
-    settings,
-    isSelectionMode,
-    annotationMode,
-    bookmark,
-    relationCount,
-    relationItems,
-    taggedItemsCount,
-    tag,
-    otherVersionAnnotations,
-    passageMedia,
-    passageMediaGallerySections,
-  }
-
   // Notify the annotation highlight system that DOM layout may have changed.
   // This fires per-verse rather than once at the parent level because each verse
   // independently determines when its Strong's content renders (based on its own
@@ -743,13 +648,141 @@ const Verse = ({
     })
   }, [isStrongVersion, verse.Livre, verse.Texte, annotationMode])
 
+  if (isParallelVerse && parallelVerse) {
+    // Vertical display mode: stack versions with inline titles, grouped by verse
+    if (parallelDisplayMode === 'vertical') {
+      const navigateToVersion = (versionId: string, index: number) => {
+        dispatch({
+          type: 'NAVIGATE_TO_VERSION',
+          payload: { version: versionId, index },
+        })
+      }
+
+      return (
+        <div>
+          {parallelVerse.map((p, i) => {
+            const isMainVersion = i === 0
+            return (
+              <div key={i}>
+                <VerticalVersionTitle
+                  settings={settings}
+                  onClick={() => navigateToVersion(p.version, i)}
+                >
+                  {p.version}
+                </VerticalVersionTitle>
+                {p.error ? (
+                  <ParallelError settings={settings}>
+                    {getParallelErrorMessage(p.error, translations)}
+                  </ParallelError>
+                ) : p.verse ? (
+                  <Verse
+                    isHebreu={isHebreu}
+                    verse={p.verse}
+                    version={p.version}
+                    interlinearMode={p.interlinearMode}
+                    settings={settings}
+                    isSelected={isSelected}
+                    isSelectedMode={isSelectedMode}
+                    isSelectionMode={isSelectionMode}
+                    highlightedColor={isMainVersion ? highlightedColor : undefined}
+                    annotationNotesCount={isMainVersion ? annotationNotesCount : undefined}
+                    relationCount={isMainVersion ? relationCount : undefined}
+                    relationItems={isMainVersion ? relationItems : undefined}
+                    isVerseToScroll={isMainVersion ? isVerseToScroll : false}
+                    selectedCode={selectedCode}
+                    isFocused={isFocused}
+                    tag={isMainVersion ? tag : undefined}
+                    isTouched={isTouched}
+                    passageMedia={isMainVersion ? passageMedia : undefined}
+                    passageMediaGallerySections={passageMediaGallerySections}
+                  />
+                ) : null}
+              </div>
+            )
+          })}
+          <VerseGroupSeparator settings={settings} />
+        </div>
+      )
+    }
+
+    // Horizontal display mode: side by side columns
+    const divWidth = `calc(${columnWidth}vw - 10px)`
+    const columnStyle = (index: number): React.CSSProperties => ({
+      width: divWidth,
+      transition: 'width 0.4s ease-in-out',
+      flexShrink: 0,
+      scrollSnapAlign: 'start',
+      padding: '5px 5px',
+      paddingLeft: index === 0 ? '0px' : '10px',
+      boxSizing: 'border-box',
+    })
+
+    return (
+      <div
+        style={{
+          display: 'flex',
+          width: divWidth,
+          transition: 'width 0.4s ease-in-out',
+        }}
+      >
+        {parallelVerse.map((p, i) => {
+          const isMainVersion = i === 0
+
+          // Error state: show translated error message
+          if (p.error) {
+            return (
+              <div key={i} style={columnStyle(i)}>
+                <ParallelError settings={settings}>
+                  {getParallelErrorMessage(p.error, translations)}
+                </ParallelError>
+              </div>
+            )
+          }
+
+          // Missing verse: render empty column to preserve layout
+          if (!p.verse) {
+            return <div key={i} style={columnStyle(i)} />
+          }
+
+          return (
+            <div key={i} style={columnStyle(i)}>
+              <Verse
+                isParallel
+                isHebreu={isHebreu}
+                verse={p.verse}
+                version={p.version}
+                interlinearMode={p.interlinearMode}
+                settings={settings}
+                isSelected={isSelected}
+                isSelectedMode={isSelectedMode}
+                isSelectionMode={isSelectionMode}
+                highlightedColor={isMainVersion ? highlightedColor : undefined}
+                annotationNotesCount={isMainVersion ? annotationNotesCount : undefined}
+                relationCount={isMainVersion ? relationCount : undefined}
+                relationItems={isMainVersion ? relationItems : undefined}
+                isVerseToScroll={isMainVersion ? isVerseToScroll : false}
+                selectedCode={selectedCode}
+                isFocused={isFocused}
+                tag={isMainVersion ? tag : undefined}
+                isTouched={isTouched}
+                passageMedia={isMainVersion ? passageMedia : undefined}
+                passageMediaGallerySections={passageMediaGallerySections}
+              />
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+
   return (
     <>
-      {/* Parallel rows already set each verse apart: a paragraph would only lower one version */}
-      {paragraphBreakBeforeVerse && !isParallelCell && <br />}
+      {paragraphBreakBeforeVerse && <br />}
       <Wrapper
         settings={settings}
-        id={isParallelCell ? undefined : `verset-${verse.Verset}`}
+        id={`verset-${verse.Verset}`}
+        isSelectedMode={isSelectedMode}
+        isSelected={isSelected}
         fadePosition={fadePosition}
       >
         <ContainerText
@@ -760,7 +793,7 @@ const Verse = ({
           isVerseToScroll={isVerseToScroll && Number(verse.Verset) !== 1}
           highlightedColor={numberHighlight.show ? undefined : highlightedColor}
         >
-          {!hideNumber && (version !== 'BHG' || Number(verse.Verset) !== 0) && (
+          {(version !== 'BHG' || Number(verse.Verset) !== 0) && (
             <NumberText
               isFocused={isFocused}
               settings={settings}
@@ -770,7 +803,32 @@ const Verse = ({
               {verse.Verset}{' '}
             </NumberText>
           )}
-          {!isParallelCell && <VerseMarkers {...verseContent} />}
+          {bookmark && !isSelectionMode && (
+            <BookmarkIcon
+              settings={settings}
+              color={bookmark.color}
+              onClick={openBookmarkModal}
+              isDisabled={annotationMode}
+            />
+          )}
+          {relationCount &&
+            (settings.relationsDisplay || 'inline') !== 'inline' &&
+            !isSelectionMode && (
+              <RelationsCount
+                settings={settings}
+                onClick={navigateToVerseStudyRelations}
+                count={relationCount}
+                isDisabled={annotationMode}
+              />
+            )}
+          {taggedItemsCount > 0 && settings.tagsDisplay !== 'inline' && !isSelectionMode && (
+            <TagsIndicator
+              count={taggedItemsCount}
+              settings={settings}
+              onClick={navigateToVerseTags}
+              isDisabled={annotationMode}
+            />
+          )}
 
           <VerseText
             key={[
@@ -781,19 +839,18 @@ const Verse = ({
               settings.textDisplay,
               verse.TextRevision || verse.Texte,
               verse.StrongSpans?.length || 0,
-              verse.StrongSpans?.filter(span => span.transliteration).length || 0,
               verse.ReverseInterlinearSpans?.length || 0,
               verse.InterlinearTokens?.length || 0,
               JSON.stringify(redWords?.[verseKey] || []),
             ].join(':')}
+            isParallel={isParallel}
             settings={settings}
-            data-verse-text
-            data-version={version}
+            id={`verse-text-${verseKey}`}
             data-verse-key={verseKey}
-            data-column={column}
           >
             {verse.ReverseInterlinearSpans?.length ? (
               <ReverseInterlinearVerse
+                isParallel={Boolean(isParallel)}
                 settings={settings}
                 verse={verse}
                 version={version}
@@ -810,19 +867,43 @@ const Verse = ({
                 selectedCode={selectedCode}
                 mode={interlinearMode}
               />
-            ) : loadingPlaceholderText !== undefined ? (
-              <LoadingVerseText settings={settings} aria-hidden>
-                {loadingPlaceholderText || '—'}
-              </LoadingVerseText>
-            ) : isMissingVerse ? (
-              <MissingVerseText settings={settings}>—</MissingVerseText>
             ) : (
               text
             )}
           </VerseText>
-          {!isParallelCell && <VersePassageMedia {...verseContent} />}
+          {passageMedia && (
+            <PassageMediaThumbnails
+              items={passageMedia}
+              gallerySections={passageMediaGallerySections}
+              placement="inline"
+              settings={settings}
+              isParallel={isParallel}
+              isDisabled={annotationMode}
+            />
+          )}
         </ContainerText>
-        {!isParallelCell && <VerseEndContent {...verseContent} />}
+        {otherVersionAnnotations && otherVersionAnnotations.length > 0 && !isSelectionMode && (
+          <VersionAnnotationIndicator
+            versions={otherVersionAnnotations}
+            settings={settings}
+            onClick={openCrossVersionModal}
+            isDisabled={annotationMode}
+          />
+        )}
+        {tag && settings.tagsDisplay === 'inline' && (
+          <VerseTags settings={settings} tag={tag} isDisabled={annotationMode} />
+        )}
+        {relationItems &&
+          (settings.relationsDisplay || 'inline') === 'inline' &&
+          !isSelectionMode && (
+            <RelationsText
+              isParallel={isParallel}
+              settings={settings}
+              onClick={navigateToRelationItem}
+              relationItems={relationItems}
+              isDisabled={annotationMode}
+            />
+          )}
       </Wrapper>
     </>
   )

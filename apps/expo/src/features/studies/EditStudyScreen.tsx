@@ -1,7 +1,6 @@
 import { type SheetRef } from '~common/sheet'
-import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react'
-import { useDispatch, useSelector, useStore } from 'react-redux'
-import { AppState } from 'react-native'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router'
 import { produce } from 'immer'
 import { useAtom, useSetAtom } from 'jotai/react'
@@ -24,8 +23,6 @@ import { useRelationCount } from '~features/studyRelations/useRelationCount'
 import { useOpenEntityRelations } from '~features/studyRelations/useOpenEntityRelations'
 import { createStudyEndpoint } from '~features/studyRelations/endpoints'
 import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
-import { useRecordHistory } from '~features/history/useRecordHistory'
-import { createStudyContentAutosave } from './studyContentAutosave'
 type EditStudyScreenProps = {
   studyAtom?: PrimitiveAtom<StudyTab>
   // Props passed directly (when called from StudiesTabScreen)
@@ -82,15 +79,6 @@ const EditStudyScreen = ({
   const studyId = useMemo(() => propStudyId ?? params.studyId ?? '', [propStudyId, params.studyId])
 
   const dispatch = useDispatch()
-  const store = useStore<RootState>()
-  const [contentAutosave] = useState(() =>
-    createStudyContentAutosave(change => {
-      // A Study deleted meanwhile is not recreated by its last edit.
-      if (!store.getState().user.bible.studies[change.id]) return
-      // Dated when saved, so that it never goes before a rename saved meanwhile.
-      dispatch(updateStudy({ ...change, modified_at: Date.now() }))
-    })
-  )
   const [isReadOnly, setIsReadOnly] = useState(true)
   const renameModalRef = useRef<SheetRef>(null)
   const openEntityRelations = useOpenEntityRelations()
@@ -114,28 +102,19 @@ const EditStudyScreen = ({
   ) => {
     if (!currentStudy) return
     console.log('[Studies] delta', delta)
-    contentAutosave.schedule({ id: currentStudy.id, ...(delta && { content: delta }) })
-    // The editor sends its last change as the app leaves the foreground: it is saved at once.
-    if (AppState.currentState !== 'active') contentAutosave.flush()
+    dispatch(
+      updateStudy({
+        id: currentStudy.id,
+        ...(delta && { content: delta }),
+        modified_at: Date.now(),
+      })
+    )
   }
 
-  // Pending edits are saved when the screen goes away and when the app leaves the foreground,
-  // where it may be ended without notice.
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', status => {
-      if (status !== 'active') contentAutosave.flush()
-    })
-    return () => {
-      subscription.remove()
-      contentAutosave.flush()
-    }
-  }, [contentAutosave])
-  useFocusEffect(useCallback(() => () => contentAutosave.flush(), [contentAutosave]))
-
   // Control weither bible webview send back to study tab or not
-  const markOpenedFromTab = useEffectEvent(() => setOpenedFromTab(openedFromTab))
   useEffect(() => {
-    markOpenedFromTab()
+    setOpenedFromTab(openedFromTab)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useFocusEffect(
@@ -143,8 +122,6 @@ const EditStudyScreen = ({
       setIsFullScreenBible(false)
     }, [setIsFullScreenBible])
   )
-
-  useRecordHistory(currentStudy ? { type: 'study', studyId, title: currentStudy.title } : null)
 
   // Show message if study doesn't exist
   if (studyId === '' || !currentStudy) {
@@ -163,9 +140,7 @@ const EditStudyScreen = ({
   }
 
   return (
-    // The editor keeps its own scroll and keyboard handling: the page stays above the home indicator
-    // and the tab bar.
-    <FormSheetScreen isFormSheet={isFormSheet} reserveBottom>
+    <FormSheetScreen isFormSheet={isFormSheet}>
       {studyAtom && <TabTitleUpdater studyAtom={studyAtom} title={currentStudy.title} />}
       <EditStudyHeader
         isReadOnly={isReadOnly}
@@ -173,8 +148,6 @@ const EditStudyScreen = ({
         openRenameModal={() => renameModalRef.current?.present()}
         openRelationsModal={() => openEntityRelations(studyEndpoint)}
         setReadOnly={() => {
-          // The read view reloads the editor from the store: it must hold the latest edits.
-          contentAutosave.flush()
           setIsReadOnly(true)
         }}
         title={currentStudy.title}

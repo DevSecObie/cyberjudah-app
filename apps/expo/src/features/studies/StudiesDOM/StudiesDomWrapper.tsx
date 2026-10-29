@@ -1,7 +1,7 @@
 import { getEntityChipListState } from '~common/entityChips'
 import { webFontFamily } from '~helpers/webFontFamily'
 import type { JSONValue } from 'expo/build/dom/dom.types'
-import { useEffect, useEffectEvent, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller'
 import { Platform, ScrollView } from 'react-native'
 import { WebViewMessageEvent } from 'react-native-webview'
@@ -110,11 +110,11 @@ export default function StudiesDomWrapper({
   const getIsCurrentTab = useIsCurrentTab()
   const isCurrentTab = studyAtom ? getIsCurrentTab(studyAtom as PrimitiveAtom<TabItem>) : false
 
-  // Refresh on entry/re-entry, not after each editor keystroke: the content and the
-  // resources are read when the effect runs, they do not trigger it.
-  const refreshEmbeds = useEffectEvent(() => {
-    if (!isReadOnly || (studyAtom && !isCurrentTab)) return null
-    return refreshStudyEntityEmbeds(contentToDisplay, {
+  useEffect(() => {
+    if (!isReadOnly || (studyAtom && !isCurrentTab)) return
+    let active = true
+
+    void refreshStudyEntityEmbeds(contentToDisplay, {
       resources,
       defaultBibleVersion,
       resourceLanguages,
@@ -122,14 +122,7 @@ export default function StudiesDomWrapper({
       links,
       studies,
       wordAnnotations,
-    })
-  })
-  useEffect(() => {
-    const refresh = refreshEmbeds()
-    if (!refresh) return
-    let active = true
-
-    void refresh.then(content => {
+    }).then(content => {
       if (!active || !content || !ref.current?.reloadEditor) return
       ref.current.reloadEditor(encodeDeltaContent(content))
     })
@@ -137,6 +130,8 @@ export default function StudiesDomWrapper({
     return () => {
       active = false
     }
+    // Refresh on entry/re-entry, not after each editor keystroke.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [studyId, isCurrentTab, isReadOnly])
 
   function dispatchToWebView(type: string, payload?: JSONValue): void {
@@ -400,7 +395,7 @@ export default function StudiesDomWrapper({
               accessibilityRole="button"
               accessibilityLabel={i18n.t('Choisir dans la Bible')}
               onPress={openBibleVersePicker}
-              className="overflow-hidden border-continuous items-center justify-center w-[44px] h-[44px] rounded-[12px] bg-[rgba(0,0,0,0.1)]"
+              className="overflow-hidden border-continuous items-center justify-center w-[44px] h-[44px] rounded-[14px] bg-[rgba(0,0,0,0.1)]"
             >
               <FeatherIcon name="book-open" size={20} />
             </TouchableBox>

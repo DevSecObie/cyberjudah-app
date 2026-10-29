@@ -1,7 +1,8 @@
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
-import { Fragment, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FlatList, Platform, Text as NativeText, TouchableOpacity, View } from 'react-native'
+import * as NativeUI from 'react-native'
+import { FlatList } from 'react-native'
 import { useSelector } from 'react-redux'
 import { twMerge } from '~common/ui/classNames'
 
@@ -15,10 +16,9 @@ import ChoiceFilterModal from '~common/ChoiceFilterModal'
 import ColorFilterModal from '~common/ColorFilterModal'
 import FiltersHeader from '~common/FiltersHeader'
 import type { SheetRef } from '~common/sheet'
-import Border from '~common/ui/Border'
-import Box, { usePageBottomInset } from '~common/ui/Box'
+import Box from '~common/ui/Box'
 import Container from '~common/ui/Container'
-import { ListSectionTitle } from '~common/ui/ListSection'
+import Text from '~common/ui/Text'
 import { getAnnotationGroupVerseKey } from '~features/entityListQuery/wordAnnotationsQuery'
 import { getBibleViewParamsForVerseKeys } from '~features/studyRelations/openableStudyObjects'
 import { isBookInTestament } from '~helpers/bibleBookCatalog'
@@ -36,26 +36,29 @@ import {
 } from '~state/entityListFilters'
 
 const TabContainer = (
-  componentProps: Omit<UIComponentProps<typeof View>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof NativeUI.View>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
 ) => {
   const { theme: _themeOverride, className, ...props } = componentProps
 
-  const resolvedClassName = twMerge('flex-row bg-reverse px-[16px]', className)
+  const resolvedClassName = twMerge(
+    'flex-row bg-reverse border-b-[1px] border-b-border px-[16px]',
+    className
+  )
   return (
-    <View
+    <NativeUI.View
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof View>['style']}
+      style={[props.style] as UIComponentProps<typeof NativeUI.View>['style']}
     />
   )
 }
 
 const Tab = (
   componentProps: Omit<
-    UIComponentProps<typeof TouchableOpacity>,
+    UIComponentProps<typeof NativeUI.TouchableOpacity>,
     keyof { active: boolean } | 'theme'
   > &
     Omit<{ active: boolean }, 'theme'> & { theme?: AppTheme; className?: string }
@@ -66,21 +69,24 @@ const Tab = (
   const { active } = props
   const resolvedClassName = twMerge('py-[12px] px-[16px] border-b-[2px]', className)
   return (
-    <TouchableOpacity
+    <NativeUI.TouchableOpacity
       {...props}
       className={resolvedClassName}
       style={
         [
           { borderBottomColor: active ? theme.colors.primary : 'transparent' },
           props.style,
-        ] as UIComponentProps<typeof TouchableOpacity>['style']
+        ] as UIComponentProps<typeof NativeUI.TouchableOpacity>['style']
       }
     />
   )
 }
 
 const TabText = (
-  componentProps: Omit<UIComponentProps<typeof NativeText>, keyof { active: boolean } | 'theme'> &
+  componentProps: Omit<
+    UIComponentProps<typeof NativeUI.Text>,
+    keyof { active: boolean } | 'theme'
+  > &
     Omit<{ active: boolean }, 'theme'> & { theme?: AppTheme; className?: string }
 ) => {
   const contextTheme = useAppTheme()
@@ -89,7 +95,7 @@ const TabText = (
   const { active } = props
   const resolvedClassName = twMerge('text-[14px]', className)
   return (
-    <NativeText
+    <NativeUI.Text
       {...props}
       className={resolvedClassName}
       style={
@@ -99,32 +105,35 @@ const TabText = (
             color: active ? theme.colors.primary : theme.colors.tertiary,
           },
           props.style,
-        ] as UIComponentProps<typeof NativeText>['style']
+        ] as UIComponentProps<typeof NativeUI.Text>['style']
       }
     />
   )
 }
 
-const AnnotationRow = (
-  componentProps: Omit<UIComponentProps<typeof TouchableOpacity>, 'theme'> & {
+const AnnotationCard = (
+  componentProps: Omit<UIComponentProps<typeof NativeUI.TouchableOpacity>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
 ) => {
   const { theme: _themeOverride, className, ...props } = componentProps
 
-  const resolvedClassName = twMerge('px-[20px] py-[14px]', className)
+  const resolvedClassName = twMerge(
+    'bg-reverse mx-[16px] my-[8px] p-[16px] rounded-[8px] border-[1px] border-border',
+    className
+  )
   return (
-    <TouchableOpacity
+    <NativeUI.TouchableOpacity
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof TouchableOpacity>['style']}
+      style={[props.style] as UIComponentProps<typeof NativeUI.TouchableOpacity>['style']}
     />
   )
 }
 
 const AnnotationText = (
-  componentProps: Omit<UIComponentProps<typeof NativeText>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof NativeUI.Text>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
@@ -133,16 +142,16 @@ const AnnotationText = (
 
   const resolvedClassName = twMerge('text-[16px] text-default mb-[8px]', className)
   return (
-    <NativeText
+    <NativeUI.Text
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof NativeText>['style']}
+      style={[props.style] as UIComponentProps<typeof NativeUI.Text>['style']}
     />
   )
 }
 
 const AnnotationMeta = (
-  componentProps: Omit<UIComponentProps<typeof NativeText>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof NativeUI.Text>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
@@ -151,16 +160,16 @@ const AnnotationMeta = (
 
   const resolvedClassName = twMerge('text-[13px] text-tertiary', className)
   return (
-    <NativeText
+    <NativeUI.Text
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof NativeText>['style']}
+      style={[props.style] as UIComponentProps<typeof NativeUI.Text>['style']}
     />
   )
 }
 
 const EmptyState = (
-  componentProps: Omit<UIComponentProps<typeof View>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof NativeUI.View>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
@@ -169,16 +178,16 @@ const EmptyState = (
 
   const resolvedClassName = twMerge('flex-[1] justify-center items-center p-[32px]', className)
   return (
-    <View
+    <NativeUI.View
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof View>['style']}
+      style={[props.style] as UIComponentProps<typeof NativeUI.View>['style']}
     />
   )
 }
 
 const EmptyText = (
-  componentProps: Omit<UIComponentProps<typeof NativeText>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof NativeUI.Text>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
@@ -187,10 +196,10 @@ const EmptyText = (
 
   const resolvedClassName = twMerge('text-[16px] text-tertiary text-center', className)
   return (
-    <NativeText
+    <NativeUI.Text
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof NativeText>['style']}
+      style={[props.style] as UIComponentProps<typeof NativeUI.Text>['style']}
     />
   )
 }
@@ -198,7 +207,6 @@ const EmptyText = (
 const WordAnnotationsScreen = () => {
   const { t } = useTranslation()
   const pushRouteOnce = usePushRouteOnce()
-  const bottomInset = usePageBottomInset()
   const [queryState, setQueryState] = useAtom(wordAnnotationsListQueryAtom)
   const setUnifiedTagsModal = useSetAtom(unifiedTagsModalAtom)
   const colorModalRef = useRef<SheetRef>(null)
@@ -224,7 +232,7 @@ const WordAnnotationsScreen = () => {
     selected: T,
     onSelect: (value: T) => void
   ) =>
-    Platform.OS === 'web'
+    NativeUI.Platform.OS === 'web'
       ? choices.map(choice => ({
           key: String(choice.value),
           label: choice.label,
@@ -388,8 +396,8 @@ const WordAnnotationsScreen = () => {
     })
   }
 
-  // Render annotation row, after a hairline when it follows another row
-  const renderAnnotationRow = (annotation: WordAnnotation & { id: string }, index: number) => {
+  // Render annotation card
+  const renderAnnotationCard = (annotation: WordAnnotation & { id: string }) => {
     // Combine all text from ranges
     const allText = annotation.ranges.map(r => r.text).join(' ... ')
     const reference = verseToReference(
@@ -397,16 +405,13 @@ const WordAnnotationsScreen = () => {
     )
 
     return (
-      <Fragment key={annotation.id}>
-        {index > 0 && <Border className="ml-[20px]" />}
-        <AnnotationRow onPress={() => handleAnnotationPress(annotation)}>
-          <AnnotationText numberOfLines={3}>{allText}</AnnotationText>
-          <AnnotationMeta>
-            {reference} • {annotation.version}
-            {annotation.noteId && ` • ${t('Contient une note')}`}
-          </AnnotationMeta>
-        </AnnotationRow>
-      </Fragment>
+      <AnnotationCard key={annotation.id} onPress={() => handleAnnotationPress(annotation)}>
+        <AnnotationText numberOfLines={3}>{allText}</AnnotationText>
+        <AnnotationMeta>
+          {reference} • {annotation.version}
+          {annotation.noteId && ` • ${t('Contient une note')}`}
+        </AnnotationMeta>
+      </AnnotationCard>
     )
   }
 
@@ -427,15 +432,15 @@ const WordAnnotationsScreen = () => {
     if (queryState.view === 'verse') {
       return (
         <FlatList
-          contentContainerStyle={[pageContentStyle, { paddingBottom: 16 + bottomInset }]}
+          contentContainerStyle={pageContentStyle}
           data={groupedByVerse}
           keyExtractor={item => item.verseKey}
           renderItem={({ item }) => (
             <Box className="overflow-hidden border-continuous">
-              <ListSectionTitle className="ml-[20px] mt-[16px] mb-[6px]">
-                {item.reference}
-              </ListSectionTitle>
-              {item.annotations.map(renderAnnotationRow)}
+              <Box className="overflow-hidden border-continuous px-[16px] py-[8px]">
+                <Text className="text-[14px] font-bold text-tertiary">{item.reference}</Text>
+              </Box>
+              {item.annotations.map(renderAnnotationCard)}
             </Box>
           )}
         />
@@ -445,15 +450,15 @@ const WordAnnotationsScreen = () => {
     if (queryState.view === 'date') {
       return (
         <FlatList
-          contentContainerStyle={[pageContentStyle, { paddingBottom: 16 + bottomInset }]}
+          contentContainerStyle={pageContentStyle}
           data={groupedByDate}
           keyExtractor={item => item.date}
           renderItem={({ item }) => (
             <Box className="overflow-hidden border-continuous">
-              <ListSectionTitle className="ml-[20px] mt-[16px] mb-[6px]">
-                {item.label}
-              </ListSectionTitle>
-              {item.annotations.map(renderAnnotationRow)}
+              <Box className="overflow-hidden border-continuous px-[16px] py-[8px]">
+                <Text className="text-[14px] font-bold text-tertiary">{item.label}</Text>
+              </Box>
+              {item.annotations.map(renderAnnotationCard)}
             </Box>
           )}
         />
@@ -463,16 +468,16 @@ const WordAnnotationsScreen = () => {
     // Flat list
     return (
       <FlatList
-        contentContainerStyle={[pageContentStyle, { paddingBottom: 16 + bottomInset }]}
+        contentContainerStyle={pageContentStyle}
         data={annotationsList}
         keyExtractor={item => item.id}
-        renderItem={({ item, index }) => renderAnnotationRow(item, index)}
+        renderItem={({ item }) => renderAnnotationCard(item)}
       />
     )
   }
 
   return (
-    <Container className="flex-[1]">
+    <Container className="bg-light-grey flex-[1]">
       <FiltersHeader
         title={t('Annotations')}
         hasBackButton
@@ -770,7 +775,6 @@ const WordAnnotationsScreen = () => {
           <TabText active={queryState.view === 'flat'}>{t('Liste')}</TabText>
         </Tab>
       </TabContainer>
-      <Border />
 
       {renderContent()}
     </Container>

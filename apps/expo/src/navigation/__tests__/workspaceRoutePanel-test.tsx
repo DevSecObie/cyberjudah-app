@@ -14,9 +14,6 @@ jest.mock('react-native', () => ({
   },
   useWindowDimensions: () => ({ width: mockWidth }),
 }))
-jest.mock('react-native-safe-area-context', () => ({
-  useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
-}))
 jest.mock('expo-router', () => ({
   useSegments: () => mockSegments,
   useRootNavigationState: () => ({
@@ -107,13 +104,4 @@ it('closes every consecutive panel route back to its originating page', () => {
 it('falls back to the workspace for a directly opened panel', () => {
   mockRoutes = [{ name: '(explore)' }]
   expect(readPanel()?.closeTarget).toBeUndefined()
-})
-it('names the page that stays under native sheets', () => {
-  mockPlatform = 'ios'
-  mockRoutes = [{ name: 'index' }, { name: 'strong' }, { name: '(explore)' }]
-  expect(readPanel()?.basePath).toBe('/')
-  mockRoutes = [{ name: 'index' }, { name: 'home' }, { name: 'strong' }]
-  expect(readPanel()?.basePath).toBe('/home')
-  mockRoutes = [{ name: 'index' }, { name: 'home' }]
-  expect(readPanel()?.basePath).toBeUndefined()
 })

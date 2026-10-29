@@ -1,7 +1,6 @@
 import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
 import { commentaryContext } from '~features/study-assistant/resourceContext'
 import { useQuery } from '@tanstack/react-query'
-import { staticResourceQueryOptions } from '~helpers/queryOptions'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
@@ -12,13 +11,12 @@ import Loading from '~common/Loading'
 import StylizedHTMLView from '~common/SwitchableHTMLView'
 import { getCommentaryShare } from './shareCommentary'
 import ScrollView from '~common/ui/ScrollView'
-import Box, { usePageBottomInset } from '~common/ui/Box'
-import Card from '~common/ui/Card'
+import Box from '~common/ui/Box'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
 import ResourceUnavailableView from '~features/resources/ResourceUnavailableView'
 import { useResourceAccess } from '~features/resources/resourceAccess'
 import { resourceFailureFromAccessError } from '~features/resources/resourceFailure'
-import { getCommentaryBookLabel } from './commentaryBookLabel'
+import { getBook } from '~helpers/bibleBookCatalog'
 import { IS_FORM_SHEET } from '~helpers/constants'
 import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
 import CommentaryResourceHeaderActions from './CommentaryResourceHeaderActions'
@@ -35,8 +33,6 @@ import {
 import CommentaryEntryNavigation from './CommentaryEntryNavigation'
 import { groupCommentarySectionsForVerse } from './commentaryResourceNavigation'
 import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
-import { useRecordHistory } from '~features/history/useRecordHistory'
-import { getCommentaryResourceHistoryEntry } from './commentaryResourceHistory'
 const CommentaryEntryScreen = ({
   routeParams,
   onOpenChapter,
@@ -57,7 +53,6 @@ const CommentaryEntryScreen = ({
   const pushRouteOnce = usePushRouteOnce()
   const { t } = useTranslation()
   const canGoBackInStack = useCanGoBackInStack()
-  const bottomInset = usePageBottomInset()
   const scrollRef = React.useRef<React.ComponentRef<typeof ScrollView>>(null)
   const query = useQuery({
     queryKey: [
@@ -76,7 +71,6 @@ const CommentaryEntryScreen = ({
     enabled: Boolean(parsed && params.sectionId),
     networkMode: 'always',
     retry: false,
-    ...staticResourceQueryOptions,
   })
 
   useAssistantResourceContext(
@@ -86,19 +80,10 @@ const CommentaryEntryScreen = ({
       query.data?.sections.find(item => item.id === params.sectionId)
     )
   )
-  useRecordHistory(
-    params.sectionId
-      ? getCommentaryResourceHistoryEntry(
-          parsed,
-          params.sectionId,
-          query.data?.sections.find(item => item.id === params.sectionId)
-        )
-      : null
-  )
 
   if (!parsed || !params.sectionId) {
     return (
-      <FormSheetScreen className="bg-canvas" isFormSheet={IS_FORM_SHEET}>
+      <FormSheetScreen isFormSheet={IS_FORM_SHEET}>
         <ResourceUnavailableView
           title={t('commentaries.resource.invalid')}
           failure={{ cause: 'not-found', recoveries: [] }}
@@ -122,7 +107,7 @@ const CommentaryEntryScreen = ({
   const sectionIndex = orderedSections.findIndex(candidate => candidate.id === params.sectionId)
   const previousSection = sectionIndex > 0 ? orderedSections[sectionIndex - 1] : undefined
   const nextSection = sectionIndex >= 0 ? orderedSections[sectionIndex + 1] : undefined
-  const bookLabel = getCommentaryBookLabel(book)
+  const bookLabel = getBook(book)?.Nom ?? String(book)
   const passage = section
     ? `${bookLabel} ${chapter}:${section.rangeStartVerse}${
         section.rangeEndVerse !== section.rangeStartVerse ? `–${section.rangeEndVerse}` : ''
@@ -130,9 +115,10 @@ const CommentaryEntryScreen = ({
     : `${bookLabel} ${chapter}`
 
   return (
-    <FormSheetScreen className="bg-canvas" isFormSheet={IS_FORM_SHEET}>
-      <Box className="overflow-hidden border-continuous flex-[1] bg-canvas">
+    <FormSheetScreen isFormSheet={IS_FORM_SHEET}>
+      <Box className="overflow-hidden border-continuous flex-[1] bg-light-grey">
         <Header
+          background
           hasBackButton={IS_FORM_SHEET ? canGoBackInStack : true}
           title={entry.author}
           subTitle={passage}
@@ -178,8 +164,7 @@ const CommentaryEntryScreen = ({
         ) : (
           <ScrollView
             ref={scrollRef}
-            backgroundColor="canvas"
-            contentContainerStyle={{ maxWidth: 600, padding: 18, paddingBottom: 44 + bottomInset }}
+            contentContainerStyle={{ maxWidth: 600, padding: 18, paddingBottom: 44 }}
           >
             <CommentaryRoomIntro
               compact
@@ -199,7 +184,17 @@ const CommentaryEntryScreen = ({
                     })
               }
             />
-            <Card className="px-[18px] py-[18px]">
+            <Box
+              className="overflow-hidden border-continuous bg-reverse rounded-[20px] px-[18px] py-[18px]"
+              style={{
+                shadowColor: 'rgb(89,131,240)',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 7,
+                elevation: 1,
+                overflow: 'visible',
+              }}
+            >
               <CommentaryEntryNavigation
                 hasPrevious={Boolean(previousSection)}
                 hasNext={Boolean(nextSection)}
@@ -243,7 +238,7 @@ const CommentaryEntryScreen = ({
                   }}
                 />
               </Box>
-            </Card>
+            </Box>
           </ScrollView>
         )}
       </Box>

@@ -1,5 +1,5 @@
+import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
-import { titleFontStyle } from '~themes/styleValues'
 import React, { useEffect, useRef } from 'react'
 import Box from '~common/ui/Box'
 import Paragraph from '~common/ui/Paragraph'
@@ -33,7 +33,10 @@ const LoginModal = ({ isVisible }: { isVisible: boolean }) => {
           <Back style={{ marginRight: 15 }}>
             <FeatherIcon name="arrow-left" size={25} />
           </Back>
-          <Text className="text-[30px]" style={titleFontStyle(stylingTheme)}>
+          <Text
+            className="text-[30px]"
+            style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+          >
             {t('Études bibliques')}
           </Text>
         </Box>

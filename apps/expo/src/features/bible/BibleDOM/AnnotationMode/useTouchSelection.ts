@@ -3,21 +3,11 @@ import { Verse as TVerse } from '~common/types'
 import { WordToken, getWordIndexFromCharOffset } from '~helpers/wordTokenizer'
 import { SelectionRange, WordPosition } from './selectionUtils'
 import { HighlightRect } from './HighlightComponents'
-import type { VerseSelectionHandles } from './useAnnotationHighlights'
-import { findVerseContainer, getCaretInfoFromPoint, isIgnoredVerseTouchTarget } from './domUtils'
-import {
-  createVerseCellKey,
-  getVerseTarget,
-  isSameVerseColumn,
-  type VerseTarget,
-} from './verseTargets'
+import { getCaretInfoFromPoint, findVerseContainer, isIgnoredVerseTouchTarget } from './domUtils'
 import { getDOMScrollTarget, scrollDOMBy } from '../domScroll'
 
 // Drag selection constants
 const DRAG_THRESHOLD = 10 // pixels to detect horizontal drag vs scroll
-// Between two lines of a verse no text is under the finger: the verse is looked for this far
-// above and below, so that a tap a little off a word is not taken for a tap away from the text
-const LINE_GAP_REACH = 12
 const AUTO_SCROLL_ZONE_TOP = 100 // pixels from top edge to trigger auto-scroll up
 const AUTO_SCROLL_ZONE_BOTTOM = 280 // pixels from bottom edge to trigger auto-scroll down
 const AUTO_SCROLL_SPEED = 5 // pixels per frame
@@ -37,90 +27,67 @@ interface VelocitySample {
   x: number
 }
 
-/** A word under the finger, in the version and parallel column it is shown in. */
-type WordTarget = WordPosition & Pick<VerseTarget, 'version' | 'column'>
-
 interface TouchState {
   startPos: { x: number; y: number }
-  startWord: WordTarget | null
-  startVerse: VerseTarget | null
+  startWord: WordPosition | null
+  startVerseKey: string | null
   isDragging: boolean
   isSwipe: boolean
   hasMoved: boolean
   dragHandle: 'start' | 'end' | null
-  // Reading mode: the handle of selected verses under the finger, taken once the finger moves
-  pendingVerseHandle: { range: SelectionRange; handle: 'start' | 'end' } | null
   // Unified gesture state
   longPressTimer: ReturnType<typeof setTimeout> | null
+  lastTapTime: number
+  lastTapVerseKey: string | null
   longPressFired: boolean
   // Swipe detection state
   startTime: number
   velocitySamples: VelocitySample[]
 }
 
-/** A tap held back until a second tap on the same verse can no longer make it a double tap */
-interface HeldTap {
-  verse: VerseTarget
-  position: Position
-  // The verse of one version tapped (double taps need the same verse of the same version)
-  cellKey: string
-  endedAt: number
-  timer: ReturnType<typeof setTimeout>
-}
-
-const INITIAL_TOUCH_STATE: Omit<TouchState, 'longPressTimer'> = {
-  startPos: { x: 0, y: 0 },
-  startWord: null,
-  startVerse: null,
-  isDragging: false,
-  isSwipe: false,
-  hasMoved: false,
-  dragHandle: null,
-  pendingVerseHandle: null,
-  longPressFired: false,
-  startTime: 0,
-  velocitySamples: [],
-}
+const INITIAL_TOUCH_STATE: Omit<TouchState, 'longPressTimer' | 'lastTapTime' | 'lastTapVerseKey'> =
+  {
+    startPos: { x: 0, y: 0 },
+    startWord: null,
+    startVerseKey: null,
+    isDragging: false,
+    isSwipe: false,
+    hasMoved: false,
+    dragHandle: null,
+    longPressFired: false,
+    startTime: 0,
+    velocitySamples: [],
+  }
 
 /**
  * Resets the mutable touch state fields that should be cleared between gestures.
- * A held tap lives outside it: double taps are detected across gestures.
+ * Does NOT reset lastTapTime/lastTapVerseKey (needed for double-tap detection across gestures).
  */
 function resetTouchState(state: TouchState): void {
   state.isDragging = false
   state.isSwipe = false
   state.hasMoved = false
   state.dragHandle = null
-  state.pendingVerseHandle = null
   state.startWord = null
-  state.startVerse = null
+  state.startVerseKey = null
   state.longPressFired = false
   state.velocitySamples = []
 }
 
 /** Callbacks for gesture handling */
 export interface TouchSelectionCallbacks {
-  /** Called on single tap - receives the verse and touch position for word-level selection */
-  onTapVerse?: (verse: VerseTarget, position: { x: number; y: number }) => void
-  /**
-   * Whether a tap on this verse waits to see if a second one follows. Without a double tap
-   * that could do anything there, the tap is reported at once. Defaults to waiting.
-   */
-  shouldWaitForDoubleTap?: (verse: VerseTarget) => boolean
-  /** Called when a tap is held back to rule out a double tap, before onTapVerse */
-  onTapVerseHeld?: (verse: VerseTarget) => void
-  /** Called on double tap - receives the verse and touch position for selecting the word */
-  onDoubleTapVerse?: (verse: VerseTarget, position: { x: number; y: number }) => void
+  /** Called on single tap - receives verseKey and touch position for word-level selection */
+  onTapVerse?: (verseKey: string, position: { x: number; y: number }) => void
+  /** Called on double tap - receives verseKey and touch position for selecting the word */
+  onDoubleTapVerse?: (verseKey: string, position: { x: number; y: number }) => void
   /** Called on long press */
-  onLongPressVerse?: (verse: VerseTarget) => void
+  onLongPressVerse?: (verseKey: string) => void
   /** Allow a mouse drag to enter annotation mode from reading mode. */
-  onMouseSelectionStart?: (verse: VerseTarget) => boolean
+  onMouseSelectionStart?: () => boolean
   /** Called when drag starts */
   onDragStart?: () => void
-  /** Reading mode: a handle of selected verses is dragged, the words of its block take over */
-  onVerseHandleDragStart?: (range: SelectionRange) => void
   /** Called to notify which verse is currently being touched (for visual feedback) */
-  onTouchedVerseChange?: (verse: VerseTarget | null) => void
+  onTouchedVerseChange?: (verseKey: string | null) => void
   /** Called when tapping on empty space (not on a verse) - useful for clearing selection */
   onTapEmpty?: () => void
   /** Called on horizontal swipe (fast movement) - for chapter navigation */
@@ -129,20 +96,11 @@ export interface TouchSelectionCallbacks {
 
 export interface TouchSelectionConfig {
   containerRef: RefObject<HTMLDivElement | null>
-  /**
-   * The element gestures are listened to on, when wider than the text: on a wide screen, a tap
-   * in the margins beside the text is a tap away from it
-   */
-  gestureSurfaceRef?: RefObject<HTMLElement | null>
-  /** The element selection handle positions are relative to (the highlight layer's host) */
-  highlightOriginRef?: RefObject<HTMLDivElement | null>
   selection: SelectionRange | null
   setSelection: (fn: (prev: SelectionRange | null) => SelectionRange | null) => void
-  versesByVersion: Record<string, TVerse[]>
+  verses: TVerse[]
   getTokens: (verseKey: string, text: string) => WordToken[]
   getSelectionHandlePositions: () => { start: Position | null; end: Position | null }
-  /** Reading mode: the handles of the selected verses, block by block */
-  getVerseSelectionHandles?: () => VerseSelectionHandles[]
   highlightRects: HighlightRect[]
   /** Whether annotation mode is currently active */
   annotationMode: boolean
@@ -155,26 +113,13 @@ interface Position {
   y: number
 }
 
-const toVerseTarget = ({ verseKey, version, column }: WordTarget): VerseTarget =>
-  column === undefined ? { verseKey, version } : { verseKey, version, column }
-
-const createSelection = (start: WordTarget, end: WordPosition): SelectionRange => ({
-  start: { verseKey: start.verseKey, wordIndex: start.wordIndex },
-  end: { verseKey: end.verseKey, wordIndex: end.wordIndex },
-  version: start.version,
-  ...(start.column === undefined ? {} : { column: start.column }),
-})
-
 export function useTouchSelection({
   containerRef,
-  gestureSurfaceRef = containerRef,
-  highlightOriginRef = containerRef,
   selection,
   setSelection,
-  versesByVersion,
+  verses,
   getTokens,
   getSelectionHandlePositions,
-  getVerseSelectionHandles = () => [],
   annotationMode,
   callbacks = {},
 }: TouchSelectionConfig): {
@@ -183,29 +128,29 @@ export function useTouchSelection({
   const touchStateRef = useRef<TouchState>({
     ...INITIAL_TOUCH_STATE,
     longPressTimer: null,
+    lastTapTime: 0,
+    lastTapVerseKey: null,
   })
   const autoScrollRef = useRef<number | null>(null)
   const currentTouchPosRef = useRef<Position | null>(null)
   const lastDragEndRef = useRef<number>(0)
-  const heldTapRef = useRef<HeldTap | null>(null)
+  const singleTapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Store frequently-changing values in refs so the touch listener effect
   // does not need to tear down and re-attach on every change.
   const selectionRef = useRef(selection)
-  const versesByVersionRef = useRef(versesByVersion)
+  const versesRef = useRef(verses)
   const getTokensRef = useRef(getTokens)
   const getSelectionHandlePositionsRef = useRef(getSelectionHandlePositions)
-  const getVerseSelectionHandlesRef = useRef(getVerseSelectionHandles)
   const annotationModeRef = useRef(annotationMode)
   const setSelectionRef = useRef(setSelection)
   const callbacksRef = useRef(callbacks)
 
   useEffect(() => {
     selectionRef.current = selection
-    versesByVersionRef.current = versesByVersion
+    versesRef.current = verses
     getTokensRef.current = getTokens
     getSelectionHandlePositionsRef.current = getSelectionHandlePositions
-    getVerseSelectionHandlesRef.current = getVerseSelectionHandles
     annotationModeRef.current = annotationMode
     setSelectionRef.current = setSelection
     callbacksRef.current = callbacks
@@ -213,25 +158,24 @@ export function useTouchSelection({
     annotationMode,
     callbacks,
     getSelectionHandlePositions,
-    getVerseSelectionHandles,
     getTokens,
     selection,
     setSelection,
-    versesByVersion,
+    verses,
   ])
 
-  // Get word position at a given screen coordinate, in the version and column shown there
-  const getWordAtPoint = (clientX: number, clientY: number): WordTarget | null => {
+  // Get word position at a given screen coordinate
+  const getWordAtPoint = (clientX: number, clientY: number): WordPosition | null => {
     const caretInfo = getCaretInfoFromPoint(clientX, clientY)
     if (!caretInfo) return null
 
-    const verseTarget = getVerseTarget(findVerseContainer(caretInfo.targetElement))
-    if (!verseTarget) return null
-    const { verseKey, version } = verseTarget
+    const verseContainer = findVerseContainer(caretInfo.targetElement)
+    if (!verseContainer) return null
 
-    const verse = versesByVersionRef.current[version]?.find(
-      v => `${v.Livre}-${v.Chapitre}-${v.Verset}` === verseKey
-    )
+    const verseKey = verseContainer.getAttribute('data-verse-key')
+    if (!verseKey) return null
+
+    const verse = versesRef.current.find(v => `${v.Livre}-${v.Chapitre}-${v.Verset}` === verseKey)
     if (!verse) return null
 
     const tokens = getTokensRef.current(verseKey, verse.Texte)
@@ -239,27 +183,24 @@ export function useTouchSelection({
 
     if (wordIndex === null) return null
 
-    return { ...verseTarget, wordIndex }
+    return { verseKey, wordIndex }
   }
 
-  // Get the verse at a given screen coordinate (without word index)
-  const getVerseAtPoint = (clientX: number, clientY: number): VerseTarget | null => {
+  // Get verse key at a given screen coordinate (without word index)
+  const getVerseKeyAtPoint = (clientX: number, clientY: number): string | null => {
     const caretInfo = getCaretInfoFromPoint(clientX, clientY)
     if (!caretInfo) return null
 
-    return getVerseTarget(findVerseContainer(caretInfo.targetElement))
-  }
+    const verseContainer = findVerseContainer(caretInfo.targetElement)
+    if (!verseContainer) return null
 
-  // The verse at a point, or in the lines just above and below it
-  const getVerseNearPoint = (clientX: number, clientY: number): VerseTarget | null =>
-    getVerseAtPoint(clientX, clientY) ??
-    getVerseAtPoint(clientX, clientY - LINE_GAP_REACH) ??
-    getVerseAtPoint(clientX, clientY + LINE_GAP_REACH)
+    return verseContainer.getAttribute('data-verse-key')
+  }
 
   // Check if a touch point is near a selection handle
   const isNearHandle = (touchX: number, touchY: number, handlePos: Position | null): boolean => {
     if (!handlePos) return false
-    const containerRect = highlightOriginRef.current?.getBoundingClientRect()
+    const containerRect = containerRef.current?.getBoundingClientRect()
     if (!containerRect) return false
 
     const HANDLE_HIT_RADIUS = 30 // Enlarged touch area
@@ -269,31 +210,6 @@ export function useTouchSelection({
     const dx = touchX - handleScreenX
     const dy = touchY - handleScreenY
     return Math.sqrt(dx * dx + dy * dy) < HANDLE_HIT_RADIUS
-  }
-
-  // Reading mode: the handle of selected verses at a point, if any
-  const findVerseSelectionHandle = (x: number, y: number): TouchState['pendingVerseHandle'] => {
-    if (annotationModeRef.current) return null
-    for (const { range, start, end } of getVerseSelectionHandlesRef.current()) {
-      if (isNearHandle(x, y, start)) return { range, handle: 'start' }
-      if (isNearHandle(x, y, end)) return { range, handle: 'end' }
-    }
-    return null
-  }
-
-  // The finger or pointer moved off a handle of selected verses: it now drags the words of the
-  // block, which the handle's end follows
-  const startVerseHandleDrag = (touchState: TouchState) => {
-    const pending = touchState.pendingVerseHandle
-    if (!pending) return
-    touchState.pendingVerseHandle = null
-    touchState.dragHandle = pending.handle
-    touchState.isDragging = true
-    clearLongPressTimer()
-    callbacksRef.current.onTouchedVerseChange?.(null)
-    setSelectionRef.current(() => pending.range)
-    callbacksRef.current.onVerseHandleDragStart?.(pending.range)
-    callbacksRef.current.onDragStart?.()
   }
 
   // Auto-scroll functionality
@@ -323,73 +239,35 @@ export function useTouchSelection({
     autoScrollRef.current = requestAnimationFrame(scroll)
   }
 
-  // Update selection during drag. A selection never leaves the column it started in:
-  // words of another column are ignored, even when it shows the same version.
-  const updateSelectionDuringDrag = (word: WordTarget) => {
+  // Update selection during drag
+  const updateSelectionDuringDrag = (wordPos: WordPosition) => {
     const touchState = touchStateRef.current
-    const wordPos = { verseKey: word.verseKey, wordIndex: word.wordIndex }
 
     setSelectionRef.current(prev => {
       if (!prev) {
-        if (!touchState.startWord || !isSameVerseColumn(touchState.startWord, word)) return null
-        return createSelection(touchState.startWord, wordPos)
+        if (!touchState.startWord) return null
+        return { start: touchState.startWord, end: wordPos }
       }
-      if (!isSameVerseColumn(prev, word)) return prev
 
       if (touchState.dragHandle === 'start') {
-        return { ...prev, start: wordPos }
+        return { start: wordPos, end: prev.end }
       } else {
-        return { ...prev, end: wordPos }
+        return { start: prev.start, end: wordPos }
       }
     })
   }
 
-  const clearLongPressTimer = () => {
+  // Clear timers helper
+  const clearTimers = () => {
     const touchState = touchStateRef.current
     if (touchState.longPressTimer) {
       clearTimeout(touchState.longPressTimer)
       touchState.longPressTimer = null
     }
-  }
-
-  // Forgets the held tap without reporting it (it became a double tap, or the view went away)
-  const dropHeldTap = () => {
-    const heldTap = heldTapRef.current
-    if (heldTap) clearTimeout(heldTap.timer)
-    heldTapRef.current = null
-  }
-
-  // Reports the held tap now: its delay ran out, or another verse was tapped
-  const releaseHeldTap = () => {
-    const heldTap = heldTapRef.current
-    if (!heldTap) return
-    dropHeldTap()
-    callbacksRef.current.onTapVerse?.(heldTap.verse, heldTap.position)
-  }
-
-  const isDoubleTapOfHeldTap = (cellKey: string, now: number) => {
-    const heldTap = heldTapRef.current
-    return heldTap?.cellKey === cellKey && now - heldTap.endedAt < DOUBLE_TAP_DELAY
-  }
-
-  // A single tap is held back only where a double tap could follow and do something.
-  // A tap on another verse first reports the one still held, so no tap is ever lost.
-  const handleSingleTap = (verse: VerseTarget, position: Position, now: number) => {
-    releaseHeldTap()
-    const cbs = callbacksRef.current
-    if (!(cbs.shouldWaitForDoubleTap?.(verse) ?? true)) {
-      cbs.onTapVerse?.(verse, position)
-      return
+    if (singleTapTimerRef.current) {
+      clearTimeout(singleTapTimerRef.current)
+      singleTapTimerRef.current = null
     }
-
-    heldTapRef.current = {
-      verse,
-      position,
-      cellKey: createVerseCellKey(verse),
-      endedAt: now,
-      timer: setTimeout(releaseHeldTap, DOUBLE_TAP_DELAY),
-    }
-    cbs.onTapVerseHeld?.(verse)
   }
 
   // Calculate average velocity from recent samples
@@ -412,7 +290,7 @@ export function useTouchSelection({
   // Attach native touch event handlers once and read latest values from refs.
   // This avoids tearing down and re-attaching listeners when props change.
   useEffect(() => {
-    const container = gestureSurfaceRef.current
+    const container = containerRef.current
     if (!container) return
     let lastTouchEndAt = 0
     let mouseIsDown = false
@@ -425,7 +303,7 @@ export function useTouchSelection({
       const touchState = touchStateRef.current
       const cbs = callbacksRef.current
 
-      clearLongPressTimer()
+      clearTimers()
 
       const now = Date.now()
 
@@ -443,19 +321,18 @@ export function useTouchSelection({
       if (isIgnoredVerseTouchTarget(e.target)) {
         touchState.hasMoved = true
         touchState.startWord = null
-        touchState.startVerse = null
+        touchState.startVerseKey = null
         cbs.onTouchedVerseChange?.(null)
         return
       }
 
       const wordPos = getWordAtPoint(touch.clientX, touch.clientY)
       touchState.startWord = wordPos
-      touchState.startVerse = wordPos
-        ? toVerseTarget(wordPos)
-        : getVerseNearPoint(touch.clientX, touch.clientY)
+      touchState.startVerseKey =
+        wordPos?.verseKey || getVerseKeyAtPoint(touch.clientX, touch.clientY)
 
-      if (touchState.startVerse) {
-        cbs.onTouchedVerseChange?.(touchState.startVerse)
+      if (touchState.startVerseKey) {
+        cbs.onTouchedVerseChange?.(touchState.startVerseKey)
       }
 
       // Check if touching a selection handle (annotation mode only)
@@ -477,17 +354,13 @@ export function useTouchSelection({
         }
       }
 
-      // A tap on a handle of selected verses still unselects a verse: the handle is only
-      // taken when the finger moves
-      touchState.pendingVerseHandle = findVerseSelectionHandle(touch.clientX, touch.clientY)
-
       // Start long-press timer (only if we found a verse)
-      if (touchState.startVerse) {
+      if (touchState.startVerseKey) {
         touchState.longPressTimer = setTimeout(() => {
-          if (!touchState.hasMoved && !touchState.isDragging && touchState.startVerse) {
+          if (!touchState.hasMoved && !touchState.isDragging && touchState.startVerseKey) {
             touchState.longPressFired = true
             callbacksRef.current.onTouchedVerseChange?.(null)
-            callbacksRef.current.onLongPressVerse?.(touchState.startVerse)
+            callbacksRef.current.onLongPressVerse?.(touchState.startVerseKey)
           }
         }, LONG_PRESS_DELAY)
       }
@@ -507,18 +380,6 @@ export function useTouchSelection({
       touchState.velocitySamples.push({ time: now, x: touch.clientX })
       if (touchState.velocitySamples.length > VELOCITY_SAMPLE_COUNT) {
         touchState.velocitySamples.shift()
-      }
-
-      // A finger on a handle of selected verses holds the page still, and takes the handle once
-      // it moves
-      if (touchState.pendingVerseHandle) {
-        e.preventDefault()
-        const distance = Math.hypot(
-          touch.clientX - touchState.startPos.x,
-          touch.clientY - touchState.startPos.y
-        )
-        if (distance <= DRAG_THRESHOLD) return
-        startVerseHandleDrag(touchState)
       }
 
       // If already dragging (handle or horizontal), block scroll and update selection
@@ -582,8 +443,10 @@ export function useTouchSelection({
             touchState.isDragging = true
             e.preventDefault()
             cbs.onDragStart?.()
-            const startWord = touchState.startWord
-            setSelectionRef.current(() => createSelection(startWord, startWord))
+            setSelectionRef.current(() => ({
+              start: touchState.startWord!,
+              end: touchState.startWord!,
+            }))
           }
         }
       }
@@ -629,16 +492,35 @@ export function useTouchSelection({
 
       // Gesture detection (only if not dragging and not moved and long-press didn't fire)
       if (!touchState.isDragging && !touchState.hasMoved && !touchState.longPressFired) {
-        const verse = touchState.startVerse
-        if (verse) {
-          if (isDoubleTapOfHeldTap(createVerseCellKey(verse), now)) {
-            dropHeldTap()
-            cbs.onDoubleTapVerse?.(verse, { ...touchState.startPos })
+        const verseKey = touchState.startVerseKey
+        if (verseKey) {
+          if (
+            touchState.lastTapVerseKey === verseKey &&
+            now - touchState.lastTapTime < DOUBLE_TAP_DELAY
+          ) {
+            // Double-tap detected
+            if (singleTapTimerRef.current) {
+              clearTimeout(singleTapTimerRef.current)
+              singleTapTimerRef.current = null
+            }
+            const doubleTapPosition = { ...touchState.startPos }
+            touchState.lastTapTime = 0
+            touchState.lastTapVerseKey = null
+            cbs.onDoubleTapVerse?.(verseKey, doubleTapPosition)
           } else {
-            handleSingleTap(verse, { ...touchState.startPos }, now)
+            // Potential single tap - defer to allow double-tap detection
+            const tapPosition = { ...touchState.startPos }
+            touchState.lastTapTime = now
+            touchState.lastTapVerseKey = verseKey
+            singleTapTimerRef.current = setTimeout(() => {
+              if (touchState.lastTapVerseKey === verseKey) {
+                callbacksRef.current.onTapVerse?.(verseKey, tapPosition)
+                touchState.lastTapVerseKey = null
+              }
+              singleTapTimerRef.current = null
+            }, DOUBLE_TAP_DELAY)
           }
-        } else if (!touchState.pendingVerseHandle) {
-          // A tap on a handle itself, off the text, is not a tap away from the text
+        } else {
           cbs.onTapEmpty?.()
         }
       }
@@ -647,10 +529,13 @@ export function useTouchSelection({
     }
 
     const handleTouchCancel = () => {
-      clearLongPressTimer()
+      clearTimers()
       callbacksRef.current.onTouchedVerseChange?.(null)
 
-      resetTouchState(touchStateRef.current)
+      const touchState = touchStateRef.current
+      resetTouchState(touchState)
+      touchState.lastTapTime = 0
+      touchState.lastTapVerseKey = null
 
       stopAutoScroll()
       currentTouchPosRef.current = null
@@ -664,7 +549,7 @@ export function useTouchSelection({
       const cbs = callbacksRef.current
       const now = Date.now()
 
-      clearLongPressTimer()
+      clearTimers()
       mouseIsDown = true
       touchState.startPos = { x: e.clientX, y: e.clientY }
       touchState.isDragging = false
@@ -678,11 +563,11 @@ export function useTouchSelection({
 
       const wordPos = getWordAtPoint(e.clientX, e.clientY)
       touchState.startWord = wordPos
-      touchState.startVerse = wordPos
-        ? toVerseTarget(wordPos)
-        : getVerseNearPoint(e.clientX, e.clientY)
+      touchState.startVerseKey = wordPos?.verseKey || getVerseKeyAtPoint(e.clientX, e.clientY)
 
-      // Handles sit outside the text lines, so test them before requiring a verse under the pointer
+      if (!touchState.startVerseKey) return
+      cbs.onTouchedVerseChange?.(touchState.startVerseKey)
+
       if (selectionRef.current && annotationModeRef.current) {
         const handlePositions = getSelectionHandlePositionsRef.current()
         if (isNearHandle(e.clientX, e.clientY, handlePositions.start)) {
@@ -699,18 +584,14 @@ export function useTouchSelection({
         }
       }
 
-      touchState.pendingVerseHandle = findVerseSelectionHandle(e.clientX, e.clientY)
-      if (!touchState.startVerse) return
-      cbs.onTouchedVerseChange?.(touchState.startVerse)
-
       touchState.longPressTimer = setTimeout(() => {
         if (!mouseIsDown || touchState.hasMoved || touchState.isDragging) return
-        if (!touchState.startVerse) return
+        if (!touchState.startVerseKey) return
 
         touchState.longPressFired = true
         suppressMouseClickUntil = Date.now() + 700
         callbacksRef.current.onTouchedVerseChange?.(null)
-        callbacksRef.current.onLongPressVerse?.(touchState.startVerse)
+        callbacksRef.current.onLongPressVerse?.(touchState.startVerseKey)
       }, LONG_PRESS_DELAY)
     }
 
@@ -719,16 +600,6 @@ export function useTouchSelection({
 
       const touchState = touchStateRef.current
       currentTouchPosRef.current = { x: e.clientX, y: e.clientY }
-
-      if (touchState.pendingVerseHandle) {
-        const distance = Math.hypot(
-          e.clientX - touchState.startPos.x,
-          e.clientY - touchState.startPos.y
-        )
-        if (distance <= DRAG_THRESHOLD) return
-        startVerseHandleDrag(touchState)
-        suppressMouseClickUntil = Date.now() + 700
-      }
 
       if (touchState.isDragging) {
         e.preventDefault()
@@ -756,18 +627,17 @@ export function useTouchSelection({
 
       if (
         touchState.startWord &&
-        (annotationModeRef.current ||
-          callbacksRef.current.onMouseSelectionStart?.(toVerseTarget(touchState.startWord)))
+        (annotationModeRef.current || callbacksRef.current.onMouseSelectionStart?.())
       ) {
         touchState.isDragging = true
         suppressMouseClickUntil = Date.now() + 700
         e.preventDefault()
         callbacksRef.current.onDragStart?.()
-        const startWord = touchState.startWord
-        const pointedWord = getWordAtPoint(e.clientX, e.clientY)
-        const currentWord =
-          pointedWord && isSameVerseColumn(pointedWord, startWord) ? pointedWord : startWord
-        setSelectionRef.current(() => createSelection(startWord, currentWord))
+        const currentWord = getWordAtPoint(e.clientX, e.clientY) ?? touchState.startWord
+        setSelectionRef.current(() => ({
+          start: touchState.startWord!,
+          end: currentWord,
+        }))
         return
       }
 
@@ -814,19 +684,19 @@ export function useTouchSelection({
       )
         return
 
-      const verse =
-        getVerseTarget(e.target instanceof Element ? findVerseContainer(e.target) : null) ??
-        getVerseNearPoint(e.clientX, e.clientY)
-      if (!verse) {
-        // A click on a handle itself, off the text, is not a click away from the text
-        if (!findVerseSelectionHandle(e.clientX, e.clientY)) callbacksRef.current.onTapEmpty?.()
+      const verseContainer = e.target instanceof Element ? findVerseContainer(e.target) : null
+      const verseKey = verseContainer?.getAttribute('data-verse-key')
+      if (!verseKey) {
+        callbacksRef.current.onTapEmpty?.()
         return
       }
 
-      // The browser reports a double click itself (dblclick): the second click of one only
-      // replaces the tap held by the first, which dblclick then drops.
-      if (isDoubleTapOfHeldTap(createVerseCellKey(verse), Date.now())) dropHeldTap()
-      handleSingleTap(verse, { x: e.clientX, y: e.clientY }, Date.now())
+      const tapPosition = { x: e.clientX, y: e.clientY }
+      if (singleTapTimerRef.current) clearTimeout(singleTapTimerRef.current)
+      singleTapTimerRef.current = setTimeout(() => {
+        callbacksRef.current.onTapVerse?.(verseKey, tapPosition)
+        singleTapTimerRef.current = null
+      }, DOUBLE_TAP_DELAY)
     }
 
     const handleDoubleClick = (e: MouseEvent) => {
@@ -837,13 +707,15 @@ export function useTouchSelection({
       )
         return
 
-      const verse = getVerseTarget(
-        e.target instanceof Element ? findVerseContainer(e.target) : null
-      )
-      if (!verse) return
+      const verseContainer = e.target instanceof Element ? findVerseContainer(e.target) : null
+      const verseKey = verseContainer?.getAttribute('data-verse-key')
+      if (!verseKey) return
 
-      dropHeldTap()
-      callbacksRef.current.onDoubleTapVerse?.(verse, { x: e.clientX, y: e.clientY })
+      if (singleTapTimerRef.current) {
+        clearTimeout(singleTapTimerRef.current)
+        singleTapTimerRef.current = null
+      }
+      callbacksRef.current.onDoubleTapVerse?.(verseKey, { x: e.clientX, y: e.clientY })
     }
 
     // { passive: false } allows preventDefault() to work
@@ -870,8 +742,7 @@ export function useTouchSelection({
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseup', handleMouseUp)
       stopAutoScroll()
-      clearLongPressTimer()
-      dropHeldTap()
+      clearTimers()
     }
   }, [])
 

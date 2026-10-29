@@ -10,7 +10,7 @@ import { useQuery } from '@tanstack/react-query'
 import { subscribeToHardwareBackPress } from '~helpers/hardwareBackPress'
 import { TimelineTab, useIsCurrentTab } from '~state/tabs'
 import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
-import { timelineEventsQueryOptions } from './timelineEventsQuery'
+import { getEvents } from './events'
 import TimelineEventDetailView from './TimelineEventDetailView'
 import TimelineHomeScreen from './TimelineHomeScreen'
 import TimelineScreen from './TimelineScreen'
@@ -26,7 +26,10 @@ const TimelineTabScreen = ({ timelineAtom }: Props) => {
   const language = useTimelineLanguage()
   const [timelineTab, setTimelineTab] = useAtom(timelineAtom)
   const isCurrentTab = useIsCurrentTab()
-  const { data: sections } = useQuery(timelineEventsQueryOptions)
+  const { data: sections } = useQuery({
+    queryKey: ['timeline'],
+    queryFn: getEvents,
+  })
 
   const eventsWithSection = sections?.flatMap((section, sectionIndex) =>
     section.events.map(event => ({ ...event, sectionIndex }))
@@ -68,8 +71,6 @@ const TimelineTabScreen = ({ timelineAtom }: Props) => {
     })
   }
 
-  const goHomeOnBackPress = React.useEffectEvent(() => goHome())
-
   React.useEffect(() => {
     return subscribeToHardwareBackPress(() => {
       if (!isCurrentTab(timelineAtom)) return false
@@ -79,12 +80,14 @@ const TimelineTabScreen = ({ timelineAtom }: Props) => {
       }
 
       if (timelineTab.data.sectionIndex !== undefined) {
-        goHomeOnBackPress()
+        goHome()
         return true
       }
 
       return false
     })
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isCurrentTab, timelineAtom, timelineTab.data.eventSlug, timelineTab.data.sectionIndex])
 
   if (timelineTab.data.eventSlug) {

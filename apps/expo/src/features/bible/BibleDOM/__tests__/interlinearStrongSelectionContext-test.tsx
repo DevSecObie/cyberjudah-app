@@ -53,6 +53,7 @@ describe('interlinear Strong selection context', () => {
       renderer = create(
         <DispatchProvider dispatch={dispatch}>
           <ReverseInterlinearVerse
+            isParallel={false}
             settings={settings}
             version="LSG"
             verse={{

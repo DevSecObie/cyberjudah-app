@@ -16,9 +16,7 @@ import { useTranslation } from 'react-i18next'
 const RegisterScreen = () => {
   const theme = useTheme()
   const router = useRouter()
-  const { isLogged, isSessionLost } = useLogin()
-  // A lost session still shows the account: the screen stays until the reader signs in again.
-  const isSignedIn = isLogged && !isSessionLost
+  const { isLogged } = useLogin()
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -26,11 +24,11 @@ const RegisterScreen = () => {
   const { t } = useTranslation()
 
   useEffect(() => {
-    if (isSignedIn) {
+    if (isLogged) {
       // Go back two screens (register -> login -> previous)
       router.dismiss(2)
     }
-  }, [isSignedIn, router])
+  }, [isLogged, router])
 
   const onRegister = async () => {
     if (!username || !email || !password) {
@@ -43,9 +41,9 @@ const RegisterScreen = () => {
   }
 
   return (
-    <Container className="bg-canvas">
+    <Container>
       <Header hasBackButton title={t('Créer un compte')} />
-      <ScrollView backgroundColor="canvas">
+      <ScrollView>
         <Box className="overflow-hidden border-continuous p-[20px] web:w-full web:max-w-[500px] web:self-center">
           <TextInput
             placeholder={t('Nom')}

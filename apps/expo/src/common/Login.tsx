@@ -1,4 +1,4 @@
-import { resolveThemeColor } from '~themes/styleValues'
+import { resolveThemeColor, resolveFontFamily } from '~themes/styleValues'
 import {
   useTheme as useStylingTheme,
   useTheme as useAppTheme,
@@ -8,14 +8,14 @@ import * as Icon from '~common/ui/classNameIcons'
 import { appleAuth, AppleButton } from '@invertase/react-native-apple-authentication'
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import { useState } from 'react'
-import { StyleSheet, TouchableOpacity } from 'react-native'
+import * as NativeUI from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
 import type { Theme as AppTheme } from '~themes'
 
 import { useTranslation } from 'react-i18next'
 import Link from '~common/Link'
-import Box, { HStack } from '~common/ui/Box'
+import Box from '~common/ui/Box'
 import Button from '~common/ui/Button'
 import Spacer from '~common/ui/Spacer'
 import Text from '~common/ui/Text'
@@ -26,7 +26,7 @@ import { Theme } from '~themes'
 
 const SocialButton = (
   componentProps: Omit<
-    UIComponentProps<typeof TouchableOpacity>,
+    UIComponentProps<typeof NativeUI.TouchableOpacity>,
     keyof { color?: string } | 'theme'
   > &
     Omit<{ color?: string }, 'theme'> & { theme?: AppTheme; className?: string }
@@ -36,16 +36,16 @@ const SocialButton = (
   const theme = themeOverride ?? contextTheme
   const { color } = props
   const resolvedClassName = twMerge(
-    'flex-row rounded-full h-[48px] items-center justify-center pl-[10px] pr-[10px] flex-[1]',
+    'flex-row rounded-[48px] h-[48px] items-center justify-center pl-[10px] pr-[10px] flex-[1]',
     className
   )
   return (
-    <TouchableOpacity
+    <NativeUI.TouchableOpacity
       {...props}
       className={resolvedClassName}
       style={
         [{ backgroundColor: color || theme.colors.reverse }, props.style] as UIComponentProps<
-          typeof TouchableOpacity
+          typeof NativeUI.TouchableOpacity
         >['style']
       }
     />
@@ -178,11 +178,14 @@ const Login = ({ theme }: { theme: Theme }) => {
         </Button>
       </Box>
       <Spacer />
-      <HStack className="items-center gap-[12px]">
-        <Box className="flex-1 bg-separator" style={{ height: StyleSheet.hairlineWidth }} />
-        <Text className="text-[13px] text-grey">{t('auth.or')}</Text>
-        <Box className="flex-1 bg-separator" style={{ height: StyleSheet.hairlineWidth }} />
-      </HStack>
+      <Box className="overflow-hidden border-continuous items-center justify-center">
+        <Text
+          className="text-[16px]"
+          style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.titleItalic) }}
+        >
+          {t('- ou -')}
+        </Text>
+      </Box>
       <Spacer />
       {appleAuth.isSignUpButtonSupported && (
         <AppleButton

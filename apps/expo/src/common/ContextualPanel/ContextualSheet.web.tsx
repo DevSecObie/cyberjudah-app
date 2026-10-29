@@ -17,8 +17,6 @@ export default function ContextualSheet({
   panelWidth,
   panelScreens,
   panelInitialScreen,
-  panelInitialStack,
-  panelFlush,
   onPresent,
   onDismissStart,
   onDismiss,
@@ -72,10 +70,6 @@ export default function ContextualSheet({
       presentAt: present,
       resizeTo: () => {},
       dismiss,
-      dismissThen: action => {
-        dismiss()
-        action()
-      },
       close: dismiss,
       forceClose: dismiss,
     }
@@ -94,7 +88,6 @@ export default function ContextualSheet({
         trigger={null}
         accessibilityLabel={panelTitle ?? heading?.title ?? ''}
         initialScreen={panelInitialScreen ?? 'content'}
-        initialStack={panelInitialStack}
         width={panelWidth ?? maxWidth ?? 440}
         onOpen={() => {
           onPresent?.()
@@ -123,7 +116,6 @@ export default function ContextualSheet({
               </>
             ),
             content: () => children,
-            flush: panelFlush,
             footer: Footer ? <Footer {...({} satisfies SheetFooterProps)} /> : undefined,
           },
         }}

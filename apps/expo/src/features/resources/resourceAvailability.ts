@@ -10,7 +10,6 @@ import {
   initLanguageDirs,
 } from '~helpers/databases'
 import { dbManager, initSQLiteDir, openSQLiteDatabase } from '~helpers/sqlite'
-import { isMalformedDatabaseError } from '~helpers/sqliteErrors'
 import {
   LANGUAGE_SPECIFIC_DBS,
   SHARED_DBS,
@@ -100,12 +99,11 @@ type ResourceAvailabilityDependencies = {
   getStrongLexiconAvailability?: (
     moduleId: Extract<OfflineCopyIdentity, { kind: 'strong-lexicon-module' }>['moduleId']
   ) => Promise<StrongLexiconModuleAvailability>
-  /** `'discarded'`: SQLite could not read the file, which was removed to be downloaded again. */
   validateDatabaseResource: (
     databaseId: Exclude<DatabaseId, 'BIBLES'>,
     language: ResourceLanguage,
     path: string
-  ) => Promise<boolean | 'discarded'>
+  ) => Promise<boolean>
   validateStandaloneResource: (kind: 'dictionary' | 'commentary', path: string) => Promise<boolean>
 }
 
@@ -113,7 +111,7 @@ const validateDatabaseResource = async (
   databaseId: Exclude<DatabaseId, 'BIBLES'>,
   language: ResourceLanguage,
   path: string
-): Promise<boolean | 'discarded'> => {
+): Promise<boolean> => {
   try {
     if (databaseId === 'TIMELINE') {
       const decoded: unknown = JSON.parse(await FileSystem.readAsStringAsync(path))
@@ -135,18 +133,7 @@ const validateDatabaseResource = async (
       if (!table) return false
     }
     return true
-  } catch (error) {
-    // A copy cut short by an interrupted download (before downloads were verified) fails on
-    // every launch and cannot be repaired in place: removing it offers a fresh download.
-    if (isMalformedDatabaseError(error)) {
-      return dbManager
-        .getDB(databaseId, language)
-        .discardUnreadableCopy()
-        .then(
-          () => 'discarded' as const,
-          () => false
-        )
-    }
+  } catch {
     return false
   }
 }
@@ -237,13 +224,7 @@ export const probeLocalResourceAvailability = async (
     const file = await dependencies.getFileInfo(expectedPath)
 
     if (file.exists) {
-      const validation = await dependencies.validateDatabaseResource(
-        resource.databaseId,
-        lang,
-        expectedPath
-      )
-      if (validation === 'discarded') return { status: 'missing', resource, expectedPath }
-      if (!validation) {
+      if (!(await dependencies.validateDatabaseResource(resource.databaseId, lang, expectedPath))) {
         return { status: 'corrupt', resource, reason: 'integrity-check-failed' }
       }
       return {

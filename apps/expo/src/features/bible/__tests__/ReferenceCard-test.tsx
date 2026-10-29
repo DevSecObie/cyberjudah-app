@@ -21,10 +21,7 @@ jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) =>
 jest.mock('~themes/ThemeProvider', () => ({
   useTheme: () => ({ colors: {}, fontFamily: { title: 'test' } }),
 }))
-jest.mock('~themes/styleValues', () => ({
-  resolveFontFamily: () => 'test',
-  titleFontStyle: () => ({ fontFamily: 'test', fontWeight: '700' }),
-}))
+jest.mock('~themes/styleValues', () => ({ resolveFontFamily: () => 'test' }))
 jest.mock('~helpers/useLanguage', () => ({ __esModule: true, default: () => 'en' }))
 jest.mock('~helpers/verseToReference', () => ({
   __esModule: true,

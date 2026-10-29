@@ -4,6 +4,7 @@ import { getUniverseColor } from '~themes/universeColors'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import React, { useEffect, useRef, useState } from 'react'
+import * as NativeUI from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
 import type { Theme as AppTheme } from '~themes'
@@ -16,13 +17,14 @@ import Box from '~common/ui/Box'
 import Container from '~common/ui/Container'
 import { FeatherIcon } from '~common/ui/Icon'
 import Paragraph from '~common/ui/Paragraph'
+import RoundedCorner from '~common/ui/RoundedCorner'
 import CanonicalStrongVerseText from './CanonicalStrongVerseText'
 import StrongCard from './StrongCard'
 
 import BibleVerseDetailFooter from './BibleVerseDetailFooter'
 
 import { useTranslation } from 'react-i18next'
-import { FlatList, ScrollView, Platform, type ScrollViewProps, View } from 'react-native'
+import { FlatList, ScrollView } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useSelector } from 'react-redux'
 import countLsgChapters from '~assets/bible_versions/countLsgChapters'
@@ -69,7 +71,7 @@ const WEB_STRONG_CARD_MAX_WIDTH = 250
 const WEB_STRONG_CARD_MAX_HEIGHT = 600
 
 const VersetWrapper = (
-  componentProps: Omit<UIComponentProps<typeof View>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof NativeUI.View>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
@@ -81,10 +83,10 @@ const VersetWrapper = (
     className
   )
   return (
-    <View
+    <NativeUI.View
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof View>['style']}
+      style={[props.style] as UIComponentProps<typeof NativeUI.View>['style']}
     />
   )
 }
@@ -108,7 +110,7 @@ const NumberText = (
 }
 
 const StyledVerse = (
-  componentProps: Omit<UIComponentProps<typeof View>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof NativeUI.View>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
@@ -117,10 +119,10 @@ const StyledVerse = (
 
   const resolvedClassName = twMerge('pl-[0px] pr-[10px] mb-[5px] flex-row', className)
   return (
-    <View
+    <NativeUI.View
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof View>['style']}
+      style={[props.style] as UIComponentProps<typeof NativeUI.View>['style']}
     />
   )
 }
@@ -211,7 +213,7 @@ const BibleVerseDetailCard: React.FC<Props> = ({
   const [currentStrongCardIndex, setCurrentStrongCardIndex] = useState(0)
   const [modalContentHeight, setModalContentHeight] = useState(0)
   const [modalContentWidth, setModalContentWidth] = useState(0)
-  const isWeb = Platform.OS === 'web'
+  const isWeb = NativeUI.Platform.OS === 'web'
   const itemWidth = isWeb
     ? Math.max(1, Math.min(WEB_STRONG_CARD_MAX_WIDTH, modalContentWidth - 40))
     : nativeItemWidth
@@ -499,7 +501,7 @@ const BibleVerseDetailCard: React.FC<Props> = ({
   if (error) {
     if (error === 'STRONG_VERSE_NOT_INDEXED') {
       return (
-        <Container className="bg-canvas">
+        <Container>
           <Empty
             iconElement={
               <FeatherIcon name="book-open" size={36} color={getUniverseColor('bible')} />
@@ -512,7 +514,7 @@ const BibleVerseDetailCard: React.FC<Props> = ({
 
     if (error === 'STRONG_BIBLE_UNAVAILABLE') {
       return (
-        <Container className="bg-canvas">
+        <Container>
           <Empty
             iconElement={
               <FeatherIcon name="book-open" size={36} color={getUniverseColor('bible')} />
@@ -555,21 +557,21 @@ const BibleVerseDetailCard: React.FC<Props> = ({
   }
 
   const verseTextStyle = {
-    fontSize: Number.parseFloat(getBibleTextFontSize(fontSizeScale)),
+    fontSize: Number.parseFloat(getBibleTextFontSize(false, fontSizeScale)),
     lineHeight: Number.parseFloat(scaleLineHeight(24, lineHeightSetting, fontSizeScale)),
   }
   const verseMaxHeight = modalContentHeight ? modalContentHeight * 0.4 : undefined
 
   return (
     <Box
-      className="overflow-hidden border-continuous flex-[1] bg-canvas"
+      className="overflow-hidden border-continuous flex-[1]"
       testID="resource-modal-content"
       onLayout={event => {
         setModalContentHeight(event.nativeEvent.layout.height)
         setModalContentWidth(event.nativeEvent.layout.width)
       }}
     >
-      <Box className="overflow-hidden border-continuous relative z-[1] bg-surface rounded-b-[24px]">
+      <Box className="overflow-hidden border-continuous relative z-[1]">
         <ScrollView
           ref={verseScrollRef}
           testID="resource-verse-scroll"
@@ -613,7 +615,10 @@ const BibleVerseDetailCard: React.FC<Props> = ({
           versesInCurrentChapter={versesInCurrentChapter}
         />
       </Box>
-      <Box className="overflow-hidden border-continuous bg-canvas flex-[1]">
+      <Box className="overflow-hidden border-continuous bg-light-grey mt-[-30px] relative z-[0]">
+        <RoundedCorner />
+      </Box>
+      <Box className="overflow-hidden border-continuous bg-light-grey flex-[1]">
         {strongCardsQuery.isError ? (
           <ResourceUnavailableView
             identity={{
@@ -686,6 +691,6 @@ const BibleVerseDetailCard: React.FC<Props> = ({
 
 export default BibleVerseDetailCard
 
-const renderStrongCardsScrollView = (props: ScrollViewProps) => (
+const renderStrongCardsScrollView = (props: NativeUI.ScrollViewProps) => (
   <HorizontalControlScrollView {...props} />
 )

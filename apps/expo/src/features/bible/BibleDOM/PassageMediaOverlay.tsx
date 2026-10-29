@@ -1,6 +1,5 @@
 import { m, useReducedMotion, type Transition } from 'motion/react'
 import { createPortal } from 'react-dom'
-import { radii } from '~common/ui/surfaces'
 import { formatPassageMediaDuration, type ResolvedPassageMedia } from '../passageMedia'
 import { useTranslations } from './TranslationsContext'
 import OverlayCloseButton from './OverlayCloseButton'
@@ -16,16 +15,13 @@ import {
 } from './overlayStagger'
 import { NAVIGATE_TO_STRONG } from './dispatch'
 import { useDispatch } from './DispatchProvider'
-import { INTERFACE_FONT } from './interfaceFont'
 import { withColorAlpha } from './themeOverlayColor'
 
 type OverlayColors = {
   default: string
   lightGrey: string
   primary: string
-  link: string
   reverse: string
-  surfaceRaised: string
 }
 
 type Props = {
@@ -90,7 +86,7 @@ const PassageMediaGalleryCard = ({
         alignSelf: 'start',
         overflow: 'visible',
         color: colors.default,
-        fontFamily: INTERFACE_FONT,
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
         textAlign: 'left',
         background: 'transparent',
       }}
@@ -109,7 +105,7 @@ const PassageMediaGalleryCard = ({
           margin: 0,
           padding: 0,
           border: 0,
-          borderRadius: radii.control,
+          borderRadius: 11,
           background: 'transparent',
           WebkitTapHighlightColor: 'transparent',
         }}
@@ -124,7 +120,8 @@ const PassageMediaGalleryCard = ({
             aspectRatio: '16 / 9',
             boxSizing: 'border-box',
             border: `2px solid ${colors.reverse}`,
-            borderRadius: radii.control,
+            borderRadius: 11,
+            boxShadow: '0 7px 22px rgba(0, 0, 0, 0.25)',
           }}
         >
           <m.span
@@ -350,7 +347,7 @@ const PassageMediaOverlay = ({
         <OverlayCloseButton
           label={translations.passageMediaClose}
           color={colors.default}
-          backgroundColor={colors.surfaceRaised}
+          backgroundColor={colors.reverse}
           onClose={closeOverlay}
         />
       )}
@@ -429,8 +426,8 @@ const PassageMediaOverlay = ({
                     transition={{ duration: 0.22, delay: 0.08 + sectionIndex * 0.06 }}
                     style={{
                       margin: '0 0 14px 2px',
-                      color: colors.link,
-                      fontFamily: INTERFACE_FONT,
+                      color: colors.primary,
+                      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
                       fontSize: 12,
                       lineHeight: 1.2,
                       fontWeight: 700,

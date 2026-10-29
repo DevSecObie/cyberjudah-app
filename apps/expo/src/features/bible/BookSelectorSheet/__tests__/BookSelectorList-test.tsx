@@ -2,7 +2,6 @@ import React from 'react'
 import { act, create, type ReactTestRenderer } from 'react-test-renderer'
 import books from '~assets/bible_versions/books-desc'
 import { BookSelectorList } from '../BookSelectorList'
-import { getTestamentGroups } from '../bookListRows'
 
 let mockSelectionMode: 'grid' | 'list' = 'list'
 
@@ -12,18 +11,6 @@ jest.mock('jotai/react', () => ({
 
 jest.mock('../atom', () => ({
   bookSelectorSelectionModeAtom: Symbol('bookSelectorSelectionModeAtom'),
-}))
-
-jest.mock('~common/ui/Box', () => ({
-  __esModule: true,
-  default: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) =>
-    jest.requireActual<typeof import('react')>('react').createElement('Box', props, children),
-}))
-
-jest.mock('../TestamentTitle', () => ({
-  __esModule: true,
-  default: (props: Record<string, unknown>) =>
-    jest.requireActual<typeof import('react')>('react').createElement('TestamentTitle', props),
 }))
 
 jest.mock('react-native-safe-area-context', () => ({
@@ -44,9 +31,6 @@ jest.mock('react-native', () => {
   }
 })
 
-jest.mock('~helpers/readingLanguage', () => ({
-  getReadingBookName: (book: { Nom: string }) => book.Nom,
-}))
 jest.mock('../BookItem', () => ({
   __esModule: true,
   default: (props: Record<string, unknown>) =>
@@ -67,14 +51,10 @@ jest.mock('../ChapterGrid', () => ({
 
 const genesis = books.find(book => book.Numero === 1)!
 const psalms = books.find(book => book.Numero === 19)!
-const matthew = books.find(book => book.Numero === 40)!
 const expandedBook = { get: jest.fn(), set: jest.fn() }
 const flatListRef = { current: null }
-const listMetrics = { current: { scrollOffset: 0, viewportHeight: 0 } }
 const onBookSelect = jest.fn()
 const onGridBookSelect = jest.fn()
-const canonical = (...listed: (typeof books)[number][]) => getTestamentGroups(listed, false)
-const bookRow = (book: (typeof books)[number]) => ({ type: 'book' as const, book })
 
 const createRenderer = (element: React.ReactElement) => {
   let renderer: ReactTestRenderer
@@ -99,15 +79,13 @@ const createRenderer = (element: React.ReactElement) => {
 const renderList = (gridBook: (typeof books)[number] | null = null) => {
   return createRenderer(
     <BookSelectorList
-      groups={[]}
-      initialScrollOffset={0}
+      data={[]}
+      initialScrollIndex={0}
       expandedBook={expandedBook as never}
       bookSelectorData={undefined}
       flatListRef={flatListRef}
-      listMetrics={listMetrics}
       chaptersByBook={{ 1: [1, 3, 5], 19: [1, 2, 150] }}
       renderedChapterBookNumbers={[1]}
-      instantBookNumber={null}
       onBookSelect={onBookSelect}
       gridBook={gridBook}
       onGridBookSelect={onGridBookSelect}
@@ -128,7 +106,7 @@ describe('BookSelectorList', () => {
   it('keeps list mode on the existing FlatList and BookItem path', () => {
     const renderer = renderList(genesis)
     const list = renderer.root.findByType('FlatList' as never)
-    const item = list.props.renderItem({ item: bookRow(genesis) })
+    const item = list.props.renderItem({ item: genesis })
 
     expect(renderer.root.findAllByType('ChapterGrid' as never)).toHaveLength(0)
     expect(item.props).toEqual(
@@ -140,120 +118,20 @@ describe('BookSelectorList', () => {
         shouldRenderChapters: true,
       })
     )
-    expect(list.props.keyExtractor(bookRow(genesis))).toBe('1')
-  })
-
-  it('sets each testament title before its books and keeps it over them', () => {
-    const renderer = createRenderer(
-      <BookSelectorList
-        groups={canonical(genesis, psalms, matthew)}
-        initialScrollOffset={0}
-        expandedBook={expandedBook as never}
-        flatListRef={flatListRef}
-        listMetrics={listMetrics}
-        renderedChapterBookNumbers={[]}
-        instantBookNumber={null}
-        onBookSelect={onBookSelect}
-        gridBook={null}
-        onGridBookSelect={onGridBookSelect}
-      />
-    )
-    const list = renderer.root.findByType('FlatList' as never)
-
-    expect(list.props.data.map(list.props.keyExtractor)).toEqual(['old', '1', '19', 'new', '40'])
-    expect(list.props.stickyHeaderIndices).toEqual([0, 3])
-    expect(list.props.renderItem({ item: list.props.data[3] }).props).toEqual({
-      testament: 'new',
-    })
-  })
-
-  it('has no title for books sorted by name', () => {
-    const renderer = createRenderer(
-      <BookSelectorList
-        groups={getTestamentGroups([matthew, genesis], true)}
-        initialScrollOffset={0}
-        expandedBook={expandedBook as never}
-        flatListRef={flatListRef}
-        listMetrics={listMetrics}
-        renderedChapterBookNumbers={[]}
-        instantBookNumber={null}
-        onBookSelect={onBookSelect}
-        gridBook={null}
-        onGridBookSelect={onGridBookSelect}
-      />
-    )
-    const list = renderer.root.findByType('FlatList' as never)
-
-    expect(list.props.data.map(list.props.keyExtractor)).toEqual(['40', '1'])
-    expect(list.props.stickyHeaderIndices).toEqual([])
-  })
-
-  it('passes the current chapter and the instant expansion to the selected book only', () => {
-    const renderer = createRenderer(
-      <BookSelectorList
-        groups={canonical(genesis, psalms)}
-        initialScrollOffset={0}
-        expandedBook={expandedBook as never}
-        bookSelectorData={{ selectedBook: psalms, selectedChapter: 119 } as never}
-        flatListRef={flatListRef}
-        listMetrics={listMetrics}
-        renderedChapterBookNumbers={[19]}
-        instantBookNumber={19}
-        onBookSelect={onBookSelect}
-        gridBook={null}
-        onGridBookSelect={onGridBookSelect}
-      />
-    )
-    const list = renderer.root.findByType('FlatList' as never)
-
-    expect(list.props.renderItem({ item: bookRow(psalms) }).props).toEqual(
-      expect.objectContaining({ isSelected: true, selectedChapter: 119, expandsInstantly: true })
-    )
-    expect(list.props.renderItem({ item: bookRow(genesis) }).props).toEqual(
-      expect.objectContaining({
-        isSelected: false,
-        selectedChapter: undefined,
-        expandsInstantly: false,
-      })
-    )
-  })
-
-  it('mounts every row at the opening offset', () => {
-    const renderer = createRenderer(
-      <BookSelectorList
-        groups={canonical(genesis, psalms)}
-        initialScrollOffset={1200}
-        expandedBook={expandedBook as never}
-        bookSelectorData={{ selectedBook: psalms, selectedChapter: 119 } as never}
-        flatListRef={flatListRef}
-        listMetrics={listMetrics}
-        renderedChapterBookNumbers={[19]}
-        instantBookNumber={19}
-        onBookSelect={onBookSelect}
-        gridBook={null}
-        onGridBookSelect={onGridBookSelect}
-      />
-    )
-    const list = renderer.root.findByType('FlatList' as never)
-
-    expect(list.props.contentOffset).toEqual({ x: 0, y: 1200 })
-    // The title of the Old Testament and its two books
-    expect(list.props.initialNumToRender).toBe(3)
+    expect(list.props.keyExtractor(genesis)).toBe('1')
   })
 
   it('uses grid book presses to enter the chapter grid', () => {
     mockSelectionMode = 'grid'
     const renderer = createRenderer(
       <BookSelectorList
-        groups={canonical(genesis, psalms)}
-        initialScrollOffset={0}
+        data={[genesis, psalms]}
+        initialScrollIndex={0}
         expandedBook={expandedBook as never}
         bookSelectorData={undefined}
         flatListRef={flatListRef}
-        listMetrics={listMetrics}
         chaptersByBook={{ 1: [1, 3, 5], 19: [1, 2, 150] }}
         renderedChapterBookNumbers={[]}
-        instantBookNumber={null}
         onBookSelect={onBookSelect}
         gridBook={null}
         onGridBookSelect={onGridBookSelect}
@@ -266,42 +144,6 @@ describe('BookSelectorList', () => {
     })
 
     expect(onGridBookSelect).toHaveBeenCalledWith(genesis)
-  })
-
-  it('heads each testament of the grid with its title, in the canon order only', () => {
-    mockSelectionMode = 'grid'
-    const renderGrid = (isAlphabetical: boolean) =>
-      createRenderer(
-        <BookSelectorList
-          groups={getTestamentGroups([genesis, psalms, matthew], isAlphabetical)}
-          initialScrollOffset={0}
-          expandedBook={expandedBook as never}
-          bookSelectorData={undefined}
-          flatListRef={flatListRef}
-          listMetrics={listMetrics}
-          renderedChapterBookNumbers={[]}
-          instantBookNumber={null}
-          onBookSelect={onBookSelect}
-          gridBook={null}
-          onGridBookSelect={onGridBookSelect}
-        />
-      )
-
-    const inCanonOrder = renderGrid(false)
-    const titles = inCanonOrder.root.findAllByType('TestamentTitle' as never)
-    expect(titles.map(title => title.props.testament)).toEqual(['old', 'new'])
-    const groups = inCanonOrder.root
-      .findAll(
-        node => node.type === ('Box' as never) && node.props.className?.includes('flex-wrap')
-      )
-      .map(group =>
-        group.findAllByType('BookShortItem' as never).map(item => item.props.book.Numero)
-      )
-    expect(groups).toEqual([[1, 19], [40]])
-
-    const alphabetical = renderGrid(true)
-    expect(alphabetical.root.findAllByType('TestamentTitle' as never)).toHaveLength(0)
-    expect(alphabetical.root.findAllByType('BookShortItem' as never)).toHaveLength(3)
   })
 
   it('passes partial coverage to the selected grid book', () => {

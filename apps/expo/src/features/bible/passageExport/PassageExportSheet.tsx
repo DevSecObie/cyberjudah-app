@@ -1,3 +1,4 @@
+import { useTheme } from '~themes/ThemeProvider'
 import * as FileSystem from 'expo-file-system/legacy'
 import * as Sharing from 'expo-sharing'
 import { forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react'
@@ -19,7 +20,6 @@ import {
 import Sheet from '~common/ContextualPanel/ContextualSheet'
 import type { VerseIds } from '~common/types'
 import Box, { TouchableBox } from '~common/ui/Box'
-import SheetWell, { useSheetWellColor } from '~common/ui/SheetWell'
 import Button from '~common/ui/Button'
 import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
@@ -69,20 +69,18 @@ type ExportFilterButtonProps = {
 
 const ExportFilterButton = ({ label, value, onPress, screen }: ExportFilterButtonProps) => {
   const navigation = useContext(PanelNavigationContext)
-  const sheetWellColor = useSheetWellColor()
   return (
     <TouchableBox
-      className="border-continuous overflow-hidden flex-[1] min-w-[0px] p-[13px] rounded-[12px]"
-      style={{ backgroundColor: sheetWellColor }}
+      className="border-continuous overflow-hidden flex-[1] min-w-[0px] p-[13px] border-[1px] border-border rounded-[14px]"
       accessibilityRole="button"
       accessibilityLabel={`${label}, ${value}`}
       onPress={() => (screen && navigation?.openScreen ? navigation.openScreen(screen) : onPress())}
     >
-      <Text className="text-[12px] text-grey" numberOfLines={1}>
-        {label}
+      <Text className="font-bold text-[11px] text-grey" numberOfLines={1}>
+        {label.toUpperCase()}
       </Text>
       <Box className="overflow-hidden border-continuous flex-row items-center mt-[5px] gap-[6px]">
-        <Text className="flex-[1] font-semibold text-[15px]" numberOfLines={1}>
+        <Text className="flex-[1] font-bold text-[14px]" numberOfLines={1}>
           {value}
         </Text>
         <FeatherIcon name="chevron-down" size={16} color="grey" />
@@ -108,6 +106,7 @@ const PassageExportSheet = forwardRef<SheetRef, PassageExportSheetProps>(
     const generationQueueRef = useRef<Promise<void>>(Promise.resolve())
     const { t } = useTranslation()
     const resources = useResourceAccess()
+    const theme = useTheme()
     const insets = useSafeAreaInsets()
     const notes = useSelector((state: RootState) => state.user.bible.notes)
     const links = useSelector((state: RootState) => state.user.bible.links)
@@ -169,7 +168,6 @@ const PassageExportSheet = forwardRef<SheetRef, PassageExportSheetProps>(
       presentAt: snapPoint => sheetRef.current?.presentAt(snapPoint),
       resizeTo: snapPoint => sheetRef.current?.resizeTo(snapPoint),
       dismiss: () => sheetRef.current?.dismiss(),
-      dismissThen: action => sheetRef.current?.dismissThen(action),
       close: () => sheetRef.current?.close(),
       forceClose: () => sheetRef.current?.forceClose(),
     }))
@@ -399,6 +397,7 @@ const PassageExportSheet = forwardRef<SheetRef, PassageExportSheetProps>(
         <Container
           ref={sheetRef}
           snapPoints={[1]}
+          backgroundColor={theme.colors.reverse}
           header={<SheetHeader title={t('passageExport.title')} />}
           footer={footer}
           onPresent={() => {
@@ -462,24 +461,26 @@ const PassageExportSheet = forwardRef<SheetRef, PassageExportSheetProps>(
             </Box>
 
             <Box className="overflow-hidden border-continuous gap-[8px]">
-              <Text className="text-[13px] text-grey">{t('passageExport.preview')}</Text>
+              <Text className="font-bold text-[13px] text-grey">
+                {t('passageExport.preview').toUpperCase()}
+              </Text>
               {result && (
                 <Text className="text-grey text-[12px]">
                   {t('passageExport.summary', result.counts)}
                 </Text>
               )}
               {hasIncompleteSync && (
-                <SheetWell className="p-[12px]">
+                <Box className="overflow-hidden border-continuous p-[12px] rounded-[12px] bg-light-grey">
                   <Text
                     className="text-grey text-[12px]"
                     style={{ flexDirection: 'column-reverse' }}
                   >
                     {t('passageExport.syncWarning')}
                   </Text>
-                </SheetWell>
+                </Box>
               )}
               {result?.missingVerseTextKeys.length ? (
-                <SheetWell className="p-[12px]">
+                <Box className="overflow-hidden border-continuous p-[12px] rounded-[12px] bg-light-grey">
                   <Text
                     className="text-grey text-[12px]"
                     style={{ flexDirection: 'column-reverse' }}
@@ -488,19 +489,19 @@ const PassageExportSheet = forwardRef<SheetRef, PassageExportSheetProps>(
                       count: result.missingVerseTextKeys.length,
                     })}
                   </Text>
-                </SheetWell>
+                </Box>
               ) : null}
               {result?.hasSkippedInvalidData ? (
-                <SheetWell className="p-[12px]">
+                <Box className="overflow-hidden border-continuous p-[12px] rounded-[12px] bg-light-grey">
                   <Text
                     className="text-grey text-[12px]"
                     style={{ flexDirection: 'column-reverse' }}
                   >
                     {t('passageExport.invalidDataSkipped')}
                   </Text>
-                </SheetWell>
+                </Box>
               ) : null}
-              <SheetWell className="p-[16px]">
+              <Box className="overflow-hidden border-continuous p-[16px] rounded-[14px] bg-light-grey">
                 <Text
                   className="text-[13px] leading-[20px]"
                   selectable
@@ -512,7 +513,7 @@ const PassageExportSheet = forwardRef<SheetRef, PassageExportSheetProps>(
                       ? preview
                       : t('passageExport.empty')}
                 </Text>
-              </SheetWell>
+              </Box>
             </Box>
           </SheetScrollView>
         </Container>

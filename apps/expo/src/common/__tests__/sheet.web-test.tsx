@@ -26,7 +26,7 @@ jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
 }))
 jest.mock('@shopify/flash-list', () => ({ FlashList: 'FlashList' }))
-jest.mock('~common/vaulBottomSheet', () => {
+jest.mock('@expo/ui/community/bottom-sheet', () => {
   const ReactModule = jest.requireActual<typeof React>('react')
   const BottomSheetModal = ReactModule.forwardRef(
     (

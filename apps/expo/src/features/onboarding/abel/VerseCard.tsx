@@ -1,5 +1,5 @@
+import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme, useTheme } from '~themes/ThemeProvider'
-import { titleFontStyle } from '~themes/styleValues'
 import { Image } from 'expo-image'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -155,12 +155,12 @@ const VerseCard = ({
             className="overflow-hidden border-continuous"
           >
             <AnimatedText
-              className="text-link"
+              className="text-primary"
               style={[
                 {
                   fontSize: s(31) || 16,
                   lineHeight: s(38),
-                  ...titleFontStyle(stylingTheme),
+                  fontFamily: resolveFontFamily(stylingTheme.fontFamily.title),
                 },
                 [{ fontFamily: 'Literata Book' }, dimmedTextStyle],
               ]}

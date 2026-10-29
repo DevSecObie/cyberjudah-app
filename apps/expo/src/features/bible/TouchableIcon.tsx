@@ -1,16 +1,17 @@
 import * as Icon from '@expo/vector-icons'
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
+import * as NativeUI from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
 import type { Theme as AppTheme } from '~themes'
 import { useTheme as useAppTheme } from '~themes/ThemeProvider'
 
-import { TouchableOpacityProps, TouchableOpacity } from 'react-native'
+import { TouchableOpacityProps } from 'react-native'
 import Text from '~common/ui/Text'
 
 const Touchable = (
   componentProps: Omit<
-    UIComponentProps<typeof TouchableOpacity>,
+    UIComponentProps<typeof NativeUI.TouchableOpacity>,
     | keyof {
         noFlex?: boolean
         disabled?: boolean
@@ -30,14 +31,14 @@ const Touchable = (
   const { noFlex, disabled } = props
   const resolvedClassName = twMerge('items-center justify-center', className)
   return (
-    <TouchableOpacity
+    <NativeUI.TouchableOpacity
       {...props}
       className={resolvedClassName}
       style={
         [
           { opacity: disabled ? 0.3 : 1, ...(!noFlex && { flex: 1 }) },
           props.style,
-        ] as UIComponentProps<typeof TouchableOpacity>['style']
+        ] as UIComponentProps<typeof NativeUI.TouchableOpacity>['style']
       }
     />
   )

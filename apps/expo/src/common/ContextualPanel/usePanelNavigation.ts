@@ -2,7 +2,6 @@ import { useRef, useState } from 'react'
 import type { ContextualPanelProps, PanelScreen } from './types'
 export function usePanelNavigation({
   initialScreen,
-  initialStack,
   screens,
   onClose,
   onOpen,
@@ -39,7 +38,7 @@ export function usePanelNavigation({
       if (openRef.current) return
       openRef.current = true
       onOpen?.()
-      setHistory(initialStack?.length ? initialStack : [initialScreen])
+      setHistory([initialScreen])
       setDirection('forward')
       setOpen(true)
     },
@@ -63,11 +62,6 @@ export function usePanelNavigation({
         setHistory(current => current.slice(0, -1))
       },
       close,
-      // Web panels close at once; the native panel waits for its sheet (see index.tsx).
-      closeThen: (action: () => void) => {
-        close()
-        action()
-      },
     },
   }
 }

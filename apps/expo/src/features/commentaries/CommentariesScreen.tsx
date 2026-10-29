@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo } from 'react'
 
 import { atom } from 'jotai/vanilla'
 import { useLocalSearchParams } from 'expo-router'
@@ -12,17 +12,20 @@ const CommentariesScreen = () => {
   // Parse params from URL strings
   const verse = params.verse || ''
 
-  const [onTheFlyAtom] = useState(() =>
-    atom<CommentaryTab>({
-      id: `commentary-${generateUUID()}`,
-      title: 'Commentaire',
-      isRemovable: true,
-      hasBackButton: true,
-      type: 'commentary',
-      data: {
-        verse,
-      },
-    } as CommentaryTab)
+  const onTheFlyAtom = useMemo(
+    () =>
+      atom<CommentaryTab>({
+        id: `commentary-${generateUUID()}`,
+        title: 'Commentaire',
+        isRemovable: true,
+        hasBackButton: true,
+        type: 'commentary',
+        data: {
+          verse,
+        },
+      } as CommentaryTab),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   )
 
   return <CommentariesTabScreen commentaryAtom={onTheFlyAtom} />

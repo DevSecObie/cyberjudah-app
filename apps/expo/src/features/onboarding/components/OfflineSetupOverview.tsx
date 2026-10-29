@@ -1,5 +1,5 @@
+import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
-import { titleFontStyle } from '~themes/styleValues'
 import { useTranslation } from 'react-i18next'
 import { ScrollView, View } from 'react-native'
 import { Easing, FadeInDown, FadeInUp } from 'react-native-reanimated'
@@ -147,7 +147,10 @@ const OfflineSetupOverview = ({
             }}
             className="overflow-hidden border-continuous"
           >
-            <Text className="text-[40px] leading-[42px]" style={titleFontStyle(stylingTheme)}>
+            <Text
+              className="text-[40px] leading-[42px]"
+              style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+            >
               {t('offlineSetup.title')}
             </Text>
             <Text className="text-tertiary text-[15px] leading-[21px] mt-[10px] mb-[28px]">

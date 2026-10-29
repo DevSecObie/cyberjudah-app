@@ -1,9 +1,6 @@
 import { parseCommentaryProjectionId } from './commentarySelection'
 import { COMMENTARY_CATALOG_BY_ID } from '~helpers/commentaryCatalog'
 
-/** Each enabled commentary costs one request per chapter read inline. */
-export const MAX_INLINE_COMMENTARIES = 5
-
 /** Associated writings remain available in Resources, but not in inline Bible reading. */
 export function isInlineCommentaryEligible(id: string): boolean {
   const projection = parseCommentaryProjectionId(id)
@@ -18,7 +15,7 @@ export function normalizeInlineCommentaries(value: unknown, selected: readonly s
       (item): item is string => typeof item === 'string' && isInlineCommentaryEligible(item)
     )
   )
-  return [...new Set(selected)].filter(item => enabled.has(item)).slice(0, MAX_INLINE_COMMENTARIES)
+  return [...new Set(selected)].filter(item => enabled.has(item)).slice(0, 5)
 }
 
 /** Selection IDs are UI identities; the delivery API uses publication identities (e.g. MHY). */

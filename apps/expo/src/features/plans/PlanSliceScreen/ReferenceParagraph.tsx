@@ -1,6 +1,6 @@
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import React from 'react'
-import { Text } from 'react-native'
+import * as NativeUI from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
 import type { Theme as AppTheme } from '~themes'
@@ -26,20 +26,22 @@ const getBibleViewParams = (target: BibleReferenceTarget) => ({
 })
 
 const ReferenceText = (
-  componentProps: Omit<UIComponentProps<typeof Text>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof NativeUI.Text>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
 ) => {
   const { theme: _themeOverride, className, ...props } = componentProps
 
-  const resolvedClassName = twMerge('text-link', className)
+  const resolvedClassName = twMerge('text-primary', className)
   return (
-    <Text
+    <NativeUI.Text
       {...props}
       className={resolvedClassName}
       style={
-        [{ textDecorationLine: 'underline' }, props.style] as UIComponentProps<typeof Text>['style']
+        [{ textDecorationLine: 'underline' }, props.style] as UIComponentProps<
+          typeof NativeUI.Text
+        >['style']
       }
     />
   )

@@ -1,16 +1,13 @@
+import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { TouchableOpacity, View, type ViewProps } from 'react-native'
-import IconTile, { ICON_TILE_SIZE } from '~common/ui/IconTile'
-import { ListSeparator } from '~common/ui/ListSection'
+import * as NativeUI from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
 import { SheetHeader, type SheetRef } from '~common/sheet'
 import Sheet from '~common/ContextualPanel/ContextualSheet'
 import Box, { HStack } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
-import { personalContentIcons } from '~common/personalContent'
-import { getUniverseColor } from '~themes/universeColors'
 import { MenuView, type MenuAction } from '~common/ui/MenuView'
 import { Chip } from '~common/ui/NewChip'
 import Text from '~common/ui/Text'
@@ -18,21 +15,67 @@ import { getBook } from '~helpers/bibleBookCatalog'
 import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
 import type { CrossVersionAnnotation } from '~redux/selectors/bible'
 import { VersionCode } from '~state/tabs'
+import type { Theme as AppTheme } from '~themes'
 
-/** A row of the sheet, with a hairline from where its text starts. */
-const ItemRow = ({ children, className, ...props }: ViewProps & { className?: string }) => (
-  <View {...props} className={twMerge('flex-row items-center px-[16px] py-[12px]', className)}>
-    {children}
-    <ListSeparator inset={16 + ICON_TILE_SIZE + 12} overlay />
-  </View>
-)
+const ItemRow = (
+  componentProps: Omit<UIComponentProps<typeof NativeUI.View>, 'theme'> & {
+    theme?: AppTheme
+    className?: string
+  }
+) => {
+  const { theme: _themeOverride, className, ...props } = componentProps
 
-const ItemButton = ({
-  className,
-  ...props
-}: React.ComponentPropsWithRef<typeof TouchableOpacity> & { className?: string }) => (
-  <TouchableOpacity {...props} className={twMerge('flex-[1] flex-row items-center', className)} />
-)
+  const resolvedClassName = twMerge(
+    'flex-row items-center p-[15px] border-b-[1px] border-b-border',
+    className
+  )
+  return (
+    <NativeUI.View
+      {...props}
+      className={resolvedClassName}
+      style={[props.style] as UIComponentProps<typeof NativeUI.View>['style']}
+    />
+  )
+}
+
+const ItemButton = (
+  componentProps: Omit<UIComponentProps<typeof NativeUI.TouchableOpacity>, 'theme'> & {
+    theme?: AppTheme
+    className?: string
+  }
+) => {
+  const { theme: _themeOverride, className, ...props } = componentProps
+
+  const resolvedClassName = twMerge('flex-[1] flex-row items-center', className)
+  return (
+    <NativeUI.TouchableOpacity
+      {...props}
+      className={resolvedClassName}
+      style={[props.style] as UIComponentProps<typeof NativeUI.TouchableOpacity>['style']}
+    />
+  )
+}
+
+const IconContainer = (
+  componentProps: Omit<UIComponentProps<typeof NativeUI.View>, 'theme'> & {
+    theme?: AppTheme
+    className?: string
+  }
+) => {
+  const { theme: _themeOverride, className, ...props } = componentProps
+
+  const resolvedClassName = twMerge(
+    'w-[36px] h-[36px] rounded-[12px] bg-light-grey items-center justify-center mr-[12px]',
+    className
+  )
+  return (
+    <NativeUI.View
+      {...props}
+      className={resolvedClassName}
+      style={[props.style] as UIComponentProps<typeof NativeUI.View>['style']}
+    />
+  )
+}
 
 interface CrossVersionAnnotationsModalProps {
   sheetRef: React.RefObject<SheetRef | null>
@@ -129,13 +172,9 @@ const CrossVersionAnnotationsModal = ({
       {versions.map(versionData => (
         <ItemRow key={versionData.version}>
           <ItemButton activeOpacity={0.7} onPress={() => handleOpenBibleView(versionData.version)}>
-            <IconTile tint={getUniverseColor('highlights')} className="mr-[12px]">
-              <FeatherIcon
-                name={personalContentIcons.highlights}
-                size={18}
-                color={getUniverseColor('highlights')}
-              />
-            </IconTile>
+            <IconContainer>
+              <FeatherIcon name="edit-3" size={18} color="secondary" />
+            </IconContainer>
             <Box className="overflow-hidden border-continuous flex-[1]">
               <HStack className="overflow-hidden border-continuous gap-[10px] items-center">
                 <Text className="text-[14px] font-semibold">

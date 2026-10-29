@@ -7,7 +7,6 @@ import Box from '~common/ui/Box'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
 import { FeatherIcon } from '~common/ui/Icon'
 import ScrollView from '~common/ui/ScrollView'
-import { STUDY_COLUMN_MAX_WIDTH } from '~common/ui/StudySection'
 import useTimelineLanguage from './useTimelineLanguage'
 import { getLegacyLocalizedField } from '~helpers/languageUtils'
 import { getPublicSiteUrl } from '~helpers/publicSiteLinks'
@@ -21,8 +20,6 @@ import { buildPublicTimelineEventPath } from './publicTimelineRoutes'
 import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
 import { EventDetailsContent, EventDetailsProps } from './EventDetails'
 import { TimelineEvent } from './types'
-import { calculateLabel } from './constants'
-import { useRecordHistory } from '~features/history/useRecordHistory'
 interface Props {
   languageOverride?: 'fr' | 'en'
   assistantScope?: string
@@ -63,31 +60,15 @@ const TimelineEventDetailContent = ({
   const canGoBackInStack = useCanGoBackInStack()
   const hasBackButton = isFormSheet ? canGoBackInStack : canGoBack
   const resources = useResourceAccess()
-  useRecordHistory(
-    event
-      ? {
-          type: 'timeline',
-          slug: event.slug,
-          title: getLegacyLocalizedField(lang, { fr: event.title, en: event.titleEn }),
-          dateLabel: String(
-            ('dateLabel' in event ? event.dateLabel : undefined) ||
-              calculateLabel(event.start, event.end, lang)
-          ),
-          language: lang,
-        }
-      : null
-  )
 
   if (!event) {
     return (
-      <FormSheetScreen className="bg-canvas" isFormSheet={isFormSheet}>
-        <Box className="overflow-hidden border-continuous flex-[1] bg-canvas">
-          <Header title={t('Chronologie de la Bible')} hasBackButton={hasBackButton} />
-          <Empty
-            icon={require('~assets/images/empty-state-icons/search.svg')}
-            message={t("Cet événement n'est plus disponible.")}
-          />
-        </Box>
+      <FormSheetScreen isFormSheet={isFormSheet}>
+        <Header title={t('Chronologie de la Bible')} hasBackButton={hasBackButton} />
+        <Empty
+          icon={require('~assets/images/empty-state-icons/search.svg')}
+          message={t("Cet événement n'est plus disponible.")}
+        />
       </FormSheetScreen>
     )
   }
@@ -116,40 +97,34 @@ const TimelineEventDetailContent = ({
   ]
 
   return (
-    // A form sheet has no container of its own: the box inside carries the ground there.
-    <FormSheetScreen className="bg-canvas" isFormSheet={isFormSheet}>
-      <Box className="overflow-hidden border-continuous flex-[1] bg-canvas">
-        <Header
-          title={t('Chronologie de la Bible')}
-          hasBackButton={hasBackButton}
-          onCustomBackPress={onBack}
-          rightComponent={
-            <MenuView
-              tabActions
-              actions={menuActions}
-              onPressAction={({ nativeEvent }) => {
-                if (runResourceShareAction(nativeEvent.event, share)) return
-                menuItems?.find(item => item.label === nativeEvent.event)?.onSelect()
-              }}
-            >
-              <Box className="overflow-hidden border-continuous flex-row items-center justify-center h-[54px] w-[54px]">
-                <FeatherIcon name="more-vertical" size={18} />
-              </Box>
-            </MenuView>
-          }
+    <FormSheetScreen isFormSheet={isFormSheet}>
+      <Header
+        title={title}
+        hasBackButton={hasBackButton}
+        onCustomBackPress={onBack}
+        rightComponent={
+          <MenuView
+            tabActions
+            actions={menuActions}
+            onPressAction={({ nativeEvent }) => {
+              if (runResourceShareAction(nativeEvent.event, share)) return
+              menuItems?.find(item => item.label === nativeEvent.event)?.onSelect()
+            }}
+          >
+            <Box className="overflow-hidden border-continuous flex-row items-center justify-center h-[54px] w-[54px]">
+              <FeatherIcon name="more-vertical" size={18} />
+            </Box>
+          </MenuView>
+        }
+      />
+      <ScrollView>
+        <EventDetailsContent
+          languageOverride={languageOverride}
+          assistantScope={assistantScope}
+          {...event}
+          onOpenEvent={onOpenEvent}
         />
-        <ScrollView
-          backgroundColor="canvas"
-          contentContainerStyle={{ maxWidth: STUDY_COLUMN_MAX_WIDTH + 40, paddingHorizontal: 20 }}
-        >
-          <EventDetailsContent
-            languageOverride={languageOverride}
-            assistantScope={assistantScope}
-            {...event}
-            onOpenEvent={onOpenEvent}
-          />
-        </ScrollView>
-      </Box>
+      </ScrollView>
     </FormSheetScreen>
   )
 }

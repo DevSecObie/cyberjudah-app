@@ -48,7 +48,7 @@ const DetailsModal = ({
           }
         >
           {!!image && (
-            <Box className="overflow-hidden border-continuous mb-[20px] rounded-[12px]">
+            <Box className="overflow-hidden border-continuous mb-[20px] rounded-[20px]">
               <Image
                 contentFit="cover"
                 style={{ width: '100%', aspectRatio: 1.8, maxHeight: 240 }}
@@ -69,14 +69,16 @@ const DetailsModal = ({
             <Box className="mt-[20px] gap-[8px]">
               <Text className="text-grey text-[13px] leading-[20px]">{attribution.text}</Text>
               <Link href={attribution.url} className="min-h-[44px] justify-center">
-                <Text className="text-link text-[13px]">{new URL(attribution.url).hostname}</Text>
+                <Text className="text-primary text-[13px]">
+                  {new URL(attribution.url).hostname}
+                </Text>
               </Link>
             </Box>
           )}
           {!!author.displayName && (
             <Box className="overflow-hidden border-continuous mt-[40px] flex-row items-center justify-center">
               {author.photoUrl && (
-                <Box className="overflow-hidden border-continuous rounded-[8px]">
+                <Box className="overflow-hidden border-continuous rounded-[10px]">
                   <Image
                     style={{ width: 50, height: 50 }}
                     source={{

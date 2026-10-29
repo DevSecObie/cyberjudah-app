@@ -1,5 +1,5 @@
 import LinkOptionsPanel from './LinkOptionsPanel'
-import { titleFontStyle } from '~themes/styleValues'
+import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme, Theme } from '~themes/ThemeProvider'
 import distanceInWords from 'date-fns/formatDistance'
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
@@ -12,13 +12,14 @@ import EntityChipList from '~common/EntityChipList'
 import Link from '~common/Link'
 import Border from '~common/ui/Border'
 import Box from '~common/ui/Box'
-import IconTile, { ICON_TILE_SIZE } from '~common/ui/IconTile'
 import Text from '~common/ui/Text'
 
 import { useTranslation } from 'react-i18next'
 import { FeatherIcon } from '~common/ui/Icon'
+import Paragraph from '~common/ui/Paragraph'
 import { linkTypeConfig } from '~helpers/fetchOpenGraphData'
 import { getDateLocale } from '~helpers/languageUtils'
+import truncate from '~helpers/truncate'
 import useLanguage from '~helpers/useLanguage'
 import { useMountTime } from '~helpers/useMountTime'
 import { Link as LinkType } from '~redux/modules/user'
@@ -29,7 +30,7 @@ const LinkItemContainer = (
 ) => {
   const { theme: _themeOverride, className, ...props } = componentProps
 
-  const resolvedClassName = twMerge('flex-row items-start pl-[20px] py-[16px]', className)
+  const resolvedClassName = twMerge('py-[20px] p-[20px] pr-[0px] flex-row', className)
   return (
     <Link
       {...props}
@@ -39,8 +40,25 @@ const LinkItemContainer = (
   )
 }
 
-/** Where the row's text starts, after its 20pt gutter, its icon tile and the gap. */
-const TEXT_INSET = 20 + ICON_TILE_SIZE + 12
+const LinkTypeIcon = (
+  componentProps: Omit<UIComponentProps<typeof Box>, keyof { bgColor: string } | 'theme'> &
+    Omit<{ bgColor: string }, 'theme'> & { theme?: AppTheme; className?: string }
+) => {
+  const { theme: _themeOverride, className, ...props } = componentProps
+
+  const { bgColor } = props
+  const resolvedClassName = twMerge(
+    'w-[24px] h-[24px] rounded-[4px] mr-[10px] items-center justify-center',
+    className
+  )
+  return (
+    <Box
+      {...props}
+      style={[{ backgroundColor: bgColor }, props.style] as UIComponentProps<typeof Box>['style']}
+      className={twMerge('overflow-hidden border-continuous', resolvedClassName)}
+    />
+  )
+}
 
 type TLink = {
   linkId: string
@@ -51,6 +69,7 @@ type TLink = {
 type Props = {
   item: TLink
   onPress: (linkId: string) => void
+  onMenuPress: (linkId: string) => void
   relationCount?: number
   onRelationPress?: () => void
 }
@@ -70,53 +89,40 @@ const BibleLinkItem = ({ item, onPress, relationCount, onRelationPress }: Props)
   const iconName = config.icon as React.ComponentProps<typeof FeatherIcon>['name']
   const displayTitle = item.link.customTitle || item.link.ogData?.title || item.link.url
   const relativeDate = t('Il y a {{formattedDate}}', { formattedDate })
-  const hasChips = Boolean(Object.keys(item.link.tags || {}).length || relationCount)
+  const metadataLabel = item.reference ? `${item.reference} - ${relativeDate}` : relativeDate
 
   return (
     <Box className="overflow-hidden border-continuous">
       <LinkItemContainer onPress={() => onPress(item.linkId)}>
-        {/* A brand fill with a white glyph: a tint would lose the black brands in dark themes. */}
-        <IconTile bg={config.color} className="mr-[12px]">
+        <LinkTypeIcon bgColor={config.color}>
           {config.textIcon ? (
-            <Text className="font-bold text-[14px] text-[white]">{config.textIcon}</Text>
+            <Text className="font-bold text-[12px] text-[white]">{config.textIcon}</Text>
           ) : (
-            <FeatherIcon name={iconName} size={16} color="white" />
+            <FeatherIcon name={iconName} size={14} color="white" />
           )}
-        </IconTile>
+        </LinkTypeIcon>
         <Box className="overflow-hidden border-continuous flex-[1]">
-          <Text className="text-[12px] text-dark-grey" numberOfLines={1}>
-            {!!item.reference && (
-              <Text className="text-[12px] font-semibold text-grey">{item.reference}</Text>
-            )}
-            {item.reference ? ` · ${relativeDate}` : relativeDate}
-          </Text>
+          <Box className="overflow-hidden border-continuous flex-row justify-between">
+            <Text className="text-dark-grey font-bold text-[11px]">{metadataLabel}</Text>
+          </Box>
           <Text
-            className="mt-[6px] text-[16px] leading-[22px]"
-            numberOfLines={2}
-            ellipsizeMode="tail"
-            style={titleFontStyle(stylingTheme)}
+            className="text-[16px]"
+            style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
           >
-            {displayTitle}
+            {truncate(displayTitle, 50)}
           </Text>
-          <Text className="mt-[2px] text-[13px] leading-[18px] text-tertiary" numberOfLines={1}>
+          <Paragraph className="text-tertiary" scale={-3} scaleLineHeight={-1} numberOfLines={1}>
             {item.link.url}
-          </Text>
-          {hasChips && (
-            <Box className="overflow-hidden border-continuous pt-[5px]">
-              <EntityChipList
-                tags={item.link.tags}
-                relationCount={relationCount}
-                onRelationPress={onRelationPress}
-              />
-            </Box>
-          )}
+          </Paragraph>
+          <EntityChipList
+            tags={item.link.tags}
+            relationCount={relationCount}
+            onRelationPress={onRelationPress}
+          />
         </Box>
-        {/* The 54pt trigger centres its icon on the header line. */}
-        <Box className="overflow-hidden border-continuous mt-[-19px] mr-[4px]">
-          <LinkOptionsPanel linkId={item.linkId} onRelations={onRelationPress} />
-        </Box>
+        <LinkOptionsPanel linkId={item.linkId} onRelations={onRelationPress} />
       </LinkItemContainer>
-      <Border style={{ marginLeft: TEXT_INSET }} />
+      <Border className="mx-[20px]" />
     </Box>
   )
 }

@@ -4,19 +4,19 @@ import { Linking, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import Empty from '~common/Empty'
 import Loading from '~common/Loading'
-import Box, { HStack, TouchableBox, VStack, usePageBottomInset } from '~common/ui/Box'
+import Box, { HStack, TouchableBox, VStack } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
 import type {
   StrongLexiconEntity,
   StrongLexiconEntityRelation,
 } from '~features/resources/strongLexiconAccess'
-import Card from '~common/ui/Card'
-import { StrongEntityRelationList, StrongEntitySummaryCard } from './StrongDetailUI'
-import { STUDY_COLUMN_MAX_WIDTH, StudyCardBody, StudySection } from '~common/ui/StudySection'
+import {
+  StrongEditorialSection,
+  StrongEntityRelationList,
+  StrongEntitySummaryCard,
+} from './StrongDetailUI'
 import { StrongEntityRelationGraph } from './StrongEntityRelationGraph'
-import StrongEntityPortraitHeader from './StrongEntityPortraitHeader'
-import { useEntityPortraitCatalog } from './entityPortraitManifest'
 import { splitStrongEntityRelations } from './strongEntityPresentation'
 import type { StrongReadingTypography } from './strongEditorialHtmlStyles'
 type Props = {
@@ -42,9 +42,7 @@ const StrongEntityPage = ({
   onOpenEntityProfile,
   onOpenEntityRelation,
 }: Props) => {
-  const { t, i18n } = useTranslation()
-  const bottomInset = usePageBottomInset()
-  const catalog = useEntityPortraitCatalog()
+  const { t } = useTranslation()
   if (loading) return <Loading message={t('Chargement...')} />
   if (!entity) {
     return <Empty message={t('strongDetail.entity.unavailable')} />
@@ -52,62 +50,29 @@ const StrongEntityPage = ({
 
   const { graph, remaining } = splitStrongEntityRelations(entity)
   const place = entity.place
-  // A painted entity opens on its portrait (ADR-0089); the others keep the compact card.
-  const portrait = catalog?.entities[entity.uniqueName]
 
   return (
     <ScrollView
       style={{ flex: 1 }}
       contentContainerStyle={[
         pageContentStyle,
-        {
-          maxWidth: STUDY_COLUMN_MAX_WIDTH + 40,
-          paddingHorizontal: 20,
-          paddingTop: 22,
-          paddingBottom: 90 + bottomInset,
-        },
+        { maxWidth: 600, paddingHorizontal: 20, paddingTop: 22, paddingBottom: 90 },
       ]}
     >
-      {catalog && portrait && (
-        <StrongEntityPortraitHeader
-          entity={entity}
-          entry={portrait}
-          catalog={catalog}
-          language={language ?? i18n.language}
-          onOpenStrong={onOpenStrong}
-        />
-      )}
-      {portrait ? (
-        <StudySection title={t('strongDetail.entity.presentation')}>
-          <StrongEntitySummaryCard
-            entity={entity}
-            expanded
-            hidesHeader
-            readingTypography={readingTypography}
-            onOpenBibleReference={onOpenBibleReference}
-            onOpenStrong={onOpenStrong}
-          />
-        </StudySection>
-      ) : (
-        <Card>
-          <StudyCardBody>
-            <StrongEntitySummaryCard
-              entity={entity}
-              expanded
-              readingTypography={readingTypography}
-              onOpenBibleReference={onOpenBibleReference}
-              onOpenStrong={onOpenStrong}
-            />
-          </StudyCardBody>
-        </Card>
-      )}
+      <StrongEntitySummaryCard
+        entity={entity}
+        expanded
+        readingTypography={readingTypography}
+        onOpenBibleReference={onOpenBibleReference}
+        onOpenStrong={onOpenStrong}
+      />
 
       {ENTITY_LOCATION_VISIBLE && !!place && (
-        <StudySection title={t('strongDetail.entity.location')}>
-          <VStack className="overflow-hidden border-continuous gap-[8px]">
+        <StrongEditorialSection title={t('strongDetail.entity.location')} separated>
+          <VStack className="overflow-hidden border-continuous bg-light-grey rounded-[18px] p-[16px] gap-[8px]">
             <HStack className="overflow-hidden border-continuous items-center gap-[10px]">
               <Box
-                className="overflow-hidden border-continuous rounded-full bg-light-primary items-center justify-center"
+                className="overflow-hidden border-continuous rounded-[21px] bg-light-primary items-center justify-center"
                 style={{ width: 42, height: 42 }}
               >
                 <FeatherIcon name="map-pin" color="primary" size={20} />
@@ -128,7 +93,7 @@ const StrongEntityPage = ({
                   className="overflow-hidden border-continuous"
                   onPress={() => Linking.openURL(place.palopenmapsUrl!)}
                 >
-                  <Text className="text-link font-bold text-[13px]">
+                  <Text className="text-primary font-bold text-[13px]">
                     {t('strongDetail.entity.bibleMap')}
                   </Text>
                 </TouchableBox>
@@ -138,16 +103,16 @@ const StrongEntityPage = ({
                   className="overflow-hidden border-continuous"
                   onPress={() => Linking.openURL(place.googleMapUrl!)}
                 >
-                  <Text className="text-link font-bold text-[13px]">Google Maps</Text>
+                  <Text className="text-primary font-bold text-[13px]">Google Maps</Text>
                 </TouchableBox>
               )}
             </HStack>
           </VStack>
-        </StudySection>
+        </StrongEditorialSection>
       )}
 
       {graph.length > 0 && (
-        <StudySection title={t('strongDetail.entity.relationships')} surface="none">
+        <StrongEditorialSection title={t('strongDetail.entity.relationships')} separated>
           <StrongEntityRelationGraph
             languageOverride={language}
             entity={entity}
@@ -155,20 +120,20 @@ const StrongEntityPage = ({
             onOpenProfile={onOpenEntityProfile}
             onOpenEntity={onOpenEntityRelation}
           />
-        </StudySection>
+        </StrongEditorialSection>
       )}
 
       {remaining.length > 0 && (
-        <StudySection
+        <StrongEditorialSection
           title={
             graph.length > 0
               ? t('strongDetail.entity.allRelationships')
               : t('strongDetail.entity.relationships')
           }
-          surface="none"
+          separated
         >
           <StrongEntityRelationList relations={remaining} onOpenEntity={onOpenEntityRelation} />
-        </StudySection>
+        </StrongEditorialSection>
       )}
     </ScrollView>
   )
