@@ -146,7 +146,8 @@ jest.mock('../CanonicalStrongVerseText', () => {
 })
 
 jest.mock('~helpers/bibleCoverage', () => ({
-  getChapterVerseCountFromCoverage: (
+  getChapterFirstVerse: () => 1,
+  getChapterLastVerseFromCoverage: (
     coverage: { verseCountByBookChapter?: Record<string, number> } | undefined,
     book: number,
     chapter: number
