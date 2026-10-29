@@ -1,4 +1,3 @@
-import { getSimpleStrongModuleId } from '@bible-strong/resource-domain/strong-lexicon'
 import { useConfirmDialog } from '~common/ConfirmDialog/useConfirmDialog'
 import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
@@ -22,27 +21,14 @@ import DownloadManagementFooter from './components/DownloadManagementFooter'
 import EntityPortraitPackCard from './components/EntityPortraitPackCard'
 import { DOWNLOAD_LIST_LAYOUT } from './components/downloadListLayout'
 import { AvailableUpdatesSheet, AvailableUpdatesWidget } from './components/AvailableUpdatesWidget'
-import { versions, type Version } from '~helpers/bibleVersions'
-import { databases } from '~helpers/databases'
-import {
-  LANGUAGE_SPECIFIC_DBS,
-  SHARED_DBS,
-  FRENCH_ONLY_DBS,
-  type DatabaseId,
-  type ResourceLanguage,
-} from '~helpers/databaseTypes'
+import { type ResourceLanguage } from '~helpers/databaseTypes'
 import { offlineResourceRegistry } from '~features/resources/resourceAvailability'
 import { useOfflineResourceRegistry } from '~features/resources/useOfflineResourceRegistry'
 import { useStrongIndexLexiconModuleId } from '~features/resources/useStrongIndexLexicon'
 import { resourceNeedsUpdate } from '~features/resources/availableUpdates'
 import { useMarkAvailableUpdatesSeen } from '~features/resources/useAvailableUpdates'
-import {
-  createCommentaryDownloadItem,
-  createOfflineCopyDownloadItem,
-  createOfflineCopyDownloadPlan,
-  dedupeDownloadItems,
-} from '~helpers/downloadItemFactory'
-import { createOfflineCopyId, parseOfflineCopyId } from '~helpers/offlineCopy'
+import { createOfflineCopyDownloadPlan, dedupeDownloadItems } from '~helpers/downloadItemFactory'
+import { parseOfflineCopyId } from '~helpers/offlineCopy'
 import { useDownloadQueue } from '~helpers/useDownloadQueue'
 import useLanguage from '~helpers/useLanguage'
 import { toast } from '~helpers/toast'
@@ -53,7 +39,6 @@ import {
   deleteDownloadedItem,
   type DownloadedItemDeletionPlan,
 } from '~helpers/deleteDownloadedItem'
-import { buildBibleVersionGroups } from './downloadVersionGroups'
 import type { InterlinearSidecarAvailability } from '~helpers/interlinearBibleSidecar'
 import { getBibleRelatedPublicationResources } from '~helpers/bibleRelatedPublications'
 import type { StrongLexiconModuleAvailability } from '~helpers/strongLexiconModules'
@@ -62,15 +47,13 @@ import { useResourceAccess } from '~features/resources/resourceAccess'
 import { resourceIdentityFromOfflineCopy } from '~features/resources/resourceModel'
 import useConnection from '~helpers/useConnection'
 import ResourceUnavailableView from '~features/resources/ResourceUnavailableView'
-import { buildBibleItems, type UnifiedDownloadItem } from './downloadBibleItems'
-import { getCommentaryCatalogForLanguage } from '~helpers/commentaryCatalog'
-import type { DictionaryWork } from '~features/resources/dictionaryAccess'
+import type { UnifiedDownloadItem } from './downloadBibleItems'
 import {
-  buildDownloadResourceSections,
   flattenDownloadSubsections,
   type DisplayDownloadItem,
   type DownloadResourceSection,
 } from './downloadResourceSections'
+import { buildDownloadCatalogSections } from './downloadCatalogSections'
 // ---------------------------------------------------------------------------
 // Unified section item type
 // ---------------------------------------------------------------------------
@@ -78,224 +61,6 @@ import {
 type UnifiedItem = UnifiedDownloadItem
 
 type UnifiedSection = DownloadResourceSection & { data: DisplayDownloadItem[] }
-
-// ---------------------------------------------------------------------------
-// Build unified sections
-// ---------------------------------------------------------------------------
-
-function buildDatabaseItems(
-  lang: ResourceLanguage,
-  includeLegacyDictionary: boolean
-): UnifiedItem[] {
-  const allDbs = databases(lang)
-  return LANGUAGE_SPECIFIC_DBS.flatMap(dbId => {
-    if (
-      dbId === 'BIBLES' ||
-      dbId === 'MHY' ||
-      (!includeLegacyDictionary && dbId === 'DICTIONNAIRE') ||
-      (lang === 'en' && FRENCH_ONLY_DBS.includes(dbId))
-    ) {
-      return []
-    }
-    const db = allDbs[dbId as keyof typeof allDbs]
-    return db
-      ? [
-          {
-            id: createOfflineCopyId({ kind: 'database', databaseId: dbId, language: lang }),
-            name: db.name,
-            subtitle: db.desc,
-            estimatedSize: db.fileSize,
-            lang: lang as 'fr' | 'en',
-            searchText: `${db.name} ${db.desc} ${dbId}`.toLowerCase(),
-          },
-        ]
-      : []
-  })
-}
-
-function buildDictionaryItems(works: readonly DictionaryWork[]): UnifiedItem[] {
-  return works.flatMap(work => {
-    const identity = {
-      kind: 'dictionary' as const,
-      work: work.resource.work,
-      resourceId: work.resourceId,
-      language: work.resource.language,
-    }
-    try {
-      const item = createOfflineCopyDownloadItem(identity)
-      const name = work.authors[0] ? `${work.authors[0]} — ${work.title}` : work.title
-      return [
-        {
-          id: item.id,
-          name,
-          subtitle: [work.description, work.edition].filter(Boolean).join(' · '),
-          estimatedSize: item.estimatedSize,
-          lang: work.resource.language,
-          searchText: [work.title, work.abbreviation, work.source, ...work.authors]
-            .join(' ')
-            .toLocaleLowerCase(),
-        },
-      ]
-    } catch {
-      return []
-    }
-  })
-}
-
-function buildCommentaryItems(lang: ResourceLanguage): UnifiedItem[] {
-  return getCommentaryCatalogForLanguage(lang).map(entry => {
-    const identity = {
-      kind: 'commentary' as const,
-      resourceId: entry.publicationId,
-      language: lang,
-    }
-    const item = createCommentaryDownloadItem(identity, entry.title)
-    return {
-      id: item.id,
-      name: entry.title,
-      subtitle: `${entry.author} · ${entry.rights}`,
-      estimatedSize: item.estimatedSize,
-      lang,
-      searchText: [entry.title, entry.author, entry.shortName, entry.tradition, ...entry.tags]
-        .join(' ')
-        .toLocaleLowerCase(),
-    }
-  })
-}
-
-function buildStrongLexiconItems(
-  lang: ResourceLanguage,
-  t: (key: string, options?: Record<string, unknown>) => string
-): UnifiedItem[] {
-  return [
-    ...[lang].map(locale => ({
-      id: createOfflineCopyId({
-        kind: 'strong-lexicon-module',
-        moduleId: getSimpleStrongModuleId(locale),
-      }),
-      name: t(
-        locale === 'fr'
-          ? 'offlineSetup.resources.simpleLexiconFr'
-          : 'offlineSetup.resources.simpleLexiconEn'
-      ),
-      subtitle: t('offlineSetup.option.simpleLexiconDescription'),
-      estimatedSize: createOfflineCopyDownloadItem({
-        kind: 'strong-lexicon-module',
-        moduleId: getSimpleStrongModuleId(locale),
-      }).estimatedSize,
-      lang: locale,
-      searchText: 'strong lexique simple grec hébreu français anglais',
-    })),
-    {
-      id: createOfflineCopyId({ kind: 'strong-lexicon-module', moduleId: 'core' }),
-      name: t('offlineSetup.resources.detailedLexicon'),
-      parentItemId: createOfflineCopyId({
-        kind: 'strong-lexicon-module',
-        moduleId: getSimpleStrongModuleId(lang),
-      }),
-      subtitle: t('offlineSetup.option.strongLexiconDescription'),
-      estimatedSize: createOfflineCopyDownloadItem({
-        kind: 'strong-lexicon-module',
-        moduleId: 'core',
-      }).estimatedSize,
-      lang: 'other',
-      searchText: 'strong lexique grec hébreu core step morphology'.toLowerCase(),
-    },
-    {
-      id: createOfflineCopyId({ kind: 'strong-lexicon-module', moduleId: 'resources' }),
-      name: t('offlineSetup.resources.greekDictionary'),
-      subtitle: t('offlineSetup.option.greekDictionaryDescription'),
-      parentItemId: createOfflineCopyId({ kind: 'strong-lexicon-module', moduleId: 'core' }),
-      estimatedSize: createOfflineCopyDownloadItem({
-        kind: 'strong-lexicon-module',
-        moduleId: 'resources',
-      }).estimatedSize,
-      lang: 'other',
-      searchText: 'strong grec lsj tflsj ressources'.toLowerCase(),
-    },
-    {
-      id: createOfflineCopyId({ kind: 'strong-lexicon-module', moduleId: 'entities' }),
-      name: t('offlineSetup.resources.entities'),
-      subtitle: t('offlineSetup.option.entitiesDescription'),
-      parentItemId: createOfflineCopyId({ kind: 'strong-lexicon-module', moduleId: 'core' }),
-      estimatedSize: createOfflineCopyDownloadItem({
-        kind: 'strong-lexicon-module',
-        moduleId: 'entities',
-      }).estimatedSize,
-      lang: 'other',
-      searchText: 'strong entités bibliques personnes lieux groupes'.toLowerCase(),
-    },
-  ]
-}
-
-function buildSharedDatabaseItems(): UnifiedItem[] {
-  const allDbs = databases('fr')
-  return SHARED_DBS.filter(
-    (dbId): dbId is Exclude<DatabaseId, 'BIBLES'> => dbId !== 'BIBLES' && dbId in allDbs
-  ).map(dbId => {
-    const db = allDbs[dbId as keyof typeof allDbs]
-    return {
-      id: createOfflineCopyId({ kind: 'database', databaseId: dbId, language: 'fr' }),
-      name: db.name,
-      subtitle: db.desc,
-      estimatedSize: db.fileSize,
-      lang: 'fr' as const,
-      searchText: `${db.name} ${db.desc} ${dbId}`.toLowerCase(),
-    }
-  })
-}
-
-function buildAllSections(
-  appLang: string,
-  t: (key: string, options?: Record<string, unknown>) => string,
-  dictionaryWorks: readonly DictionaryWork[]
-): UnifiedSection[] {
-  const allVersions = Object.values(versions) as Version[]
-  const bibleGroups = new Map(
-    buildBibleVersionGroups(allVersions, appLang).map(group => [
-      group.key,
-      buildBibleItems(group.versions, appLang, t),
-    ])
-  )
-  const frenchDictionaries = dictionaryWorks.filter(work => work.resource.language === 'fr')
-  const englishDictionaries = dictionaryWorks.filter(work => work.resource.language === 'en')
-  const sharedStudyTools = buildSharedDatabaseItems()
-  const sections = buildDownloadResourceSections({
-    titles: {
-      french: t('versionCatalog.language.fr'),
-      english: t('versionCatalog.language.en'),
-      original: t('downloads.language.original'),
-      bibles: t('downloads.subsection.bibles'),
-      commentaries: t('downloads.subsection.commentaries'),
-      dictionaries: t('downloads.subsection.dictionaries'),
-      studyTools: t('downloads.subsection.studyTools'),
-      otherResources: t('downloads.subsection.otherResources'),
-    },
-    french: {
-      studyTools: buildStrongLexiconItems('fr', t),
-      bibles: bibleGroups.get('bible-fr') ?? [],
-      commentaries: buildCommentaryItems('fr'),
-      dictionaries: buildDictionaryItems(frenchDictionaries),
-      otherResources: buildDatabaseItems('fr', frenchDictionaries.length === 0),
-    },
-    english: {
-      studyTools: buildStrongLexiconItems('en', t),
-      bibles: bibleGroups.get('bible-en') ?? [],
-      commentaries: buildCommentaryItems('en'),
-      dictionaries: buildDictionaryItems(englishDictionaries),
-      otherResources: buildDatabaseItems('en', englishDictionaries.length === 0),
-    },
-    originalBibles: bibleGroups.get('bible-original') ?? [],
-    sharedStudyTools,
-  })
-
-  return sections
-    .filter(section => section.subsections.length > 0)
-    .map(section => ({
-      ...section,
-      data: flattenDownloadSubsections(section.key, section.subsections),
-    }))
-}
 
 // ---------------------------------------------------------------------------
 // Hook: track downloaded state per item
@@ -423,7 +188,7 @@ const DownloadsScreen = () => {
     isAvailabilityError,
     refreshDownloadedItems,
   } = useDownloadedItems()
-  const allSections = buildAllSections(lang, t, dictionaryCatalogQuery.data ?? [])
+  const allSections = buildDownloadCatalogSections(lang, t, dictionaryCatalogQuery.data ?? [])
   const allSectionKeys = allSections.map(section => section.key).join(',')
   const collapseSourceKey = `${lang}:${allSectionKeys}`
   const getDefaultCollapsedSections = () =>
