@@ -1,4 +1,3 @@
-import { isStandaloneStrongModule } from '@bible-strong/resource-domain/strong-lexicon'
 import type { DownloadItem } from '~state/downloadQueue'
 import { isSharedDB, type DatabaseId, type ResourceLanguage } from '~helpers/databaseTypes'
 import { versions, type Version } from '~helpers/bibleVersions'
@@ -32,6 +31,7 @@ import {
   createStrongLexiconModuleDownloadPlan,
 } from './strongLexiconDownloadItems'
 import type { StrongLexiconModuleId } from './strongLexiconPublications'
+import { requiresStrongLexiconCore } from './strongLexiconCore'
 export {
   createStrongLexiconModuleDownloadItem,
   createStrongLexiconModuleDownloadPlan,
@@ -274,7 +274,7 @@ export const completeStrongLexiconDownloadPlan = (
   for (const lexiconModule of items) {
     if (
       lexiconModule.type !== 'strong-lexicon-module' ||
-      isStandaloneStrongModule(lexiconModule.strongLexiconModuleId)
+      !requiresStrongLexiconCore(lexiconModule.strongLexiconModuleId)
     ) {
       continue
     }

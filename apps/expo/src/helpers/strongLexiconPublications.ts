@@ -1,4 +1,5 @@
 import { resourceArtifactUrl } from './mobileResourceCatalog'
+import { cyberJudahEntitiesArtifact } from './strongLexiconCore'
 
 export type StrongLexiconModuleId = 'core' | 'resources' | 'entities' | 'simple-fr' | 'simple-en'
 
@@ -80,4 +81,20 @@ export const STRONG_LEXICON_PUBLICATIONS: Record<
 
 export const getStrongLexiconPublication = (
   moduleId: StrongLexiconModuleId
-): StrongLexiconPublicationArtifact => STRONG_LEXICON_PUBLICATIONS[moduleId]
+): StrongLexiconPublicationArtifact =>
+  (moduleId === 'entities' && cyberJudahEntities) || STRONG_LEXICON_PUBLICATIONS[moduleId]
+
+const cyberJudahEntities: StrongLexiconPublicationArtifact | undefined =
+  cyberJudahEntitiesArtifact?.resourceRevision
+    ? {
+        id: 'entities',
+        required: false,
+        url: cyberJudahEntitiesArtifact.url,
+        entry: cyberJudahEntitiesArtifact.entry,
+        archiveBytes: cyberJudahEntitiesArtifact.archiveBytes,
+        archiveSha256: cyberJudahEntitiesArtifact.archiveSha256,
+        contentBytes: cyberJudahEntitiesArtifact.contentBytes,
+        contentSha256: cyberJudahEntitiesArtifact.contentSha256,
+        resourceRevision: cyberJudahEntitiesArtifact.resourceRevision,
+      }
+    : undefined

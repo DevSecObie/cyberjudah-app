@@ -22,7 +22,9 @@ import {
   type StrongIdentity,
   type StrongIdentityKind,
 } from '~helpers/strongIdentities'
+import cyberJudahEntityBookCodes from '~assets/cyberjudah/entity-book-codes.json'
 import type { StrongLexiconModuleId } from '~helpers/strongLexiconPublications'
+import { requiresStrongLexiconCore } from '~helpers/strongLexiconCore'
 import {
   withOptionalStrongLexiconDatabase,
   withStrongLexiconDatabase,
@@ -550,7 +552,13 @@ const TIPNR_BOOK_CODES = [
   'Rev',
 ] as const
 
-export const getTipnrBookCode = (book: number): string | undefined => TIPNR_BOOK_CODES[book - 1]
+// CyberJudah's People module also names people in the Apocrypha (books 67 to 81).
+const ENTITY_BOOK_CODES: readonly string[] =
+  process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+    ? cyberJudahEntityBookCodes
+    : TIPNR_BOOK_CODES
+
+export const getTipnrBookCode = (book: number): string | undefined => ENTITY_BOOK_CODES[book - 1]
 
 type ChapterEntityRow = {
   uniqueName: string
@@ -582,11 +590,11 @@ const toChapterEntity = (
 })
 
 const loadEntityStrongCodeMap = async (
-  database: SQLiteDatabase,
+  database: SQLiteDatabase | null,
   uStrongValues: string[]
 ): Promise<Map<string, string[]>> => {
   const uniqueValues = [...new Set(uStrongValues.filter(Boolean))]
-  if (!uniqueValues.length) return new Map()
+  if (!database || !uniqueValues.length) return new Map()
   const placeholders = uniqueValues.map(() => '?').join(', ')
   const rows = await database.getAllAsync<{ uStrong: string; code: string }>(
     `SELECT DISTINCT e.uStrong, i.stepCode AS code
@@ -610,7 +618,7 @@ const loadEntityStrongCodeMap = async (
 
 const hydrateEntity = async (
   database: SQLiteDatabase,
-  core: SQLiteDatabase,
+  core: SQLiteDatabase | null,
   entity: EntityRow,
   language: ResourceLanguage
 ): Promise<StrongLexiconEntity> => {
@@ -971,7 +979,12 @@ export const createLocalStrongLexiconAccess = (
     async loadEntity(uniqueName, language) {
       const availability = await getRegisteredStrongLexiconAvailability('entities')
       if (availability.status !== 'available') return undefined
-      return withStrongLexiconDatabase(coreModule(language), core =>
+      // A People module built without Strong entries opens without the lexicon core.
+      const withCore = <T>(operation: (core: SQLiteDatabase | null) => Promise<T>) =>
+        requiresStrongLexiconCore('entities')
+          ? withStrongLexiconDatabase(coreModule(language), operation)
+          : operation(null)
+      return withCore(core =>
         withOptionalStrongLexiconDatabase('entities', async database => {
           const row = await database.getFirstAsync<EntityRow>(
             `SELECT e.*,
