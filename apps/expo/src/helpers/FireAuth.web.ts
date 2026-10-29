@@ -1,4 +1,3 @@
-import { restoreCyberJudahSession, endCyberJudahSession } from './cyberJudahAccount'
 import { identifyAnalyticsUser, trackAnalyticsEvent } from './analytics'
 import * as Sentry from '@sentry/react-native'
 import {
@@ -213,12 +212,10 @@ export class WebFireAuth {
       if (!this.previousEmailVerified && emailVerified) this.onEmailVerified?.()
       this.previousEmailVerified = emailVerified
     })
-    void restoreCyberJudahSession()
   }
 
   private providerLogin = async (provider: GoogleAuthProvider | OAuthProvider) => {
     const providerId = provider.providerId as AccountEntryProvider
-    sessionStorage.removeItem('cyberjudah:signed-out')
     const attempt = this.beginAccountEntryAttempt('provider-sign-in', providerId)
     try {
       const credential = await signInWithPopup(getAuth(firebaseApp), provider)
@@ -370,12 +367,6 @@ export class WebFireAuth {
     this.isLoggingOut = true
     const hadUser = Boolean(this.user)
     try {
-      // A failed Telegram logout must never retain the Firebase account locally.
-      try {
-        await endCyberJudahSession()
-      } catch (error) {
-        this.onError?.(error)
-      }
       await signOut(getAuth(firebaseApp))
       void identifyAnalyticsUser(null)
       if (this.user) {
