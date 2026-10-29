@@ -680,9 +680,6 @@ export const versions: Record<string, Version> =
           canonId: 'kjv-1611',
           hasRedWords: false,
           hasPericope: false,
-          // Recorded audio comes from a third party; CyberJudah reads aloud on the device instead.
-          hasAudio: false,
-          getAudioUrl: undefined,
         },
       }
     : upstreamVersions

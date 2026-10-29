@@ -20,6 +20,7 @@ import { getNoteTitle } from '~helpers/getNoteTitle'
 import { getDefaultBibleVersion } from '~helpers/languageUtils'
 import type { StrongBibleVersionId } from '~helpers/strongBiblePublications'
 import {
+  getDefaultCommentarySelection,
   normalizeCommentarySelection,
   type CommentarySelectionState,
 } from '~features/commentaries/commentarySelection'
@@ -669,10 +670,7 @@ const getInitialState = (): UserState => ({
       tagsDisplay: 'inline',
       commentsDisplay: false,
       inlineCommentaries: [],
-      commentarySelection:
-        getLanguage() === 'en'
-          ? ['barnes:en', 'acbc:en', 'mhcc:en']
-          : ['barnes:fr', 'acbc:fr', 'mhy-fr:fr'],
+      commentarySelection: getDefaultCommentarySelection(getLanguage()),
       contextualInformationDisplay: true,
       redWordsDisplay: true,
       shareVerses: {
