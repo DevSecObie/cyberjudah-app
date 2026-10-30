@@ -2,7 +2,7 @@ import NetInfo from '@react-native-community/netinfo'
 import * as FileSystem from 'expo-file-system/legacy'
 import { openSQLiteDatabase, type SQLiteDatabase } from '~helpers/sqlite'
 import { useEffect, useSyncExternalStore } from 'react'
-import { AppState } from 'react-native'
+import { AppState, Platform } from 'react-native'
 import { storage } from '~helpers/storage'
 import { ftsQuery, momentOf } from './classIndexQuery'
 
@@ -54,7 +54,12 @@ const open = () =>
 /** Whether the library is on this phone (checked once, then kept in step with downloads). */
 export const refreshClassIndexState = async () => {
   if (state.status === 'downloading') return state
-  const info = await FileSystem.getInfoAsync(FILE)
+  // The web app has no file system to keep the library in: it always searches online.
+  if (Platform.OS === 'web') {
+    setState({ status: 'absent' })
+    return state
+  }
+  const info = await FileSystem.getInfoAsync(FILE).catch(() => ({ exists: false }))
   setState({ status: info.exists ? 'ready' : 'absent' })
   return state
 }
@@ -202,6 +207,7 @@ export const searchClassIndex = async (query: string, limit = 40): Promise<Class
  * on Wi-Fi; on mobile data the Search tab offers the download instead.
  */
 export const keepClassIndexCurrent = async () => {
+  if (Platform.OS === 'web') return
   const network = await NetInfo.fetch()
   if (!network.isConnected || (network.type !== 'wifi' && network.type !== 'ethernet')) return
   const current = await refreshClassIndexState()
