@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput } from 'react-native'
+import {
+  KeyboardAvoidingView,
+  Linking,
+  Platform,
+  Pressable,
+  ScrollView,
+  TextInput,
+} from 'react-native'
 import { useSelector } from 'react-redux'
 import { selectUserLoginInfo } from '~redux/selectors/user'
 import { useTranslation } from 'react-i18next'
@@ -11,9 +18,84 @@ import { useTheme } from '~themes/ThemeProvider'
 import AssistantMarkdown from './AssistantMarkdown'
 import { askAssistant } from './client'
 import { assistantAccessible, assistantAvailable } from './assistantConfig'
+import {
+  askCyberJudah,
+  CyberJudahAskError,
+  isCyberJudahAssistant,
+  sourceLink,
+  timestamp,
+  type CyberJudahSource,
+} from './cyberJudahAsk'
+import { storage } from '~helpers/storage'
 import type { HistoryMessage } from '@bible-strong/ai-contract/contract'
 
-type Turn = { question: string; answer: string }
+type Turn = { question: string; answer: string; sources?: CyberJudahSource[] }
+
+// The AI providers this reader agreed may receive their questions (Ask CyberJudah only).
+const CONSENT_KEY = 'cyberjudah.ask.consent'
+const readConsent = (): string[] => {
+  try {
+    const value = JSON.parse(storage.getString(CONSENT_KEY) ?? '[]')
+    return Array.isArray(value) ? value.filter((x): x is string => typeof x === 'string') : []
+  } catch {
+    return []
+  }
+}
+// Ask CyberJudah's own wording where it differs from Bible Strong's assistant.
+const CJ_KEYS: Record<string, string> = {
+  'assistant.title': 'assistant.cyberjudah.title',
+  'assistant.notice': 'assistant.cyberjudah.notice',
+  'assistant.heading': 'assistant.cyberjudah.heading',
+  'assistant.intro': 'assistant.cyberjudah.intro',
+  'assistant.searching': 'assistant.cyberjudah.searching',
+  'assistant.placeholder': 'assistant.cyberjudah.placeholder',
+}
+const keyOf = (key: string) => (isCyberJudahAssistant && CJ_KEYS[key]) || key
+
+/** The class sources an answer cited, each a tap to the moment it was said or to its page. */
+function Sources({ sources }: { sources: CyberJudahSource[] }) {
+  const { t } = useTranslation()
+  if (!sources.length) return null
+  return (
+    <Box className="mt-3 gap-2">
+      <Text className="text-xs font-bold uppercase text-grey">
+        {t('assistant.cyberjudah.sources')}
+      </Text>
+      {sources.map(source => {
+        const link = sourceLink(source)
+        const detail = [
+          source.sub,
+          source.date,
+          source.video && source.t !== undefined ? timestamp(source.t) : undefined,
+        ]
+          .filter(Boolean)
+          .join(' · ')
+        return (
+          <Pressable
+            key={source.n}
+            disabled={!link}
+            accessibilityRole="link"
+            accessibilityLabel={`${source.n}. ${source.title}${detail ? `, ${detail}` : ''}`}
+            onPress={() => link && void Linking.openURL(link)}
+            className="flex-row gap-3 rounded-xl bg-light-grey p-3"
+          >
+            <Text className="font-bold text-primary">{source.n}</Text>
+            <Box className="flex-1">
+              <Text className="font-bold" numberOfLines={2}>
+                {source.title}
+              </Text>
+              {!!detail && (
+                <Text className="text-xs text-grey" numberOfLines={1}>
+                  {detail}
+                </Text>
+              )}
+            </Box>
+          </Pressable>
+        )
+      })}
+    </Box>
+  )
+}
 export default function StudyAssistantScreen() {
   const { t } = useTranslation()
   const { id: userId } = useSelector(selectUserLoginInfo)
@@ -26,6 +108,8 @@ export default function StudyAssistantScreen() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [progress, setProgress] = useState('')
+  // Ask CyberJudah: the provider awaiting the reader's agreement, and the question it holds.
+  const [consentFor, setConsentFor] = useState<{ provider: string; question: string } | null>(null)
   const active = useRef<AbortController | null>(null)
   const assistantAccess = assistantAccessible(userId)
   useEffect(
@@ -45,18 +129,20 @@ export default function StudyAssistantScreen() {
     setAnswer('')
     setActiveQuestion('')
     setError('')
+    setConsentFor(null)
   }, [userId])
   const stop = () => {
     active.current?.abort()
   }
-  const send = async () => {
-    if (active.current || !question.trim()) return
-    const current = question.trim(),
-      controller = new AbortController()
+  const send = async (asked?: string) => {
+    const current = (asked ?? question).trim()
+    if (active.current || !current) return
+    const controller = new AbortController()
     active.current = controller
     const deadline = setTimeout(() => controller.abort(), 130000)
     setBusy(true)
     setError('')
+    setConsentFor(null)
     setAnswer('')
     setActiveQuestion(current)
     setQuestion('')
@@ -70,6 +156,21 @@ export default function StudyAssistantScreen() {
     ])
     while (history.reduce((size, m) => size + m.content.length, 0) > 32000) history.splice(0, 2)
     try {
+      if (isCyberJudahAssistant) {
+        setProgress(t(keyOf('assistant.searching')))
+        const reply = await askCyberJudah(
+          { question: current, history, consent: readConsent() },
+          controller.signal
+        )
+        if (active.current !== controller) return
+        if (controller.signal.aborted) throw new Error('INTERRUPTED')
+        setTurns(previous => [
+          ...previous,
+          { question: current, answer: reply.answer, sources: reply.sources },
+        ])
+        setActiveQuestion('')
+        return
+      }
       await askAssistant(
         {
           question: current,
@@ -104,6 +205,10 @@ export default function StudyAssistantScreen() {
       setActiveQuestion('')
     } catch (cause) {
       if (active.current !== controller) return
+      if (cause instanceof CyberJudahAskError && cause.code === 'CONSENT') {
+        setConsentFor({ provider: cause.provider || '', question: current })
+        return
+      }
       const code = controller.signal.aborted
         ? 'INTERRUPTED'
         : failure || (cause instanceof Error ? cause.message : 'AI_UNAVAILABLE')
@@ -112,6 +217,7 @@ export default function StudyAssistantScreen() {
         BETA_ACCESS_REQUIRED: 'assistant.betaOnly',
         DAILY_LIMIT: 'assistant.limit',
         INTERRUPTED: 'assistant.interrupted',
+        PAUSED: 'assistant.cyberjudah.paused',
       }
       setError(t(keys[code] || 'assistant.unavailable'))
     } finally {
@@ -123,10 +229,18 @@ export default function StudyAssistantScreen() {
       }
     }
   }
+  const agree = () => {
+    if (!consentFor) return
+    const agreed = readConsent()
+    if (consentFor.provider && !agreed.includes(consentFor.provider)) {
+      storage.set(CONSENT_KEY, JSON.stringify([...agreed, consentFor.provider]))
+    }
+    void send(consentFor.question)
+  }
   return (
     <Box className="flex-1 bg-reverse">
       <Header
-        title={t('assistant.title')}
+        title={t(keyOf('assistant.title'))}
         hasBackButton
         rightComponent={
           <Pressable
@@ -136,6 +250,7 @@ export default function StudyAssistantScreen() {
               setAnswer('')
               setActiveQuestion('')
               setError('')
+              setConsentFor(null)
             }}
           >
             <Text className="text-primary">{t('assistant.new')}</Text>
@@ -156,11 +271,11 @@ export default function StudyAssistantScreen() {
             alignSelf: 'center',
           }}
         >
-          <Text className="mb-5 text-sm text-grey">{t('assistant.notice')}</Text>
+          <Text className="mb-5 text-sm text-grey">{t(keyOf('assistant.notice'))}</Text>
           {!turns.length && !activeQuestion && (
             <Box className="py-8">
-              <Text className="mb-3 text-2xl font-bold">{t('assistant.heading')}</Text>
-              <Text className="text-grey">{t('assistant.intro')}</Text>
+              <Text className="mb-3 text-2xl font-bold">{t(keyOf('assistant.heading'))}</Text>
+              <Text className="text-grey">{t(keyOf('assistant.intro'))}</Text>
             </Box>
           )}
           {turns.map((turn, index) => (
@@ -169,6 +284,7 @@ export default function StudyAssistantScreen() {
                 <Text>{turn.question}</Text>
               </Box>
               <AssistantMarkdown text={turn.answer} streaming={false} />
+              {!!turn.sources && <Sources sources={turn.sources} />}
             </Box>
           ))}
           {!!activeQuestion && (
@@ -177,6 +293,34 @@ export default function StudyAssistantScreen() {
             </Box>
           )}
           {!!answer && <AssistantMarkdown text={answer} streaming={busy} />}
+          {!!consentFor && (
+            <Box className="mt-4 rounded-2xl bg-light-grey p-4">
+              <Text className="mb-3">
+                {t('assistant.cyberjudah.consent', {
+                  provider: consentFor.provider || t('assistant.cyberjudah.consentProvider'),
+                })}
+              </Text>
+              <HStack className="gap-3">
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={agree}
+                  className="rounded-xl bg-primary px-4 py-3"
+                >
+                  <Text className="font-bold text-white">{t('assistant.cyberjudah.agree')}</Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => {
+                    setConsentFor(null)
+                    setActiveQuestion('')
+                  }}
+                  className="px-4 py-3"
+                >
+                  <Text className="text-primary">{t('assistant.cyberjudah.notNow')}</Text>
+                </Pressable>
+              </HStack>
+            </Box>
+          )}
           {!!progress && (
             <Text className="mt-3 text-sm text-grey" accessibilityLiveRegion="polite">
               {progress}
@@ -201,9 +345,9 @@ export default function StudyAssistantScreen() {
             maxLength={4000}
             value={question}
             onChangeText={setQuestion}
-            placeholder={t('assistant.placeholder')}
+            placeholder={t(keyOf('assistant.placeholder'))}
             placeholderTextColor={colors.grey}
-            accessibilityLabel={t('assistant.placeholder')}
+            accessibilityLabel={t(keyOf('assistant.placeholder'))}
             editable={assistantAccess}
             style={{
               flex: 1,
