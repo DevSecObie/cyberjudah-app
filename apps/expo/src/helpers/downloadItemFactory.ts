@@ -8,7 +8,7 @@ import {
   getDictionaryDbPath,
   getDictionaryDirectoryDbPath,
 } from '~helpers/databases'
-import { getMobileResourceCatalogEntry, MOBILE_RESOURCE_CATALOG } from '~helpers/mobileResourceCatalog'
+import { getMobileResourceCatalogEntry } from '~helpers/mobileResourceCatalog'
 import {
   getStrongBiblePublication,
   isStrongCapableBibleVersion,
@@ -407,12 +407,21 @@ export function createDictionaryDirectoryDownloadItem(): DownloadItem {
   }
 }
 
+const hasDictionaryDirectoryInCatalog = () => {
+  try {
+    getMobileResourceCatalogEntry('dictionary-directory')
+    return true
+  } catch {
+    return false
+  }
+}
+
 export const createDictionaryDownloadPlan = (
   identity: Extract<OfflineCopyIdentity, { kind: 'dictionary' }>,
   isDirectoryAvailable = false
 ): DownloadItem[] => {
   // A catalog without the shared index (CyberJudah's) installs the dictionary on its own.
-  if (isDirectoryAvailable || !MOBILE_RESOURCE_CATALOG.resources['dictionary-directory'])
+  if (isDirectoryAvailable || !hasDictionaryDirectoryInCatalog())
     return [createDictionaryDownloadItem(identity)]
   const directory = createDictionaryDirectoryDownloadItem()
   return [directory, { ...createDictionaryDownloadItem(identity), dependsOnId: directory.id }]

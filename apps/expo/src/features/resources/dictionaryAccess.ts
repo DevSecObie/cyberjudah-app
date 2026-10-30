@@ -168,7 +168,8 @@ const CYBERJUDAH_DICTIONARY_WORKS: readonly DictionaryWork[] =
             'A reference work, not the classes’ teaching: the twelve volumes of 1901–1906, from our own scans, each article with its volume and page.',
           edition: 'Funk and Wagnalls, New York, 1901–1906',
           source: 'CyberJudah library (archive.org scans)',
-          attribution: 'The Jewish Encyclopedia, Isidore Singer, editor (1901–1906). Public domain.',
+          attribution:
+            'The Jewish Encyclopedia, Isidore Singer, editor (1901–1906). Public domain.',
           onlineAccess: false,
           offlineDownload: true,
         },
@@ -1236,7 +1237,8 @@ export const createHybridDictionaryAccess = ({
         reason: 'offline-copy-required',
         recoveries: ['acquire-offline-copy'],
       } as const),
-    remotelyReadable: remotelyReadableLanguages.has(language) && !isDownloadOnlyDictionaryWork(work),
+    remotelyReadable:
+      remotelyReadableLanguages.has(language) && !isDownloadOnlyDictionaryWork(work),
   })
   const localFailure = (state: Awaited<ReturnType<typeof availability>>) => {
     if (state.local.status !== 'available' && state.local.reason === 'invalid-offline-copy') {
