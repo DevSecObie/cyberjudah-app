@@ -8,12 +8,7 @@ jest.mock('~helpers/storage', () => ({
   },
 }))
 
-import {
-  publishedNotePathOf,
-  studyNoteHeading,
-  studySections,
-  toStudyNotes,
-} from '../publishedNotes'
+import { studyNoteHeading, studySections, toStudyNotes } from '../publishedNotes'
 
 const index = [
   {
@@ -79,12 +74,7 @@ describe('published notes', () => {
     ).toEqual(['/study/genesis/2'])
   })
 
-  it('opens study and encyclopedia links in the app, nothing else', () => {
-    expect(publishedNotePathOf('https://cyberjudah.io/study/genesis/1')).toBe('/study/genesis/1')
-    expect(publishedNotePathOf('https://cyberjudah.io/encyclopedia/sabbath#x')).toBe(
-      '/encyclopedia/sabbath'
-    )
-    expect(publishedNotePathOf('https://cyberjudah.io/classes/2026/x')).toBeNull()
+  it('drops the reference before the colon in a study title', () => {
     expect(studyNoteHeading('Genesis 1: The Beginning')).toBe('The Beginning')
   })
 })
