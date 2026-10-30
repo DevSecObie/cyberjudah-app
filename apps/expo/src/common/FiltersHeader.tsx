@@ -1,7 +1,7 @@
 import { FilterHeaderButtonContent } from './FilterHeaderButton'
 import FilterChoices from './FilterChoices'
 import { useTranslation } from 'react-i18next'
-import { Platform, StyleSheet } from 'react-native'
+import { Platform } from 'react-native'
 import { useState, type ComponentProps, type ReactNode } from 'react'
 import PanelSearch from './ContextualPanel/PanelSearch'
 import { useTheme } from '~themes/ThemeProvider'
@@ -13,7 +13,6 @@ import PageContent from '~common/ui/PageContent'
 import Back from './Back'
 import ContextualPanel from './ContextualPanel'
 import type { PanelScreen } from './ContextualPanel/types'
-import { useWorkspaceHeaderInset } from '~features/app-switcher/workspaceHeaderInset'
 export type FiltersHeaderItem = {
   key: string
   icon: ComponentProps<typeof FeatherIcon>['name']
@@ -40,9 +39,12 @@ export default function FiltersHeader({
   filters,
   onReset,
   buttonOnly = false,
+  rightComponent,
 }: {
-  title: ReactNode
+  title: string
   children?: ReactNode
+  /** Shown before the filter button, such as an export action. */
+  rightComponent?: ReactNode
   buttonOnly?: boolean
   hasBackButton?: boolean
   filters: FiltersHeaderItem[]
@@ -50,14 +52,13 @@ export default function FiltersHeader({
 }) {
   const { t } = useTranslation()
   const theme = useTheme()
-  const workspaceHeaderInset = useWorkspaceHeaderInset()
   const [searches, setSearches] = useState<Record<string, string>>({})
   const isWeb = Platform.OS === 'web'
   const activeCount = filters.filter(filter => filter.active).length
   const reset =
     activeCount > 0 && onReset ? (
       <TouchableBox onPress={onReset} accessibilityRole="button" className="p-2">
-        <Text className="text-link text-[12px]">{t('Réinitialiser')}</Text>
+        <Text className="text-primary text-[12px]">{t('Réinitialiser')}</Text>
       </TouchableBox>
     ) : undefined
   const screens: Record<string, PanelScreen> = {
@@ -89,7 +90,7 @@ export default function FiltersHeader({
                 color={filter.active ? 'primary' : 'tertiary'}
               />
               <Text
-                className={`flex-1 ${isWeb ? 'text-[14px]' : 'text-[16px]'} ${filter.active ? 'text-link' : 'text-default'}`}
+                className={`flex-1 ${isWeb ? 'text-[14px]' : 'text-[16px]'} ${filter.active ? 'text-primary' : 'text-default'}`}
               >
                 {filter.label}
               </Text>
@@ -162,11 +163,7 @@ export default function FiltersHeader({
   )
   if (buttonOnly) return filterButton
   return (
-    <Box
-      className="border-separator"
-      style={{ borderBottomWidth: StyleSheet.hairlineWidth, paddingLeft: workspaceHeaderInset }}
-      testID="workspace-page-header"
-    >
+    <Box className="bg-reverse border-b border-border" testID="workspace-page-header">
       <PageContent className="min-h-[54px] items-center flex-row">
         {hasBackButton ? (
           <Back padding>
@@ -176,6 +173,7 @@ export default function FiltersHeader({
           <Box className="w-[15px]" />
         )}
         <Text className="flex-1 text-[14px] font-bold">{title}</Text>
+        {rightComponent}
         {filterButton}
       </PageContent>
       {children && <PageContent>{children}</PageContent>}

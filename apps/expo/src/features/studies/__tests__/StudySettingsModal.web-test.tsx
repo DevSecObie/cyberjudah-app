@@ -60,7 +60,6 @@ describe('Study deletion on web', () => {
             ref={{
               current: {
                 dismiss,
-                dismissThen: jest.fn(),
                 present: jest.fn(),
                 presentAt: jest.fn(),
                 resizeTo: jest.fn(),

@@ -146,7 +146,8 @@ jest.mock('../CanonicalStrongVerseText', () => {
 })
 
 jest.mock('~helpers/bibleCoverage', () => ({
-  getChapterVerseCountFromCoverage: (
+  getChapterFirstVerse: () => 1,
+  getChapterLastVerseFromCoverage: (
     coverage: { verseCountByBookChapter?: Record<string, number> } | undefined,
     book: number,
     chapter: number
@@ -212,6 +213,7 @@ jest.mock('~common/ui/Paragraph', () => ({
   __esModule: true,
   default: ({ children }: React.PropsWithChildren) => <>{children}</>,
 }))
+jest.mock('~common/ui/RoundedCorner', () => () => null)
 jest.mock('~common/ui/Text', () => ({
   __esModule: true,
   default: ({ children }: React.PropsWithChildren) => <>{children}</>,

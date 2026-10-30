@@ -1,4 +1,4 @@
-import { getCurrentRouteInfo } from './currentRouteInfo'
+import { store } from 'expo-router/build/global-state/router-store'
 
 // Opening and closing form-sheet routes retain their own panel animation.
 const panelPaths = new Set([
@@ -35,7 +35,7 @@ export function navigateWithPageTransition(
   navigate: () => void,
   direction: 'forward' | 'back' = 'forward'
 ) {
-  const fromPanel = isPanel(getCurrentRouteInfo().pathname)
+  const fromPanel = isPanel(store.getRouteInfo().pathname)
   const toPanel = isPanel(pathname)
   if (
     !document.startViewTransition ||

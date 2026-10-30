@@ -1,21 +1,14 @@
 import ExternalLinkCard from './ExternalLinkCard'
-import { titleFontStyle } from '~themes/styleValues'
 import { goBackOrHome } from '~navigation/goBackOrHome'
 import { useConfirmDialog } from '~common/ConfirmDialog/useConfirmDialog'
+import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme, useTheme } from '~themes/ThemeProvider'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useSetAtom } from 'jotai/react'
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import React, { useEffect, useState } from 'react'
-import {
-  ActivityIndicator,
-  Dimensions,
-  Image,
-  Linking,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-} from 'react-native'
+import * as NativeUI from 'react-native'
+import { ActivityIndicator, Dimensions, Image, Linking, ScrollView } from 'react-native'
 import {
   KeyboardAvoidingView,
   KeyboardStickyView,
@@ -27,7 +20,6 @@ import { twMerge } from '~common/ui/classNames'
 
 import { MenuView } from '~common/ui/MenuView'
 import { pageContentStyle } from '~common/ui/PageContent'
-import { radii } from '~common/ui/surfaces'
 import YoutubePlayer from '~helpers/react-native-youtube-iframe'
 import type { Theme as AppTheme } from '~themes'
 
@@ -35,7 +27,7 @@ import { useTranslation } from 'react-i18next'
 import EntityChipList from '~common/EntityChipList'
 import Header from '~common/Header'
 import { VerseIds } from '~common/types'
-import Box, { usePageBottomInset, VStack } from '~common/ui/Box'
+import Box, { VStack } from '~common/ui/Box'
 import Button from '~common/ui/Button'
 import Fab from '~common/ui/Fab'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
@@ -67,7 +59,7 @@ import { unifiedTagsModalAtom } from '~state/app'
 const FOOTER_HEIGHT = 64
 
 const StyledTextInput = (
-  componentProps: Omit<UIComponentProps<typeof TextInput>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof NativeUI.TextInput>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
@@ -75,14 +67,14 @@ const StyledTextInput = (
   const { theme: _themeOverride, className, ...props } = componentProps
 
   const resolvedClassName = twMerge(
-    'text-default h-[48px] border-border border-[2px] rounded-[12px] px-[15px] text-[16px]',
+    'text-default h-[48px] border-border border-[2px] rounded-[10px] px-[15px] text-[16px]',
     className
   )
   return (
-    <TextInput
+    <NativeUI.TextInput
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof TextInput>['style']}
+      style={[props.style] as UIComponentProps<typeof NativeUI.TextInput>['style']}
     />
   )
 }
@@ -152,7 +144,6 @@ const BibleLinkScreen = () => {
   const openEntityRelations = useOpenEntityRelations()
   const setUnifiedTagsModal = useSetAtom(unifiedTagsModalAtom)
   const keyboardHeight = useKeyboardState(state => state.height)
-  const bottomInset = usePageBottomInset()
 
   useEffect(() => {
     if (currentLink) {
@@ -271,8 +262,7 @@ const BibleLinkScreen = () => {
   const playerHeight = (playerWidth * 9) / 16
 
   return (
-    // While editing, the page keeps its bottom save bar above the home indicator.
-    <FormSheetScreen isFormSheet={isFormSheet} reserveBottom={isEditing}>
+    <FormSheetScreen isFormSheet={isFormSheet}>
       <Box className="overflow-hidden border-continuous flex-[1]">
         <Header
           hasBackButton={hasBackButton}
@@ -338,7 +328,7 @@ const BibleLinkScreen = () => {
             contentContainerStyle={[
               pageContentStyle,
               {
-                paddingBottom: isEditing ? FOOTER_HEIGHT + keyboardHeight + 20 : bottomInset,
+                paddingBottom: isEditing ? FOOTER_HEIGHT + keyboardHeight + 20 : 0,
               },
             ]}
           >
@@ -388,15 +378,15 @@ const BibleLinkScreen = () => {
                   />
 
                   {isYoutubeLink && currentLink.videoId && (
-                    <Box className="border-continuous overflow-visible mb-[20px] rounded-[12px] bg-light-grey">
+                    <Box className="border-continuous overflow-visible mb-[20px] rounded-[10px] bg-light-grey">
                       <YoutubePlayer
                         height={playerHeight}
                         width={playerWidth}
                         videoId={currentLink.videoId}
                         onReady={() => console.log('[BibleLinkScreen] YouTube ready')}
                         onError={e => console.log('[BibleLinkScreen] YouTube error:', e)}
-                        viewContainerStyle={{ borderRadius: radii.control, overflow: 'hidden' }}
-                        webviewStyle={{ borderRadius: radii.control, overflow: 'hidden' }}
+                        viewContainerStyle={{ borderRadius: 10, overflow: 'hidden' }}
+                        webviewStyle={{ borderRadius: 10, overflow: 'hidden' }}
                       />
                     </Box>
                   )}
@@ -407,7 +397,7 @@ const BibleLinkScreen = () => {
                       style={{
                         width: '100%',
                         height: 180,
-                        borderRadius: radii.control,
+                        borderRadius: 10,
                         marginBottom: 15,
                         backgroundColor: theme.colors.lightGrey,
                       }}
@@ -428,7 +418,10 @@ const BibleLinkScreen = () => {
                     </Text>
                   </HStack>
 
-                  <Text className="text-[20px] mb-[10px]" style={titleFontStyle(stylingTheme)}>
+                  <Text
+                    className="text-[20px] mb-[10px]"
+                    style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+                  >
                     {displayTitle}
                   </Text>
 
@@ -453,10 +446,7 @@ const BibleLinkScreen = () => {
 
           {isEditing && (
             <KeyboardStickyView style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
-              <HStack
-                className="border-separator px-[20px] py-[10px] justify-end bg-reverse"
-                style={{ borderTopWidth: StyleSheet.hairlineWidth }}
-              >
+              <HStack className="border-border px-[20px] py-[10px] justify-end border-t-[1px] bg-reverse">
                 {currentLink && (
                   <Box className="overflow-hidden border-continuous">
                     <Button reverse onPress={cancelEditing}>
@@ -475,7 +465,7 @@ const BibleLinkScreen = () => {
         </KeyboardAvoidingView>
         {!isEditing && isYoutubeLink && (
           <Box
-            className="overflow-visible border-continuous absolute right-[20px]"
+            className="overflow-hidden border-continuous absolute right-[20px]"
             style={{ bottom: insets.bottom + 20 }}
           >
             <Fab

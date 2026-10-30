@@ -5,7 +5,6 @@ import { useAtomValue, useSetAtom } from 'jotai/react'
 import React, { memo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { type StyleProp, type ViewStyle } from 'react-native'
-import Border from '~common/ui/Border'
 import Box, { TouchableBox } from '~common/ui/Box'
 import { useDeleteGroup } from '../../../state/tabGroups'
 import { TabGroup, closeAllTabsAtom, tabGroupsAtom } from '../../../state/tabs'
@@ -112,7 +111,7 @@ const GroupActionsPopover = memo(
                   />
                 </>
               )}
-              <Border />
+              <Box className="overflow-hidden border-continuous h-[1px] bg-border" />
               <ActionSheetItem icon="plus" label={t('tabs.newGroup')} onPress={handleCreateGroup} />
               <ActionSheetItem
                 icon="layers"

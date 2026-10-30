@@ -1,5 +1,4 @@
 import { getSimpleStrongModuleId } from '@bible-strong/resource-domain/strong-lexicon'
-import { titleFontStyle } from '~themes/styleValues'
 import { getPrimaryStrongLexiconAvailability } from '~features/resources/layeredStrongLexiconAccess'
 import { usePassageFilterChoices } from './usePassageFilterChoices'
 import { getSearchRateLimitNotice, searchRateLimitQueryOptions } from './searchRateLimit'
@@ -11,12 +10,13 @@ import { normalizeSearchItemFilters } from '~state/searchFilters'
 import generateUUID from '~helpers/generateUUID'
 import { useOpenInNewTab } from '~features/app-switcher/utils/useOpenInNewTab'
 import { usePassageSearch } from './usePassageSearch'
+import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme, useTheme } from '~themes/ThemeProvider'
 import PageContent, { pageContentStyle } from '~common/ui/PageContent'
 import type { ReactNode } from 'react'
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FlatList, Keyboard, StyleSheet, TextInput } from 'react-native'
+import { FlatList, Keyboard, TextInput } from 'react-native'
 import { KeyboardAwareScrollView, useKeyboardState } from '~common/KeyboardAwareScrollView'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
@@ -32,7 +32,7 @@ import {
   getSearchResultsPresentation,
   type SearchResultsSnapshot,
 } from './searchResultsPresentation'
-import Box, { HStack, TouchableBox, usePageBottomInset } from '~common/ui/Box'
+import Box, { HStack, TouchableBox } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import Paragraph from '~common/ui/Paragraph'
 import Text from '~common/ui/Text'
@@ -66,7 +66,6 @@ import SearchFacetBar from './shared/SearchFacetBar'
 import SearchSectionBlock, {
   SEARCH_SECTION_LOAD_MORE_COUNT,
   SEARCH_SECTION_PREVIEW_LIMIT,
-  SearchResultSeparator,
 } from './shared/SearchSectionBlock'
 import { type DictionarySearchRow, type NaveSearchItemRow } from './shared/searchItems'
 import type { SearchEntityResult } from './shared/searchResultTypes'
@@ -104,7 +103,19 @@ import {
   getSearchAnalyticsInputKind,
 } from './searchAnalyticsModel'
 import { createSearchExperienceController } from './searchExperience'
-import { useWorkspaceHeaderInset } from '~features/app-switcher/workspaceHeaderInset'
+import { useRouter } from 'expo-router'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
+import { findClasses, findClassesOnDevice } from '~features/passageMediaLibrary/classSearch'
+import { formatMoment, searchSaidInClass } from '~features/passageMediaLibrary/saidInClass'
+import {
+  isClassIndexSearchable,
+  searchClassIndex,
+  useClassIndexState,
+} from '~features/passageMediaLibrary/classLibraryIndex'
+import {
+  loadClassLibrary,
+  readCachedClassLibrary,
+} from '~features/passageMediaLibrary/cyberJudahClasses'
 type Props = {
   searchValue: string
   setSearchValue: (value: string) => void
@@ -116,6 +127,9 @@ type Props = {
 }
 
 const MIN_SEARCH_LENGTH = SEARCH_MIN_QUERY_LENGTH
+// The class search needs a word of some length: two letters match nearly every class.
+const MIN_CLASS_SEARCH_LENGTH = 3
+const SAID_IN_CLASS_SIGN_IN_ID = 'cyberjudah-said-in-class-sign-in'
 const SEARCH_ALPHABET_FOOTER_HEIGHT = 70
 
 type DictionaryRow = DictionarySearchRow
@@ -139,11 +153,10 @@ const SQLiteSearchScreen = ({
   onSaveDraft,
   onFiltersChange,
 }: Props) => {
-  const workspaceHeaderInset = useWorkspaceHeaderInset()
   const { t, i18n } = useTranslation()
   const theme = useTheme()
   const keyboardFooterBottom = useKeyboardFooterBottom(SEARCH_ALPHABET_FOOTER_HEIGHT)
-  const bottomInset = usePageBottomInset()
+  const router = useRouter()
   const openCatalogTab = useOpenInNewTab()
   const openStudyObject = useOpenStudyObject()
   const resources = useResourceAccess()
@@ -486,6 +499,84 @@ const SQLiteSearchScreen = ({
     ...(shouldSearchNave ? [naveQuery] : []),
   ])
 
+  // CyberJudah's classes: every class whose notes say the words, from the site's search of the notes.
+  const shouldSearchClasses =
+    usesCyberJudahEditorial() &&
+    itemFilters.classes !== false &&
+    trimmedSearchValue.length >= MIN_CLASS_SEARCH_LENGTH
+  const classIndex = useClassIndexState()
+  const classQuery = useQuery({
+    queryKey: ['cyberjudah-search-classes', trimmedSearchValue, isClassIndexSearchable(classIndex)],
+    queryFn: () => {
+      const library = async () => readCachedClassLibrary() ?? loadClassLibrary()
+      // On this phone when the class library is kept here; from the site until then.
+      return isClassIndexSearchable(classIndex)
+        ? findClassesOnDevice(trimmedSearchValue, library, searchClassIndex).catch(() =>
+            findClasses(trimmedSearchValue, library)
+          )
+        : findClasses(trimmedSearchValue, library)
+    },
+    enabled: shouldSearchClasses,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+  })
+  // Said in Class: the recordings' own words (their transcripts), searched on CyberJudah's server.
+  const saidInClassQuery = useQuery({
+    queryKey: ['cyberjudah-said-in-class', trimmedSearchValue],
+    queryFn: () => searchSaidInClass(trimmedSearchValue),
+    enabled: shouldSearchClasses,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+  })
+  const saidInClassResults: SearchEntityResult[] = !shouldSearchClasses
+    ? []
+    : saidInClassQuery.data && !saidInClassQuery.data.signedIn
+      ? [
+          {
+            id: SAID_IN_CLASS_SIGN_IN_ID,
+            type: 'classes',
+            iconType: 'classes',
+            title: 'Sign in to search what was said in class',
+            description:
+              'Every recording’s own words, including the classes that have no notes yet, each playing from the second it was said.',
+          },
+        ]
+      : (saidInClassQuery.data?.hits ?? []).map(
+          (hit, index): SearchEntityResult => ({
+            id: `said:${hit.video}:${hit.start}:${index}`,
+            type: 'classes',
+            iconType: 'classes',
+            title: hit.title,
+            chip: formatMoment(hit.start),
+            subtitle: hit.date,
+            description: hit.excerpt,
+            classVideo: hit.video,
+            classStart: hit.start,
+            thumbnailUrl:
+              readCachedClassLibrary()?.find(row => row.providerId === hit.video)?.thumbnailUrl ??
+              `https://i.ytimg.com/vi/${hit.video}/hqdefault.jpg`,
+          })
+        )
+
+  const classResults: SearchEntityResult[] = shouldSearchClasses
+    ? [
+        ...(classQuery.data ?? []).map(
+          (item): SearchEntityResult => ({
+            id: `class:${item.notesPath}`,
+            type: 'classes',
+            iconType: 'classes',
+            title: item.title,
+            chip: item.series,
+            subtitle: [item.date, item.teacher].filter(Boolean).join(' · '),
+            description: item.snippet || [item.date, item.teacher].filter(Boolean).join(' · '),
+            classWorkId: item.workId,
+            classStart: item.start,
+            thumbnailUrl: item.thumbnailUrl,
+          })
+        ),
+      ]
+    : []
+
   const catalogScopes = (['commentary', 'plan', 'timeline'] as const).filter(
     type => itemFilters[type]
   )
@@ -520,6 +611,8 @@ const SQLiteSearchScreen = ({
     strongResults,
     dictionaryResults,
     naveResults,
+    classResults,
+    saidInClassResults,
     passageResults: mergedPassages,
     totalPassageCount: totalCount,
     semanticSearchError,
@@ -534,6 +627,8 @@ const SQLiteSearchScreen = ({
       strong: isStrongSearching,
       dictionary: isDictionarySearching,
       nave: isNaveSearching,
+      classes: shouldSearchClasses && classQuery.isFetching,
+      saidInClass: shouldSearchClasses && saidInClassQuery.isFetching,
     },
     t,
   })
@@ -716,7 +811,7 @@ const SQLiteSearchScreen = ({
           onPress={() => void semanticPassageQuery.refetch()}
         >
           <Text className="text-grey">{semanticSearchError}</Text>
-          <Text className="text-link">{t('Réessayer')}</Text>
+          <Text className="text-primary">{t('Réessayer')}</Text>
         </TouchableBox>
       )
     return null
@@ -768,6 +863,28 @@ const SQLiteSearchScreen = ({
   const openSearchItem = (item: SearchEntityResult) => {
     dismissSearchInput()
     if (!isShowingPreviousResults) recordResultOpened(item)
+    if (item.id === SAID_IN_CLASS_SIGN_IN_ID) {
+      router.push('/login')
+      return
+    }
+    if (item.type === 'classes' && item.classVideo && !item.classWorkId) {
+      // A recording the class library may not list (no notes yet): the player opens it by its video.
+      const listed = readCachedClassLibrary()?.find(row => row.providerId === item.classVideo)
+      router.push({
+        pathname: '/(explore)/passage-media-player',
+        params: listed
+          ? { workId: listed.workId, start: String(item.classStart ?? 0) }
+          : { video: item.classVideo, title: item.title, start: String(item.classStart ?? 0) },
+      })
+      return
+    }
+    if (item.type === 'classes' && item.classWorkId) {
+      router.push({
+        pathname: '/(explore)/passage-media-player',
+        params: { workId: item.classWorkId, start: String(item.classStart ?? 0) },
+      })
+      return
+    }
     if (item.catalogResult) {
       void catalogSelection.select({ ...item.catalogResult.tab, id: generateUUID() })
       return
@@ -806,8 +923,6 @@ const SQLiteSearchScreen = ({
   const shouldRenderSearchList = searchModel.shouldRenderSearchList
   const alphabetFooterInset = browseAlphabet ? SEARCH_ALPHABET_FOOTER_HEIGHT : 0
   const listBottomInset = alphabetFooterInset + keyboardFooterBottom
-  // The page runs under the home indicator and the tab bar: the list's end clears them too.
-  const listFooterHeight = listBottomInset + bottomInset
 
   const renderBrowseDatabaseState = () => {
     if (browseItemType === 'strong' && (strongAvailabilityQuery.isError || strongQuery.isError)) {
@@ -1140,10 +1255,10 @@ const SQLiteSearchScreen = ({
               backgroundColor: theme.colors.reverse,
             }}
             ListFooterComponent={
-              listFooterHeight ? (
+              listBottomInset ? (
                 <Box
                   className="overflow-hidden border-continuous"
-                  style={{ height: listFooterHeight }}
+                  style={{ height: listBottomInset }}
                 />
               ) : null
             }
@@ -1151,7 +1266,6 @@ const SQLiteSearchScreen = ({
             data={soloPaginatedSection.items}
             keyExtractor={item => item.id}
             renderItem={({ item }) => renderSearchResult(item)}
-            ItemSeparatorComponent={SearchResultSeparator}
             onEndReachedThreshold={0.4}
             onEndReached={() => fetchNextPage(soloPaginatedSection.id)}
             ListHeaderComponent={
@@ -1198,10 +1312,10 @@ const SQLiteSearchScreen = ({
             backgroundColor: theme.colors.reverse,
           }}
           ListFooterComponent={
-            listFooterHeight ? (
+            listBottomInset ? (
               <Box
                 className="overflow-hidden border-continuous"
-                style={{ height: listFooterHeight }}
+                style={{ height: listBottomInset }}
               />
             ) : null
           }
@@ -1279,7 +1393,7 @@ const SQLiteSearchScreen = ({
                     accessibilityRole="button"
                     className="px-[20px] py-[12px]"
                   >
-                    <Text className="text-link">{t('Réessayer')}</Text>
+                    <Text className="text-primary">{t('Réessayer')}</Text>
                   </TouchableBox>
                 ) : section.id === 'passages' ? (
                   <>
@@ -1303,11 +1417,7 @@ const SQLiteSearchScreen = ({
 
   return (
     <Box className="overflow-hidden border-continuous flex-[1]">
-      <Box
-        testID="workspace-page-header"
-        className="border-separator"
-        style={{ borderBottomWidth: StyleSheet.hairlineWidth, paddingLeft: workspaceHeaderInset }}
-      >
+      <Box testID="workspace-page-header" className="border-b-[1px] border-border">
         <PageContent>
           <HStack className="items-center gap-[4px] pl-[20px] pt-[6px] pb-[4px]">
             <Box className="flex-1 pt-[5px]">
@@ -1347,22 +1457,20 @@ const SQLiteSearchScreen = ({
       <PassageSearchFiltersSheet ref={passageFiltersRef} {...passageFilterProps} />
 
       {rateLimitNotice && (
-        <PageContent className="px-[20px] pt-[12px]">
-          <Box className="overflow-hidden border-continuous px-[14px] py-[10px] rounded-[12px] bg-light-grey">
-            <Text accessibilityLiveRegion="polite" className="text-grey text-[13px]">
-              {t(rateLimitNotice.retrying ? 'search.rateLimitedRetrying' : 'search.rateLimited', {
-                seconds: rateLimitNotice.seconds,
-              })}
-            </Text>
-          </Box>
-        </PageContent>
+        <Box className="px-[20px] py-[12px] bg-light-grey">
+          <Text accessibilityLiveRegion="polite" className="text-grey text-[13px]">
+            {t(rateLimitNotice.retrying ? 'search.rateLimitedRetrying' : 'search.rateLimited', {
+              seconds: rateLimitNotice.seconds,
+            })}
+          </Text>
+        </Box>
       )}
       {isShowingPreviousResults && currentSearchModel.isLoading ? <SearchSpinner /> : null}
       {renderContent()}
       {browseAlphabet ? (
         <Box
           className="overflow-hidden border-continuous absolute left-[0px] right-[0px] bg-reverse"
-          style={{ bottom: keyboardFooterBottom, paddingBottom: bottomInset }}
+          style={{ bottom: keyboardFooterBottom }}
         >
           {browseAlphabet}
         </Box>
@@ -1387,7 +1495,10 @@ const SearchNoResultsState = ({ query }: { query: string }) => {
           contentFit="contain"
         />
       </Box>
-      <Text className="text-[18px] text-center mb-[8px]" style={titleFontStyle(stylingTheme)}>
+      <Text
+        className="text-[18px] text-center mb-[8px]"
+        style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+      >
         {t('Aucun résultat')}
       </Text>
       <Text className="text-tertiary text-center">

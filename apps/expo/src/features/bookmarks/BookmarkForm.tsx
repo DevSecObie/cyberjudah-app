@@ -5,7 +5,6 @@ import Box from '~common/ui/Box'
 import Button from '~common/ui/Button'
 import ColorPicker from '~common/ColorPicker'
 import { IonIcon } from '~common/ui/Icon'
-import { radii } from '~common/ui/surfaces'
 export default function BookmarkForm({
   name,
   color,
@@ -36,7 +35,7 @@ export default function BookmarkForm({
             color: theme.colors.default,
             borderColor: theme.colors.border,
             borderWidth: 1,
-            borderRadius: radii.control,
+            borderRadius: 8,
             padding: 12,
           }}
         />

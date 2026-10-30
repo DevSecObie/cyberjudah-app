@@ -40,58 +40,17 @@ les paramètres de navigation ; le choix du verset du jour reste toujours visibl
 - Calcul du pourcentage d'avancement
 - Possibilité de réinitialiser un plan
 
-### Le jour courant, la série et « Continuer »
-
-`planSchedule.ts` lit un plan suivi contre son calendrier, pour la page du plan, la liste et
-l'accueil :
-
-- le **jour courant** est celui du calendrier, aujourd'hui, même si des jours plus anciens
-  restent à lire ; avant la date de départ c'est le jour 1, et une fois le calendrier fini
-  ou sans calendrier (ancienne progression), le premier jour non lu ;
-- un jour est **lu**, **manqué** (passé et non lu), **aujourd'hui** ou **à venir** : la bande
-  des jours et le calendrier du mois le montrent, et « N lectures à retrouver » mène au
-  premier jour manqué ;
-- la **série** compte les jours du calendrier lus d'affilée jusqu'à aujourd'hui, ou jusqu'à
-  hier tant que la lecture du jour reste à faire ; rattraper des jours manqués la prolonge,
-  et elle s'éteint le lendemain du dernier jour ;
-- **« Continuer »** mène au jour courant, puis, une fois lu, au premier jour manqué
-  (« Rattraper »). Sur l'accueil et dans la liste, la pastille ouvre `/plan?continue=1` : la
-  page du plan ouvre aussitôt l'élément par-dessus elle, si bien que le retour montre le
-  plan, où la journée terminée est fêtée.
-
-La durée d'un élément (`planReadingTime.ts`) se compte en mots, à 200 mots par minute :
-ceux du passage dans la version par défaut, ou ceux du texte. Une vidéo ou une image n'en a
-pas. La ligne d'un élément montre aussi son début, dans la police de lecture.
-
-Sous le jour viennent les trois jours **à venir** et, sur mobile, le **rappel quotidien**. À
-partir de 800 points de large, la progression, le calendrier du mois, les jours à venir et le
-rappel passent dans une colonne à droite du jour.
-
-La liste des plans range les plans suivis en « Vos parcours » et « Terminés » (avec
-« Recommencer »), et ne montre dans « À découvrir » que les plans pas encore suivis.
-
 ### Éléments d'un jour
 
 Un jour de plan n'a pas de page à lui. La page du plan liste les éléments du jour
 sélectionné, chacun avec une case lu / non lu et un chevron :
 
 - un **passage** (`Chapter`, `Verse`) ouvre le lecteur Bible en **mode plan** : l'en-tête
-  reste celui d'un chapitre, mais le livre n'y est plus un sélecteur, et la navigation
-  entre chapitres reste dans le passage. Un bandeau « Plan — Genèse 1-3 » sous l'en-tête
-  nomme le passage ; sa croix quitte le mode plan et rend le lecteur libre. Pour des
-  versets, une icône y bascule entre les versets et le chapitre entier ;
+  nomme le passage, les sélecteurs de livre, chapitre et verset sont absents, et la
+  navigation entre chapitres reste dans le passage. La croix de l'en-tête quitte le mode
+  plan et rend le lecteur libre ;
 - un **texte**, une **image** ou une **vidéo** ouvre sa propre page (`/plan-entity`) ;
 - un **titre** sert d'intertitre dans la liste.
-
-Les pages d'un élément et le lecteur Bible vivent dans la même pile, celle de la feuille
-Explore (`app/(explore)/`) : sur iOS, les éléments d'un jour s'ouvrent tous dans la même
-feuille ; sur le Web large, dans le panneau de droite.
-
-Chaque élément se termine par « Voir la suite », qui ouvre l'élément suivant du jour à sa
-place, dans la même feuille, quel que soit son type : revenir en arrière ramène toujours à
-la page du plan. Dans le lecteur Bible, la
-carte attend le dernier chapitre du passage. Le dernier élément propose « Terminer la
-journée », qui marque le jour comme lu et revient au plan, où il est fêté.
 
 Ouvrir un élément le marque comme lu ; la case permet de le faire à la main. Le jour est
 terminé quand tous ses éléments sont lus, et redevient non terminé si l'un d'eux est
@@ -117,6 +76,8 @@ L'ancienne route d'un jour (`/plan-slice`) ouvre la page du plan sur ce jour.
 ```
 plans/
 ├── Screens/
+│   ├── MyPlanListScreen      # Liste des plans de l'utilisateur
+│   ├── ExploreScreen         # Découverte de nouveaux plans
 │   ├── PlanScreen            # Détail d'un plan, jour par jour
 │   ├── PlanEntityScreen      # Page d'un texte, d'une image ou d'une vidéo
 │   └── PlanSelectScreen      # Sélection d'un plan
@@ -191,9 +152,13 @@ interface PlanState {
 
 ## Utilisation
 
-### Ajouter un plan
+### Explorer et ajouter un plan
 
 ```typescript
+// Navigation vers l'exploration
+navigation.navigate('ExploreScreen')
+
+// Ajouter un plan
 await dispatch(fetchPlan(planId))
 ```
 

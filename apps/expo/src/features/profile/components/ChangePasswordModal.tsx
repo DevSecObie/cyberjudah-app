@@ -1,7 +1,8 @@
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ActivityIndicator, TouchableOpacity } from 'react-native'
+import * as NativeUI from 'react-native'
+import { ActivityIndicator } from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
 import { SheetFooter, SheetHeader, SheetTextInput, SheetView, type SheetRef } from '~common/sheet'
@@ -158,7 +159,7 @@ const StyledInput = (
   const { theme: _themeOverride, className, ...props } = componentProps
 
   const resolvedClassName = twMerge(
-    'text-default h-[48px] border-border border-[2px] rounded-[12px] px-[15px] pr-[50px] text-[16px]',
+    'bg-light-grey rounded-[10px] px-[15px] py-[14px] pr-[50px] text-[16px] text-default',
     className
   )
   return (
@@ -171,7 +172,7 @@ const StyledInput = (
 }
 
 const TogglePasswordButton = (
-  componentProps: Omit<UIComponentProps<typeof TouchableOpacity>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof NativeUI.TouchableOpacity>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
@@ -183,10 +184,10 @@ const TogglePasswordButton = (
     className
   )
   return (
-    <TouchableOpacity
+    <NativeUI.TouchableOpacity
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof TouchableOpacity>['style']}
+      style={[props.style] as UIComponentProps<typeof NativeUI.TouchableOpacity>['style']}
     />
   )
 }

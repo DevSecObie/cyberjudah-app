@@ -1,7 +1,8 @@
 import type { DebugEntry, DebugSession } from './debug/trace'
 import ErrorState from './ErrorState.web'
+import { runConversation } from './conversationRun'
 import { createPortal } from 'react-dom'
-import { useEffect, useEffectEvent, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
@@ -18,15 +19,35 @@ import {
 import { createAvatar } from '@bible-strong/avatar-react'
 import '@bible-strong/avatar-react/styles.css'
 import { selectUserLoginInfo } from '~redux/selectors/user'
-import { floatingShadow } from '~common/ui/surfaces'
 import { resolveFontFamily } from '~themes/styleValues'
+import { getCurrentAuthUser } from '~helpers/firebaseAuthRuntime'
 import { toast } from '~helpers/toast'
 import i18n from '~i18n'
 import { useTheme } from '~themes/ThemeProvider'
-import { askAssistant, connectAssistantDictation } from './client'
+import {
+  askAssistant,
+  compactAssistant,
+  captureAssistantPreferences,
+  connectAssistantDictation,
+} from './client'
 import { assistantAccessible, assistantAvailable } from './assistantConfig'
-import { followReadingPreferenceKey, type ReadingContext } from './conversations'
-import { useAssistantSession } from './useAssistantSession'
+import { isCyberJudahAssistant } from './cyberJudahAsk'
+import {
+  assertConversationCapacity,
+  loadFollowReadingPreference,
+  saveFollowReadingPreference,
+  followReadingPreferenceKey,
+  newConversation,
+  type Conversation,
+  type ReadingContext,
+} from './conversations'
+import {
+  deleteConversation,
+  observeConversation,
+  observeConversationIndex,
+  renameConversation,
+  saveConversation,
+} from './conversationRepository.web'
 import { useReadingContext } from './useReadingContext.web'
 import './assistant-modal.css'
 import { LiveDictationAdapter } from './dictationAdapter'
@@ -100,7 +121,8 @@ function Icon({
 }
 export default function AssistantLauncher() {
   const { id } = useSelector(selectUserLoginInfo)
-  if (!assistantAccessible(id)) return null
+  // The web modal speaks Bible Strong's assistant protocol; a CyberJudah build uses its own Ask screen.
+  if (isCyberJudahAssistant || !assistantAccessible(id)) return null
   return <AccountAssistant key={id || 'guest'} account={id || 'guest'} signedIn={Boolean(id)} />
 }
 function AccountAssistant({ account, signedIn }: { account: string; signedIn: boolean }) {
@@ -127,8 +149,34 @@ function AccountAssistant({ account, signedIn }: { account: string; signedIn: bo
   }, [debugSession])
   const [open, setOpen] = useState(false),
     [historyOpen, setHistoryOpen] = useState(false)
+  const [conversations, setConversations] = useState<Conversation[]>([]),
+    [current, setCurrent] = useState<Conversation>(() => newConversation())
+  const [ready, setReady] = useState(false),
+    [storageError, setStorageError] = useState(false),
+    [cloudIds, setCloudIds] = useState<string[]>([])
+  const [busy, setBusy] = useState(false),
+    [error, setError] = useState(''),
+    [retrying, setRetrying] = useState(false),
+    [progress, setProgress] = useState('')
   const [avatarSleeping, setAvatarSleeping] = useState(false)
   const [avatarHovered, setAvatarHovered] = useState(false)
+  const [followReading, setFollowReading] = useState(false),
+    [pinned, setPinned] = useState<ReadingContext | null>(null)
+  useEffect(() => {
+    if (open || !ready) return
+    const sleepTimer = window.setTimeout(() => setAvatarSleeping(true), 10_000)
+    return () => window.clearTimeout(sleepTimer)
+  }, [open, ready])
+  const avatarAnimation: StrobiAnimation =
+    busy && open
+      ? 'thinking'
+      : avatarHovered
+        ? 'listening'
+        : open
+          ? 'excited'
+          : avatarSleeping
+            ? 'sleeping'
+            : 'idle'
   const inputRef = useRef<HTMLTextAreaElement | null>(null)
   const [dictationState, setDictationState] = useState<
     'idle' | 'starting' | 'listening' | 'stopping' | 'error'
@@ -162,113 +210,270 @@ function AccountAssistant({ account, signedIn }: { account: string; signedIn: bo
     if (!value) dictation.cancel()
   }
   const loginRef = useRef<HTMLButtonElement | null>(null)
-  const session = useAssistantSession({
-    account,
-    signedIn,
-    liveContext,
-    preferenceStorage: () => localStorage,
-    createRequest: ({ isCurrent }) => {
-      const debug = __DEV__ && debugOpen ? debugSession : null
-      if (!debug) return undefined
-      return (input, signal, emit) => {
-        if (!__DEV__) return askAssistant(input, signal, emit)
-        const { askDebugAssistant } =
-          require('./debug/client.web') as typeof import('./debug/client.web')
-        return askDebugAssistant(input, signal, emit, debug, entry => {
-          if (isCurrent() && !signal.aborted && Date.now() < debug.expiresAt)
-            setDebugEntries(previous => [...previous, entry].slice(-251))
-        })
-      }
-    },
-    onAction: action => {
-      const tab = createTabForAssistantAction(action)
-      if (!tab) {
-        toast.error(t('assistant.unavailable'))
-        return
-      }
-      openInNewTab(tab, { autoRedirect: true })
-      changeOpen(false)
-    },
-    onRunStart: () => {
-      setHistoryOpen(false)
-      if (__DEV__ && debugOpen) setDebugEntries([])
-    },
-    onThreadSwitch: () => {
-      dictation.cancel()
-      setDebugEntries([])
-      setHistoryOpen(false)
-    },
-    onCurrentThreadDeleted: () => dictation.cancel(),
-  })
-  const {
-    conversations,
-    current,
-    ready,
-    storageError,
-    busy,
-    error,
-    retrying,
-    progress,
-    pinned,
-    setPinned,
-    context,
-    send,
-    changeFollowReading,
-  } = session
-  useEffect(() => {
-    if (open || !ready) return
-    const sleepTimer = window.setTimeout(() => setAvatarSleeping(true), 10_000)
-    return () => window.clearTimeout(sleepTimer)
-  }, [open, ready])
-  const avatarAnimation: StrobiAnimation =
-    busy && open
-      ? 'thinking'
-      : avatarHovered
-        ? 'listening'
-        : open
-          ? 'excited'
-          : avatarSleeping
-            ? 'sleeping'
-            : 'idle'
+  const active = useRef<AbortController | null>(null)
+  const receivedInitialIndex = useRef(false)
+  const context = followReading ? pinned || liveContext : null
   const dictationActive = ['starting', 'listening', 'stopping'].includes(dictationState)
-  const syncFollowReading = useEffectEvent((enabled: boolean) => changeFollowReading(enabled))
+  useEffect(() => {
+    try {
+      setFollowReading(loadFollowReadingPreference(localStorage, account))
+    } catch {
+      setStorageError(true)
+    }
+    const stop = observeConversationIndex(
+      account,
+      remote => {
+        const ids = remote.map(conversation => conversation.id)
+        setCloudIds(ids)
+        setConversations(previous => {
+          const localOnly = previous.filter(
+            conversation => !ids.includes(conversation.id) && conversation.messages.length
+          )
+          return [
+            ...localOnly,
+            ...remote.map(conversation => {
+              const local = previous.find(item => item.id === conversation.id)
+              return local?.messages.length
+                ? { ...conversation, messages: local.messages, memory: local.memory }
+                : conversation
+            }),
+          ]
+        })
+        setCurrent(previous => {
+          if (!receivedInitialIndex.current) {
+            receivedInitialIndex.current = true
+            return remote[0] || previous
+          }
+          const metadata = remote.find(item => item.id === previous.id)
+          if (metadata)
+            return previous.messages.length
+              ? { ...previous, title: metadata.title, updatedAt: metadata.updatedAt }
+              : metadata
+          return previous
+        })
+        setStorageError(false)
+        setReady(true)
+      },
+      () => {
+        setStorageError(true)
+        setReady(true)
+      }
+    )
+    return () => {
+      stop()
+      active.current?.abort()
+      active.current = null
+    }
+  }, [account])
+  const currentIsCloud = cloudIds.includes(current.id)
+  useEffect(() => {
+    if (!currentIsCloud) return
+    return observeConversation(
+      account,
+      current.id,
+      conversation => {
+        if (!conversation) {
+          setConversations(previous => previous.filter(item => item.id !== current.id))
+          setCloudIds(previous => previous.filter(item => item !== current.id))
+          setCurrent(previous => (previous.id === current.id ? newConversation() : previous))
+          return
+        }
+        if (active.current) return
+        setCurrent(conversation)
+        setConversations(previous => [
+          conversation,
+          ...previous.filter(item => item.id !== conversation.id),
+        ])
+      },
+      () => setStorageError(true)
+    )
+  }, [account, current.id, currentIsCloud])
+  useEffect(() => {
+    if (!ready) return
+    try {
+      saveFollowReadingPreference(localStorage, account, followReading)
+    } catch {
+      setStorageError(true)
+    }
+  }, [account, followReading, ready])
   useEffect(() => {
     const key = followReadingPreferenceKey(account)
     const sync = (event: StorageEvent) => {
       if (event.key !== key) return
-      syncFollowReading(event.newValue === 'true')
+      setFollowReading(event.newValue === 'true')
+      if (event.newValue !== 'true') setPinned(null)
     }
     window.addEventListener('storage', sync)
     return () => window.removeEventListener('storage', sync)
   }, [account])
+  const publish = (conversation: Conversation) => {
+    setCurrent(conversation)
+    setConversations(previous => [conversation, ...previous.filter(c => c.id !== conversation.id)])
+    if (conversation.messages.at(-1)?.state !== 'streaming') {
+      void saveConversation(account, conversation)
+        .then(() => setStorageError(false))
+        .catch(() => setStorageError(true))
+    }
+  }
+  const send = (text: string, source = current, readingContext = context) => {
+    const question = text.trim()
+    if (!question || active.current || !ready || (currentIsCloud && !current.messages.length))
+      return
+    if (!signedIn || getCurrentAuthUser()?.uid !== account) {
+      setError('assistant.signIn')
+      return
+    }
+    if (!assistantAvailable) {
+      setError('assistant.unavailable')
+      return
+    }
+    try {
+      assertConversationCapacity(conversations, current)
+    } catch {
+      setStorageError(true)
+      return
+    }
+    const controller = new AbortController()
+    active.current = controller
+    setBusy(true)
+    setError('')
+    setHistoryOpen(false)
+    if (__DEV__ && debugOpen) setDebugEntries([])
+    const session = __DEV__ && debugOpen ? debugSession : null
+    return runConversation({
+      conversation: source,
+      question,
+      context: readingContext,
+      preferences: captureAssistantPreferences(readingContext?.bibleVersion),
+      controller,
+      request: session
+        ? (input, signal, emit) => {
+            if (!__DEV__) return askAssistant(input, signal, emit)
+            const { askDebugAssistant } =
+              require('./debug/client.web') as typeof import('./debug/client.web')
+            return askDebugAssistant(input, signal, emit, session, entry => {
+              if (
+                active.current === controller &&
+                !signal.aborted &&
+                Date.now() < session.expiresAt
+              )
+                setDebugEntries(previous => [...previous, entry].slice(-251))
+            })
+          }
+        : askAssistant,
+      compact: compactAssistant,
+      isCurrent: () => active.current === controller,
+      onUpdate: publish,
+      onProgress: key => setProgress(t(key)),
+      onError: key => setError(key),
+      onAction: action => {
+        const tab = createTabForAssistantAction(action)
+        if (!tab) {
+          toast.error(t('assistant.unavailable'))
+          return
+        }
+        openInNewTab(tab, { autoRedirect: true })
+        changeOpen(false)
+      },
+    }).finally(() => {
+      if (active.current === controller) {
+        active.current = null
+        setBusy(false)
+        setProgress('')
+      }
+    })
+  }
   const onNew = async (message: AppendMessage) => {
     await send(message.content.flatMap(p => (p.type === 'text' ? [p.text] : [])).join('\n'))
+  }
+  const startNewThread = () => {
+    if (busy) return
+    dictation.cancel()
+    setDebugEntries([])
+    setCurrent(newConversation())
+    setHistoryOpen(false)
+    setError('')
+  }
+  const switchToThread = (id: string) => {
+    if (busy) return
+    const conversation = conversations.find(item => item.id === id)
+    if (!conversation) return
+    dictation.cancel()
+    setDebugEntries([])
+    setCurrent(conversation)
+    setHistoryOpen(false)
+    setError('')
+  }
+  const deleteThread = (id: string) => {
+    if (busy) return
+    void deleteConversation(account, id)
+      .then(() => {
+        if (current.id === id) dictation.cancel()
+        setConversations(previous => previous.filter(conversation => conversation.id !== id))
+        if (current.id === id) setCurrent(newConversation())
+        setCloudIds(previous => previous.filter(item => item !== id))
+      })
+      .catch(() => setStorageError(true))
+  }
+  const renameThread = (id: string, title: string) => {
+    const normalizedTitle = title.slice(0, 120)
+    const updatedAt = Date.now()
+    setConversations(previous =>
+      previous.map(conversation =>
+        conversation.id === id
+          ? { ...conversation, title: normalizedTitle, updatedAt }
+          : conversation
+      )
+    )
+    if (current.id === id)
+      setCurrent(previous => ({ ...previous, title: normalizedTitle, updatedAt }))
+    void renameConversation(account, id, normalizedTitle, updatedAt).catch(() =>
+      setStorageError(true)
+    )
+  }
+  const changeFollowReading = (enabled: boolean) => {
+    setFollowReading(enabled)
+    if (!enabled) setPinned(null)
   }
   const runtime = useExternalStoreRuntime({
     adapters: {
       dictation,
-      threadList: session.threadList,
+      threadList: {
+        threadId: current.id,
+        threads: conversations.map(conversation => ({
+          id: conversation.id,
+          status: 'regular' as const,
+          title: conversation.title,
+          custom: {
+            updatedAt: conversation.updatedAt,
+            messageCount:
+              conversation.summaryMessageCount === undefined
+                ? conversation.messages.length
+                : conversation.summaryMessageCount,
+          },
+        })),
+        onSwitchToNewThread: startNewThread,
+        onSwitchToThread: switchToThread,
+        onRename: renameThread,
+        onDelete: deleteThread,
+      },
     },
     messages: current.messages,
     convertMessage,
     isRunning: busy,
     onNew,
     onCancel: async () => {
-      session.cancel()
+      active.current?.abort()
     },
   })
   const vars = {
     fontFamily: resolveFontFamily(fontFamily.text),
-    // The panel floats above the page: the raised level and the one floating shadow.
-    '--as-surface': colors.surfaceRaised,
+    '--as-surface': colors.reverse,
     '--as-ink': colors.default,
     '--as-muted': colors.grey,
     '--as-accent': colors.primary,
-    '--as-link': colors.link,
     '--as-soft': colors.lightGrey,
     '--as-border': colors.border,
-    '--as-line': colors.separator,
-    '--as-floating-shadow': floatingShadow.boxShadow,
   } as CSSProperties
   const shortcuts =
     context &&
@@ -465,7 +670,27 @@ function AccountAssistant({ account, signedIn }: { account: string; signedIn: bo
                           : 'assistant.errors.title'
                     )}
                     detail={t(error === 'assistant.limit' ? 'assistant.errors.limitDetail' : error)}
-                    onRetry={session.retry}
+                    onRetry={
+                      !busy &&
+                      [
+                        'assistant.unavailable',
+                        'assistant.interrupted',
+                        'assistant.modal.compactionFailed',
+                      ].includes(error) &&
+                      current.messages.at(-2)?.role === 'user'
+                        ? () => {
+                            const question = current.messages.at(-2)!
+                            setRetrying(true)
+                            void Promise.resolve(
+                              send(
+                                question.text,
+                                { ...current, messages: current.messages.slice(0, -2) },
+                                question.context || null
+                              )
+                            ).finally(() => setRetrying(false))
+                          }
+                        : undefined
+                    }
                   />
                 )}
                 <ThreadPrimitive.ViewportFooter className="bs-assistant-compose-area">

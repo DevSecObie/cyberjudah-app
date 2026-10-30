@@ -9,17 +9,12 @@ import type {
 import type { StrongLexiconModuleAvailability } from '~helpers/strongLexiconModules'
 import type { BibleDOMDownloadState, RootStyles } from './BibleDOMWrapper'
 import ChapterEntitiesOverlay from './ChapterEntitiesOverlay'
-import { getChapterEntityAvatar } from './chapterEntityAvatar'
-import {
-  getEntityAvatarRadius,
-  type EntityPortraitSources,
-} from '~features/lexique/entityPortraits'
-import { getChapterEntitiesViewMode, splitChapterEntities } from './chapterEntitiesPresentation'
+import { getChapterEntityAvatarUri } from './chapterEntityAvatar'
+import { getChapterEntitiesViewMode } from './chapterEntitiesPresentation'
 import { useBibleOverlayOpen } from './overlayLifecycle'
 import { getOverlayLayoutTransition } from './overlayStagger'
 
 const MAX_STACKED_ENTITIES = 3
-const AVATAR_SIZE = 62
 
 type ChapterEntityTranslations = {
   title: string
@@ -35,7 +30,6 @@ type ChapterEntityTranslations = {
 
 type Props = RootStyles & {
   entities: StrongLexiconChapterEntity[]
-  portraits: EntityPortraitSources
   loaded: boolean
   availabilityStatus: StrongLexiconModuleAvailability['status'] | null
   downloadState: BibleDOMDownloadState
@@ -48,7 +42,6 @@ type Props = RootStyles & {
 
 const ChapterEntities = ({
   entities,
-  portraits,
   loaded,
   availabilityStatus,
   downloadState,
@@ -70,10 +63,7 @@ const ChapterEntities = ({
   const colors = settings.colors[settings.theme]
   const isDownloading = ['queued', 'downloading', 'inserting'].includes(downloadState.status ?? '')
   const progress = Math.max(0, Math.min(1, downloadState.progress))
-  const { painted, stacked } = splitChapterEntities(entities, portraits)
-  const showsPainted = viewMode === 'entities' && painted.length > 0
-  const showsStack = viewMode === 'entities' && stacked.length > 0
-  const stackedEntities = stacked.slice(0, MAX_STACKED_ENTITIES)
+  const stackedEntities = entities.slice(0, MAX_STACKED_ENTITIES)
   const layoutTransition = getOverlayLayoutTransition(shouldReduceMotion)
   const sectionStyle: CSSProperties = {
     direction: 'ltr',
@@ -116,67 +106,7 @@ const ChapterEntities = ({
           }}
         />
       </h2>
-      {showsPainted && (
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            gap: '16px 10px',
-            marginTop: 20,
-          }}
-        >
-          {painted.map(entity => (
-            <m.button
-              key={entity.uniqueName}
-              type="button"
-              className="chapter-entity-button"
-              data-ignore-verse-touch
-              aria-label={translations.openEntity.replace('{{name}}', entity.name)}
-              whileTap={{ opacity: 0.55, scale: 0.97 }}
-              onClick={() => onOpenEntity(entity.uniqueName)}
-              style={{
-                width: 74,
-                margin: 0,
-                padding: 0,
-                border: 0,
-                background: 'transparent',
-                color: colors.default,
-                fontFamily: settings.fontFamily,
-                cursor: 'pointer',
-              }}
-            >
-              <img
-                {...getChapterEntityAvatar(entity, portraits)}
-                alt=""
-                style={{
-                  display: 'block',
-                  width: AVATAR_SIZE,
-                  height: AVATAR_SIZE,
-                  margin: '0 auto 6px',
-                  borderRadius: getEntityAvatarRadius(AVATAR_SIZE),
-                  objectFit: 'cover',
-                }}
-              />
-              <span
-                style={{
-                  display: '-webkit-box',
-                  overflow: 'hidden',
-                  fontSize: 12,
-                  lineHeight: 1.22,
-                  fontWeight: 600,
-                  textAlign: 'center',
-                  WebkitBoxOrient: 'vertical',
-                  WebkitLineClamp: 2,
-                }}
-              >
-                {entity.name}
-              </span>
-            </m.button>
-          ))}
-        </div>
-      )}
-      {(viewMode === 'download' || showsStack || chapterResources) && (
+      {(viewMode === 'download' || viewMode === 'entities' || chapterResources) && (
         <div
           style={{
             display: 'flex',
@@ -227,7 +157,7 @@ const ChapterEntities = ({
                     height: 62,
                     placeItems: 'center',
                     border: `2px dashed ${colors.border}`,
-                    borderRadius: getEntityAvatarRadius(62),
+                    borderRadius: 33,
                     background: colors.reverse,
                     color: colors.tertiary,
                   }}
@@ -289,11 +219,11 @@ const ChapterEntities = ({
                     placeItems: 'center',
                     margin: 0,
                     padding: 0,
-                    border: 0,
-                    borderRadius: '50%',
-                    // A neutral tint, like the app's secondary button: no outline, no shadow
-                    background: colors.lightGrey,
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: 12,
+                    background: colors.reverse,
                     color: colors.tertiary,
+                    boxShadow: '0 1px 4px rgba(0, 0, 0, 0.14)',
                     cursor: 'pointer',
                   }}
                 >
@@ -302,14 +232,14 @@ const ChapterEntities = ({
               )}
             </div>
           )}
-          {showsStack && (
+          {viewMode === 'entities' && (
             <LayoutGroup id={layoutGroupId}>
               <m.button
                 layoutDependency={isOverlayOpen}
                 type="button"
                 className="chapter-entity-button"
                 data-ignore-verse-touch
-                aria-label={stacked.map(entity => entity.name).join(', ')}
+                aria-label={entities.map(entity => entity.name).join(', ')}
                 whileTap={{ opacity: 0.55 }}
                 onClick={() => setIsOverlayOpen(true)}
                 style={{
@@ -334,18 +264,19 @@ const ChapterEntities = ({
                       key={entity.uniqueName}
                       layoutId={`chapter-entity-${entity.uniqueName}`}
                       layoutDependency={isOverlayOpen}
-                      {...getChapterEntityAvatar(entity, portraits)}
+                      src={getChapterEntityAvatarUri(entity)}
                       alt=""
                       transition={{ layout: layoutTransition }}
                       style={{
                         gridArea: '1 / 1',
                         display: 'block',
-                        width: AVATAR_SIZE,
-                        height: AVATAR_SIZE,
+                        width: 62,
+                        height: 62,
                         placeSelf: 'center',
                         border: `2px solid ${colors.reverse}`,
-                        borderRadius: getEntityAvatarRadius(AVATAR_SIZE),
-                        objectFit: 'cover',
+                        borderRadius: 33,
+                        boxShadow: '0 2px 7px rgba(0, 0, 0, 0.22)',
+                        objectFit: 'contain',
                         x: position * 6,
                         y: Math.abs(position) * 2,
                         rotate: position * 5,
@@ -357,8 +288,7 @@ const ChapterEntities = ({
                 })}
               </m.button>
               <ChapterEntitiesOverlay
-                entities={stacked}
-                portraits={portraits}
+                entities={entities}
                 groupLabels={translations.groups}
                 openEntityLabel={translations.openEntity}
                 colors={colors}

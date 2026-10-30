@@ -12,7 +12,7 @@ import { useTabGroupsSync } from '~state/useTabGroupsSync'
 const InitHooks = () => {
   const accountEntryState = useInitFireAuth()
   const store = useStore<RootState>()
-  const { isLogged, isSessionLost, user } = useLogin()
+  const { isLogged, user } = useLogin()
   const hydrationEnabled = canStartRemoteHydration(accountEntryState)
   const accountMigrations = useAccountMigrations({
     getCurrentState: store.getState,
@@ -24,10 +24,9 @@ const InitHooks = () => {
     runBeforeSync: accountMigrations.runBeforeSync,
     resumeToken: accountMigrations.resumeToken,
   })
-  // While the session is lost nothing comes from the server, and local changes wait in the queue.
   useTabGroupsSync({
-    incomingEnabled: hydrationEnabled && accountMigrations.isAccountSyncReady && !isSessionLost,
-    outgoingEnabled: (hydrationEnabled && accountMigrations.isAccountWriteReady) || isSessionLost,
+    incomingEnabled: hydrationEnabled && accountMigrations.isAccountSyncReady,
+    outgoingEnabled: hydrationEnabled && accountMigrations.isAccountWriteReady,
   })
 
   return (

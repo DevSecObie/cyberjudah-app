@@ -3,26 +3,22 @@ import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { twMerge } from '~common/ui/classNames'
 import React from 'react'
 import { Platform, TextInput } from 'react-native'
-import Animated, {
+import {
   Extrapolation,
   SharedValue,
   interpolate,
-  useAnimatedProps,
+  useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
 } from 'react-native-reanimated'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { scheduleOnRN } from 'react-native-worklets'
+import { useBottomBarHeightInTab } from '~features/app-switcher/context/TabContext'
 import Link from '~common/Link'
 import Box, { AnimatedBox } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
-import { floatingShadow } from '~common/ui/surfaces'
 import { useMediaQueriesArray } from '~helpers/useMediaQueries'
 import { wpUI } from '~helpers/utils'
 import { offset } from './constants'
-const AnimatedTextInput = Animated.createAnimatedComponent(TextInput)
-type AnimatedTextInputAnimatedProps = React.ComponentProps<
-  typeof AnimatedTextInput
->['animatedProps']
 
 const LinkBox = (props: React.ComponentProps<typeof Box> & React.ComponentProps<typeof Link>) => (
   <Box
@@ -57,6 +53,17 @@ const CurrentYear = ({
   nextColor?: string
 }) => {
   const stylingTheme = useStylingTheme()
+  const { bottomBarHeight } = useBottomBarHeightInTab()
+  const [currentYear, setCurrentYear] = React.useState(year.get())
+  // A native TextInput can restore its stale default text when a sheet closes.
+  // Keep its displayed value in sync with the UI-thread year instead.
+  useAnimatedReaction(
+    () => year.get(),
+    (value, previous) => {
+      if (value !== previous) scheduleOnRN(setCurrentYear, value)
+    },
+    [year]
+  )
 
   const r = useMediaQueriesArray()
   const progressInSection = useDerivedValue(() => {
@@ -73,7 +80,7 @@ const CurrentYear = ({
     <AnimatedBox
       className="overflow-hidden border-continuous absolute left-[0px] right-[0px]"
       style={[
-        { height: r([30, 40, 60, 60]), bottom: useSafeAreaInsets().bottom },
+        { height: r([30, 40, 60, 60]), bottom: bottomBarHeight },
         useAnimatedStyle(() => ({
           transform: [{ translateX: lineX.get() }],
         })),
@@ -81,12 +88,16 @@ const CurrentYear = ({
     >
       {prevColor && (
         <LinkBox
-          className="absolute bottom-[0px] left-[0px] rounded-tl-[8px] rounded-tr-[8px] bg-surface-raised items-center justify-center"
+          className="absolute bottom-[0px] left-[0px] rounded-tr-[5px] rounded-tl-[5px] bg-reverse items-center justify-center"
           onPress={onPrev}
           style={{
             width: r([30, 40, 60, 60]),
             height: r([30, 40, 60, 60]),
-            ...floatingShadow,
+            shadowColor: 'rgb(89,131,240)',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 7,
+            elevation: 1,
             overflow: 'visible',
           }}
         >
@@ -95,12 +106,16 @@ const CurrentYear = ({
       )}
       {nextColor && (
         <LinkBox
-          className="ml-auto absolute bottom-[0px] right-[0px] rounded-tl-[8px] rounded-tr-[8px] bg-surface-raised items-center justify-center"
+          className="ml-auto absolute bottom-[0px] right-[0px] rounded-tr-[5px] rounded-tl-[5px] bg-reverse items-center justify-center"
           onPress={onNext}
           style={{
             width: r([30, 40, 60, 60]),
             height: r([30, 40, 60, 60]),
-            ...floatingShadow,
+            shadowColor: 'rgb(89,131,240)',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 7,
+            elevation: 1,
             overflow: 'visible',
           }}
         >
@@ -108,19 +123,14 @@ const CurrentYear = ({
         </LinkBox>
       )}
       <Box
-        className="overflow-hidden border-continuous absolute bottom-[0px] w-[100px] h-[30px] items-center justify-center rounded-tl-[8px] rounded-tr-[8px]"
+        className="overflow-hidden border-continuous absolute bottom-[0px] w-[100px] h-[30px] items-center justify-center rounded-tl-[5px] rounded-tr-[5px]"
         pointerEvents="none"
         style={{ left: offset - 50, backgroundColor: resolveThemeColor(stylingTheme, color) }}
       >
-        <AnimatedTextInput
+        <TextInput
           underlineColorAndroid="transparent"
           editable={false}
-          animatedProps={
-            useAnimatedProps<{ text: string }>(() => ({
-              text: year.get(),
-            })) as unknown as AnimatedTextInputAnimatedProps
-          }
-          defaultValue={year.get()}
+          value={currentYear}
           style={{
             color: 'white',
             width: 120,
@@ -139,7 +149,15 @@ const CurrentYear = ({
       <AnimatedBox
         className="overflow-hidden border-continuous absolute left-[0px] bottom-[0px] h-[3px]"
         style={[
-          { backgroundColor: resolveThemeColor(stylingTheme, color) },
+          {
+            backgroundColor: resolveThemeColor(stylingTheme, color),
+            shadowColor: 'rgb(89,131,240)',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 7,
+            elevation: 1,
+            overflow: 'visible',
+          },
           useAnimatedStyle(() => ({
             width: `${progressInSection.value}%`,
           })),

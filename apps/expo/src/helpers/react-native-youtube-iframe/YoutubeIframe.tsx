@@ -8,7 +8,7 @@ import React, {
 } from 'react'
 import { DimensionValue, Platform, StyleProp, StyleSheet, ViewStyle } from 'react-native'
 import WebView, { WebViewMessageEvent, WebViewProps } from 'react-native-webview'
-import { PLAYER_STATES, PLAYER_ERROR, CUSTOM_USER_AGENT, PLAYER_BASE_URL } from './constants'
+import { PLAYER_STATES, PLAYER_ERROR, CUSTOM_USER_AGENT } from './constants'
 import { EventEmitter } from 'events'
 import Box from '~common/ui/Box'
 import Text from '~common/ui/Text'
@@ -79,9 +79,7 @@ const YoutubeIframe = (
   }: YoutubeIframeProps,
   ref: React.Ref<YoutubeIframeRef>
 ) => {
-  // react-native-webview 14 defaults the extra-props parameter to `undefined`, which collapses the
-  // props of a bare `WebView` ref type to `never`.
-  const webViewRef = useRef<WebView<object>>(null)
+  const webViewRef = useRef<WebView>(null)
   const [eventEmitter] = useState(() => new EventEmitter())
   const [playerReady, setPlayerReady] = useState(false)
 
@@ -215,15 +213,12 @@ const YoutubeIframe = (
         style={[styles.webView, webViewStyle]}
         mediaPlaybackRequiresUserAction={false}
         allowsFullscreenVideo={!initialPlayerParams?.preventFullScreen}
-        source={{
-          html: MAIN_SCRIPT(videoId, playList, initialPlayerParams),
-          baseUrl: PLAYER_BASE_URL,
-        }}
+        source={{ html: MAIN_SCRIPT(videoId, playList, initialPlayerParams) }}
         userAgent={
           forceAndroidAutoplay ? Platform.select({ android: CUSTOM_USER_AGENT, ios: '' }) : ''
         }
         onShouldStartLoadWithRequest={request => {
-          return request.mainDocumentURL === PLAYER_BASE_URL
+          return request.mainDocumentURL === 'about:blank'
         }}
         {...webViewProps}
       />

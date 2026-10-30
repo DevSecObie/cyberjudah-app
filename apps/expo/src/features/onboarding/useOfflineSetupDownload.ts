@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom } from 'jotai/react'
-import { useEffect, useEffectEvent, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Platform } from 'react-native'
 
 import { downloadManager } from '~helpers/downloadManager'
@@ -143,8 +143,7 @@ const useOfflineSetupDownload = ({
     }
   }
 
-  // Resources are intentionally captured once when the download scene mounts.
-  const startDownload = useEffectEvent(() => {
+  useEffect(() => {
     if (isPreview) {
       const startedAt = Date.now()
       previewInterval.current = setInterval(() => {
@@ -171,24 +170,22 @@ const useOfflineSetupDownload = ({
       )
       fail(itemError)
     }
+    // Resources are intentionally captured once when the download scene mounts.
     return undefined
-  })
-
-  useEffect(() => startDownload(), [])
-
-  const finishPreview = useEffectEvent(() => finish())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     if (!isPreview || previewProgress < 1 || phase !== 'downloading') return
     if (previewInterval.current) clearInterval(previewInterval.current)
-    finishPreview()
+    finish()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPreview, phase, previewProgress])
-
-  const completeTrackedDownload = useEffectEvent(() => void verifyAndComplete())
 
   useEffect(() => {
     if (isPreview || !trackingStarted || phase !== 'downloading' || !tracking.completed) return
-    completeTrackedDownload()
+    void verifyAndComplete()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPreview, phase, tracking.completed, trackingStarted])
 
   useEffect(() => {

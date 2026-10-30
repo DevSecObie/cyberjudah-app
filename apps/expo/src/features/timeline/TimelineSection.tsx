@@ -1,6 +1,9 @@
 import { type SheetRef } from '~common/sheet'
 import React from 'react'
 import { useSharedValue } from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useBottomBarHeightInTab } from '~features/app-switcher/context/TabContext'
+import { useMediaQueriesArray } from '~helpers/useMediaQueries'
 import Box from '~common/ui/Box'
 import { useOpenInNewTab } from '~features/app-switcher/utils/useOpenInNewTab'
 import generateUUID from '~helpers/generateUUID'
@@ -20,8 +23,12 @@ import TimelineHeader from './TimelineHeader'
 import { buildPublicTimelineIndexPath } from './publicTimelineRoutes'
 import { getPublicSiteUrl } from '~helpers/publicSiteLinks'
 import { useTimeline } from './timeline.hooks'
+import { calculateLabel, rowGap, rowHeight, rows } from './constants'
+import { layoutTimelineRows } from './layoutTimelineRows'
 import { ShallowTimelineSection, TimelineSection as TimelineSectionProps } from './types'
 import { useTimelineDetails } from './TimelineResourceBoundary'
+import { offset, rowToPx } from './constants'
+import { getTimelineFocusEvent } from './timelineViewport'
 interface Props extends TimelineSectionProps {
   onPrev: () => void
   onNext: () => void
@@ -71,6 +78,9 @@ const Timeline = ({
   const openInNewTab = useOpenInNewTab()
   const pushRouteOnce = usePushRouteOnce()
   const lang = useTimelineLanguage()
+  const insets = useSafeAreaInsets()
+  const { bottomBarHeight } = useBottomBarHeightInTab()
+  const responsive = useMediaQueriesArray()
 
   const timeline = useTimelineDetails()
   const eventDetailSlugs = new Set(timeline.map(e => e.slug))
@@ -91,11 +101,36 @@ const Timeline = ({
     })
   }
 
-  const { x, y, lineX, year, width, height, yearsToPx, calculateEventWidth } = useTimeline({
+  const {
+    x,
+    y,
+    lineX,
+    year,
+    width,
+    height: baseHeight,
+    yearsToPx,
+    calculateEventWidth,
+  } = useTimeline({
     startYear,
     endYear,
     interval,
   })
+  const initialEvent = getTimelineFocusEvent(events, startYear, endYear, entrance)
+
+  const layout = React.useMemo(
+    () =>
+      layoutTimelineRows({
+        id,
+        events,
+        yearsToPx,
+        calculateEventWidth,
+        calculateLabel: (start, end) => String(calculateLabel(start, end, lang)),
+      }),
+    // yearsToPx and calculateEventWidth only change with the years of the section.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [id, events, startYear, endYear, interval, lang]
+  )
+  const height = baseHeight + (layout.rowCount - rows) * (rowHeight + rowGap)
 
   if (!isCurrent) {
     return null
@@ -180,14 +215,35 @@ const Timeline = ({
         isLast={isLast}
         isReady={isReady}
         entrance={entrance}
+        initialFocus={
+          initialEvent && {
+            x: yearsToPx(initialEvent.start) + offset,
+            y: rowToPx(initialEvent.row),
+          }
+        }
+        contentInsets={{
+          top: (isFormSheet ? 0 : insets.top) + 54,
+          bottom: bottomBarHeight + responsive([30, 40, 60, 60]),
+        }}
       >
-        <Box className="overflow-hidden border-continuous" style={{ width: width, height: height }}>
-          {/* The period lies on the page ground; its events are the cards on it. */}
+        <Box
+          className="overflow-hidden border-continuous"
+          style={{
+            width: width,
+            height: height,
+            shadowColor: 'rgb(89,131,240)',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 7,
+            elevation: 1,
+            overflow: 'visible',
+          }}
+        >
           <Box
-            className="overflow-hidden border-continuous relative bg-canvas"
+            className="overflow-hidden border-continuous relative bg-light-grey"
             style={{ width: width, height: height }}
           >
-            {events.map(event => (
+            {layout.events.map(event => (
               <TimelineEvent
                 x={x}
                 key={event.id}

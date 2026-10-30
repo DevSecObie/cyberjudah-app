@@ -1,13 +1,12 @@
 import { useConfirmDialog } from '~common/ConfirmDialog/useConfirmDialog'
 import type { CommentaryCatalogEntry } from '~helpers/commentaryCatalog'
+import { useTheme } from '~themes/ThemeProvider'
 import React from 'react'
-import { StyleSheet } from 'react-native'
 
 import { useTranslation } from 'react-i18next'
 import { SheetScrollView, type SheetRef } from '~common/sheet'
 import Sheet from '~common/ContextualPanel/ContextualSheet'
 import Box, { TouchableBox } from '~common/ui/Box'
-import SheetWell, { useSheetWellColor } from '~common/ui/SheetWell'
 import Button from '~common/ui/Button'
 import { FeatherIcon } from '~common/ui/Icon'
 import Progress from '~common/ui/Progress'
@@ -46,7 +45,7 @@ const formatMegabytes = (bytes: number, language: string) =>
 const CommentaryOfflineDetailsSheet = ({ sheetRef, projection }: Props) => {
   const { t, i18n } = useTranslation()
   const confirmDeletion = useConfirmDialog()
-  const sheetWellColor = useSheetWellColor()
+  const theme = useTheme()
   const isConnected = useConnection()
   const identity = projection
     ? {
@@ -97,7 +96,7 @@ const CommentaryOfflineDetailsSheet = ({ sheetRef, projection }: Props) => {
   }
 
   return (
-    <Sheet ref={sheetRef}>
+    <Sheet ref={sheetRef} backgroundColor={theme.colors.reverse}>
       <SheetScrollView
         contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 22, paddingBottom: 32 }}
       >
@@ -109,41 +108,35 @@ const CommentaryOfflineDetailsSheet = ({ sheetRef, projection }: Props) => {
             size={68}
           />
           <Box className="overflow-hidden border-continuous flex-[1] gap-[6px]">
-            <Text className="text-[22px] font-semibold" numberOfLines={3}>
+            <Text className="text-[22px] font-bold" numberOfLines={3}>
               {entry.title}
             </Text>
-            <Text className="text-grey text-[13px]" numberOfLines={2}>
+            <Text className="text-tertiary text-[13px]" numberOfLines={2}>
               {entry.author}
             </Text>
           </Box>
         </Box>
 
-        <Box
-          className="border-continuous overflow-hidden flex-row mt-[22px] py-[14px] border-separator"
-          style={{
-            borderTopWidth: StyleSheet.hairlineWidth,
-            borderBottomWidth: StyleSheet.hairlineWidth,
-          }}
-        >
+        <Box className="border-continuous overflow-hidden flex-row mt-[22px] py-[14px] border-t-[1px] border-b-[1px] border-border">
           <Box className="overflow-hidden border-continuous flex-[1] items-center gap-[4px]">
-            <Text className="text-grey text-[12px]">{t('bibleOfflineDetails.language')}</Text>
-            <Text className="text-[15px] font-semibold">{languageLabel}</Text>
+            <Text className="text-tertiary text-[9px] font-bold">
+              {t('bibleOfflineDetails.language').toUpperCase()}
+            </Text>
+            <Text className="text-[13px] font-bold">{languageLabel}</Text>
           </Box>
-          <Box
-            className="overflow-hidden border-continuous bg-separator"
-            style={{ width: StyleSheet.hairlineWidth }}
-          />
+          <Box className="overflow-hidden border-continuous w-[1px] bg-border" />
           <Box className="overflow-hidden border-continuous flex-[1] items-center gap-[4px]">
-            <Text className="text-grey text-[12px]">{t('commentaries.details.tradition')}</Text>
-            <Text className="text-[15px] font-semibold text-center">{entry.tradition}</Text>
+            <Text className="text-tertiary text-[9px] font-bold">
+              {t('commentaries.details.tradition').toUpperCase()}
+            </Text>
+            <Text className="text-[13px] font-bold text-center">{entry.tradition}</Text>
           </Box>
-          <Box
-            className="overflow-hidden border-continuous bg-separator"
-            style={{ width: StyleSheet.hairlineWidth }}
-          />
+          <Box className="overflow-hidden border-continuous w-[1px] bg-border" />
           <Box className="overflow-hidden border-continuous flex-[1] items-center gap-[4px]">
-            <Text className="text-grey text-[12px]">{t('bibleOfflineDetails.installedSize')}</Text>
-            <Text className="text-[15px] font-semibold">{size}</Text>
+            <Text className="text-tertiary text-[9px] font-bold">
+              {t('bibleOfflineDetails.installedSize').toUpperCase()}
+            </Text>
+            <Text className="text-[13px] font-bold">{size}</Text>
           </Box>
         </Box>
 
@@ -156,32 +149,32 @@ const CommentaryOfflineDetailsSheet = ({ sheetRef, projection }: Props) => {
           style={{ flexWrap: 'wrap' }}
         >
           {entry.tags.map(tag => (
-            <SheetWell className="px-[10px] py-[6px] rounded-full" key={tag}>
+            <Box
+              className="overflow-hidden border-continuous px-[10px] py-[6px] bg-light-grey rounded-[14px]"
+              key={tag}
+            >
               <Text className="text-[12px]">{tag}</Text>
-            </SheetWell>
+            </Box>
           ))}
         </Box>
 
-        <Box
-          className="border-continuous overflow-hidden mt-[20px] pt-[16px] border-separator"
-          style={{ borderTopWidth: StyleSheet.hairlineWidth }}
-        >
-          <Text className="text-grey text-[12px]">{entry.rights}</Text>
+        <Box className="border-continuous overflow-hidden mt-[20px] pt-[16px] border-t-[1px] border-border">
+          <Text className="text-tertiary text-[12px]">{entry.rights}</Text>
         </Box>
 
         {downloading ? (
-          <SheetWell className="mt-[22px] p-[16px] flex-row items-center">
+          <Box className="overflow-hidden border-continuous mt-[22px] p-[16px] bg-light-grey rounded-[22px] flex-row items-center">
             <Progress progress={Math.max(progress, 0.04)} size={30} thickness={3} />
-            <Text className="ml-[12px] flex-[1] font-semibold">{Math.round(progress * 100)} %</Text>
+            <Text className="ml-[12px] flex-[1] font-bold">{Math.round(progress * 100)} %</Text>
             <TouchableBox
               className="overflow-hidden border-continuous px-[8px] py-[6px]"
               onPress={() => downloadManager.cancel(itemId)}
             >
-              <Text className="text-quart font-semibold">{t('bibleOfflineDetails.cancel')}</Text>
+              <Text className="text-quart font-bold">{t('bibleOfflineDetails.cancel')}</Text>
             </TouchableBox>
-          </SheetWell>
+          </Box>
         ) : (
-          <Box className="overflow-hidden border-continuous mt-[22px] flex-row items-center gap-[10px]">
+          <Box className="overflow-hidden border-continuous mt-[22px] p-[16px] bg-light-grey rounded-[22px] flex-row items-center gap-[10px]">
             <Box className="overflow-hidden border-continuous flex-[1]">
               <Button
                 onPress={download}
@@ -211,11 +204,11 @@ const CommentaryOfflineDetailsSheet = ({ sheetRef, projection }: Props) => {
             </Box>
             {installed && (
               <TouchableBox
-                className="border-continuous overflow-hidden items-center justify-center rounded-full"
+                className="border-continuous overflow-hidden items-center justify-center bg-reverse rounded-[24px] border-[1px] border-border"
                 accessibilityRole="button"
                 accessibilityLabel={t('commentaries.selector.removeOffline')}
                 onPress={remove}
-                style={{ width: 48, height: 48, backgroundColor: sheetWellColor }}
+                style={{ width: 48, height: 48 }}
               >
                 <FeatherIcon name="trash-2" size={20} color="quart" />
               </TouchableBox>

@@ -1,7 +1,6 @@
 import { useDispatch } from './DispatchProvider'
 import { scaleFontSize } from './scaleFontSize'
 import type { SelectedCode, Verse } from '~common/types'
-import { radii } from '~common/ui/surfaces'
 import type { RootState } from '~redux/modules/reducer'
 import { buildInterlinearVerseLayout } from '~helpers/interlinearVerseLayout'
 import { normalizeInterlinearMode, type InterlinearMode } from '~helpers/interlinearDisplayMode'
@@ -193,7 +192,7 @@ const StructuredInterlinearVerse = ({
               style={{
                 appearance: 'none',
                 border: 0,
-                borderRadius: radii.tile,
+                borderRadius: 6,
                 background: selected ? colors.primary : 'transparent',
                 color: selected ? colors.reverse : colors.default,
                 display: 'inline-flex',

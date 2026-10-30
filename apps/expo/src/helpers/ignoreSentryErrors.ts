@@ -4,6 +4,7 @@ export const ignoreSentryErrors = [
   'remoteConfig',
   'SQLite: connection is closed',
   'SQLite: database is locked',
+  'keep awake',
   'auth/no-current-user',
   'deleteAsync',
   'Player does not exist',

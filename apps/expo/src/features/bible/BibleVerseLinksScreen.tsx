@@ -1,15 +1,17 @@
-import React, { useState, useEffect, useEffectEvent, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { useLocalSearchParams } from 'expo-router'
 import { useAtom, useSetAtom } from 'jotai/react'
 import BibleLinkItem from './BibleLinkItem'
+import BibleLinksSettingsModal from './BibleLinksSettingsModal'
 import Box from '~common/ui/Box'
 import FlatList from '~common/ui/FlatList'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
 import Header from '~common/Header'
 import Empty from '~common/Empty'
 import FiltersHeader from '~common/FiltersHeader'
+import { useSheet } from '~helpers/useSheet'
 import { unifiedTagsModalAtom } from '~state/app'
 import verseToReference from '~helpers/verseToReference'
 import { Tag } from '~common/types'
@@ -59,6 +61,7 @@ const BibleVerseLinks = ({ isFormSheet = false }: BibleVerseLinksProps) => {
   const [links, setLinks] = useState<TLink[]>([])
   const [queryState, setQueryState] = useAtom(linksListQueryAtom)
   const typeModalRef = useRef<SheetRef>(null)
+  const [linkSettingsId, setLinkSettingsId] = useState<string | null>(null)
   const _links = useSelector(selectLinks)
   const tags = useSelector((state: RootState) => state.user.bible.tags)
   const tagsReady = useSelector((state: RootState) => !state.user.id || state.user.sync.loaded.tags)
@@ -81,6 +84,7 @@ const BibleVerseLinks = ({ isFormSheet = false }: BibleVerseLinksProps) => {
   const relations = useSelector(selectRelations)
   const relationCountsByEndpoint = useSelector(selectRelationCountsByEndpointIdentity)
   const setUnifiedTagsModal = useSetAtom(unifiedTagsModalAtom)
+  const linkSettingsModal = useSheet()
   const openEntityRelations = useOpenEntityRelations()
 
   const openTagsModal = () => {
@@ -89,6 +93,11 @@ const BibleVerseLinks = ({ isFormSheet = false }: BibleVerseLinksProps) => {
       selectedTag: selectedChip ?? undefined,
       onSelect: (tag?: Tag) => setQueryState(state => ({ ...state, tagId: tag?.id || null })),
     })
+  }
+
+  const openLinkSettings = (linkId: string) => {
+    setLinkSettingsId(linkId)
+    linkSettingsModal.open()
   }
 
   const getLinkEndpoint = (
@@ -106,7 +115,7 @@ const BibleVerseLinks = ({ isFormSheet = false }: BibleVerseLinksProps) => {
     openEntityRelations(endpoint)
   }
 
-  const loadPage = useEffectEvent(async () => {
+  const loadPage = async () => {
     let title
     const filtered_links: TLink[] = []
 
@@ -154,10 +163,11 @@ const BibleVerseLinks = ({ isFormSheet = false }: BibleVerseLinksProps) => {
 
     setTitle(title)
     setLinks(filtered_links)
-  })
+  }
 
   useEffect(() => {
     loadPage()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [verse, _links, relations])
 
   const openLink = (linkId: string) => {
@@ -172,6 +182,7 @@ const BibleVerseLinks = ({ isFormSheet = false }: BibleVerseLinksProps) => {
         key={index}
         item={item}
         onPress={openLink}
+        onMenuPress={openLinkSettings}
         relationCount={endpoint ? relationCountsByEndpoint[endpointIdentity(endpoint)] || 0 : 0}
         onRelationPress={() => {
           openLinkRelations(item.linkId)
@@ -221,6 +232,7 @@ const BibleVerseLinks = ({ isFormSheet = false }: BibleVerseLinksProps) => {
     typeOptions.find(option => option.value === (queryState.linkType || 'all'))?.label ||
     t('Tous') ||
     'Tous'
+  const selectedLink = links.find(link => link.linkId === linkSettingsId)
 
   return (
     <FormSheetScreen isFormSheet={isFormSheet}>
@@ -315,6 +327,18 @@ const BibleVerseLinks = ({ isFormSheet = false }: BibleVerseLinksProps) => {
             }
           />
         )}
+        <BibleLinksSettingsModal
+          ref={linkSettingsModal.getRef()}
+          title={
+            selectedLink?.link.ogData?.title ||
+            selectedLink?.link.customTitle ||
+            selectedLink?.link.url ||
+            ''
+          }
+          linkId={linkSettingsId}
+          onClosed={() => setLinkSettingsId(null)}
+          onEditRelations={openLinkRelations}
+        />
       </Box>
     </FormSheetScreen>
   )

@@ -1,7 +1,8 @@
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TouchableOpacity, View } from 'react-native'
+import * as NativeUI from 'react-native'
+import { TouchableOpacity } from 'react-native'
 import type { ColorFormatsObject } from 'reanimated-color-picker'
 import { twMerge } from '~common/ui/classNames'
 
@@ -41,7 +42,7 @@ const StyledTextInput = (
 }
 
 const TypeSelectorContainer = (
-  componentProps: Omit<UIComponentProps<typeof View>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof NativeUI.View>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
@@ -50,10 +51,10 @@ const TypeSelectorContainer = (
 
   const resolvedClassName = twMerge('flex-row mt-[10px]', className)
   return (
-    <View
+    <NativeUI.View
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof View>['style']}
+      style={[props.style] as UIComponentProps<typeof NativeUI.View>['style']}
     />
   )
 }
@@ -88,7 +89,7 @@ const TypeButton = (
 }
 
 const PreviewContainer = (
-  componentProps: Omit<UIComponentProps<typeof View>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof NativeUI.View>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
@@ -100,10 +101,10 @@ const PreviewContainer = (
     className
   )
   return (
-    <View
+    <NativeUI.View
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof View>['style']}
+      style={[props.style] as UIComponentProps<typeof NativeUI.View>['style']}
     />
   )
 }

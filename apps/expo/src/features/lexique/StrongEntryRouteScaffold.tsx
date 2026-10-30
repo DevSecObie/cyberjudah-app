@@ -6,8 +6,6 @@ import Empty from '~common/Empty'
 import Header from '~common/Header'
 import Loading from '~common/Loading'
 import Box from '~common/ui/Box'
-import { twMerge } from '~common/ui/classNames'
-import { formatStrongDisplayCode } from '~helpers/strongIdentities'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
 import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
 import StrongEntryMenu from './StrongEntryMenu'
@@ -25,11 +23,6 @@ type StrongEntryLoadState = Pick<
 
 type Props = {
   children: ReactNode
-  /**
-   * The ground of the page, given to its root wrapper so the status bar and the space above the
-   * tab bar follow it: the canvas for a page of cards, nothing for a continuous list.
-   */
-  className?: string
   context: StrongDetailRouteContext
   entryState: StrongEntryLoadState
   fontSize?: number
@@ -44,7 +37,6 @@ type Props = {
 
 const StrongEntryRouteScaffold = ({
   children,
-  className,
   context,
   entryState,
   fontSize,
@@ -73,15 +65,6 @@ const StrongEntryRouteScaffold = ({
       }
     />
   )
-  // A form sheet has no container of its own: the box inside carries the ground there.
-  const screen = (content: ReactNode) => (
-    <FormSheetScreen className={className} isFormSheet={isFormSheet}>
-      <Box className={twMerge('overflow-hidden border-continuous flex-[1]', className)}>
-        {header}
-        {content}
-      </Box>
-    </FormSheetScreen>
-  )
 
   if (
     requireEntry &&
@@ -90,22 +73,30 @@ const StrongEntryRouteScaffold = ({
         entryState.coreAvailability.data?.status === 'available' &&
         entryState.entryQuery.isPending))
   ) {
-    return screen(
-      entryState.entryQuery.isError ? (
-        <Empty message={t("Cette entrée Strong n'a pas pu être chargée.")} />
-      ) : (
-        <Loading message={t('Chargement...')} />
-      )
+    return (
+      <FormSheetScreen isFormSheet={isFormSheet}>
+        {header}
+        {entryState.entryQuery.isError ? (
+          <Empty message={t("Cette entrée Strong n'a pas pu être chargée.")} />
+        ) : (
+          <Loading message={t('Chargement...')} />
+        )}
+      </FormSheetScreen>
     )
   }
 
   if (requireEntry && entryState.coreAvailability.isError) {
-    return screen(
-      <ResourceUnavailableView
-        title={t('resource.strong.temporarilyUnavailable')}
-        failure={resourceFailureFromAccessError(entryState.coreAvailability.error)}
-        onRetry={() => void entryState.coreAvailability.refetch()}
-      />
+    return (
+      <FormSheetScreen isFormSheet={isFormSheet}>
+        <Box className="overflow-hidden border-continuous flex-[1]">
+          {header}
+          <ResourceUnavailableView
+            title={t('resource.strong.temporarilyUnavailable')}
+            failure={resourceFailureFromAccessError(entryState.coreAvailability.error)}
+            onRetry={() => void entryState.coreAvailability.refetch()}
+          />
+        </Box>
+      </FormSheetScreen>
     )
   }
 
@@ -114,42 +105,60 @@ const StrongEntryRouteScaffold = ({
     entryState.coreAvailability.data &&
     entryState.coreAvailability.data.status !== 'available'
   ) {
-    return screen(
-      <ResourceUnavailableView
-        identity={{
-          kind: 'strong-lexicon-module',
-          moduleId: getSimpleStrongModuleId(language),
-        }}
-        title={t('resource.strong.coreUnavailable')}
-        offlineTitle={t('resource.strong.temporarilyUnavailable')}
-        fileSize={35}
-        failure={resourceFailureFromStrongModuleAvailability(entryState.coreAvailability.data)}
-        onRetry={() => void entryState.coreAvailability.refetch()}
-      />
+    return (
+      <FormSheetScreen isFormSheet={isFormSheet}>
+        <Box className="overflow-hidden border-continuous flex-[1]">
+          {header}
+          <ResourceUnavailableView
+            identity={{
+              kind: 'strong-lexicon-module',
+              moduleId: getSimpleStrongModuleId(language),
+            }}
+            title={t('resource.strong.coreUnavailable')}
+            offlineTitle={t('resource.strong.temporarilyUnavailable')}
+            fileSize={35}
+            failure={resourceFailureFromStrongModuleAvailability(entryState.coreAvailability.data)}
+            onRetry={() => void entryState.coreAvailability.refetch()}
+          />
+        </Box>
+      </FormSheetScreen>
     )
   }
 
   if (requireEntry && entryState.entryQuery.isError) {
-    return screen(
-      <ResourceUnavailableView
-        title={t("Cette entrée Strong n'a pas pu être chargée.")}
-        failure={resourceFailureFromAccessError(entryState.entryQuery.error)}
-        onRetry={() => void entryState.entryQuery.refetch()}
-      />
+    return (
+      <FormSheetScreen isFormSheet={isFormSheet}>
+        <Box className="overflow-hidden border-continuous flex-[1]">
+          {header}
+          <ResourceUnavailableView
+            title={t("Cette entrée Strong n'a pas pu être chargée.")}
+            failure={resourceFailureFromAccessError(entryState.entryQuery.error)}
+            onRetry={() => void entryState.entryQuery.refetch()}
+          />
+        </Box>
+      </FormSheetScreen>
     )
   }
 
   if (requireEntry && !entryState.entry) {
-    return screen(
-      <Empty
-        message={t('Aucune entrée lexicale trouvée pour {{code}}.', {
-          code: formatStrongDisplayCode(entryState.identity?.code ?? ''),
-        })}
-      />
+    return (
+      <FormSheetScreen isFormSheet={isFormSheet}>
+        {header}
+        <Empty
+          message={t('Aucune entrée lexicale trouvée pour {{code}}.', {
+            code: entryState.identity?.code ?? '',
+          })}
+        />
+      </FormSheetScreen>
     )
   }
 
-  return screen(children)
+  return (
+    <FormSheetScreen isFormSheet={isFormSheet}>
+      {header}
+      {children}
+    </FormSheetScreen>
+  )
 }
 
 export default StrongEntryRouteScaffold

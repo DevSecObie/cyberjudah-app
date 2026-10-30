@@ -6,16 +6,16 @@ import { MenuView, type MenuAction } from '~common/ui/MenuView'
 import { useRouter } from 'expo-router'
 import { produce } from 'immer'
 import { PrimitiveAtom, useAtom, useSetAtom } from 'jotai'
-import React, { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Platform, ScrollView, Share, StyleSheet } from 'react-native'
+import { Platform, ScrollView, Share } from 'react-native'
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useDispatch, useSelector } from 'react-redux'
 import EntityChipList from '~common/EntityChipList'
 import Header from '~common/Header'
 import { VerseIds } from '~common/types'
-import Box, { usePageBottomInset } from '~common/ui/Box'
+import Box from '~common/ui/Box'
 import Button from '~common/ui/Button'
 import Fab from '~common/ui/Fab'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
@@ -33,6 +33,7 @@ import { toast } from '~helpers/toast'
 import useCurrentThemeSelector from '~helpers/useCurrentThemeSelector'
 import verseToReference from '~helpers/verseToReference'
 import { getNoteTitle } from '~helpers/getNoteTitle'
+import { useExportPersonalNotes } from '~features/notesExport/useExportPersonalNotes'
 import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
 import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
 import { RootState } from '~redux/modules/reducer'
@@ -47,7 +48,6 @@ import {
 } from '~redux/selectors/bible'
 import { isFullScreenBibleAtom, unifiedTagsModalAtom } from '~state/app'
 import { NotesTab, useIsCurrentTab } from '~state/tabs'
-import { useRecordHistory } from '~features/history/useRecordHistory'
 const IPAD_FORM_SHEET_KEYBOARD_OFFSET = -54
 
 const NOTE_EDITOR_MIN_HEIGHT = 240
@@ -100,7 +100,6 @@ const NoteDetailTabScreen = ({
   const editorLayoutYRef = useRef(0)
   const cursorBottomRef = useRef(0)
   const { bottomBarHeight } = useBottomBarHeightInTab()
-  const bottomInset = usePageBottomInset()
   const { colorScheme } = useCurrentThemeSelector()
   const fontSizeScale = useSelector((state: RootState) => state.user.bible.settings.fontSizeScale)
   const isCreating = !noteId
@@ -110,11 +109,7 @@ const NoteDetailTabScreen = ({
     setWebViewHeight(Math.max(NOTE_EDITOR_MIN_HEIGHT, Math.ceil(height)))
   }
 
-  const keepEditorCursorVisible = (measuredViewportHeight?: number) => {
-    const viewportHeight =
-      measuredViewportHeight === undefined
-        ? scrollViewportHeightRef.current
-        : measuredViewportHeight
+  const keepEditorCursorVisible = (viewportHeight = scrollViewportHeightRef.current) => {
     if (!isEditing || !viewportHeight || !cursorBottomRef.current) return
 
     const cursorY = editorLayoutYRef.current + cursorBottomRef.current
@@ -195,16 +190,6 @@ const NoteDetailTabScreen = ({
     ? createNoteEndpoint(noteId, getNoteTitle(currentNote, reference))
     : null
   const relationCount = useRelationCount(noteEndpoint)
-  useRecordHistory(
-    noteId && currentNote
-      ? {
-          type: 'note',
-          noteId,
-          title: getNoteTitle(currentNote, reference),
-          reference: hasNoteVerses ? reference : undefined,
-        }
-      : null
-  )
 
   // Go back to notes list
   const goBack = useCallback(() => {
@@ -221,13 +206,11 @@ const NoteDetailTabScreen = ({
     )
   }, [onBackPress, setNotesTab, t])
 
-  // Initialize form when note loads: the note is read, its edits do not reset the form.
-  const readCurrentNote = useEffectEvent(() => currentNote)
+  // Initialize form when note loads
   useEffect(() => {
-    const note = readCurrentNote()
-    if (note) {
-      setTitle(note.title || '')
-      setDescription(note.description || '')
+    if (currentNote) {
+      setTitle(currentNote.title || '')
+      setDescription(currentNote.description || '')
       setIsEditing(false)
       setEditorResetKey(key => key + 1)
     } else if (isCreating || isCreatingAnnotationNote) {
@@ -236,6 +219,7 @@ const NoteDetailTabScreen = ({
       setIsEditing(true)
       setEditorResetKey(key => key + 1)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [noteId, isCreating, isCreatingAnnotationNote])
 
   // Update tab title when note title changes
@@ -318,16 +302,18 @@ const NoteDetailTabScreen = ({
     setEditorResetKey(key => key + 1)
   }
 
+  const notesPdf = useExportPersonalNotes()
+
   const shareNote = async () => {
     if (!currentNote) return
     try {
-      const message = `
-Note pour ${reference}
-
-${getNoteTitle(currentNote, '')}
-
-${currentNote.description}
-      `
+      const message = [
+        t('notesExport.noteFor', { reference }),
+        getNoteTitle(currentNote, ''),
+        currentNote.description,
+      ]
+        .filter(Boolean)
+        .join('\n\n')
       Share.share({ message })
     } catch (e) {
       toast.error(t('Erreur lors du partage.'))
@@ -422,6 +408,7 @@ ${currentNote.description}
               actions={
                 [
                   { id: 'share', title: t('Partager'), image: 'square.and.arrow.up' },
+                  { id: 'pdf', title: t('notesExport.savePdf'), image: 'doc.richtext' },
                   { id: 'edit', title: t('Éditer'), image: 'pencil' },
                   { id: 'tags', title: t('Éditer les tags'), image: 'tag' },
                   noteEndpoint
@@ -444,6 +431,16 @@ ${currentNote.description}
                 switch (nativeEvent.event) {
                   case 'share':
                     shareNote()
+                    break
+                  case 'pdf':
+                    notesPdf.exportPdf([
+                      {
+                        title: getNoteTitle(currentNote, ''),
+                        reference: reference ?? '',
+                        date: currentNote.date,
+                        text: currentNote.description,
+                      },
+                    ])
                     break
                   case 'edit':
                     onEditNote()
@@ -499,7 +496,7 @@ ${currentNote.description}
             {
               maxWidth: 600,
               padding: 20,
-              paddingBottom: isEditing ? 20 : bottomInset + 100,
+              paddingBottom: isEditing ? 20 : insets.bottom + 100,
             },
           ]}
         >
@@ -510,7 +507,7 @@ ${currentNote.description}
               onRelationPress={() => noteEndpoint && openEntityRelations(noteEndpoint)}
             />
             {isAnnotationNote && annotation ? (
-              <Box className="overflow-hidden border-continuous bg-opacity5 rounded-[12px] py-[12px] px-[16px]">
+              <Box className="overflow-hidden border-continuous bg-opacity5 rounded-[8px] py-[12px] px-[16px]">
                 <Text className="text-[14px] text-grey mb-[4px]">{t('Texte annoté')}</Text>
                 <Text className="text-[16px] font-semibold">
                   {annotation.ranges.map(r => r.text).join(' ')}
@@ -572,10 +569,7 @@ ${currentNote.description}
           </Box>
         </ScrollView>
         {isEditing && (
-          <HStack
-            className="border-separator px-[20px] py-[10px] justify-end gap-[10px] bg-reverse"
-            style={{ borderTopWidth: StyleSheet.hairlineWidth }}
-          >
+          <HStack className="border-border px-[20px] py-[10px] justify-end border-t-[1px] gap-[10px] bg-reverse">
             <Button reverse onPress={cancelEditing}>
               {t('Annuler')}
             </Button>
@@ -587,7 +581,7 @@ ${currentNote.description}
       </KeyboardAvoidingView>
       {!isEditing && (
         <Box
-          className="overflow-visible border-continuous absolute right-[20px]"
+          className="overflow-hidden border-continuous absolute right-[20px]"
           style={{ bottom: (isFormSheet ? insets.bottom : bottomBarHeight) + 20 }}
         >
           <Fab
@@ -600,12 +594,7 @@ ${currentNote.description}
     </Box>
   )
 
-  // While editing, the page keeps its bottom save bar above the home indicator and the tab bar.
-  return (
-    <FormSheetScreen isFormSheet={isFormSheet} reserveBottom={isEditing}>
-      {content}
-    </FormSheetScreen>
-  )
+  return <FormSheetScreen isFormSheet={isFormSheet}>{content}</FormSheetScreen>
 }
 
 export default NoteDetailTabScreen

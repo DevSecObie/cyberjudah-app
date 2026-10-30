@@ -431,14 +431,6 @@ const loadRegularBibleChapter = async (
   ) {
     throw new ResourceAccessError('RESOURCE_UNSUPPORTED')
   }
-  if (
-    request.strongMode === 'transliteration' &&
-    (!isStrongCapableBibleVersion(request.version) ||
-      !dependencies.loadStrongBibleChapterSpans ||
-      !dependencies.loadInterlinearChapterTokens)
-  ) {
-    throw new ResourceAccessError('RESOURCE_UNSUPPORTED')
-  }
   const chapter = await dependencies.chapterAdapter.loadChapter(
     request.version,
     request.book,
@@ -670,10 +662,9 @@ const loadRegularBibleChapter = async (
     })
   }
 
-  if (request.strongMode !== 'visible' && request.strongMode !== 'transliteration') {
+  if (request.strongMode !== 'visible') {
     return successResult({ kind: 'plain', verses, ...chapterIdentity })
   }
-  const showsTransliteration = request.strongMode === 'transliteration'
 
   const strongChapter = await dependencies.loadStrongBibleChapterSpans!(
     request.version as StrongBibleVersionId,
@@ -709,17 +700,7 @@ const loadRegularBibleChapter = async (
     })
   }
   let alignedTokensByVerse: InterlinearChapterTokens = {}
-  if (showsTransliteration) {
-    // The transliterations are the mode itself: a load failure is the chapter's failure.
-    alignedTokensByVerse = readInterlinearTokens(
-      await dependencies.loadInterlinearChapterTokens!(
-        'BHG',
-        await resolveRequestedInterlinearLocale(request, dependencies),
-        request.book,
-        request.chapter
-      )
-    ).tokensByVerse
-  } else if (dependencies.loadInterlinearChapterTokens) {
+  if (dependencies.loadInterlinearChapterTokens) {
     try {
       // Tokens are matched to spans by id and bring morphology only: no offset is applied.
       alignedTokensByVerse = readInterlinearTokens(
@@ -754,26 +735,10 @@ const loadRegularBibleChapter = async (
             alignedSegments.flatMap(segment => segment.identities)
           )
           const morphologies = collectStrongSelectionMorphologies(identities, alignedSegments)
-          // The original words as they stand in the verse, each one whole: the segments of a
-          // word (prefixes, root) are joined, the words apart. A span without one keeps its code.
-          const transliteration = showsTransliteration
-            ? [
-                ...new Set(
-                  (span.stepTokenIds ?? [])
-                    .map(tokenId =>
-                      (alignedTokensById.get(tokenId)?.segments ?? [])
-                        .map(segment => segment.transliteration)
-                        .join('')
-                    )
-                    .filter(Boolean)
-                ),
-              ].join(' · ')
-            : ''
           return {
             ...span,
             identities,
             ...(morphologies.length ? { morphologies } : {}),
-            ...(transliteration ? { transliteration } : {}),
           }
         }),
       }
@@ -884,7 +849,6 @@ export const createBibleContentAccess = (
             request.book === requests[0]?.book &&
             request.chapter === requests[0]?.chapter &&
             request.strongMode !== 'visible' &&
-            request.strongMode !== 'transliteration' &&
             request.strongMode !== 'reverse-interlinear' &&
             !isInterlinearModeEnabled(request.interlinearMode)
         )

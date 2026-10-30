@@ -64,7 +64,6 @@ const CompareVersionSelectorSheet = ({
       <Container
         ref={sheetRef}
         panelWidth={500}
-        panelFlush
         panelHeaderRight={
           <FiltersHeader
             buttonOnly

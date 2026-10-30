@@ -10,9 +10,6 @@ export type ContextualSheetProps = SheetProps & {
   panelWidth?: number
   panelScreens?: Record<string, PanelScreen>
   panelInitialScreen?: string
-  panelInitialStack?: string[]
-  /** Web: the content runs to the panel's sides and bottom. */
-  panelFlush?: boolean
 }
 
 // Opt-in adapter: native retains exactly the existing sheet.
@@ -23,8 +20,6 @@ export default function ContextualSheet({
   panelWidth: ____,
   panelScreens: _____,
   panelInitialScreen: ______,
-  panelInitialStack: _______,
-  panelFlush: ________,
   ...props
 }: ContextualSheetProps) {
   return <Sheet {...props} />

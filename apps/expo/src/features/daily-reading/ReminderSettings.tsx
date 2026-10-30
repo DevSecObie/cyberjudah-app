@@ -1,5 +1,3 @@
-import Card from '~common/ui/Card'
-import SheetWell from '~common/ui/SheetWell'
 import { DateTimePicker } from '@expo/ui/community/datetime-picker'
 import { useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, Platform } from 'react-native'
@@ -16,11 +14,8 @@ const ReminderSettings = ({
   onChange,
   scope = 'daily',
   showIcon = false,
-  surface = 'well',
 }: {
   showIcon?: boolean
-  /** A well inside a sheet; a card when the setting sits on a page. */
-  surface?: 'well' | 'card'
   time?: string
   scope?: string
   onChange: (time: string | null) => void
@@ -52,9 +47,8 @@ const ReminderSettings = ({
     setPending(false)
     if (allowed) onChange('07:00')
   }
-  const Container = surface === 'card' ? Card : SheetWell
   return (
-    <Container className={surface === 'card' ? 'p-[16px] gap-[12px]' : 'p-[20px] gap-[12px]'}>
+    <Box className="bg-light-grey rounded-[20px] p-[20px] gap-[12px]">
       <Box className="flex-row items-center justify-between gap-[16px]">
         <Box className="flex-1 flex-row items-center gap-[8px]">
           {showIcon && Platform.OS !== 'web' && (
@@ -86,7 +80,7 @@ const ReminderSettings = ({
                   className="min-h-[44px] justify-center"
                   accessibilityLabel={t("Choisir l'heure")}
                 >
-                  <Text className="text-link text-[18px] font-bold">{validTime ?? '07:00'}</Text>
+                  <Text className="text-primary text-[18px] font-bold">{validTime ?? '07:00'}</Text>
                 </Link>
               )}
               {(Platform.OS === 'ios' || open) && (
@@ -121,7 +115,7 @@ const ReminderSettings = ({
                 }}
                 className="min-h-[44px] justify-center"
               >
-                <Text className="text-link font-bold">
+                <Text className="text-primary font-bold">
                   {t('dailyReading.notificationSettings')}
                 </Text>
               </Link>
@@ -133,7 +127,7 @@ const ReminderSettings = ({
                 {t('dailyReading.reminderError')}
               </Text>
               <Link onPress={delivery.retry} className="min-h-[44px] justify-center">
-                <Text className="text-link font-bold">{t('dailyReading.retry')}</Text>
+                <Text className="text-primary font-bold">{t('dailyReading.retry')}</Text>
               </Link>
             </Box>
           )}
@@ -145,7 +139,7 @@ const ReminderSettings = ({
             )}
         </>
       )}
-    </Container>
+    </Box>
   )
 }
 export default ReminderSettings

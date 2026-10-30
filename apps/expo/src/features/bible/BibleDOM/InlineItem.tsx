@@ -1,14 +1,14 @@
 import { styled } from 'goober'
 import { RootStyles } from './BibleDOMWrapper'
 import { scaleFontSize } from './scaleFontSize'
-import { referenceHalo } from './referenceHalo'
-import { noSelect } from './utils'
+import { isDarkTheme, noSelect } from './utils'
 import { getDisabledStyles } from './disabledStyles'
 
 export const InlineItemContainer = styled('span')<
-  RootStyles & { isButton?: boolean; isDisabled?: boolean }
+  RootStyles & { isParallel?: boolean; isButton?: boolean; isDisabled?: boolean }
 >(
   ({
+    isParallel,
     isButton = false,
     isDisabled = false,
     settings: { fontSizeScale, theme, colors, fontFamily },
@@ -16,11 +16,17 @@ export const InlineItemContainer = styled('span')<
     fontFamily,
     ...noSelect,
     color: colors[theme].default,
-    fontSize: scaleFontSize(16, fontSizeScale),
-    lineHeight: scaleFontSize(26, fontSizeScale),
+    fontSize: scaleFontSize(isParallel ? 10 : 16, fontSizeScale),
+    lineHeight: scaleFontSize(isParallel ? 18 : 26, fontSizeScale),
+    '@media (min-width: 768px)': {
+      fontSize: scaleFontSize(16, fontSizeScale),
+      lineHeight: scaleFontSize(26, fontSizeScale),
+    },
 
     backgroundColor: colors[theme].reverse,
-    ...referenceHalo(theme),
+    boxShadow: isDarkTheme(theme)
+      ? `0 0 10px 0 rgba(255, 255, 255, 0.1)`
+      : `0 0 10px 0 rgba(0, 0, 0, 0.2)`,
     borderRadius: '8px',
     paddingInlineEnd: '8px',
     paddingInlineStart: '4px',

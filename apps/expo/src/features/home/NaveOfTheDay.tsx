@@ -1,9 +1,16 @@
 import ResourceDiscoveryEntry from './ResourceDiscoveryEntry'
+import { LinearGradient } from 'expo-linear-gradient'
 import { useQuery } from '@tanstack/react-query'
-import React from 'react'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import Link from '~common/Link'
+import NaveIcon from '~common/NaveIcon'
+import Box from '~common/ui/Box'
+import Paragraph from '~common/ui/Paragraph'
+import Text from '~common/ui/Text'
 import { useResourceAccess } from '~features/resources/resourceAccess'
-import { WidgetContainer, WidgetLoading } from './widget'
+import RandomButton from './RandomButton'
+import { WidgetContainer, WidgetLoading, itemHeight } from './widget'
 import { localQueryOptions } from '~helpers/queryOptions'
 import { useResourceLanguage } from '~state/resourcesLanguage'
 import { resourceQueryKeys } from '~helpers/resourceQueryKeys'
@@ -14,12 +21,17 @@ import {
   resourceFailureFromAvailability,
 } from '~features/resources/resourceFailure'
 import ResourceDownloadWidget from './ResourceDownloadWidget'
-const NaveOfTheDay = () => {
+const NaveOfTheDay = ({
+  discovery = false,
+  color1 = 'rgb(80, 83, 140)',
+  color2 = 'rgb(48, 51, 107)',
+}) => {
   const { t } = useTranslation()
   const resources = useResourceAccess()
   const [resourceLanguage] = useResourceLanguage('NAVE')
   const isConnected = useConnection()
   const resourceTitle = t('Thématique Nave')
+  const [randomSeed, setRandomSeed] = useState(0)
   const availabilityQuery = useQuery({
     queryKey: [
       ...resourceQueryKeys.offlineDatabaseAvailability('NAVE', resourceLanguage),
@@ -32,12 +44,9 @@ const NaveOfTheDay = () => {
     staleTime: Infinity,
   })
   const naveQuery = useQuery({
-    queryKey: ['home-nave-random', resourceLanguage, isConnected],
+    queryKey: ['home-nave-random', resourceLanguage, randomSeed, isConnected],
     queryFn: async () => (await resources.nave.loadRandom(resourceLanguage)) ?? null,
     ...localQueryOptions,
-    // A remount (the home switching layout as its width changes) keeps the draw; the shuffle
-    // button draws again by refetching.
-    staleTime: Infinity,
   })
   const naveReference = naveQuery.data
 
@@ -104,14 +113,51 @@ const NaveOfTheDay = () => {
 
   const { name, normalizedName } = naveReference
 
+  if (discovery)
+    return (
+      <ResourceDiscoveryEntry
+        category={t('tabs.nave')}
+        title={name}
+        detail={{ route: 'NaveDetail', params: { name, name_lower: normalizedName } }}
+        isRefreshing={naveQuery.isFetching}
+        onShuffle={() => void naveQuery.refetch()}
+      />
+    )
+
   return (
-    <ResourceDiscoveryEntry
-      category={t('tabs.nave')}
-      title={name}
-      detail={{ route: 'NaveDetail', params: { name, name_lower: normalizedName } }}
-      isRefreshing={naveQuery.isFetching}
-      onShuffle={() => void naveQuery.refetch()}
-    />
+    <Link route="NaveDetail" params={{ name, name_lower: normalizedName }}>
+      <WidgetContainer>
+        <Box
+          className="overflow-hidden border-continuous"
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            height: itemHeight,
+            borderRadius: 3,
+          }}
+        >
+          <LinearGradient
+            start={[0.1, 0.2]}
+            style={{ height: itemHeight }}
+            colors={[color1, color2]}
+          />
+        </Box>
+        <RandomButton onPress={() => setRandomSeed(seed => seed + 1)} />
+        <Box className="overflow-hidden border-continuous flex-[1] items-center justify-center mt-[20px]">
+          <Paragraph style={{ color: 'white' }} scale={-2} scaleLineHeight={-2}>
+            {name}
+          </Paragraph>
+        </Box>
+        <Link route="Nave" style={{ width: '100%' }}>
+          <Box className="overflow-hidden border-continuous flex-row items-center justify-center bg-[rgba(0,0,0,0.1)] py-[10px]">
+            <NaveIcon style={{ marginRight: 10 }} size={20} color="white" />
+            <Text className="text-[white] font-bold text-[12px]">{t('Thèmes Nave')}</Text>
+          </Box>
+        </Link>
+      </WidgetContainer>
+    </Link>
   )
 }
 

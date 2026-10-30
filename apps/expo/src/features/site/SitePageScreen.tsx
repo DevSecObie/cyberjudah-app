@@ -19,7 +19,7 @@ const SitePageScreen = () => {
   if (!url) return <Redirect href="/" />
 
   return (
-    <Container reserveBottom>
+    <Container>
       <Header
         hasBackButton
         title={title}

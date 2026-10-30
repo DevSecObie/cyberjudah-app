@@ -3,12 +3,11 @@ import { useRef, useState } from 'react'
 import { Image } from 'expo-image'
 import { useFireStorage } from '../plan.hooks'
 import { useRouter } from 'expo-router'
-import { Platform, ScrollView, StyleSheet } from 'react-native'
+import { Platform, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import type { ComputedPlan, ComputedReadingSlice, Plan } from '~common/types'
 import Link from '~common/Link'
-import Border from '~common/ui/Border'
-import Box, { usePageBottomInset } from '~common/ui/Box'
+import Box from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import Button from '~common/ui/Button'
 import { FeatherIcon } from '~common/ui/Icon'
@@ -37,7 +36,6 @@ const MeditationCollectionContent = ({ plan, onReadingSlicePress }: Props) => {
   const today = useLocalReadingDate()
   const cover = useFireStorage(plan.image)
   const scroll = useRef<ScrollView>(null)
-  const bottomInset = usePageBottomInset()
   const columnY = useRef(0)
   const listY = useRef(0)
   const rowY = useRef<Record<string, number>>({})
@@ -97,12 +95,7 @@ const MeditationCollectionContent = ({ plan, onReadingSlicePress }: Props) => {
     <ScrollView
       ref={scroll}
       onLayout={event => setWidth(event.nativeEvent.layout.width)}
-      contentContainerStyle={{
-        width: '100%',
-        maxWidth: 1180,
-        alignSelf: 'center',
-        paddingBottom: bottomInset,
-      }}
+      contentContainerStyle={{ width: '100%', maxWidth: 1180, alignSelf: 'center' }}
     >
       <Box
         className={
@@ -114,17 +107,12 @@ const MeditationCollectionContent = ({ plan, onReadingSlicePress }: Props) => {
         <Box
           className={
             desktop
-              ? 'w-[260px] shrink-0 gap-[24px] pr-[28px] border-separator'
-              : 'flex-row items-start gap-[20px] pb-[24px] border-separator'
-          }
-          style={
-            desktop
-              ? { borderRightWidth: StyleSheet.hairlineWidth }
-              : { borderBottomWidth: StyleSheet.hairlineWidth }
+              ? 'w-[260px] shrink-0 gap-[24px] pr-[28px] border-r border-border'
+              : 'flex-row items-start gap-[20px] pb-[24px] border-b border-border'
           }
         >
           <Box
-            className="rounded-[12px] overflow-hidden bg-light-grey"
+            className="rounded-[10px] overflow-hidden bg-light-grey"
             style={{ width: desktop ? 204 : 80, height: desktop ? 286 : 112 }}
           >
             {cover ? (
@@ -180,7 +168,7 @@ const MeditationCollectionContent = ({ plan, onReadingSlicePress }: Props) => {
                 <Link
                   size={36}
                   hitSlop={4}
-                  className="bg-light-grey rounded-full"
+                  className="bg-light-grey rounded-[18px]"
                   accessibilityLabel={t('dailyReading.previousMonth')}
                   onPress={() => moveMonth(-1)}
                 >
@@ -192,7 +180,7 @@ const MeditationCollectionContent = ({ plan, onReadingSlicePress }: Props) => {
                 <Link
                   size={36}
                   hitSlop={4}
-                  className="bg-light-grey rounded-full"
+                  className="bg-light-grey rounded-[18px]"
                   accessibilityLabel={t('dailyReading.nextMonth')}
                   onPress={() => moveMonth(1)}
                 >
@@ -209,7 +197,9 @@ const MeditationCollectionContent = ({ plan, onReadingSlicePress }: Props) => {
                 }}
               >
                 <Box className="min-h-[44px] justify-center">
-                  <Text className="text-link font-bold text-[14px]">{t('dailyReading.today')}</Text>
+                  <Text className="text-primary font-bold text-[14px]">
+                    {t('dailyReading.today')}
+                  </Text>
                 </Box>
               </Link>
             </Box>
@@ -234,24 +224,26 @@ const MeditationCollectionContent = ({ plan, onReadingSlicePress }: Props) => {
                 >
                   <Link onPress={() => open(reading)} accessibilityRole="button">
                     <Box
-                      className={`min-h-[68px] flex-row items-center gap-[16px] px-[12px] py-[14px] ${selected ? 'bg-light-grey rounded-[12px]' : ''}`}
+                      className={`min-h-[68px] flex-row items-center gap-[16px] px-[12px] py-[14px] ${selected ? 'bg-light-grey rounded-[14px]' : 'border-b border-border'}`}
                     >
                       {key && (
                         <Box className="w-[38px] gap-[2px]">
                           <Text
-                            className={`${selected ? 'text-link' : 'text-default'} font-bold text-[19px]`}
+                            className={`${selected ? 'text-primary' : 'text-default'} font-bold text-[19px]`}
                           >
                             {Number(key.slice(3))}
                           </Text>
-                          <Text className={`${selected ? 'text-link' : 'text-grey'} text-[12px]`}>
+                          <Text
+                            className={`${selected ? 'text-primary' : 'text-grey'} text-[12px]`}
+                          >
                             {shortMonth}
                           </Text>
                         </Box>
                       )}
                       <Box className="flex-1 gap-[6px]">
                         {isToday && (
-                          <Box className="self-start bg-light-primary rounded-full px-[9px] py-[2px]">
-                            <Text className="text-link text-[12px] font-semibold">
+                          <Box className="self-start bg-light-primary rounded-[8px] px-[8px] py-[3px]">
+                            <Text className="text-primary text-[10px] font-bold uppercase">
                               {t('dailyReading.today')}
                             </Text>
                           </Box>
@@ -268,7 +260,6 @@ const MeditationCollectionContent = ({ plan, onReadingSlicePress }: Props) => {
                       <FeatherIcon name="chevron-right" size={18} color="primary" />
                     </Box>
                   </Link>
-                  {!selected && <Border className="ml-[12px]" />}
                 </Box>
               )
             })}

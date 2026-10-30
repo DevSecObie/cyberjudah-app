@@ -1,11 +1,12 @@
 import HeaderAction from '~common/ContextualPanel/HeaderAction'
 import PanelSearch from '~common/ContextualPanel/PanelSearch'
+import { twMerge } from '~common/ui/classNames'
+
 import {
   COMMENTARY_CATALOG,
   type CommentaryCatalogEntry,
   type CommentaryLanguage,
 } from '~helpers/commentaryCatalog'
-import { colorWithOpacity } from '~themes/colorValues'
 import { useTheme } from '~themes/ThemeProvider'
 import React from 'react'
 import { Platform, SectionList, TouchableOpacity } from 'react-native'
@@ -20,7 +21,6 @@ import Sheet from '~common/ContextualPanel/ContextualSheet'
 import Box from '~common/ui/Box'
 import Checkbox from '~common/ui/Checkbox'
 import { FeatherIcon } from '~common/ui/Icon'
-import { ListSectionTitle, ListSeparator } from '~common/ui/ListSection'
 import Text from '~common/ui/Text'
 import { useOfflineResourceRegistry } from '~features/resources/useOfflineResourceRegistry'
 import { createOfflineCopyId } from '~helpers/offlineCopyId'
@@ -63,12 +63,6 @@ type CommentarySection = {
   data: CommentaryProjection[]
 }
 
-const ROW_PADDING_LEFT = 20
-const CHECKBOX_SLOT = 48
-
-/** Rows are split by a hairline that starts where their title starts. */
-const SelectorRowSeparator = () => <ListSeparator inset={ROW_PADDING_LEFT + CHECKBOX_SLOT} />
-
 const CommentarySelectorItem = ({
   projection,
   selected,
@@ -89,8 +83,14 @@ const CommentarySelectorItem = ({
 
   return (
     <Box
-      className="overflow-hidden border-continuous min-h-[76px] pr-[4px] py-[12px]"
-      style={{ paddingLeft: ROW_PADDING_LEFT }}
+      className={twMerge(
+        'overflow-hidden border-continuous',
+        twMerge(
+          selected ? 'border-l-primary' : '',
+          'overflow-hidden min-h-[76px] pl-[20px] pr-[4px] py-[12px] border-b-[1px] border-border'
+        )
+      )}
+      style={{ borderLeftWidth: selected ? 3 : 0 }}
     >
       <Box className="overflow-hidden border-continuous flex-[1] flex-row items-center">
         <TouchableOpacity
@@ -105,11 +105,8 @@ const CommentarySelectorItem = ({
             className="overflow-hidden border-continuous flex-[1] flex-row items-center"
             style={{ opacity: selectionDisabled ? 0.45 : 1 }}
           >
-            <Box
-              className="overflow-hidden border-continuous min-h-[48px] items-center justify-center"
-              style={{ width: CHECKBOX_SLOT }}
-            >
-              <Checkbox checked={selected} size={22} />
+            <Box className="overflow-hidden border-continuous w-[48px] min-h-[48px] items-center justify-center">
+              <Checkbox checked={selected} variant="icon" size={22} />
             </Box>
             <Box className="overflow-hidden border-continuous flex-[1]">
               <Text
@@ -158,7 +155,6 @@ const CommentarySelectorSheet = ({ sheetRef, inline = false, onOpenDetails }: Pr
   const [traditions, setTraditions] = React.useState<string[]>([])
   const [currents, setCurrents] = React.useState<string[]>([])
   const [limitReached, setLimitReached] = React.useState(false)
-  const selectionCount = `${selected.length}/${MAX_SELECTED_COMMENTARIES}`
   const [detailsProjection, setDetailsProjection] = React.useState<CommentaryProjection>()
   const searchRef = React.useRef<SheetRef>(null)
   const traditionsRef = React.useRef<SheetRef>(null)
@@ -288,21 +284,12 @@ const CommentarySelectorSheet = ({ sheetRef, inline = false, onOpenDetails }: Pr
         header={
           <>
             {Platform.OS === 'web' && !inline && (
-              <SheetHeader title={t('commentaries.selector.title')} subTitle={selectionCount} />
+              <SheetHeader title={t('commentaries.selector.title')} />
             )}
             <FilterPlacement>
               <FiltersHeader
                 buttonOnly={isWebPanel}
-                title={
-                  isWebPanel ? (
-                    ''
-                  ) : (
-                    <>
-                      {t('commentaries.selector.title')}
-                      <Text className="text-tertiary font-normal">{`  ${selectionCount}`}</Text>
-                    </>
-                  )
-                }
+                title={isWebPanel ? '' : t('commentaries.selector.title')}
                 onReset={() => {
                   setQuery('')
                   setTraditions([])
@@ -365,6 +352,7 @@ const CommentarySelectorSheet = ({ sheetRef, inline = false, onOpenDetails }: Pr
             </FilterPlacement>
             <SelectedCommentariesHeader
               items={selectedProjections}
+              max={MAX_SELECTED_COMMENTARIES}
               onRemove={removeSelection}
               onMove={moveSelection}
               onReorder={reorderSelection}
@@ -386,11 +374,7 @@ const CommentarySelectorSheet = ({ sheetRef, inline = false, onOpenDetails }: Pr
           }}
           ListHeaderComponent={
             limitReached ? (
-              // A warning takes a tint of its own colour, which reads the same in every theme.
-              <Box
-                className="overflow-hidden border-continuous mx-[20px] mt-[12px] px-[14px] py-[10px] rounded-[12px]"
-                style={{ backgroundColor: colorWithOpacity(theme.colors.quart, 0.1) }}
-              >
+              <Box className="overflow-hidden border-continuous px-[20px] py-[10px] bg-light-grey border-b-[1px] border-border">
                 <Text className="text-quart text-[12px]">
                   {t('commentaries.selector.limit', { max: MAX_SELECTED_COMMENTARIES })}
                 </Text>
@@ -398,12 +382,10 @@ const CommentarySelectorSheet = ({ sheetRef, inline = false, onOpenDetails }: Pr
             ) : null
           }
           renderSectionHeader={({ section }) => (
-            // Sticky, so it takes the sheet's own ground to cover the rows scrolling under it.
-            <Box className="overflow-hidden border-continuous bg-reverse px-[20px] pt-[18px] pb-[6px]">
-              <ListSectionTitle className="m-[0px]">{section.title}</ListSectionTitle>
+            <Box className="overflow-hidden border-continuous min-h-[48px] px-[20px] flex-row items-center bg-light-grey border-b-[1px] border-border">
+              <Text className="flex-[1] text-[16px] opacity-[0.8]">{section.title}</Text>
             </Box>
           )}
-          ItemSeparatorComponent={SelectorRowSeparator}
           renderItem={({ item }) => {
             const isSelected = selected.includes(item.projectionId)
             return (

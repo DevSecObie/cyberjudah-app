@@ -3,10 +3,9 @@ import React from 'react'
 import { ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import Empty from '~common/Empty'
-import { usePageBottomInset } from '~common/ui/Box'
+import { VStack } from '~common/ui/Box'
 import type { StrongLexiconEntry } from '~features/resources/strongLexiconAccess'
-import { StrongEditorialHtml } from './StrongDetailUI'
-import { STUDY_COLUMN_MAX_WIDTH, StudySection } from '~common/ui/StudySection'
+import { StrongEditorialHtml, StrongEyebrow } from './StrongDetailUI'
 type Props = {
   entry: StrongLexiconEntry
   onOpenBibleReference: (osis: string) => void
@@ -15,7 +14,6 @@ type Props = {
 
 const StrongDictionaryPage = ({ entry, onOpenBibleReference, onOpenStrong }: Props) => {
   const { t } = useTranslation()
-  const bottomInset = usePageBottomInset()
   const resource = entry.resources[0]
   if (!resource) {
     return <Empty message={t('strongDetail.dictionary.unavailable')} />
@@ -26,22 +24,18 @@ const StrongDictionaryPage = ({ entry, onOpenBibleReference, onOpenStrong }: Pro
       style={{ flex: 1 }}
       contentContainerStyle={[
         pageContentStyle,
-        {
-          maxWidth: STUDY_COLUMN_MAX_WIDTH + 40,
-          paddingHorizontal: 20,
-          paddingTop: 22,
-          paddingBottom: 90 + bottomInset,
-        },
+        { maxWidth: 600, paddingHorizontal: 20, paddingTop: 22, paddingBottom: 90 },
       ]}
     >
-      <StudySection title={resource.source} className="mt-[0px]">
+      <VStack className="overflow-hidden border-continuous gap-[14px]">
+        <StrongEyebrow>{resource.source}</StrongEyebrow>
         <StrongEditorialHtml
           selectable
           value={resource.contentHtml}
           onOpenBibleReference={onOpenBibleReference}
           onOpenStrong={onOpenStrong}
         />
-      </StudySection>
+      </VStack>
     </ScrollView>
   )
 }

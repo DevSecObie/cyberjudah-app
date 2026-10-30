@@ -27,6 +27,7 @@ jest.mock('react-native', () => {
 
 let tree: ReactTestRenderer
 beforeEach(() => {
+  jest.useFakeTimers()
   jest.clearAllMocks()
   mockRouter.canGoBack.mockReturnValue(false)
   mockNavigation.getState.mockReturnValue({ index: 0, routes: [{ name: 'nave-detail' }] })
@@ -34,6 +35,8 @@ beforeEach(() => {
 })
 afterEach(() => {
   act(() => tree?.unmount())
+  jest.runOnlyPendingTimers()
+  jest.useRealTimers()
 })
 const press = (props: React.ComponentProps<typeof Back> = {}) => {
   act(() => {
@@ -67,4 +70,14 @@ it('preserves custom tab-local back actions', () => {
   expect(onCustomPress).toHaveBeenCalledTimes(1)
   expect(mockRouter.back).not.toHaveBeenCalled()
   expect(mockRouter.replace).not.toHaveBeenCalled()
+})
+
+it('ignores repeated back taps until the navigation settles', () => {
+  mockRouter.canGoBack.mockReturnValue(true)
+  press()
+  act(() => tree.root.findByType(TouchableOpacity).props.onPress())
+  expect(mockRouter.back).toHaveBeenCalledTimes(1)
+  act(() => jest.advanceTimersByTime(500))
+  act(() => tree.root.findByType(TouchableOpacity).props.onPress())
+  expect(mockRouter.back).toHaveBeenCalledTimes(2)
 })

@@ -55,7 +55,7 @@ export type DictionaryPassageDiscoveryEntry = Schema.Schema.Type<
   typeof DictionaryPassageDiscoveryResponseDto
 >['entries'][number]
 
-export const KNOWN_DICTIONARY_WORKS: readonly DictionaryWork[] = (
+const UPSTREAM_DICTIONARY_WORKS: readonly DictionaryWork[] = (
   [
     [
       'westphal',
@@ -148,6 +148,41 @@ export const KNOWN_DICTIONARY_WORKS: readonly DictionaryWork[] = (
   onlineAccess: true,
   offlineDownload: true,
 }))
+
+// CyberJudah's own published references, served by our API with optional Offline copies.
+const CYBERJUDAH_DICTIONARY_WORKS: readonly DictionaryWork[] =
+  process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+    ? [
+        {
+          resource: {
+            kind: 'dictionary' as const,
+            work: 'jewish-encyclopedia',
+            language: 'en' as const,
+            revision: 'catalog',
+          },
+          resourceId: 'JEWISH_ENCYCLOPEDIA',
+          title: 'The Jewish Encyclopedia (1901–1906)',
+          abbreviation: 'Jewish Encyclopedia',
+          authors: ['Isidore Singer, editor'],
+          description:
+            'A reference work, not the classes’ teaching: the twelve volumes of 1901–1906, from our own scans, each article with its volume and page.',
+          edition: 'Funk and Wagnalls, New York, 1901–1906',
+          source: 'CyberJudah library (archive.org scans)',
+          attribution:
+            'The Jewish Encyclopedia, Isidore Singer, editor (1901–1906). Public domain.',
+          onlineAccess: true,
+          offlineDownload: true,
+        },
+      ]
+    : []
+
+export const KNOWN_DICTIONARY_WORKS: readonly DictionaryWork[] = [
+  ...UPSTREAM_DICTIONARY_WORKS,
+  ...CYBERJUDAH_DICTIONARY_WORKS,
+]
+
+const isDownloadOnlyDictionaryWork = (work: DictionaryWorkId | undefined) =>
+  CYBERJUDAH_DICTIONARY_WORKS.some(item => item.resource.work === work && !item.onlineAccess)
 
 export type DictionaryAccess = {
   listWorks?: (language?: ResourceLanguage) => Promise<DictionaryWork[]>
@@ -853,8 +888,6 @@ type HttpDictionaryAccessOptions = {
   baseUrl: string
   fetcher?: typeof fetch
   isOnline: () => Promise<boolean>
-  /** Explains a request that failed without a response; defaults to the online gate. */
-  isOfflineFailure?: () => Promise<boolean>
   timeoutMs?: number
 }
 
@@ -877,7 +910,6 @@ export const createHttpDictionaryAccess = ({
   baseUrl,
   fetcher = fetch,
   isOnline,
-  isOfflineFailure = async () => !(await isOnline()),
   timeoutMs = 10_000,
 }: HttpDictionaryAccessOptions): DictionaryAccess => {
   const normalizedBaseUrl = normalizeBaseUrl(baseUrl)
@@ -903,7 +935,7 @@ export const createHttpDictionaryAccess = ({
       if (signal?.aborted) throw error
       if (error instanceof ResourceAccessError) throw error
       throw new ResourceAccessError(
-        (await isOfflineFailure()) ? 'NETWORK_OFFLINE' : 'TEMPORARY_UNAVAILABLE'
+        (await isOnline()) ? 'TEMPORARY_UNAVAILABLE' : 'NETWORK_OFFLINE'
       )
     } finally {
       clearTimeout(timeout)
@@ -1205,7 +1237,8 @@ export const createHybridDictionaryAccess = ({
         reason: 'offline-copy-required',
         recoveries: ['acquire-offline-copy'],
       } as const),
-    remotelyReadable: remotelyReadableLanguages.has(language),
+    remotelyReadable:
+      remotelyReadableLanguages.has(language) && !isDownloadOnlyDictionaryWork(work),
   })
   const localFailure = (state: Awaited<ReturnType<typeof availability>>) => {
     if (state.local.status !== 'available' && state.local.reason === 'invalid-offline-copy') {
@@ -1297,7 +1330,16 @@ export const createHybridDictionaryAccess = ({
     listWorks: async language => {
       if (await isOnline()) {
         try {
-          return (await online.listWorks?.(language)) ?? []
+          const works = (await online.listWorks?.(language)) ?? []
+          // Include our own publication alongside the upstream dictionary catalog.
+          return [
+            ...works,
+            ...CYBERJUDAH_DICTIONARY_WORKS.filter(
+              item =>
+                (!language || item.resource.language === language) &&
+                !works.some(work => work.resource.work === item.resource.work)
+            ),
+          ]
         } catch (error) {
           if (
             !(error instanceof ResourceAccessError) ||

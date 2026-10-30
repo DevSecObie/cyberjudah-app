@@ -1,8 +1,6 @@
 'use dom'
 
-// surface-allow: drawn on the text, not surfaces (pen circle glow, annotation ring, handles)
 import { styled, keyframes } from 'goober'
-import { TEXT_SELECTION_RADIUS } from './selectionUtils'
 
 /** Parse a hex color string to [r, g, b] array */
 function hexToRgb(hex: string): [number, number, number] {
@@ -64,20 +62,18 @@ function createMarkerGradient(colorStr: string, intensity: number = 1): string {
   }
 }
 
-// $overflowVisible: drawn inside horizontally scrolled columns wider than the layer,
-// which their scroll container clips instead.
-export const HighlightLayer = styled('div')<{ $overflowVisible?: boolean }>(
-  ({ $overflowVisible }) => ({
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 0,
-    pointerEvents: 'none',
-    overflow: $overflowVisible ? 'visible' : 'hidden',
-  })
-)
+export const HighlightLayer = styled('div')<{ $dimmed?: boolean }>(({ $dimmed }) => ({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  zIndex: 0,
+  pointerEvents: 'none',
+  overflow: 'hidden',
+  opacity: $dimmed ? 0.3 : 1,
+  transition: 'opacity 0.3s ease',
+}))
 
 /**
  * Returns the rotation angle (in degrees) for the sketchy circle effect.
@@ -195,7 +191,7 @@ export const HighlightRectDiv = styled('div')<{
     left: `${$left}px`,
     width: `${$width}px`,
     height: `${$height}px`,
-    borderRadius: isSelection ? TEXT_SELECTION_RADIUS : '2px',
+    borderRadius: '2px',
     boxSizing: 'border-box',
     pointerEvents: 'none',
     opacity: $isDimmed ? 0.18 : 1,

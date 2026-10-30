@@ -14,7 +14,6 @@ import {
   parseBibleVerseKey,
 } from './bibleChapterContract'
 import { resolveHybridResourceSource, type HybridResourceSource } from './hybridResourcePolicy'
-import { canonicalListParameter } from '~helpers/canonicalListParameter'
 
 export type BibleChapterUnavailableReason =
   | 'publication-not-available'
@@ -306,8 +305,6 @@ type HttpBibleChapterAdapterOptions = {
   baseUrl: string
   fetcher?: typeof fetch
   isOnline: () => Promise<boolean>
-  /** Explains a request that failed without a response; defaults to the online gate. */
-  isOfflineFailure?: () => Promise<boolean>
   timeoutMs?: number
 }
 
@@ -340,24 +337,6 @@ const problemReason = (status: number, code: unknown): BibleChapterUnavailableRe
   return 'temporary-unavailable'
 }
 
-// A batch refused for what it asks (400, 404: one version the server does not publish) or
-// answered unreadably is read again version by version, so the other columns still load. When
-// the server or the network fails (5xx, 401, 403, 429, timeout, offline) each version would
-// fail the same way: the failure is given to every column instead of multiplying the requests.
-const isRejectedBatch = (result: {
-  reason: BibleChapterUnavailableReason
-  diagnostics?: ResourceAccessErrorDiagnostics
-}) =>
-  result.reason === 'integrity-failure' ||
-  result.diagnostics?.httpStatus === 400 ||
-  result.diagnostics?.httpStatus === 404
-
-const compareVerseKeys = (left: string, right: string) => {
-  const a = parseBibleVerseKey(left)!
-  const b = parseBibleVerseKey(right)!
-  return a.book - b.book || a.chapter - b.chapter || a.verse - b.verse || left.localeCompare(right)
-}
-
 const toVerse = (
   book: number,
   chapter: number,
@@ -388,7 +367,6 @@ export const createHttpBibleChapterAdapter = ({
   baseUrl,
   fetcher = fetch,
   isOnline,
-  isOfflineFailure = async () => !(await isOnline()),
   timeoutMs = 10_000,
 }: HttpBibleChapterAdapterOptions): BibleChapterAdapter => {
   const normalizedBaseUrl = normalizeBaseUrl(baseUrl)
@@ -443,7 +421,7 @@ export const createHttpBibleChapterAdapter = ({
     } catch {
       return {
         status: 'unavailable',
-        reason: (await isOfflineFailure()) ? 'network-offline' : 'temporary-unavailable',
+        reason: (await isOnline()) ? 'temporary-unavailable' : 'network-offline',
       }
     } finally {
       clearTimeout(timeout)
@@ -454,9 +432,7 @@ export const createHttpBibleChapterAdapter = ({
     async loadChapters(versions, book, chapter) {
       if (!versions.length) return []
       const params = new URLSearchParams({
-        // The same set of versions gives the same address whatever the order of the columns,
-        // so the edge cache serves it to every reader; the answer is matched back by version.
-        versions: canonicalListParameter(versions).join(','),
+        versions: versions.join(','),
         book: String(book),
         chapter: String(chapter),
       })
@@ -465,7 +441,6 @@ export const createHttpBibleChapterAdapter = ({
         Schema.decodeUnknownSync(BibleChaptersDto)
       )
       if (result.status === 'unavailable') {
-        if (!isRejectedBatch(result)) return versions.map(() => result)
         return Promise.all(versions.map(version => this.loadChapter(version, book, chapter)))
       }
       const chaptersByVersion = new Map(
@@ -495,10 +470,7 @@ export const createHttpBibleChapterAdapter = ({
       )
     },
     async loadVerseTexts(version, verseKeys, shouldCancel) {
-      // In reading order, so that the same selection always gives the same addresses.
-      const references = [...new Set(verseKeys.filter(key => parseBibleVerseKey(key)))].sort(
-        compareVerseKeys
-      )
+      const references = [...new Set(verseKeys.filter(key => parseBibleVerseKey(key)))]
       if (!references.length || shouldCancel?.()) return { status: 'available', texts: {} }
 
       const texts: Record<string, string> = {}

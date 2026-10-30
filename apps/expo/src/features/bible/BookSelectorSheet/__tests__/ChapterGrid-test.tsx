@@ -5,12 +5,6 @@ import ChapterGrid from '../ChapterGrid'
 
 const mockEmit = jest.fn()
 
-// The grid is called as a plain function here, outside a React render
-jest.mock('react', () => ({
-  ...jest.requireActual<typeof import('react')>('react'),
-  useRef: (initialValue: unknown) => ({ current: initialValue }),
-}))
-
 jest.mock('react-native', () => ({
   DeviceEventEmitter: {
     emit: (...args: unknown[]) => mockEmit(...args),
@@ -41,10 +35,6 @@ jest.mock('~common/ui/Box', () => ({
     jest
       .requireActual<typeof import('react')>('react')
       .createElement('TouchableBox', props, children),
-}))
-
-jest.mock('~themes/ThemeProvider', () => ({
-  useTheme: () => ({ colors: { primary: 'rgb(0,0,0)' } }),
 }))
 
 jest.mock('~common/ui/Text', () => ({

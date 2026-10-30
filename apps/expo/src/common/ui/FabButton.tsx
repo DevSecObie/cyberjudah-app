@@ -6,7 +6,6 @@ import { twMerge } from '~common/ui/classNames'
 import type { Theme as AppTheme } from '~themes'
 import Box from './Box'
 import PageContent from './PageContent'
-import { floatingShadow } from './surfaces'
 
 import Link from '~common/Link'
 import { useBottomBarHeightInTab } from '~features/app-switcher/context/TabContext'
@@ -21,7 +20,7 @@ const StyledLink = (
   const { theme: _themeOverride, className, ...props } = componentProps
 
   const resolvedClassName = twMerge(
-    'bg-primary w-[50px] h-[50px] rounded-full justify-center items-center flex-row absolute right-[30px]',
+    'bg-primary w-[50px] h-[50px] rounded-[30px] justify-center items-center flex-row absolute right-[30px]',
     className
   )
   return (
@@ -70,13 +69,12 @@ const Fab = ({
 }: FabProps) => {
   const { bottomBarHeight } = useBottomBarHeightInTab()
   return (
-    // The wrappers stay unclipped so the button's floating shadow shows.
     <Box
-      className="overflow-visible border-continuous absolute left-[0px] right-[0px]"
+      className="overflow-hidden border-continuous absolute left-[0px] right-[0px]"
       pointerEvents="box-none"
       style={{ bottom: bottomBarHeight + 30 }}
     >
-      <PageContent className="h-[50px] overflow-visible" pointerEvents="box-none">
+      <PageContent className="h-[50px]" pointerEvents="box-none">
         <StyledLink
           route={route}
           params={params}
@@ -84,7 +82,6 @@ const Fab = ({
           accessibilityLabel={accessibilityLabel}
           style={{
             bottom: 0,
-            ...floatingShadow,
           }}
         >
           {Component ? (

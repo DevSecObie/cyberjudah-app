@@ -1,4 +1,3 @@
-import SheetWell from '~common/ui/SheetWell'
 import Lottie from 'lottie-react-native'
 import React from 'react'
 import { SheetView, type SheetRef } from '~common/sheet'
@@ -38,7 +37,17 @@ const SuccessModal = ({ modalRef, isPlanCompleted, onClose }: Props) => {
             }
           />
         </Box>
-        <SheetWell className="mb-[30px] p-[20px]">
+        <Box
+          className="overflow-hidden border-continuous bg-reverse rounded-[30px] mb-[30px] p-[20px]"
+          style={{
+            shadowColor: 'rgb(89,131,240)',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 7,
+            elevation: 1,
+            overflow: 'visible',
+          }}
+        >
           {isPlanCompleted ? (
             <>
               <Paragraph className="text-center font-bold" fontFamily="text">
@@ -58,7 +67,7 @@ const SuccessModal = ({ modalRef, isPlanCompleted, onClose }: Props) => {
               </Paragraph>
             </>
           )}
-        </SheetWell>
+        </Box>
         <Button onPress={handleClose}>{t('Continuer')}</Button>
       </SheetView>
     </Sheet>

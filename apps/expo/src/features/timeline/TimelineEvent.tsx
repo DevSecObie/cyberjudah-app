@@ -61,6 +61,9 @@ const TimelineEvent = ({
   const [width] = React.useState(() => calculateEventWidth(start, end, isFixed))
 
   const label = calculateLabel(start, end, lang)
+  // Many CyberJudah events have no picture yet: the text then takes the picture's
+  // place instead of leaving an empty slot at the end of the card.
+  const textSize = image ? descSize : descSize + imageSize
 
   const onOpenEvent = () => {
     if (!hasDetails) return
@@ -87,7 +90,7 @@ const TimelineEvent = ({
   if (type === 'minor') {
     return (
       <LinkBox
-        className="h-[25px] absolute bg-surface flex-row rounded-full"
+        className="h-[25px] absolute bg-reverse flex-row rounded-[20px]"
         onPress={onOpenEvent}
         disabled={!hasDetails}
         style={[
@@ -97,11 +100,17 @@ const TimelineEvent = ({
               top: top,
               left: left + offset,
               opacity: !hasDetails ? 0.6 : hasDetails ? 1 : 0.6,
+              shadowColor: 'rgb(89,131,240)',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 7,
+              elevation: 1,
+              overflow: 'visible',
             },
           ],
         ]}
       >
-        <Box className="overflow-hidden border-continuous bg-tertiary px-[10px] justify-center">
+        <Box className="overflow-hidden border-continuous rounded-tl-[10px] rounded-bl-[10px] bg-tertiary px-[10px] justify-center">
           <Text className="text-[white] text-[10px]" numberOfLines={1}>
             {getLegacyLocalizedField(lang, { fr: title, en: titleEn })}
           </Text>
@@ -115,7 +124,7 @@ const TimelineEvent = ({
 
   return (
     <LinkBox
-      className="h-[60px] absolute bg-surface flex-row rounded-[16px]"
+      className="h-[60px] absolute bg-reverse flex-row rounded-[20px]"
       onPress={onOpenEvent}
       disabled={!hasDetails}
       style={[
@@ -126,13 +135,19 @@ const TimelineEvent = ({
             top: top,
             left: left + offset,
             opacity: !hasDetails ? 0.6 : hasDetails ? 1 : 0.6,
+            shadowColor: 'rgb(89,131,240)',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 7,
+            elevation: 1,
+            overflow: 'visible',
           },
         ],
       ]}
     >
       <AnimatedBox
         className="px-[10px] py-[6px] relative items-center justify-center"
-        style={[{ width: descSize }, styles]}
+        style={[{ width: textSize }, styles]}
       >
         <Text className="text-[12px]" numberOfLines={2}>
           {getLegacyLocalizedField(lang, { fr: title, en: titleEn })}
@@ -140,14 +155,19 @@ const TimelineEvent = ({
         <Box className="border-continuous overflow-hidden border-b-[1px] border-border" />
         <Text className="text-[10px] text-center">{label}</Text>
       </AnimatedBox>
-      <Box className="overflow-hidden border-continuous ml-auto" style={{ width: imageSize }}>
-        <Image
-          style={{ width: imageSize, height: '100%' }}
-          source={{
-            uri: image,
-          }}
-        />
-      </Box>
+      {image ? (
+        <Box
+          className="overflow-hidden border-continuous ml-auto rounded-tr-[10px] rounded-br-[10px]"
+          style={{ width: imageSize }}
+        >
+          <Image
+            style={{ width: imageSize, height: '100%' }}
+            source={{
+              uri: image,
+            }}
+          />
+        </Box>
+      ) : null}
     </LinkBox>
   )
 }

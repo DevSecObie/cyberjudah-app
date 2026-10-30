@@ -43,8 +43,6 @@ export interface SelectedAnnotation {
   type: AnnotationType
   noteId?: string
   tags?: { [id: string]: { id: string; name: string } }
-  /** The words it marks, verse by verse. */
-  ranges: { verseKey: string; startWordIndex: number; endWordIndex: number }[]
 }
 
 export interface AnnotationModeState {
@@ -70,7 +68,7 @@ export interface WebViewRef {
 export interface UseAnnotationModeReturn extends AnnotationModeState {
   enterMode: (version: VersionCode) => void
   exitMode: () => void
-  setVerses: (versesByVersion: Partial<Record<VersionCode, Verse[]>>) => void
+  setVerses: (verses: Verse[]) => void
   setWebViewRef: (ref: WebViewRef | null) => void
   applyAnnotation: (color: string, type: AnnotationType) => void
   clearSelection: () => void
@@ -80,13 +78,8 @@ export interface UseAnnotationModeReturn extends AnnotationModeState {
     ranges: { verseKey: string; startWordIndex: number; endWordIndex: number; text: string }[]
     color: string
     type: AnnotationType
-    version?: VersionCode
   }) => void
-  handleEraseSelection: (payload: {
-    start: WordPosition
-    end: WordPosition
-    version?: VersionCode
-  }) => void
+  handleEraseSelection: (payload: { start: WordPosition; end: WordPosition }) => void
   handleAnnotationSelected: (annotationId: string | null) => void
   changeAnnotationColor: (color: string) => void
   changeAnnotationType: (type: AnnotationType) => void
@@ -97,7 +90,7 @@ export interface UseAnnotationModeReturn extends AnnotationModeState {
 export function useAnnotationMode(): UseAnnotationModeReturn {
   const [state, setState] = useState<AnnotationSessionState>(INITIAL_ANNOTATION_SESSION_STATE)
   const reduxDispatch = useDispatch()
-  const versesRef = useRef<Partial<Record<VersionCode, Verse[]>>>({})
+  const versesRef = useRef<Verse[]>([])
   const webViewRef = useRef<WebViewRef | null>(null)
   const featureOnboarding = useFeatureOnboarding()
 
@@ -123,7 +116,6 @@ export function useAnnotationMode(): UseAnnotationModeReturn {
       type: selectedAnnotationFromRedux.type,
       noteId: selectedAnnotationFromRedux.noteId,
       tags: selectedAnnotationFromRedux.tags,
-      ranges: selectedAnnotationFromRedux.ranges,
     }
   })()
 
@@ -131,8 +123,8 @@ export function useAnnotationMode(): UseAnnotationModeReturn {
     webViewRef.current = ref
   }
 
-  const setVerses = (versesByVersion: Partial<Record<VersionCode, Verse[]>>) => {
-    versesRef.current = versesByVersion
+  const setVerses = (verses: Verse[]) => {
+    versesRef.current = verses
   }
 
   const enterMode = (version: VersionCode) => {
@@ -164,11 +156,8 @@ export function useAnnotationMode(): UseAnnotationModeReturn {
     ranges: { verseKey: string; startWordIndex: number; endWordIndex: number; text: string }[]
     color: string
     type: AnnotationType
-    version?: VersionCode
   }) => {
-    // The reader names the version the words were selected in (parallel reading)
-    const version = payload.version ?? state.version
-    if (!version || payload.ranges.length === 0) return
+    if (!state.version || payload.ranges.length === 0) return
 
     const ranges: AnnotationRange[] = payload.ranges.map(r => ({
       verseKey: r.verseKey,
@@ -179,12 +168,12 @@ export function useAnnotationMode(): UseAnnotationModeReturn {
 
     // Generate ID before dispatch so we can use it for auto-selection
     const annotationId = generateUUID()
-    const textRevision = versesRef.current[version]?.find(verse => verse.TextRevision)?.TextRevision
+    const textRevision = versesRef.current.find(verse => verse.TextRevision)?.TextRevision
 
     reduxDispatch(
       addWordAnnotation({
         id: annotationId,
-        version,
+        version: state.version,
         ranges,
         color: payload.color,
         type: payload.type,
@@ -195,15 +184,10 @@ export function useAnnotationMode(): UseAnnotationModeReturn {
     setState(prev => markAnnotationCreated(prev, annotationId))
   }
 
-  const handleEraseSelection = (payload: {
-    start: WordPosition
-    end: WordPosition
-    version?: VersionCode
-  }) => {
-    const version = payload.version ?? state.version
-    if (!version) return
+  const handleEraseSelection = (payload: { start: WordPosition; end: WordPosition }) => {
+    if (!state.version) return
 
-    reduxDispatch(removeWordAnnotationsInRangeAction(version, payload.start, payload.end))
+    reduxDispatch(removeWordAnnotationsInRangeAction(state.version, payload.start, payload.end))
 
     setState(markAnnotationSelectionErased)
   }
@@ -240,8 +224,7 @@ export function useAnnotationMode(): UseAnnotationModeReturn {
 
   return {
     enabled: state.enabled,
-    // The version being annotated: the selected annotation's, else the selection's
-    version: selectedAnnotationFromRedux?.version ?? state.version,
+    version: state.version,
     hasSelection: state.hasSelection,
     selection: state.selection,
     clearSelectionTrigger: state.clearSelectionTrigger,

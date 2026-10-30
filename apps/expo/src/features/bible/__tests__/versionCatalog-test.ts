@@ -190,20 +190,6 @@ describe('Bible version catalog query', () => {
     expect(byCode[0].data.map(version => version.id)).toEqual(['NASB1995'])
   })
 
-  it('finds the Hebrew and Greek Bible under the interlinear Bibles it replaces', () => {
-    for (const query of ['interlineaire', 'Interlinear', 'hébreu', 'greek']) {
-      const sections = getVersionCatalogSections({
-        catalog: Object.values(versions),
-        grouping: 'alphabetical',
-        query,
-        uiLanguage: 'fr',
-        labels,
-      })
-
-      expect(sections[0].data.map(version => version.id)).toContain('BHG')
-    }
-  })
-
   it('returns one localized alphabetical list ordered by display name', () => {
     const sections = getVersionCatalogSections({
       catalog: [versions.VUL, versions.LAU, versions.LXX],
@@ -223,7 +209,7 @@ describe('Bible version catalog query', () => {
     ])
   })
 
-  it('puts the Hebrew and Greek section just before the Greek one', () => {
+  it('puts the Hebrew and Greek section first', () => {
     const sections = getVersionCatalogSections({
       catalog: [versions.VUL, versions.KJV, versions.LSG, versions.BHG, versions.BHS, versions.LXX],
       grouping: 'language',
@@ -232,27 +218,27 @@ describe('Bible version catalog query', () => {
       labels,
     })
 
-    expect(sections.map(section => section.key)).toEqual(['fr', 'en', 'he-grc', 'grc', 'he', 'la'])
+    expect(sections.map(section => section.key)).toEqual(['he-grc', 'fr', 'en', 'grc', 'he', 'la'])
     expect(sections.map(section => section.title)).toEqual([
+      'Hébreu et Grec',
       'Français',
       'Anglais',
-      'Hébreu et Grec',
       'Grec',
       'Hébreu',
       'Latin',
     ])
   })
 
-  it('keeps the Hebrew and Greek section before the Greek one when English is the app language', () => {
+  it('keeps the Hebrew and Greek section first when English is the app language', () => {
     const sections = getVersionCatalogSections({
-      catalog: [versions.LSG, versions.KJV, versions.BHG, versions.LXX, versions.VUL],
+      catalog: [versions.LSG, versions.KJV, versions.BHG, versions.VUL],
       grouping: 'language',
       query: '',
       uiLanguage: 'en',
       labels,
     })
 
-    expect(sections.map(section => section.key)).toEqual(['en', 'fr', 'he-grc', 'grc', 'la'])
+    expect(sections.map(section => section.key)).toEqual(['he-grc', 'en', 'fr', 'la'])
   })
 
   it('orders style sections by the approved spectrum and collects null profiles under Other', () => {

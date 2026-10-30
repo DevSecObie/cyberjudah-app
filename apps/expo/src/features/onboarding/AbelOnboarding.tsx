@@ -1,5 +1,5 @@
+import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme, useTheme } from '~themes/ThemeProvider'
-import { titleFontStyle } from '~themes/styleValues'
 import { Feather } from '@expo/vector-icons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Pressable, useWindowDimensions } from 'react-native'
@@ -153,7 +153,10 @@ const StrongCarouselPrompt = ({
   const renderPrompt = (prompt: string) => (
     <Text
       className="text-[25px] leading-[32px] text-center"
-      style={[titleFontStyle(stylingTheme), { fontFamily: 'Literata Book' }]}
+      style={[
+        { fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) },
+        { fontFamily: 'Literata Book' },
+      ]}
     >
       {prompt}
     </Text>
@@ -418,7 +421,10 @@ const AbelOnboarding = ({ completionMode = 'handoff', onComplete }: AbelOnboardi
               >
                 <Feather name="check" size={30} color={theme.colors.primary} />
               </AnimatedBox>
-              <Text className="text-[27px] text-center" style={titleFontStyle(stylingTheme)}>
+              <Text
+                className="text-[27px] text-center"
+                style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+              >
                 {t('onboarding.abel.complete')}
               </Text>
             </VStack>
@@ -558,7 +564,7 @@ const AbelOnboarding = ({ completionMode = 'handoff', onComplete }: AbelOnboardi
                   {
                     fontSize: currentScene.id === 'scene-one' ? 32 : isFinalScene ? 22 : 25,
                     lineHeight: currentScene.id === 'scene-one' ? 38 : isFinalScene ? 26 : 32,
-                    ...titleFontStyle(stylingTheme),
+                    fontFamily: resolveFontFamily(stylingTheme.fontFamily.title),
                   },
                   { fontFamily: 'Literata Book' },
                 ]}

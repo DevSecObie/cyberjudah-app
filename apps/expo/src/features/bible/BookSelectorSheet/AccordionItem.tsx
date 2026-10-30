@@ -2,8 +2,8 @@ import React from 'react'
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native'
 import Animated, {
   SharedValue,
-  useAnimatedReaction,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated'
@@ -14,8 +14,6 @@ interface AccordionItemProps {
   viewKey: string
   style?: StyleProp<ViewStyle>
   duration?: number
-  /** Mounts already open at this height, without animating. */
-  initialHeight?: number
 }
 
 function AccordionItem({
@@ -24,20 +22,16 @@ function AccordionItem({
   viewKey,
   style,
   duration = 300,
-  initialHeight = 0,
 }: AccordionItemProps) {
-  const height = useSharedValue(initialHeight)
-  const animatedHeight = useSharedValue(initialHeight)
+  const height = useSharedValue(0)
 
-  // Starting at `initialHeight`, an item that mounts open has nothing to animate
-  useAnimatedReaction(
-    () => height.get() * Number(isExpanded.get()),
-    target => {
-      animatedHeight.set(withTiming(target, { duration }))
-    }
+  const derivedHeight = useDerivedValue(() =>
+    withTiming(height.get() * Number(isExpanded.get()), {
+      duration,
+    })
   )
   const bodyStyle = useAnimatedStyle(() => ({
-    height: animatedHeight.get(),
+    height: derivedHeight.get(),
   }))
 
   return (

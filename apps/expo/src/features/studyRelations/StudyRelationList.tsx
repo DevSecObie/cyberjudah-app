@@ -24,8 +24,6 @@ import {
   SheetView,
 } from '~common/sheet'
 import Box, { HStack, TouchableBox, VStack } from '~common/ui/Box'
-import IconTile, { ICON_TILE_SIZE } from '~common/ui/IconTile'
-import { ListSectionTitle, ListSeparator } from '~common/ui/ListSection'
 import Button from '~common/ui/Button'
 import { FeatherIcon, MaterialIcon } from '~common/ui/Icon'
 import { type MenuAction, MenuView } from '~common/ui/MenuView'
@@ -131,15 +129,11 @@ const TargetIcon = ({ type }: { type: RelationEndpoint['type'] }) => {
   }
 }
 
-/** A badge on the corner of the icon tile of a relation whose target no longer exists. */
 const MissingTargetWarningIcon = () => (
-  <Box className="overflow-hidden border-continuous items-center justify-center absolute top-[-6px] right-[-6px] bg-reverse rounded-full p-[3px]">
-    <FeatherIcon name="alert-triangle" size={11} color="secondary" />
+  <Box className="overflow-hidden border-continuous items-center justify-center mr-[6px] absolute top-[20px] left-[35px] bg-reverse rounded-[100px] p-[4px]">
+    <FeatherIcon name="alert-triangle" size={12} color="secondary" />
   </Box>
 )
-
-/** Where a relation's text starts: the page margin, the icon tile and the gap after it. */
-const RELATION_TEXT_INSET = 20 + ICON_TILE_SIZE + 12
 
 const getRelationTitleParts = (
   model: RelationDisplayModel,
@@ -362,7 +356,7 @@ const StudyRelationList = ({
                 borderTopRightRadius: hasDirectionalType ? 0 : 16,
               }}
             >
-              <Text className="font-bold text-[12px] text-link">
+              <Text className="font-bold text-[12px] text-primary">
                 {getDraftRelationText(editingModel)}
               </Text>
             </TouchableBox>
@@ -451,33 +445,43 @@ const StudyRelationList = ({
 
     return (
       <Box className="overflow-hidden border-continuous" key={model.relation.id}>
-        <HStack
-          className="overflow-hidden border-continuous items-center pl-[20px]"
+        <Box className="border-continuous overflow-hidden absolute top-[0px] left-[20px] border-l-[4px] border-b-[4px] rounded-bl-[50px] h-[35px] w-[25px] border-border" />
+        {index !== sectionLength - 1 && (
+          <Box className="border-continuous overflow-hidden absolute top-[0px] bottom-[0px] left-[20px] border-l-[4px] w-[25px] border-border" />
+        )}
+        {!model.isTargetAvailable ? <MissingTargetWarningIcon /> : null}
+
+        <Box
+          className="border-continuous overflow-hidden flex-[1] flex-row items-center ml-[60px] pl-[0px] border-b-[1px] border-border"
           style={{ opacity: !model.isTargetAvailable ? 0.5 : 1 }}
         >
-          <Box className="overflow-visible">
-            <IconTile tint={targetIconConfig[model.targetEndpoint.type].color}>
-              <TargetIcon type={model.targetEndpoint.type} />
-            </IconTile>
-            {!model.isTargetAvailable ? <MissingTargetWarningIcon /> : null}
-          </Box>
           <TouchableBox
-            className="overflow-hidden border-continuous flex-[1] py-[11px] pl-[12px] gap-[2px]"
+            className="overflow-hidden border-continuous flex-[1] flex-row items-center py-[10px]"
             onPress={() => openRelationTarget(model)}
           >
-            <Text className="text-[15px]" numberOfLines={1}>
-              {relationTitle.prefix} {relationTitle.target}
-            </Text>
-            {relationSubtitle ? (
-              <Text className="text-[13px] text-grey" numberOfLines={1}>
-                {relationSubtitle}
-              </Text>
-            ) : null}
-            {model.relation.label ? (
-              <Text className="text-[13px] text-grey" numberOfLines={1}>
-                {model.relation.label}
-              </Text>
-            ) : null}
+            <Box className="overflow-hidden border-continuous flex-[1]">
+              <HStack className="overflow-hidden border-continuous items-center">
+                <Text className="font-bold text-[14px]" numberOfLines={1}>
+                  {relationTitle.prefix}
+                </Text>
+                <Box className="overflow-hidden border-continuous mx-[6px]">
+                  <TargetIcon type={model.targetEndpoint.type} />
+                </Box>
+                <Text className="font-bold text-[14px]" numberOfLines={1} style={{ flexShrink: 1 }}>
+                  {relationTitle.target}
+                </Text>
+              </HStack>
+              {relationSubtitle ? (
+                <Text className="text-[12px] text-tertiary" numberOfLines={1}>
+                  {relationSubtitle}
+                </Text>
+              ) : null}
+              {model.relation.label ? (
+                <Text className="text-[12px] text-tertiary" numberOfLines={1}>
+                  {model.relation.label}
+                </Text>
+              ) : null}
+            </Box>
           </TouchableBox>
           <ContextualMenu
             panelTitle={t('Relations')}
@@ -524,8 +528,7 @@ const StudyRelationList = ({
               <FeatherIcon name="more-vertical" size={18} />
             </Box>
           </ContextualMenu>
-        </HStack>
-        {index !== sectionLength - 1 && <ListSeparator inset={RELATION_TEXT_INSET} />}
+        </Box>
       </Box>
     )
   }
@@ -543,9 +546,10 @@ const StudyRelationList = ({
         sections.map(section => (
           <VStack className="overflow-hidden border-continuous mb-[12px]" key={section.id}>
             {section.title ? (
-              <ListSectionTitle className="ml-[20px] mt-[16px] mb-[6px]">
-                {section.title}
-              </ListSectionTitle>
+              <HStack className="overflow-hidden border-continuous items-center ml-[20px] py-[20px]">
+                <TargetIcon type="verse" />
+                <Text className="font-bold text-tertiary ml-[8px]">{section.title}</Text>
+              </HStack>
             ) : null}
             {section.data.map((model, index) => renderRelation(model, index, section.data.length))}
           </VStack>

@@ -114,7 +114,7 @@ const TagScreen = () => {
       case 'link':
         return <LinkItem t={t} lang={lang} item={item.data} />
       case 'study':
-        return <StudyItem study={item.data} onPlainGround />
+        return <StudyItem study={item.data} />
       default:
         return null
     }

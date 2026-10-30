@@ -1,13 +1,12 @@
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import React from 'react'
+import * as NativeUI from 'react-native'
 import {
   AccessibilityState,
   ActivityIndicator,
   StyleProp,
   TouchableOpacityProps,
   ViewStyle,
-  type Text as NativeText,
-  TouchableOpacity,
 } from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
@@ -19,7 +18,6 @@ import Box from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import { MainStackProps } from '~navigation/type'
 import { Theme } from '~themes'
-import { colorWithOpacity } from '~themes/colorValues'
 
 interface Props {
   children: React.ReactNode
@@ -59,8 +57,9 @@ const buttonStyles = ({
   success,
   fullWidth,
 }: WrapperButtonProps): ViewStyle => ({
-  // The secondary button is a neutral tint, not an outline: a border only marks fields and selection.
-  backgroundColor: reverse ? colorWithOpacity(theme.colors.default, 0.07) : theme.colors.primary,
+  backgroundColor: reverse ? theme.colors.reverse : theme.colors.primary,
+  borderWidth: reverse ? 1 : 0,
+  borderColor: theme.colors.border,
   borderRadius: 24,
   height: 48,
   alignItems: 'center',
@@ -91,7 +90,10 @@ const buttonStyles = ({
 })
 
 const WrapperButton = (
-  componentProps: Omit<UIComponentProps<typeof TouchableOpacity>, keyof Partial<Props> | 'theme'> &
+  componentProps: Omit<
+    UIComponentProps<typeof NativeUI.TouchableOpacity>,
+    keyof Partial<Props> | 'theme'
+  > &
     Omit<Partial<Props>, 'theme'> & { theme?: AppTheme; className?: string }
 ) => {
   const contextTheme = useAppTheme()
@@ -100,12 +102,12 @@ const WrapperButton = (
 
   const resolvedClassName = twMerge('', className)
   return (
-    <TouchableOpacity
+    <NativeUI.TouchableOpacity
       {...props}
       className={resolvedClassName}
       style={
         [buttonStyles({ ...props, theme }), props.style] as UIComponentProps<
-          typeof TouchableOpacity
+          typeof NativeUI.TouchableOpacity
         >['style']
       }
     />
@@ -144,7 +146,7 @@ const WrapperLink = (
 
 const TextButton = (
   componentProps: Omit<
-    UIComponentProps<typeof NativeText>,
+    UIComponentProps<typeof NativeUI.Text>,
     keyof { theme?: Theme; small?: boolean; reverse?: boolean } | 'theme'
   > &
     Omit<{ theme?: Theme; small?: boolean; reverse?: boolean }, 'theme'> & {
@@ -170,7 +172,7 @@ const TextButton = (
             }),
           },
           props.style,
-        ] as UIComponentProps<typeof NativeText>['style']
+        ] as UIComponentProps<typeof NativeUI.Text>['style']
       }
     />
   )

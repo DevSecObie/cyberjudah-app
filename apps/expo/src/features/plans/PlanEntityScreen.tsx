@@ -7,33 +7,23 @@ import Link from '~common/Link'
 import Loading from '~common/Loading'
 import { PLAN_READING_HORIZONTAL_PADDING, READING_TEXT_MAX_WIDTH } from '~common/readingLayout'
 import { type SheetRef } from '~common/sheet'
-import Box, { usePageBottomInset } from '~common/ui/Box'
+import Box from '~common/ui/Box'
 import Button from '~common/ui/Button'
-import FormSheetScreen from '~common/ui/FormSheetScreen'
+import Container from '~common/ui/Container'
 import { FeatherIcon } from '~common/ui/Icon'
 import ScrollView from '~common/ui/ScrollView'
 import { useReadingContent } from '~features/daily-reading/useDailyMeditation'
 import { editorialContext } from '~features/study-assistant/editorialContext'
 import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
 import { goBackOrHome } from '~navigation/goBackOrHome'
-import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
 import { getEntitySliceTitle } from './entitySliceTitle'
 import { useComputedPlan } from './plan.hooks'
 import { getEntitySliceKey } from './planProgress'
 import ParamsModal from './PlanSliceScreen/ParamsModal'
 import Slice from './PlanSliceScreen/Slice'
-import PlanDayStepCard from './PlanDayStepCard'
-import { usePlanDayStep } from './usePlanDayStep'
 
-type PlanEntityScreenProps = {
-  isFormSheet?: boolean
-}
-
-/**
- * The page of one text, image or video of a plan day. Passages open the Bible reader instead.
- * It shares the reader's sheet, so « Voir la suite » moves between them in place.
- */
-const PlanEntityScreen = ({ isFormSheet = false }: PlanEntityScreenProps) => {
+/** The page of one text, image or video of a plan day. Passages open the Bible reader instead. */
+const PlanEntityScreen = () => {
   const {
     planId = '',
     readingSliceId = '',
@@ -42,7 +32,6 @@ const PlanEntityScreen = ({ isFormSheet = false }: PlanEntityScreenProps) => {
   const { t } = useTranslation()
   const router = useRouter()
   const paramsModalRef = React.useRef<SheetRef>(null)
-  const bottomInset = usePageBottomInset()
   const { isError, retry } = useReadingContent(planId)
   const plan = useComputedPlan(planId)
   const reading = plan?.sections
@@ -52,20 +41,12 @@ const PlanEntityScreen = ({ isFormSheet = false }: PlanEntityScreenProps) => {
     (item, index) => getEntitySliceKey(reading.id, item, index) === entitySliceId
   )
   useAssistantResourceContext('panel', editorialContext(plan, reading))
-  const dayStep = usePlanDayStep(slice ? { planId, readingSliceId, entitySliceId } : undefined)
   const goBack = () => goBackOrHome(router)
-  const canGoBackInStack = useCanGoBackInStack()
-  // In the sheet, an element opened from the plan is closed by the sheet itself.
-  const hasBackButton = isFormSheet ? canGoBackInStack : true
 
   if (!plan || !slice) {
     return (
-      <FormSheetScreen isFormSheet={isFormSheet}>
-        <Header
-          hasBackButton={hasBackButton}
-          title={t('readingPlans.tab')}
-          onCustomBackPress={goBack}
-        />
+      <Container>
+        <Header hasBackButton title={t('readingPlans.tab')} onCustomBackPress={goBack} />
         {isError || plan ? (
           <>
             <Empty message={t('dailyReading.unavailableReading')} />
@@ -84,14 +65,14 @@ const PlanEntityScreen = ({ isFormSheet = false }: PlanEntityScreenProps) => {
         ) : (
           <Loading />
         )}
-      </FormSheetScreen>
+      </Container>
     )
   }
 
   return (
-    <FormSheetScreen isFormSheet={isFormSheet}>
+    <Container>
       <Header
-        hasBackButton={hasBackButton}
+        hasBackButton
         title={getEntitySliceTitle(slice, t)}
         onCustomBackPress={goBack}
         rightComponent={
@@ -112,18 +93,13 @@ const PlanEntityScreen = ({ isFormSheet = false }: PlanEntityScreenProps) => {
           alignSelf: 'center',
           maxWidth: READING_TEXT_MAX_WIDTH + PLAN_READING_HORIZONTAL_PADDING * 2,
           paddingTop: 24,
-          paddingBottom: 32 + bottomInset,
+          paddingBottom: 32,
         }}
       >
         <Slice {...slice} planLanguage={plan.lang} />
-        {dayStep && (
-          <Box className="mt-[32px]" style={{ paddingHorizontal: PLAN_READING_HORIZONTAL_PADDING }}>
-            <PlanDayStepCard step={dayStep} />
-          </Box>
-        )}
       </ScrollView>
       <ParamsModal paramsModalRef={paramsModalRef} />
-    </FormSheetScreen>
+    </Container>
   )
 }
 

@@ -8,34 +8,18 @@ import { fetch as expoFetch } from 'expo/fetch'
 import { readStudyStream } from '@bible-strong/ai-contract/stream'
 import type { StudyRequest, StudyEvent } from '@bible-strong/ai-contract/contract'
 import { getCurrentAuthUser } from '~helpers/firebaseAuthRuntime'
-import { assistantAuthHeaders } from './assistantAuthHeaders'
+import { getResourceAppCheckToken } from '~helpers/resourceAppCheck'
 import type { DictationConnection } from './dictationAdapter'
-/** AbortSignal.any/timeout are missing from the native runtime: one portable deadline instead. */
-function withDeadline(signal: AbortSignal, milliseconds: number) {
-  const controller = new AbortController()
-  const abort = () => controller.abort()
-  const timer = setTimeout(abort, milliseconds)
-  if (signal.aborted) abort()
-  else signal.addEventListener('abort', abort, { once: true })
-  return {
-    signal: controller.signal,
-    clear: () => {
-      clearTimeout(timer)
-      signal.removeEventListener('abort', abort)
-    },
-  }
-}
 export async function connectAssistantDictation(signal: AbortSignal): Promise<DictationConnection> {
   const base = process.env.EXPO_PUBLIC_AI_API_URL
   const user = getCurrentAuthUser()
   if (!base || !user) throw new Error('SIGN_IN_REQUIRED')
-  const auth = await assistantAuthHeaders(user)
-  const deadline = withDeadline(signal, 15000)
+  const [token, appCheck] = await Promise.all([user.getIdToken(), getResourceAppCheckToken()])
   const response = await expoFetch(`${base.replace(/\/$/, '')}/v1/study-assistant/dictation`, {
     method: 'POST',
-    signal: deadline.signal,
-    headers: auth,
-  }).finally(deadline.clear)
+    signal: AbortSignal.any([signal, AbortSignal.timeout(15000)]),
+    headers: { Authorization: `Bearer ${token}`, 'X-Firebase-AppCheck': appCheck },
+  })
   if (!response.ok)
     throw new Error(response.status === 429 ? 'DAILY_LIMIT' : 'DICTATION_UNAVAILABLE')
   const session = await response.json()
@@ -55,10 +39,7 @@ export async function connectAssistantDictation(signal: AbortSignal): Promise<Di
   )
     throw new Error('INVALID_DICTATION_SESSION')
   return {
-    socket: new WebSocket(url.href, [
-      'ai-gateway-transcription.v1',
-      `ai-gateway-auth.${session.token}`,
-    ]),
+    socket: new WebSocket(url, ['ai-gateway-transcription.v1', `ai-gateway-auth.${session.token}`]),
     providerOptions: session.providerOptions,
   }
 }
@@ -90,13 +71,14 @@ export async function askAssistant(
   if (!base) throw new Error('AI_UNAVAILABLE')
   const user = getCurrentAuthUser()
   if (!user) throw new Error('SIGN_IN_REQUIRED')
-  const auth = await assistantAuthHeaders(user)
+  const [token, appCheck] = await Promise.all([user.getIdToken(), getResourceAppCheckToken()])
   if (signal.aborted) throw new Error('INTERRUPTED')
   const response = await expoFetch(`${base.replace(/\/$/, '')}/v1/study-assistant/chat`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      ...auth,
+      Authorization: `Bearer ${token}`,
+      'X-Firebase-AppCheck': appCheck,
     },
     body: JSON.stringify({ ...input, ...preferences }),
     signal,
@@ -122,17 +104,17 @@ export async function compactAssistant(
     user = getCurrentAuthUser()
   if (!base) throw new Error('AI_UNAVAILABLE')
   if (!user) throw new Error('SIGN_IN_REQUIRED')
-  const auth = await assistantAuthHeaders(user)
-  const deadline = withDeadline(signal, 50000)
+  const [token, appCheck] = await Promise.all([user.getIdToken(), getResourceAppCheckToken()])
   const response = await expoFetch(`${base.replace(/\/$/, '')}/v1/study-assistant/compact`, {
     method: 'POST',
-    signal: deadline.signal,
+    signal: AbortSignal.any([signal, AbortSignal.timeout(50000)]),
     headers: {
       'Content-Type': 'application/json',
-      ...auth,
+      Authorization: `Bearer ${token}`,
+      'X-Firebase-AppCheck': appCheck,
     },
     body: JSON.stringify(input),
-  }).finally(deadline.clear)
+  })
   if (!response.ok) throw new Error(response.status === 429 ? 'DAILY_LIMIT' : 'COMPACTION_FAILED')
   const result = await response.json()
   if (

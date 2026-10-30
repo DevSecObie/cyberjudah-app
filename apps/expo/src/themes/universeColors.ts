@@ -1,26 +1,20 @@
 import type { Theme } from './index'
 import { colorWithOpacity } from './colorValues'
 
-/**
- * Visual identity of each universe. State colors (selected/disabled) stay with the control.
- *
- * What the reader makes (highlights, bookmarks, notes, studies, links, tags) keeps the same
- * color in every theme where a theme token would collide: `primary` turns teal in the dark
- * themes, like links, and `quint` turns pink.
- */
+/** Visual identity of each universe. State colors (selected/disabled) stay with the control. */
 export const universeColors = {
   bible: 'tertiary',
   strong: 'primary',
   dictionary: 'secondary',
   nave: 'quint',
   commentary: '#26A69A',
+  // CyberJudah's classes, in the assembly's purple.
+  classes: '#6A3FB5',
   references: 'quart',
-  highlights: 'secondary',
-  bookmarks: '#5983F0',
-  notes: 'color2',
   study: 'tertiary',
-  links: '#26A69A',
-  tags: '#8E6CEF',
+  notes: 'color2',
+  links: 'secondary',
+  annotation: 'primary',
   word: 'tertiary',
   compare: 'tertiary',
   plan: 'tertiary',
@@ -38,11 +32,6 @@ const aliases = {
   note: 'notes',
   studies: 'study',
   externalLink: 'links',
-  // A word annotation is a highlight drawn on words, and is counted with them.
-  annotation: 'highlights',
-  highlight: 'highlights',
-  bookmark: 'bookmarks',
-  tag: 'tags',
   reference: 'references',
   'commentary-resource': 'commentary',
   new: 'default',

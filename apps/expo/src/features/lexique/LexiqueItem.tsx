@@ -1,10 +1,12 @@
-import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
-import { titleFontStyle } from '~themes/styleValues'
+import { resolveFontFamily } from '~themes/styleValues'
+import { useTheme as useStylingTheme, useTheme as useAppTheme } from '~themes/ThemeProvider'
+import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import { Pressable } from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
+import type { Theme as AppTheme } from '~themes'
+
 import { useTranslation } from 'react-i18next'
-import Border from '~common/ui/Border'
 import Box from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import type { StrongLexiconSearchResult } from '~features/resources/strongLexiconAccess'
@@ -12,25 +14,62 @@ import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
 import { createStrongIdentityForBook } from '~helpers/strongIdentities'
 import { createStrongDetailRoute } from './strongDetailRoutes'
 
-/** Height of a row, used by the list layout. */
-export const LEXIQUE_ITEM_HEIGHT = 80
+const SectionItem = (
+  componentProps: Omit<UIComponentProps<typeof Box>, 'theme'> & {
+    theme?: AppTheme
+    className?: string
+  }
+) => {
+  const { theme: _themeOverride, className, ...props } = componentProps
 
-const chipClassName = 'rounded-full px-[6px] py-[2px]'
+  const resolvedClassName = twMerge(
+    'h-[80px] ml-[20px] mr-[20px] bg-reverse border-b-border border-b-[1px] items-start justify-center',
+    className
+  )
+  return (
+    <Box
+      {...props}
+      style={[props.style] as UIComponentProps<typeof Box>['style']}
+      className={twMerge('overflow-hidden border-continuous', resolvedClassName)}
+    />
+  )
+}
+
+interface ChipProps {
+  isHebreu?: boolean
+}
+
+const Chip = (
+  componentProps: Omit<UIComponentProps<typeof Box>, keyof ChipProps | 'theme'> &
+    Omit<ChipProps, 'theme'> & { theme?: AppTheme; className?: string }
+) => {
+  const contextTheme = useAppTheme()
+  const { theme: themeOverride, className, ...props } = componentProps
+  const theme = themeOverride ?? contextTheme
+  const { isHebreu } = props
+  const resolvedClassName = twMerge(
+    'rounded-[10px] pt-[2px] pb-[2px] pl-[5px] pr-[5px] mb-[3px]',
+    className
+  )
+  return (
+    <Box
+      {...props}
+      style={
+        [
+          { backgroundColor: isHebreu ? theme.colors.lightPrimary : theme.colors.border },
+          props.style,
+        ] as UIComponentProps<typeof Box>['style']
+      }
+      className={twMerge('overflow-hidden border-continuous', resolvedClassName)}
+    />
+  )
+}
 
 interface LexiqueItemProps extends StrongLexiconSearchResult {
   onSelect?: (book: number, reference: string, title?: string) => void
-  /** The hairline under the row; the last row of a group has none. */
-  hasSeparator?: boolean
 }
 
-const LexiqueItem = ({
-  stepCode,
-  language,
-  original,
-  gloss,
-  onSelect,
-  hasSeparator = true,
-}: LexiqueItemProps) => {
+const LexiqueItem = ({ stepCode, language, original, gloss, onSelect }: LexiqueItemProps) => {
   const stylingTheme = useStylingTheme()
   const pushRouteOnce = usePushRouteOnce()
 
@@ -54,42 +93,40 @@ const LexiqueItem = ({
     )
   }
 
+  const content = (
+    <SectionItem>
+      <Box className="overflow-hidden border-continuous flex-row">
+        <Chip isHebreu={language === 'hebrew'}>
+          <Text className="text-[10px]">{t(lexiqueType)}</Text>
+        </Chip>
+        <Chip className="ml-[5px]">
+          <Text className="text-[10px]">{stepCode}</Text>
+        </Chip>
+      </Box>
+      <Box className="overflow-hidden border-continuous flex-row">
+        <Text
+          className="text-[18px] text-default flex-[1] pr-[20px]"
+          style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+        >
+          {gloss}
+        </Text>
+        <Text
+          className="text-[18px] text-default"
+          accessibilityLanguage={language === 'hebrew' ? 'he-IL' : 'el-GR'}
+        >
+          {original}
+        </Text>
+      </Box>
+    </SectionItem>
+  )
+
   return (
     <Pressable
       accessibilityRole={onSelect ? 'button' : 'link'}
       onPress={handlePress}
       style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
     >
-      <Box className="px-[20px] items-start justify-center" style={{ height: LEXIQUE_ITEM_HEIGHT }}>
-        <Box className="flex-row gap-[5px] mb-[3px]">
-          <Box
-            className={twMerge(
-              chipClassName,
-              language === 'hebrew' ? 'bg-light-primary' : 'bg-border'
-            )}
-          >
-            <Text className="text-[10px]">{t(lexiqueType)}</Text>
-          </Box>
-          <Box className={twMerge(chipClassName, 'bg-border')}>
-            <Text className="text-[10px]">{stepCode}</Text>
-          </Box>
-        </Box>
-        <Box className="flex-row">
-          <Text
-            className="text-[18px] text-default flex-[1] pr-[20px]"
-            style={titleFontStyle(stylingTheme)}
-          >
-            {gloss}
-          </Text>
-          <Text
-            className="text-[18px] text-default"
-            accessibilityLanguage={language === 'hebrew' ? 'he-IL' : 'el-GR'}
-          >
-            {original}
-          </Text>
-        </Box>
-        {hasSeparator && <Border className="absolute bottom-0 left-[20px] right-0" />}
-      </Box>
+      {content}
     </Pressable>
   )
 }

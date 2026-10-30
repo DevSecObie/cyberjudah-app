@@ -22,8 +22,12 @@ export const getScrollTargetVerse = ({
   contextDisplayMode: WebViewProps['contextDisplayMode']
   focusVerses: WebViewProps['focusVerses']
 }) => {
-  // A focus shows its verses first: the reader starts at the top, whatever the verses.
-  if (contextDisplayMode === 'focused' && focusVerses?.length) return 1
+  if (contextDisplayMode === 'focused' && focusVerses?.length) {
+    const focusVerseNumbers = focusVerses.map(Number).filter(Number.isFinite)
+    if (focusVerseNumbers.length) {
+      return Math.min(...focusVerseNumbers)
+    }
+  }
 
   return verseToScroll
 }
@@ -113,108 +117,37 @@ export const shouldHighlightOnlyVerseNumber = ({
   isStrongModeVerse?: boolean
 }) => Boolean(hasWordAnnotations) || Boolean(isStrongModeVerse)
 
-export type ParallelVerseRow = {
-  version: string
-  verse: TVerse
-  error?: BibleError
-  interlinearMode?: InterlinearMode
-  // The version has no such verse (e.g. Acts 8:37 in the ESV)
-  isMissing?: boolean
-  // The version's chapter is still loading
-  isLoading?: boolean
-}
-
-export type ParallelChapterRow = {
-  verse: TVerse
-  rows: ParallelVerseRow[]
-}
-
-const getVerseNumberKey = (verse: Pick<TVerse, 'Verset'>) => String(verse.Verset)
-
-const createMissingVerse = ({ Livre, Chapitre, Verset }: TVerse): TVerse => ({
-  Livre,
-  Chapitre,
-  Verset,
-  Texte: '',
-})
-
-// Only numeric verse numbers are compared; anything else keeps its version's order
-const isLowerVerseNumber = (a: string, b: string) => {
-  const numberA = Number(a)
-  const numberB = Number(b)
-  return Number.isFinite(numberA) && Number.isFinite(numberB) && numberA < numberB
-}
-
-// Verse numbers of every version, each version's order kept: a verse only one version has
-// goes after the verse that precedes it in that version and after any lower verse number.
-const getParallelChapterVerseNumbers = (verseLists: TVerse[][]) => {
-  const numbers: string[] = []
-  const anchors = new Map<string, TVerse>()
-
-  verseLists.forEach(verses => {
-    let previousIndex = -1
-    verses.forEach(verse => {
-      const key = getVerseNumberKey(verse)
-      const existingIndex = numbers.indexOf(key)
-      if (existingIndex !== -1) {
-        previousIndex = existingIndex
-        return
-      }
-      previousIndex += 1
-      while (previousIndex < numbers.length && isLowerVerseNumber(numbers[previousIndex], key)) {
-        previousIndex += 1
-      }
-      numbers.splice(previousIndex, 0, key)
-      anchors.set(key, verse)
-    })
-  })
-
-  return numbers.map(key => anchors.get(key) as TVerse)
-}
-
-// Rows are aligned by verse number, not by position, so a verse one version omits
-// leaves an empty row in that version instead of shifting every following verse.
-export const getParallelChapterRows = (
-  verses: TVerse[],
+export const getParallelVerseRows = (
+  index: number,
   parallelVerses: ParallelVerse[],
+  verse: TVerse,
   version: string,
   interlinearMode?: InterlinearMode
-): ParallelChapterRow[] => {
-  const versesByNumber = (list: TVerse[] | undefined) =>
-    new Map(list?.map(verse => [getVerseNumberKey(verse), verse] as const) ?? [])
-  const mainVersesByNumber = versesByNumber(verses)
-  const parallelVersesByNumber = parallelVerses.map(parallel => versesByNumber(parallel.verses))
+): { version: string; verse: TVerse; error?: BibleError; interlinearMode?: InterlinearMode }[] => {
+  const result: {
+    version: string
+    verse: TVerse
+    error?: BibleError
+    interlinearMode?: InterlinearMode
+  }[] = [
+    {
+      version,
+      verse,
+      ...getParallelVerseModeProps({ version, interlinearMode }),
+    },
+  ]
 
-  return getParallelChapterVerseNumbers([
-    verses,
-    ...parallelVerses.map(parallel => parallel.verses ?? []),
-  ]).map(anchor => {
-    const key = getVerseNumberKey(anchor)
-    const mainVerse = mainVersesByNumber.get(key)
-    const verse = mainVerse || createMissingVerse(anchor)
-
-    const rows: ParallelVerseRow[] = [
-      {
-        version,
-        verse,
-        ...getParallelVerseModeProps({ version, interlinearMode }),
-        ...(mainVerse ? {} : { isMissing: true }),
-      },
-    ]
-
-    parallelVerses.forEach(({ id, error, interlinearMode, isLoading }, index) => {
-      const parallelVerse = parallelVersesByNumber[index].get(key)
-      rows.push({
-        version: id,
-        verse: parallelVerse || createMissingVerse(anchor),
-        error,
-        ...getParallelVerseModeProps({ version: id, interlinearMode }),
-        ...(isLoading ? { isLoading: true } : parallelVerse || error ? {} : { isMissing: true }),
-      })
+  parallelVerses.forEach(({ id, verses, error, interlinearMode }) => {
+    const parallelVerse = verses?.[index]
+    result.push({
+      version: id,
+      verse: parallelVerse || { ...verse, Texte: '' },
+      error,
+      ...getParallelVerseModeProps({ version: id, interlinearMode }),
     })
-
-    return { verse, rows }
   })
+
+  return result
 }
 
 export const getParallelVerseModeProps = ({

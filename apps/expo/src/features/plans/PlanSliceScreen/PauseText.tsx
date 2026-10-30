@@ -5,7 +5,6 @@ import Color from 'color'
 import Animated, { cubicBezier } from 'react-native-reanimated'
 import Box from '~common/ui/Box'
 import Paragraph from '~common/ui/Paragraph'
-import { radii } from '~common/ui/surfaces'
 import { Theme } from '~themes'
 interface Props {
   children: React.ReactNode
@@ -26,7 +25,7 @@ const PauseText = ({ children }: Props) => {
             style={{
               width: 30,
               height: 30,
-              borderRadius: radii.pill,
+              borderRadius: 15,
               backgroundColor: color.alpha(0.3).string(),
               animationName: {
                 from: { transform: [{ scale: 1.1 }] },
@@ -47,7 +46,7 @@ const PauseText = ({ children }: Props) => {
             style={{
               width: 30,
               height: 30,
-              borderRadius: radii.pill,
+              borderRadius: 15,
               backgroundColor: color.alpha(0.5).string(),
               animationName: {
                 from: { transform: [{ scale: 1 }] },

@@ -1,11 +1,12 @@
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
-import { TouchableOpacityProps, ViewProps, TouchableOpacity, View } from 'react-native'
+import * as NativeUI from 'react-native'
+import { TouchableOpacityProps, ViewProps } from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
 import type { Theme as AppTheme } from '~themes'
 
 const Touchable = (
-  componentProps: Omit<UIComponentProps<typeof TouchableOpacity>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof NativeUI.TouchableOpacity>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
@@ -14,10 +15,10 @@ const Touchable = (
 
   const resolvedClassName = twMerge('flex-[1] items-center justify-center', className)
   return (
-    <TouchableOpacity
+    <NativeUI.TouchableOpacity
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof TouchableOpacity>['style']}
+      style={[props.style] as UIComponentProps<typeof NativeUI.TouchableOpacity>['style']}
     />
   )
 }
@@ -28,7 +29,7 @@ type CircleStyleProps = {
 }
 
 const Container = (
-  componentProps: Omit<UIComponentProps<typeof View>, keyof CircleStyleProps | 'theme'> &
+  componentProps: Omit<UIComponentProps<typeof NativeUI.View>, keyof CircleStyleProps | 'theme'> &
     Omit<CircleStyleProps, 'theme'> & { theme?: AppTheme; className?: string }
 ) => {
   const { theme: _themeOverride, className, ...props } = componentProps
@@ -36,14 +37,14 @@ const Container = (
   const { color, size } = props
   const resolvedClassName = twMerge('', className)
   return (
-    <View
+    <NativeUI.View
       {...props}
       className={resolvedClassName}
       style={
         [
           { width: size, height: size, borderRadius: size / 3, backgroundColor: color },
           props.style,
-        ] as UIComponentProps<typeof View>['style']
+        ] as UIComponentProps<typeof NativeUI.View>['style']
       }
     />
   )

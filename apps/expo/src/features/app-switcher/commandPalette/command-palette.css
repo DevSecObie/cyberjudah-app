@@ -42,7 +42,7 @@
   color: var(--command-muted);
   border: 1px solid var(--command-border);
   padding: 3px 5px;
-  border-radius: 4px;
+  border-radius: 5px;
 }
 .bs-command [cmdk-list] {
   max-height: min(360px, 50vh);
@@ -85,7 +85,7 @@
   width: 28px;
   height: 28px;
   flex-shrink: 0;
-  border-radius: 8px;
+  border-radius: 7px;
 }
 .bs-command-item-text {
   overflow: hidden;
@@ -131,8 +131,7 @@
   width: min(620px, calc(100vw - 32px));
   outline: none;
   border-radius: 16px;
-  /* floatingShadow in apps/expo/src/common/ui/surfaces.ts */
-  box-shadow: 0 6px 20px rgba(16, 27, 53, 0.14);
+  box-shadow: 0 24px 80px #0003;
 }
 .bs-command-sr-only {
   position: absolute;
@@ -203,7 +202,7 @@
   max-width: 45%;
   padding: 6px 8px;
   border: none;
-  border-radius: 8px;
+  border-radius: 7px;
   background: var(--command-active);
   color: var(--command-text);
   font: inherit;
@@ -275,7 +274,7 @@
   justify-content: center;
   width: 28px;
   height: 28px;
-  border-radius: 8px;
+  border-radius: 7px;
   flex-shrink: 0;
 }
 
@@ -359,11 +358,10 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
-/* Inner panels of the guide: a tinted ground, not an outline. */
 .bs-command-help-search > div {
   padding: 14px;
-  background: var(--command-panel);
-  border-radius: 12px;
+  border: 1px solid var(--command-border);
+  border-radius: 10px;
 }
 .bs-command-help-tools {
   grid-column: 1 / -1;
@@ -385,14 +383,6 @@
   gap: 16px;
   padding: 6px 0;
 }
-/* One keycap per key, as on the keyboard; two shortcuts of a row split by a slash. */
-.bs-command-help-shortcuts dd {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  gap: 4px;
-  color: var(--command-muted);
-}
 .bs-command-help-scopes {
   display: flex;
   flex-wrap: wrap;
@@ -403,14 +393,14 @@
   background: var(--command-active);
   color: var(--command-text);
   padding: 3px 7px;
-  border-radius: 4px;
+  border-radius: 5px;
   font-size: 11px;
 }
 
 .bs-command-help-search .bs-command-help-example {
   margin-top: 10px;
   padding: 6px 8px;
-  border-radius: 4px;
+  border-radius: 5px;
   background: var(--command-active);
   color: var(--command-text);
   font-size: 12px;

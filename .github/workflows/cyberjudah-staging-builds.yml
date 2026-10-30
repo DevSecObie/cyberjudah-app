@@ -1,7 +1,7 @@
-name: CyberJudah staging builds
+name: CyberJudah mobile compatibility and Android staging
 on:
   push:
-    branches: [codex/bible-strong-web-port]
+    branches: [codex/bible-strong-mobile-release]
   workflow_dispatch:
 permissions:
   contents: read
@@ -89,39 +89,4 @@ jobs:
         with:
           name: CyberJudah-staging-Android
           path: apps/expo/android/app/build/outputs/apk/release/*.apk
-          retention-days: 14
-  ios:
-    if: github.repository == 'DevSecObie/cyberjudah-app'
-    runs-on: macos-26
-    timeout-minutes: 90
-    env:
-      CI: '1'
-      EXPO_NO_TELEMETRY: '1'
-      SENTRY_DISABLE_AUTO_UPLOAD: 'true'
-      NODE_OPTIONS: --max-old-space-size=6144
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: corepack enable
-      - run: yarn workspaces focus @bible-strong/expo
-      - run: cp apps/expo/.env.cyberjudah.example apps/expo/.env.local
-      - run: yarn workspace @bible-strong/expo exec expo prebuild --platform ios --no-install
-      - run: node apps/expo/scripts/verify-cyberjudah-native-config.mjs ios
-      - run: pod install
-        working-directory: apps/expo/ios
-      - name: Compile iPhone archive without signing or publishing
-        run: |
-          workspace=$(find apps/expo/ios -maxdepth 1 -name '*.xcworkspace' -print -quit)
-          scheme=$(basename "$workspace" .xcworkspace)
-          xcodebuild -workspace "$workspace" -scheme "$scheme" -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/CyberJudah-Staging.xcarchive" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO archive > "$RUNNER_TEMP/ios-build.log" 2>&1 || { tail -100 "$RUNNER_TEMP/ios-build.log"; exit 1; }
-          ditto -c -k --sequesterRsrc --keepParent "$RUNNER_TEMP/CyberJudah-Staging.xcarchive" "$RUNNER_TEMP/CyberJudah-Staging-unsigned.zip"
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: CyberJudah-staging-iPhone-unsigned
-          path: |
-            ${{ runner.temp }}/CyberJudah-Staging-unsigned.zip
-            ${{ runner.temp }}/ios-build.log
           retention-days: 14

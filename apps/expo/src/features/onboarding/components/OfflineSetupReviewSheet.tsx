@@ -1,4 +1,4 @@
-import { resolveThemeColor, titleFontStyle } from '~themes/styleValues'
+import { resolveThemeColor, resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { Feather } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -409,7 +409,7 @@ const OfflineSetupReviewSheet = ({
             style={{
               color:
                 resolveThemeColor(stylingTheme, palette.onAccent) || stylingTheme.colors.default,
-              ...titleFontStyle(stylingTheme),
+              fontFamily: resolveFontFamily(stylingTheme.fontFamily.title),
             }}
           >
             {buttonLabel}
@@ -426,7 +426,7 @@ const OfflineSetupReviewSheet = ({
                   color:
                     resolveThemeColor(stylingTheme, palette.onAccent) ||
                     stylingTheme.colors.default,
-                  ...titleFontStyle(stylingTheme),
+                  fontFamily: resolveFontFamily(stylingTheme.fontFamily.title),
                 }}
               >
                 {closedButtonLabel}
@@ -442,7 +442,7 @@ const OfflineSetupReviewSheet = ({
                   color:
                     resolveThemeColor(stylingTheme, palette.onAccent) ||
                     stylingTheme.colors.default,
-                  ...titleFontStyle(stylingTheme),
+                  fontFamily: resolveFontFamily(stylingTheme.fontFamily.title),
                 }}
               >
                 {openButtonLabel}

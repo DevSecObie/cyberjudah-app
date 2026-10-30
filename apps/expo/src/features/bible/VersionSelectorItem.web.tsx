@@ -1,24 +1,16 @@
 import { isStrongCapableBibleVersion } from '~helpers/strongBiblePublications'
 import { isInterlinearCapableBibleVersion } from '~helpers/interlinearBiblePublications'
 import StrongMark from './StrongMark'
-import InterlinearShortcut from './InterlinearShortcut'
+import InterlinearMark from './InterlinearMark'
 import { twMerge } from '~common/ui/classNames'
 
 import { TouchableOpacity } from 'react-native'
-import { useTranslation } from 'react-i18next'
 import Box from '~common/ui/Box'
 import Checkbox from '~common/ui/Checkbox'
 import { FeatherIcon } from '~common/ui/Icon'
-import { ListSeparator } from '~common/ui/ListSection'
 import Text from '~common/ui/Text'
 import { useResourceAccess } from '~features/resources/resourceAccess'
-import { colorWithOpacity } from '~themes/colorValues'
-import { useTheme } from '~themes/ThemeProvider'
 import type { Props } from './VersionSelectorItem'
-
-const ROW_PADDING_LEFT = 20
-const CHECKBOX_SLOT = 42
-
 const VersionSelectorItem = ({
   version,
   isSelected,
@@ -26,98 +18,71 @@ const VersionSelectorItem = ({
   showSelectionCheckbox,
   showStrongIndex,
   selectionRequirement = 'bible',
-  onOpenInterlinear,
 }: Props) => {
-  const { t } = useTranslation()
-  const theme = useTheme()
   const resources = useResourceAccess()
   const identity =
     selectionRequirement === 'strong'
       ? ({ kind: 'strong-bible-index', versionId: version.id } as const)
       : ({ kind: 'bible-text', versionId: version.id } as const)
   const available = resources.capabilities.getOnlineAccess(identity).status === 'remotely-readable'
-  const showInterlinearCapability = showStrongIndex && isInterlinearCapableBibleVersion(version.id)
 
   return (
-    // With a checkbox, the box says a version is chosen: the row takes no tint.
-    <Box
-      className="border-continuous overflow-hidden"
-      style={{
-        backgroundColor:
-          isSelected && !showSelectionCheckbox
-            ? colorWithOpacity(theme.colors.primary, 0.12)
-            : undefined,
+    <TouchableOpacity
+      accessibilityRole={showSelectionCheckbox ? 'checkbox' : 'button'}
+      accessibilityState={{
+        ...(showSelectionCheckbox ? { checked: Boolean(isSelected) } : {}),
+        disabled: !available,
       }}
+      disabled={!available}
+      onPress={() => onChange?.(version.id)}
     >
-      <TouchableOpacity
-        accessibilityRole={showSelectionCheckbox ? 'checkbox' : 'button'}
-        accessibilityState={{
-          ...(showSelectionCheckbox ? { checked: Boolean(isSelected) } : {}),
-          disabled: !available,
-        }}
-        disabled={!available}
-        onPress={() => onChange?.(version.id)}
+      <Box
+        className="border-continuous overflow-hidden min-h-[72px] flex-row items-center px-[20px] py-[12px] border-b-[1px] border-border"
+        style={{ borderLeftWidth: isSelected ? 3 : 0, opacity: available ? 1 : 0.42 }}
       >
-        <Box
-          className="border-continuous overflow-hidden min-h-[72px] flex-row items-center pr-[20px] py-[12px]"
-          style={{ paddingLeft: ROW_PADDING_LEFT, opacity: available ? 1 : 0.42 }}
-        >
-          {showSelectionCheckbox && (
-            <Box
-              className="overflow-hidden border-continuous items-center justify-center"
-              style={{ width: CHECKBOX_SLOT }}
-            >
-              <Checkbox checked={Boolean(isSelected)} size={22} />
-            </Box>
-          )}
-          <Box className="overflow-hidden border-continuous flex-[1]">
+        {showSelectionCheckbox && (
+          <Box className="overflow-hidden border-continuous w-[42px] items-center justify-center">
+            <Checkbox checked={Boolean(isSelected)} variant="icon" size={22} />
+          </Box>
+        )}
+        <Box className="overflow-hidden border-continuous flex-[1]">
+          <Text
+            className={twMerge(
+              isSelected ? 'text-primary' : 'text-default',
+              'text-[12px] opacity-[0.5] font-bold'
+            )}
+          >
+            {version.id}
+          </Text>
+          <Box className="flex-row items-center gap-[5px] flex-wrap">
             <Text
               className={twMerge(
-                isSelected ? 'text-link' : 'text-default',
-                'text-[12px] opacity-[0.5] font-bold'
+                isSelected ? 'text-primary' : 'text-default',
+                'text-[16px] shrink'
               )}
             >
-              {version.id}
+              {version.displayName || version.name}
             </Text>
-            <Box className="flex-row items-center gap-[5px] flex-wrap">
-              <Text
-                className={twMerge(isSelected ? 'text-link' : 'text-default', 'text-[16px] shrink')}
-              >
-                {version.displayName || version.name}
-              </Text>
-              {version.hasAudio && <FeatherIcon name="volume-2" size={16} color="primary" />}
-              {(showStrongIndex || selectionRequirement === 'strong') &&
-                isStrongCapableBibleVersion(version.id) && <StrongMark passive />}
-            </Box>
-            {showInterlinearCapability && (
-              <Text className="text-[13px] leading-[18px] text-tertiary mt-[2px]">
-                {t('versionSelector.interlinearDescription')}
-              </Text>
+            {version.hasAudio && <FeatherIcon name="volume-2" size={16} color="primary" />}
+            {(showStrongIndex || selectionRequirement === 'strong') &&
+              isStrongCapableBibleVersion(version.id) && <StrongMark passive />}
+            {showStrongIndex && isInterlinearCapableBibleVersion(version.id) && (
+              <InterlinearMark passive />
             )}
-            {version.c ? (
-              <Text className="text-tertiary text-[10px]" numberOfLines={1}>
-                {version.c}
-              </Text>
-            ) : null}
           </Box>
-          {(isSelected || !available) && (
-            <Box className="overflow-hidden border-continuous w-[42px] items-center justify-center">
-              <FeatherIcon name={available ? 'check' : 'slash'} size={18} />
-            </Box>
-          )}
+          {version.c ? (
+            <Text className="text-tertiary text-[10px]" numberOfLines={1}>
+              {version.c}
+            </Text>
+          ) : null}
         </Box>
-      </TouchableOpacity>
-      {/* Beside the row's button, not inside it: a web button cannot hold another one */}
-      {showInterlinearCapability && onOpenInterlinear && available && (
-        <Box className="overflow-visible border-continuous px-[20px] pb-[14px] mt-[-4px]">
-          <InterlinearShortcut onPress={() => onOpenInterlinear(version.id)} />
-        </Box>
-      )}
-      <ListSeparator
-        inset={showSelectionCheckbox ? ROW_PADDING_LEFT + CHECKBOX_SLOT : ROW_PADDING_LEFT}
-        overlay
-      />
-    </Box>
+        {(isSelected || !available) && (
+          <Box className="overflow-hidden border-continuous w-[42px] items-center justify-center">
+            <FeatherIcon name={available ? 'check' : 'slash'} size={18} />
+          </Box>
+        )}
+      </Box>
+    </TouchableOpacity>
   )
 }
 

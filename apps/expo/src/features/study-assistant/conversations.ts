@@ -1,4 +1,3 @@
-import generateUUID from '~helpers/generateUUID'
 import {
   parseRoutingDecision,
   parseStudySource,
@@ -278,7 +277,7 @@ export function assertConversationCapacity(conversations: Conversation[], curren
 }
 
 export function newConversation(): Conversation {
-  return { id: generateUUID(), title: '', updatedAt: Date.now(), messages: [] }
+  return { id: crypto.randomUUID(), title: '', updatedAt: Date.now(), messages: [] }
 }
 
 type PreferenceStorage = Pick<Storage, 'getItem' | 'setItem'>

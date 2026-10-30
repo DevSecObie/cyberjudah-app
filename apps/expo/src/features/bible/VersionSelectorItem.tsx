@@ -1,8 +1,8 @@
 import { useConfirmDialog } from '~common/ConfirmDialog/useConfirmDialog'
 import { twMerge } from '~common/ui/classNames'
-import { colorWithOpacity, resolveThemeColor } from '~themes/colorValues'
+import { resolveThemeColor } from '~themes/colorValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
-import React, { useEffectEvent } from 'react'
+import React from 'react'
 import { Linking, Platform, TouchableOpacity } from 'react-native'
 import { useQuery } from '@tanstack/react-query'
 import { getDefaultStore } from 'jotai/vanilla'
@@ -10,7 +10,6 @@ import { useTranslation } from 'react-i18next'
 import Box from '~common/ui/Box'
 import Checkbox from '~common/ui/Checkbox'
 import { FeatherIcon } from '~common/ui/Icon'
-import { ListSeparator } from '~common/ui/ListSection'
 import Progress from '~common/ui/Progress'
 import { HStack } from '~common/ui/Stack'
 import Text from '~common/ui/Text'
@@ -30,9 +29,11 @@ import {
   isStrongCapableBibleVersion,
 } from '~helpers/strongBiblePublications'
 import type { StrongBibleSidecarAvailability } from '~helpers/strongBibleSidecar'
+import StrongIndexSelectorItem from './StrongIndexSelectorItem'
 import StrongMark from './StrongMark'
 import { isInterlinearCapableBibleVersion } from '~helpers/interlinearBiblePublications'
-import InterlinearShortcut from './InterlinearShortcut'
+import InterlinearIndexSelectorItem from './InterlinearIndexSelectorItem'
+import InterlinearMark from './InterlinearMark'
 import { getDownloadItemProgress } from '~state/downloadQueue'
 import { useResourcePublicationStatus } from '~helpers/useResourcePublicationStatus'
 import { getBibleRelatedPublicationResources } from '~helpers/bibleRelatedPublications'
@@ -44,38 +45,33 @@ import {
 import useConnection from '~helpers/useConnection'
 import { useResourceAccess } from '~features/resources/resourceAccess'
 import { localQueryOptions } from '~helpers/queryOptions'
-const ROW_PADDING_LEFT = 20
-const CHECKBOX_SLOT = 48
-
 const VersionItemContainer = ({
   children,
   needsUpdate,
+  hasDependency,
   selected,
-  separatorInset = ROW_PADDING_LEFT,
   onPress,
 }: React.PropsWithChildren<{
   needsUpdate?: boolean
+  hasDependency?: boolean
   selected?: boolean
-  /** Where the hairline under the row starts: where its text starts. */
-  separatorInset?: number
   onPress?: () => void
 }>) => {
-  const theme = useStylingTheme()
   const content = (
     <Box
       className={twMerge(
-        'overflow-hidden border-continuous min-h-[76px] pr-[4px] py-[12px]',
-        needsUpdate && 'border-l-success'
+        'overflow-hidden border-continuous',
+        twMerge(
+          selected ? 'border-l-primary' : needsUpdate ? 'border-l-success' : '',
+          'overflow-hidden min-h-[76px] pl-[20px] pr-[4px] py-[12px] border-border'
+        )
       )}
       style={{
-        paddingLeft: ROW_PADDING_LEFT,
-        // An update waiting keeps its mark on the edge; the chosen version takes a tint.
-        borderLeftWidth: needsUpdate ? 5 : 0,
-        backgroundColor: selected ? colorWithOpacity(theme.colors.primary, 0.12) : undefined,
+        borderBottomWidth: hasDependency ? 0 : 1,
+        borderLeftWidth: selected ? 3 : needsUpdate ? 5 : 0,
       }}
     >
       {children}
-      <ListSeparator inset={separatorInset} overlay />
     </Box>
   )
 
@@ -135,11 +131,18 @@ const VersionIdentity = ({
   copyrightStyle,
   onCopyrightPress,
   showStrongCapability,
-  highlightStrong,
+  isStrongIndexAvailable,
+  isStrongIndexExpanded,
+  onToggleStrongIndex,
+  strongToggleLabel,
   strongAttribution,
   showInterlinearCapability,
+  isInterlinearIndexAvailable,
+  isInterlinearIndexExpanded,
+  onToggleInterlinearIndex,
+  interlinearToggleLabel,
   interlinearAttribution,
-  interlinearShortcut,
+  passiveCapabilities = false,
 }: {
   version: Version & { displayName?: string }
   color: string
@@ -150,19 +153,22 @@ const VersionIdentity = ({
   copyrightStyle?: { textDecorationLine: 'underline' }
   onCopyrightPress?: () => void
   showStrongCapability?: boolean
-  /** The S follows the selected row's colour; it says nothing of an Offline copy. */
-  highlightStrong?: boolean
+  isStrongIndexAvailable?: boolean
+  isStrongIndexExpanded?: boolean
+  onToggleStrongIndex?: () => void
+  strongToggleLabel?: string
   strongAttribution?: string
   showInterlinearCapability?: boolean
+  isInterlinearIndexAvailable?: boolean
+  isInterlinearIndexExpanded?: boolean
+  onToggleInterlinearIndex?: () => void
+  interlinearToggleLabel?: string
   interlinearAttribution?: string
-  /** Opens the version straight in interlinear, under the line that says it can. */
-  interlinearShortcut?: React.ReactNode
+  passiveCapabilities?: boolean
 }) => {
-  const { t } = useTranslation()
   const stylingTheme = useStylingTheme()
   return (
-    // Visible overflow: the interlinear button's shadow goes past the column
-    <Box className="overflow-visible border-continuous flex-[1]">
+    <Box className="overflow-hidden border-continuous flex-[1]">
       <Text
         className="text-[12px] opacity-[0.5] font-bold"
         style={{ color: resolveThemeColor(stylingTheme, color) || stylingTheme.colors.default }}
@@ -181,17 +187,70 @@ const VersionIdentity = ({
             <FeatherIcon name="volume-2" size={16} color="primary" />
           </Box>
         )}
-        {showCapabilities && showStrongCapability && (
-          <Box className="overflow-hidden border-continuous ml-[5px]">
-            <StrongMark highlighted={highlightStrong} passive />
-          </Box>
-        )}
+        {showCapabilities &&
+          showStrongCapability &&
+          (onToggleStrongIndex ? (
+            <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel={strongToggleLabel}
+              accessibilityState={{ expanded: isStrongIndexExpanded }}
+              onPress={event => {
+                event.stopPropagation()
+                onToggleStrongIndex()
+              }}
+            >
+              <Box className="border-continuous overflow-visible w-[38px] h-[28px] items-center justify-center ml-[5px]">
+                <Box className="border-continuous overflow-visible relative w-[22px] h-[24px] items-center justify-center">
+                  <StrongMark highlighted={isStrongIndexAvailable} />
+                  <Box className="overflow-hidden border-continuous absolute w-[16px] h-[16px] items-center justify-center right-[-10px] bottom-[0px]">
+                    <FeatherIcon
+                      name={isStrongIndexExpanded ? 'chevron-up' : 'chevron-down'}
+                      size={12}
+                      color="tertiary"
+                    />
+                  </Box>
+                </Box>
+              </Box>
+            </TouchableOpacity>
+          ) : (
+            <Box className="overflow-hidden border-continuous ml-[5px]">
+              <StrongMark highlighted={isStrongIndexAvailable} passive={passiveCapabilities} />
+            </Box>
+          ))}
+        {showCapabilities &&
+          showInterlinearCapability &&
+          (onToggleInterlinearIndex ? (
+            <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel={interlinearToggleLabel}
+              accessibilityState={{ expanded: isInterlinearIndexExpanded }}
+              onPress={event => {
+                event.stopPropagation()
+                onToggleInterlinearIndex()
+              }}
+            >
+              <Box className="border-continuous overflow-visible w-[38px] h-[28px] items-center justify-center ml-[5px]">
+                <Box className="border-continuous overflow-visible relative w-[22px] h-[24px] items-center justify-center">
+                  <InterlinearMark highlighted={isInterlinearIndexAvailable} />
+                  <Box className="overflow-hidden border-continuous absolute w-[16px] h-[16px] items-center justify-center right-[-10px] bottom-[0px]">
+                    <FeatherIcon
+                      name={isInterlinearIndexExpanded ? 'chevron-up' : 'chevron-down'}
+                      size={12}
+                      color="tertiary"
+                    />
+                  </Box>
+                </Box>
+              </Box>
+            </TouchableOpacity>
+          ) : (
+            <Box className="overflow-hidden border-continuous ml-[5px]">
+              <InterlinearMark
+                highlighted={isInterlinearIndexAvailable}
+                passive={passiveCapabilities}
+              />
+            </Box>
+          ))}
       </HStack>
-      {showCapabilities && showInterlinearCapability && (
-        <Text className="text-[13px] leading-[18px] text-tertiary mt-[2px]">
-          {t('versionSelector.interlinearDescription')}
-        </Text>
-      )}
       {showPublicationDetails && (
         <Text
           className="text-[10px]"
@@ -207,27 +266,28 @@ const VersionIdentity = ({
           {version.c}
         </Text>
       )}
-      {showPublicationDetails && strongAttribution && (
-        <Text
-          className="text-[10px] opacity-[0.5]"
-          style={{ color: resolveThemeColor(stylingTheme, color) || stylingTheme.colors.default }}
-        >
-          {strongAttribution}
-        </Text>
-      )}
-      {showPublicationDetails && interlinearAttribution && (
-        <Text
-          className="text-[10px] opacity-[0.5]"
-          style={{ color: resolveThemeColor(stylingTheme, color) || stylingTheme.colors.default }}
-        >
-          {interlinearAttribution}
-        </Text>
-      )}
-      {showCapabilities && showInterlinearCapability && interlinearShortcut && (
-        <Box className="overflow-visible border-continuous mt-[10px] mb-[6px]">
-          {interlinearShortcut}
-        </Box>
-      )}
+      {showPublicationDetails &&
+        isStrongIndexAvailable &&
+        !isStrongIndexExpanded &&
+        strongAttribution && (
+          <Text
+            className="text-[10px] opacity-[0.5]"
+            style={{ color: resolveThemeColor(stylingTheme, color) || stylingTheme.colors.default }}
+          >
+            {strongAttribution}
+          </Text>
+        )}
+      {showPublicationDetails &&
+        isInterlinearIndexAvailable &&
+        !isInterlinearIndexExpanded &&
+        interlinearAttribution && (
+          <Text
+            className="text-[10px] opacity-[0.5]"
+            style={{ color: resolveThemeColor(stylingTheme, color) || stylingTheme.colors.default }}
+          >
+            {interlinearAttribution}
+          </Text>
+        )}
     </Box>
   )
 }
@@ -242,10 +302,9 @@ export interface Props {
   onDownloadComplete?: (id: VersionCode) => void
   showSelectionCheckbox?: boolean
   showStrongIndex?: boolean
+  strongCollapseKey?: number
   selectionRequirement?: 'bible' | 'strong'
   onOpenOfflineDetails?: (version: Version & { displayName?: string }) => void
-  /** Offers to open an interlinear-capable version straight in interlinear. */
-  onOpenInterlinear?: (id: VersionCode) => void
 }
 
 const VersionSelectorItem = ({
@@ -258,12 +317,29 @@ const VersionSelectorItem = ({
   onDownloadComplete,
   showSelectionCheckbox,
   showStrongIndex,
+  strongCollapseKey,
   selectionRequirement = 'bible',
   onOpenOfflineDetails,
-  onOpenInterlinear,
 }: Props) => {
   const { t } = useTranslation()
   const confirmDeletion = useConfirmDialog()
+  const [reportedStrongIndexAvailable, setReportedStrongIndexAvailable] = React.useState<boolean>()
+  const [strongExpansion, setStrongExpansion] = React.useState({
+    collapseKey: strongCollapseKey,
+    expanded: false,
+  })
+  const [isFrenchInterlinearIndexAvailable, setFrenchInterlinearIndexAvailable] =
+    React.useState<boolean>()
+  const [isEnglishInterlinearIndexAvailable, setEnglishInterlinearIndexAvailable] =
+    React.useState<boolean>()
+  const [interlinearExpansion, setInterlinearExpansion] = React.useState({
+    collapseKey: strongCollapseKey,
+    expanded: false,
+  })
+  const isStrongIndexExpanded =
+    strongExpansion.collapseKey === strongCollapseKey && strongExpansion.expanded
+  const isInterlinearIndexExpanded =
+    interlinearExpansion.collapseKey === strongCollapseKey && interlinearExpansion.expanded
   const isConnected = useConnection()
   const resources = useResourceAccess()
 
@@ -292,6 +368,9 @@ const VersionSelectorItem = ({
   const strongSelectionAvailability = requiresStrong
     ? strongUsageAvailability
     : strongOfflineAvailability
+  const isStrongIndexAvailable = requiresStrong
+    ? strongSelectionAvailability?.status === 'available'
+    : reportedStrongIndexAvailable
   const versionNeedsDownload = offlineResourceState
     ? offlineResourceState.availability.status !== 'available'
     : undefined
@@ -324,7 +403,22 @@ const VersionSelectorItem = ({
   const isQueued = activeQueueState?.status === 'queued'
   const downloadProgress = activeQueueState ? getDownloadItemProgress(activeQueueState) : 0
   const showStrongCapability = (showStrongIndex || requiresStrong) && Boolean(strongVersionId)
+  const toggleStrongIndex = () =>
+    setStrongExpansion({ collapseKey: strongCollapseKey, expanded: !isStrongIndexExpanded })
+  const strongToggleLabel = isStrongIndexExpanded
+    ? t('versionSelector.hideStrongIndex', { bible: version.id })
+    : t('versionSelector.showStrongIndex', { bible: version.id })
   const showInterlinearCapability = showStrongIndex && isInterlinearCapableBibleVersion(version.id)
+  const isInterlinearIndexAvailable =
+    isFrenchInterlinearIndexAvailable === true || isEnglishInterlinearIndexAvailable === true
+  const toggleInterlinearIndex = () =>
+    setInterlinearExpansion({
+      collapseKey: strongCollapseKey,
+      expanded: !isInterlinearIndexExpanded,
+    })
+  const interlinearToggleLabel = isInterlinearIndexExpanded
+    ? t('versionSelector.hideInterlinearIndex')
+    : t('versionSelector.showInterlinearIndex')
   const openSourceUrl = () => {
     if (version.sourceUrl) {
       Linking.openURL(version.sourceUrl)
@@ -359,15 +453,13 @@ const VersionSelectorItem = ({
     downloadManager.enqueue([item])
   }
 
-  // The shared function keeps the download of the render that shared it.
-  const getStartDownload = useEffectEvent(() => startDownload)
   React.useEffect(() => {
     if (shareFn) {
-      const start = getStartDownload()
       shareFn(() => {
-        void start()
+        void startDownload()
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shareFn, version.id])
 
   // Watch for Bible-only download completion
@@ -416,7 +508,7 @@ const VersionSelectorItem = ({
 
     return (
       <ActionColumn opacity={disabled ? 0.45 : 1}>
-        <Checkbox checked={Boolean(isSelected)} size={22} />
+        <Checkbox checked={Boolean(isSelected)} variant="icon" size={22} />
       </ActionColumn>
     )
   }
@@ -424,12 +516,27 @@ const VersionSelectorItem = ({
   const renderSelectedIndicator = () => (
     <ActionColumn>
       {isSelected && (
-        <Box className="overflow-hidden border-continuous w-[22px] h-[22px] rounded-full bg-primary items-center justify-center">
+        <Box className="overflow-hidden border-continuous w-[22px] h-[22px] rounded-[11px] bg-primary items-center justify-center">
           <FeatherIcon name="check" size={14} color="white" />
         </Box>
       )}
     </ActionColumn>
   )
+
+  const interlinearIndexItems = showInterlinearCapability ? (
+    <>
+      <InterlinearIndexSelectorItem
+        locale="fr"
+        expanded={isInterlinearIndexExpanded}
+        onAvailabilityChange={setFrenchInterlinearIndexAvailable}
+      />
+      <InterlinearIndexSelectorItem
+        locale="en"
+        expanded={isInterlinearIndexExpanded}
+        onAvailabilityChange={setEnglishInterlinearIndexAvailable}
+      />
+    </>
+  ) : null
 
   const selectionNeedsDownload = requiresStrong
     ? strongSelectionAvailability
@@ -437,20 +544,11 @@ const VersionSelectorItem = ({
       : undefined
     : versionNeedsDownload
   const isUnavailableOffline = selectionNeedsDownload === true && !isConnected
-  const interlinearShortcut =
-    onOpenInterlinear && showInterlinearCapability && !isUnavailableOffline ? (
-      <InterlinearShortcut onPress={() => onOpenInterlinear(version.id)} />
-    ) : undefined
 
   if (onOpenOfflineDetails) {
     return (
-      // With a checkbox, the box says a version is chosen: the row takes no tint.
-      <VersionItemContainer
-        needsUpdate={needsUpdate}
-        selected={isSelected && !showSelectionCheckbox}
-        separatorInset={showSelectionCheckbox ? ROW_PADDING_LEFT + CHECKBOX_SLOT : undefined}
-      >
-        <Box className="overflow-visible border-continuous flex-[1] flex-row items-center">
+      <VersionItemContainer needsUpdate={needsUpdate} selected={isSelected}>
+        <Box className="overflow-hidden border-continuous flex-[1] flex-row items-center">
           <TouchableOpacity
             style={{ flex: 1 }}
             disabled={isUnavailableOffline}
@@ -462,20 +560,9 @@ const VersionSelectorItem = ({
                 ? { checked: Boolean(isSelected), disabled: isUnavailableOffline }
                 : { disabled: isUnavailableOffline }
             }
-            // The row is one element for screen readers: its interlinear button becomes an action
-            accessibilityActions={
-              interlinearShortcut
-                ? [{ name: 'openInterlinear', label: t('versionSelector.openInterlinear') }]
-                : undefined
-            }
-            onAccessibilityAction={event => {
-              if (event.nativeEvent.actionName === 'openInterlinear') {
-                onOpenInterlinear?.(version.id)
-              }
-            }}
           >
             <Box
-              className="overflow-visible border-continuous flex-[1] flex-row items-center"
+              className="overflow-hidden border-continuous flex-[1] flex-row items-center"
               style={{ opacity: isUnavailableOffline ? 0.45 : 1 }}
             >
               {renderSelectionCheckbox()}
@@ -484,11 +571,11 @@ const VersionSelectorItem = ({
                 color={versionColor}
                 showPublicationDetails
                 showCapabilities
+                passiveCapabilities
                 copyrightOpacity={copyrightOpacity}
                 showStrongCapability={showStrongCapability}
-                highlightStrong={isSelected}
+                isStrongIndexAvailable={isSelected}
                 showInterlinearCapability={showInterlinearCapability}
-                interlinearShortcut={interlinearShortcut}
               />
               {isLoading ? (
                 <Box className="overflow-hidden border-continuous w-[30px] items-center justify-center">
@@ -499,7 +586,7 @@ const VersionSelectorItem = ({
                   <FeatherIcon name="cloud" size={18} color="primary" />
                   {strongPresent && (
                     <Box
-                      className="overflow-hidden border-continuous absolute right-[-1px] bottom-[-2px] rounded-full bg-primary items-center justify-center"
+                      className="overflow-hidden border-continuous absolute right-[-1px] bottom-[-2px] rounded-[7px] bg-primary items-center justify-center"
                       style={{ width: 14, height: 14 }}
                     >
                       <Text
@@ -533,67 +620,88 @@ const VersionSelectorItem = ({
 
   if (selectionNeedsDownload !== false) {
     return (
-      <VersionItemContainer
-        onPress={isUnavailableOffline ? undefined : () => onChange?.(version.id)}
-      >
-        <Box
-          className="overflow-hidden border-continuous flex-[1] flex-row items-center"
-          style={{ opacity: isUnavailableOffline ? 0.45 : 1 }}
+      <Box className="overflow-hidden border-continuous">
+        <VersionItemContainer
+          onPress={isUnavailableOffline ? undefined : () => onChange?.(version.id)}
+          hasDependency={
+            (showStrongCapability && isStrongIndexExpanded) ||
+            (showInterlinearCapability && isInterlinearIndexExpanded)
+          }
         >
-          <Box className="overflow-hidden border-continuous flex-[1]">
-            <VersionIdentity
-              version={version}
-              color="default"
-              showPublicationDetails
-              showCapabilities
-              copyrightColor={copyrightColor}
-              copyrightOpacity={copyrightOpacity}
-              copyrightStyle={copyrightStyle}
-              onCopyrightPress={version.sourceUrl ? openSourceUrl : undefined}
-              showStrongCapability={showStrongCapability}
-              strongAttribution={
-                strongVersionId ? t(getStrongBibleAttributionKey(strongVersionId)) : undefined
-              }
-              showInterlinearCapability={showInterlinearCapability}
-              interlinearShortcut={interlinearShortcut}
-              interlinearAttribution={
-                isInterlinearCapableBibleVersion(version.id)
-                  ? t('versionSelector.interlinearAttribution')
-                  : undefined
-              }
-            />
+          <Box
+            className="overflow-hidden border-continuous flex-[1] flex-row items-center"
+            style={{ opacity: isUnavailableOffline ? 0.45 : 1 }}
+          >
+            <Box className="overflow-hidden border-continuous flex-[1]">
+              <VersionIdentity
+                version={version}
+                color="default"
+                showPublicationDetails
+                showCapabilities
+                copyrightColor={copyrightColor}
+                copyrightOpacity={copyrightOpacity}
+                copyrightStyle={copyrightStyle}
+                onCopyrightPress={version.sourceUrl ? openSourceUrl : undefined}
+                showStrongCapability={showStrongCapability}
+                isStrongIndexAvailable={isStrongIndexAvailable}
+                isStrongIndexExpanded={isStrongIndexExpanded}
+                onToggleStrongIndex={
+                  showStrongIndex && showStrongCapability ? toggleStrongIndex : undefined
+                }
+                strongToggleLabel={strongToggleLabel}
+                strongAttribution={
+                  strongVersionId ? t(getStrongBibleAttributionKey(strongVersionId)) : undefined
+                }
+                showInterlinearCapability={showInterlinearCapability}
+                isInterlinearIndexAvailable={isInterlinearIndexAvailable}
+                isInterlinearIndexExpanded={isInterlinearIndexExpanded}
+                onToggleInterlinearIndex={
+                  showInterlinearCapability ? toggleInterlinearIndex : undefined
+                }
+                interlinearToggleLabel={interlinearToggleLabel}
+                interlinearAttribution={t('versionSelector.interlinearAttribution')}
+              />
+            </Box>
+            {selectionNeedsDownload === true && !isLoading && !isQueued && (
+              <ActionButton
+                accessibilityLabel={t('accessibility.downloadVersion', {
+                  version: version.displayName || version.name,
+                })}
+                disabled={!isConnected}
+                onPress={() => {
+                  void startDownload()
+                }}
+              >
+                <FeatherIcon name={isConnected ? 'download-cloud' : 'wifi-off'} size={16} />
+              </ActionButton>
+            )}
+            {renderSelectionCheckbox()}
+            {typeof selectionNeedsDownload === 'undefined' && (
+              <ActionColumn>
+                <FeatherIcon name="clock" size={18} color="tertiary" />
+              </ActionColumn>
+            )}
+            {isQueued && (
+              <ActionColumn>
+                <FeatherIcon name="clock" size={18} color="tertiary" />
+              </ActionColumn>
+            )}
+            {isLoading && (
+              <ActionColumn>
+                <Progress progress={Math.max(downloadProgress, 0.04)} size={22} thickness={2.5} />
+              </ActionColumn>
+            )}
           </Box>
-          {selectionNeedsDownload === true && !isLoading && !isQueued && (
-            <ActionButton
-              accessibilityLabel={t('accessibility.downloadVersion', {
-                version: version.displayName || version.name,
-              })}
-              disabled={!isConnected}
-              onPress={() => {
-                void startDownload()
-              }}
-            >
-              <FeatherIcon name={isConnected ? 'download-cloud' : 'wifi-off'} size={16} />
-            </ActionButton>
-          )}
-          {renderSelectionCheckbox()}
-          {typeof selectionNeedsDownload === 'undefined' && (
-            <ActionColumn>
-              <FeatherIcon name="clock" size={18} color="tertiary" />
-            </ActionColumn>
-          )}
-          {isQueued && (
-            <ActionColumn>
-              <FeatherIcon name="clock" size={18} color="tertiary" />
-            </ActionColumn>
-          )}
-          {isLoading && (
-            <ActionColumn>
-              <Progress progress={Math.max(downloadProgress, 0.04)} size={22} thickness={2.5} />
-            </ActionColumn>
-          )}
-        </Box>
-      </VersionItemContainer>
+        </VersionItemContainer>
+        {showStrongIndex && showStrongCapability && strongVersionId && (
+          <StrongIndexSelectorItem
+            versionId={strongVersionId}
+            expanded={isStrongIndexExpanded}
+            onAvailabilityChange={setReportedStrongIndexAvailable}
+          />
+        )}
+        {interlinearIndexItems}
+      </Box>
     )
   }
 
@@ -637,36 +745,57 @@ const VersionSelectorItem = ({
   }
 
   return (
-    <VersionItemContainer
-      needsUpdate={needsUpdate}
-      onPress={() => onChange && onChange(version.id)}
-    >
-      <Box className="overflow-hidden border-continuous flex-[1] flex-row items-center">
-        <VersionIdentity
-          version={version}
-          color={versionColor}
-          showPublicationDetails
-          showCapabilities
-          copyrightColor={copyrightColor}
-          copyrightOpacity={copyrightOpacity}
-          copyrightStyle={copyrightStyle}
-          onCopyrightPress={version.sourceUrl ? openSourceUrl : undefined}
-          showStrongCapability={showStrongCapability}
-          strongAttribution={
-            strongVersionId ? t(getStrongBibleAttributionKey(strongVersionId)) : undefined
-          }
-          showInterlinearCapability={showInterlinearCapability}
-          interlinearShortcut={interlinearShortcut}
-          interlinearAttribution={
-            isInterlinearCapableBibleVersion(version.id)
-              ? t('versionSelector.interlinearAttribution')
-              : undefined
-          }
+    <Box className="overflow-hidden border-continuous">
+      <VersionItemContainer
+        needsUpdate={needsUpdate}
+        hasDependency={
+          (showStrongCapability && isStrongIndexExpanded) ||
+          (showInterlinearCapability && isInterlinearIndexExpanded)
+        }
+        onPress={() => onChange && onChange(version.id)}
+      >
+        <Box className="overflow-hidden border-continuous flex-[1] flex-row items-center">
+          <VersionIdentity
+            version={version}
+            color={versionColor}
+            showPublicationDetails
+            showCapabilities
+            copyrightColor={copyrightColor}
+            copyrightOpacity={copyrightOpacity}
+            copyrightStyle={copyrightStyle}
+            onCopyrightPress={version.sourceUrl ? openSourceUrl : undefined}
+            showStrongCapability={showStrongCapability}
+            isStrongIndexAvailable={isStrongIndexAvailable}
+            isStrongIndexExpanded={isStrongIndexExpanded}
+            onToggleStrongIndex={
+              showStrongIndex && showStrongCapability ? toggleStrongIndex : undefined
+            }
+            strongToggleLabel={strongToggleLabel}
+            strongAttribution={
+              strongVersionId ? t(getStrongBibleAttributionKey(strongVersionId)) : undefined
+            }
+            showInterlinearCapability={showInterlinearCapability}
+            isInterlinearIndexAvailable={isInterlinearIndexAvailable}
+            isInterlinearIndexExpanded={isInterlinearIndexExpanded}
+            onToggleInterlinearIndex={
+              showInterlinearCapability ? toggleInterlinearIndex : undefined
+            }
+            interlinearToggleLabel={interlinearToggleLabel}
+            interlinearAttribution={t('versionSelector.interlinearAttribution')}
+          />
+          {renderSelectionCheckbox()}
+          {!showSelectionCheckbox && renderSelectedIndicator()}
+        </Box>
+      </VersionItemContainer>
+      {showStrongIndex && showStrongCapability && strongVersionId && (
+        <StrongIndexSelectorItem
+          versionId={strongVersionId}
+          expanded={isStrongIndexExpanded}
+          onAvailabilityChange={setReportedStrongIndexAvailable}
         />
-        {renderSelectionCheckbox()}
-        {!showSelectionCheckbox && renderSelectedIndicator()}
-      </Box>
-    </VersionItemContainer>
+      )}
+      {interlinearIndexItems}
+    </Box>
   )
 }
 

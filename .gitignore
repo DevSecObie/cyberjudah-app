@@ -213,3 +213,6 @@ scripts/google-service-account.json
 .cyberjudah-signing/
 
 .gh-cache/
+
+# Local Cloudflare development state is not a mobile build input.
+**/.wrangler/

@@ -8,7 +8,6 @@ import {
   setBibleColumnTextModes,
   type BibleColumnTextModesData,
 } from '../bibleColumnTextModes'
-import { getColumnTextModeControls } from '~features/bible/columnTextModeControls'
 
 const legacyTab = (
   overrides: Partial<BibleColumnTextModesData> = {}
@@ -136,23 +135,5 @@ describe('resetParallelColumnTextModes', () => {
       { version: 'BDS', strongMode: 'hidden', interlinearLocale: 'en' },
       { version: 'BHG', strongMode: 'hidden', interlinearMode: 'strong', interlinearLocale: 'en' },
     ])
-  })
-})
-
-describe('getColumnTextModeControls', () => {
-  it('gives each column the buttons its version supports', () => {
-    const controls = getColumnTextModeControls({
-      ...legacyTab({
-        selectedVersion: 'BDS',
-        strongMode: 'hidden',
-        parallelVersions: ['LSG', 'BHG'],
-      }),
-      parallelTextModes: [
-        { version: 'LSG', strongMode: 'visible' },
-        { version: 'BHG', strongMode: 'hidden', interlinearMode: 'hidden' },
-      ],
-    })
-
-    expect(controls).toEqual([{}, { strong: { active: true } }, { interlinear: { active: false } }])
   })
 })

@@ -8,13 +8,12 @@ import { toast } from '~helpers/toast'
 import * as Updates from 'expo-updates'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { remoteQueryOptions } from '~helpers/queryOptions'
-import Box, { usePageBottomInset } from '~common/ui/Box'
+import Box from '~common/ui/Box'
 import Button from '~common/ui/Button'
 import Container from '~common/ui/Container'
 import Text from '~common/ui/Text'
 import useLogin from '~helpers/useLogin'
 import { appLogger } from '~helpers/agentObservability'
-import { persistor } from '~redux/store'
 type ErrorBoundaryState = {
   hasError: boolean
   error: Error | null
@@ -74,7 +73,6 @@ type ErrorFallbackProps = {
 const ErrorFallback = ({ error, errorInfo }: ErrorFallbackProps) => {
   const { t } = useTranslation()
   const { logout } = useLogin()
-  const bottomInset = usePageBottomInset()
 
   const updateCheck = useQuery({
     queryKey: ['errorBoundaryUpdate'],
@@ -84,8 +82,7 @@ const ErrorFallback = ({ error, errorInfo }: ErrorFallbackProps) => {
       }
 
       const check = await Updates.checkForUpdateAsync()
-      // A rollback to the embedded JavaScript is not "available", yet it still has to be fetched.
-      return check.isAvailable || check.isRollBackToEmbedded
+      return check.isAvailable
     },
     staleTime: Infinity,
     ...remoteQueryOptions,
@@ -131,14 +128,13 @@ Date: ${new Date().toISOString()}
   const handleReset = () => {
     logout()
     setTimeout(() => {
-      // State writes are throttled: the signed-out state is written before the reload.
-      void persistor.flush().finally(() => Updates.reloadAsync())
+      Updates.reloadAsync()
     }, 1000)
   }
 
   return (
     <Container>
-      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: bottomInset }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <Box className="overflow-hidden border-continuous flex-[1] items-center justify-center px-[20px] py-[40px]">
           <Icon.Feather name="alert-triangle" size={80} color="#DC2626" />
 
@@ -150,7 +146,7 @@ Date: ${new Date().toISOString()}
           {(isLoading || updateReady) && (
             <Box className="border-continuous overflow-hidden mt-[20px] p-[16px] bg-[rgba(59,130,246,0.1)] rounded-[8px] border-[1px] border-[rgba(59,130,246,0.2)] w-[100%] flex-row items-center">
               <ActivityIndicator size="small" color="#3B82F6" />
-              <Text className="text-[14px] text-link ml-[12px]">
+              <Text className="text-[14px] text-primary ml-[12px]">
                 {isLoading && t('app.updateChecking')}
                 {updateReady && t('app.updateReady')}
               </Text>

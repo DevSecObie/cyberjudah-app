@@ -7,27 +7,19 @@ import { Dispatch, WebViewProps } from '../BibleDOMWrapper'
 import { HighlightRect } from './HighlightComponents'
 import { SelectionRange } from './selectionUtils'
 import { useTouchSelection } from './useTouchSelection'
-import type { VerseSelectionHandles } from './useAnnotationHighlights'
 import { useAnnotationEvents } from './useAnnotationEvents'
-import type { VerseTarget } from './verseTargets'
 
 /** Callbacks for gesture handling passed through to touch selection */
 interface AnnotationModeCallbacks {
-  onMouseSelectionStart?: (verse: VerseTarget) => boolean
-  /** Called on single tap - receives the verse (and its version) and touch position */
-  onTapVerse?: (verse: VerseTarget, position: { x: number; y: number }) => void
-  /** Whether a tap on this verse waits to rule out a double tap */
-  shouldWaitForDoubleTap?: (verse: VerseTarget) => boolean
-  /** Called when a tap is held back to rule out a double tap, before onTapVerse */
-  onTapVerseHeld?: (verse: VerseTarget) => void
-  /** Called on double tap - receives the verse (and its version) and touch position */
-  onDoubleTapVerse?: (verse: VerseTarget, position: { x: number; y: number }) => void
+  onMouseSelectionStart?: () => boolean
+  /** Called on single tap - receives verseKey and touch position */
+  onTapVerse?: (verseKey: string, position: { x: number; y: number }) => void
+  /** Called on double tap - receives verseKey and touch position */
+  onDoubleTapVerse?: (verseKey: string, position: { x: number; y: number }) => void
   /** Called on long press */
-  onLongPressVerse?: (verse: VerseTarget) => void
+  onLongPressVerse?: (verseKey: string) => void
   /** Called to notify which verse is currently being touched (for visual feedback) */
-  onTouchedVerseChange?: (verse: VerseTarget | null) => void
-  /** Reading mode: a handle of selected verses is dragged, the words of its block take over */
-  onVerseHandleDragStart?: (range: SelectionRange) => void
+  onTouchedVerseChange?: (verseKey: string | null) => void
   /** Called when tapping on empty space (not on a verse) - useful for clearing selection */
   onTapEmpty?: () => void
   /** Called on horizontal swipe (fast movement) - for chapter navigation */
@@ -44,13 +36,8 @@ interface AnnotationModeTriggers {
 interface UseAnnotationModeControllerProps {
   // Core
   containerRef: RefObject<HTMLDivElement | null>
-  // The element gestures are listened to on: the whole width of the reader
-  gestureSurfaceRef?: RefObject<HTMLElement | null>
-  // The element the highlight layer is drawn in
-  highlightOriginRef: RefObject<HTMLDivElement | null>
   annotationMode: boolean | undefined
-  // The verses of every version on screen
-  versesByVersion: Record<string, TVerse[]>
+  verses: TVerse[]
   dispatch: Dispatch
   // Selection state (managed by parent)
   selection: SelectionRange | null
@@ -65,8 +52,6 @@ interface UseAnnotationModeControllerProps {
     end: { x: number; y: number } | null
   }
   selectedAnnotationId: string | null | undefined
-  // Reading mode: the handles of the selected verses, block by block
-  verseSelectionHandles?: VerseSelectionHandles[]
   // Triggers from native side
   triggers?: AnnotationModeTriggers
   // Gesture callbacks
@@ -79,10 +64,8 @@ interface UseAnnotationModeControllerReturn {
 
 export function useAnnotationModeController({
   containerRef,
-  gestureSurfaceRef,
-  highlightOriginRef,
   annotationMode,
-  versesByVersion,
+  verses,
   dispatch,
   selection,
   setSelection,
@@ -90,7 +73,6 @@ export function useAnnotationModeController({
   highlightRects,
   selectionHandlePositions,
   selectedAnnotationId,
-  verseSelectionHandles = [],
   triggers = {},
   callbacks = {},
 }: UseAnnotationModeControllerProps): UseAnnotationModeControllerReturn {
@@ -98,12 +80,9 @@ export function useAnnotationModeController({
   const {
     onMouseSelectionStart,
     onTapVerse,
-    shouldWaitForDoubleTap,
-    onTapVerseHeld,
     onDoubleTapVerse,
     onLongPressVerse,
     onTouchedVerseChange,
-    onVerseHandleDragStart,
     onTapEmpty,
     onSwipe,
   } = callbacks
@@ -111,21 +90,16 @@ export function useAnnotationModeController({
   // Touch selection hook (handles all gestures)
   const { lastDragEndRef } = useTouchSelection({
     containerRef,
-    gestureSurfaceRef,
-    highlightOriginRef,
     selection,
     setSelection: fn => setSelection(fn),
-    versesByVersion,
+    verses,
     getTokens,
     getSelectionHandlePositions: () => selectionHandlePositions,
-    getVerseSelectionHandles: () => verseSelectionHandles,
     highlightRects,
     annotationMode: annotationMode ?? false,
     callbacks: {
       onMouseSelectionStart,
       onTapVerse,
-      shouldWaitForDoubleTap,
-      onTapVerseHeld,
       onDoubleTapVerse,
       onLongPressVerse,
       onDragStart: () => {
@@ -137,7 +111,6 @@ export function useAnnotationModeController({
         }
       },
       onTouchedVerseChange,
-      onVerseHandleDragStart,
       onTapEmpty,
       onSwipe,
     },
@@ -147,7 +120,7 @@ export function useAnnotationModeController({
   useAnnotationEvents({
     selection: annotationMode ? selection : null,
     setSelection,
-    versesByVersion,
+    verses,
     dispatch,
     getTokens,
     clearSelectionTrigger,

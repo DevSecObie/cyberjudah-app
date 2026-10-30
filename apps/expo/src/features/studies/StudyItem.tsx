@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next'
 import EntityChipList from '~common/EntityChipList'
 import Link from '~common/Link'
 import Box from '~common/ui/Box'
-import Card from '~common/ui/Card'
 import Paragraph from '~common/ui/Paragraph'
 import Text from '~common/ui/Text'
 import { deltaToPlainText } from '~helpers/deltaToPlainText'
@@ -59,8 +58,6 @@ export type StudyItemProps = {
   onPress?: (studyId: string) => void
   relationCount?: number
   onRelationPress?: () => void
-  /** On the plain page ground (a list or a sheet) rather than the canvas: the tile takes a tint. */
-  onPlainGround?: boolean
 }
 
 const StudyItem = ({
@@ -71,7 +68,6 @@ const StudyItem = ({
   onPress,
   relationCount,
   onRelationPress,
-  onPlainGround = false,
 }: StudyItemProps) => {
   const { t } = useTranslation()
   const lang = useLanguage()
@@ -87,8 +83,16 @@ const StudyItem = ({
       className="overflow-hidden border-continuous"
       style={{ width: columns ? `${100 / columns}%` : r(['50%', '50%', '33%', '33%']) }}
     >
-      <Card
-        className={twMerge('m-[6px] p-[14px] h-[230px] relative', onPlainGround && 'bg-light-grey')}
+      <Box
+        className="overflow-hidden border-continuous m-[10px] bg-reverse p-[10px] h-[230px] rounded-[8px] relative"
+        style={{
+          shadowColor: 'rgb(89,131,240)',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 7,
+          elevation: 1,
+          overflow: 'visible',
+        }}
       >
         <StudyLink
           {...(onPress
@@ -98,12 +102,12 @@ const StudyItem = ({
                 params: { studyId: study.id },
               })}
         >
-          <Text className="text-grey text-[12px] mt-[6px]">
+          <Text className="text-dark-grey text-[10px] mt-[10px]">
             {t('Il y a {{formattedDate}}', { formattedDate })}
           </Text>
           {study.content ? (
             <>
-              <Text className="font-semibold text-[16px] mt-[4px]">{study.title}</Text>
+              <Text className="font-bold text-[16px] mt-[4px]">{study.title}</Text>
 
               <Paragraph className="mt-[10px]" scale={-3}>
                 {truncate(
@@ -116,9 +120,7 @@ const StudyItem = ({
             </>
           ) : (
             <>
-              <Text className="font-semibold text-[16px] mt-[4px] text-grey">
-                {t('Étude vide')}
-              </Text>
+              <Text className="font-bold text-[16px] mt-[4px] text-border">{t('Étude vide')}</Text>
             </>
           )}
         </StudyLink>
@@ -135,7 +137,7 @@ const StudyItem = ({
             <StudyOptionsPanel study={study} />
           </Box>
         )}
-      </Card>
+      </Box>
     </Box>
   )
 }

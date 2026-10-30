@@ -6,11 +6,7 @@ import type {
   StrongLexiconChapterEntity,
   StrongLexiconEntityCategory,
 } from '~features/resources/strongLexiconAccess'
-import { getChapterEntityAvatar } from './chapterEntityAvatar'
-import {
-  getEntityAvatarRadius,
-  type EntityPortraitSources,
-} from '~features/lexique/entityPortraits'
+import { getChapterEntityAvatarUri } from './chapterEntityAvatar'
 import OverlayCloseButton from './OverlayCloseButton'
 import { useModalOverlayLifecycle } from './overlayLifecycle'
 import { useTranslations } from './TranslationsContext'
@@ -24,14 +20,12 @@ import { withColorAlpha } from './themeOverlayColor'
 
 type Props = {
   entities: StrongLexiconChapterEntity[]
-  portraits: EntityPortraitSources
   groupLabels: Record<StrongLexiconEntityCategory, string>
   openEntityLabel: string
   colors: {
     default: string
     primary: string
     reverse: string
-    surfaceRaised: string
   }
   fontFamily: string
   visibleStackItemCount: number
@@ -42,7 +36,6 @@ type Props = {
 
 const ChapterEntitiesOverlay = ({
   entities,
-  portraits,
   groupLabels,
   openEntityLabel,
   colors,
@@ -97,7 +90,7 @@ const ChapterEntitiesOverlay = ({
         <OverlayCloseButton
           label={translations.passageMediaClose}
           color={colors.default}
-          backgroundColor={colors.surfaceRaised}
+          backgroundColor={colors.reverse}
           onClose={onClose}
         />
       )}
@@ -176,7 +169,7 @@ const ChapterEntitiesOverlay = ({
                 >
                   <m.img
                     layoutId={`chapter-entity-${entity.uniqueName}`}
-                    {...getChapterEntityAvatar(entity, portraits)}
+                    src={getChapterEntityAvatarUri(entity)}
                     alt=""
                     transition={{ layout: { ...spring, delay: sourceDelay } }}
                     style={{
@@ -185,8 +178,9 @@ const ChapterEntitiesOverlay = ({
                       height: 68,
                       margin: '0 auto 8px',
                       border: `2px solid ${colors.reverse}`,
-                      borderRadius: getEntityAvatarRadius(68),
-                      objectFit: 'cover',
+                      borderRadius: 36,
+                      boxShadow: '0 5px 16px rgba(0, 0, 0, 0.2)',
+                      objectFit: 'contain',
                     }}
                   />
                   <m.div

@@ -34,9 +34,11 @@ nave/
 │   ├── NaveScreen              # Point d'entrée, crée un onglet
 │   ├── NaveTabScreen           # Liste principale des thèmes
 │   ├── NaveDetailScreen        # Wrapper pour le détail
-│   └── NaveDetailTabScreen     # Vue détaillée d'un thème
+│   ├── NaveDetailTabScreen     # Vue détaillée d'un thème
+│   └── NaveWarningScreen       # Avertissement (version FR)
 ├── Components/
-│   └── NaveItem                # Élément de liste
+│   ├── NaveItem                # Élément de liste
+│   └── NaveResultItem          # Résultat de recherche
 └── Modals/
     ├── NaveModalForVerse       # Modal contextuel pour verset
     ├── NaveModalItem           # Élément dans le modal

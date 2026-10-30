@@ -14,6 +14,9 @@ const books = JSON.parse(await readFile(join(app, 'src/assets/cyberjudah/books.j
 const publication = JSON.parse(
   await readFile(join(app, 'src/assets/cyberjudah/publication.json'), 'utf8')
 )
+const verseNumbering = JSON.parse(
+  await readFile(join(app, 'src/assets/cyberjudah/verse-numbering.json'), 'utf8')
+)
 const hash = bytes => createHash('sha256').update(bytes).digest('hex')
 const temp = await mkdtemp(join(tmpdir(), 'cyberjudah-offline-'))
 try {
@@ -60,6 +63,7 @@ try {
   assert.equal(Object.keys(bible.verses).length, 81)
   let verses = 0,
     chapters = 0
+  const firstVerses = {}
   for (const book of books) {
     assert.deepEqual(Object.keys(bible.verses[book.id]).map(Number), book.chapters)
     for (const chapter of book.chapters) {
@@ -67,12 +71,17 @@ try {
         Number(v),
         data.text,
       ])
+      // The app numbers each chapter from its first verse; verses must then run without gaps.
+      rows.forEach(([number], index) => assert.equal(number, rows[0][0] + index))
+      if (rows[0][0] !== 1) firstVerses[`${book.id}-${chapter}`] = rows[0][0]
       assert.equal(hash(JSON.stringify(rows)), publication.chapterHashes[`${book.id}-${chapter}`])
       verses += rows.length
       chapters++
     }
   }
   assert.equal(verses, bible.verseCount)
+  assert.equal(verseNumbering.textSha256, bible.textSha256)
+  assert.deepEqual(verseNumbering.firstVerseByBookChapter, firstVerses)
   const db = new DatabaseSync(join(temp, 'bible-kjv-strong.sqlite'), { readOnly: true })
   const metadata = Object.fromEntries(
     db
@@ -153,6 +162,7 @@ try {
       archiveIntegrity: 'verified',
       strongSchema: 'verified',
       john316Alignment: 'verified',
+      verseNumbering: verseNumbering.firstVerseByBookChapter,
     })
   )
 } finally {

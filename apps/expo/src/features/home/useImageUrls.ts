@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import i18n from '~i18n'
 import { remoteQueryOptions } from '~helpers/queryOptions'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 
 interface ImageUrls {
   small?: string
@@ -30,7 +31,8 @@ export const useImageUrls = (verseOfTheDay: VerseOfTheDay | false): ImageUrls | 
         large: `https:${image.renditions[2].url}`,
       }
     },
-    enabled: !!verseId,
+    // Verse pictures come from YouVersion; CyberJudah shows the verse without one.
+    enabled: !!verseId && !usesCyberJudahEditorial(),
     ...remoteQueryOptions,
   })
 

@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer'
 // Import the versioned projection produced by cyberjudah-telegram/bot/scripts/build-bs-timeline.mjs.
 // Keep Bible Strong's geometry, resource API and optional native Offline-copy formats unchanged.
 import { readFile, writeFile, mkdir } from 'node:fs/promises'

@@ -1,4 +1,3 @@
-import { isStandaloneStrongModule } from '@bible-strong/resource-domain/strong-lexicon'
 import type { DownloadItem } from '~state/downloadQueue'
 import {
   createBibleDownloadItem,
@@ -16,6 +15,7 @@ import { getDefaultBibleVersion, type ActiveLanguage } from '~helpers/languageUt
 import type { DatabaseId, ResourceLanguage } from '~helpers/databaseTypes'
 import type { StrongBibleVersionId } from '~helpers/strongBiblePublications'
 import type { StrongLexiconModuleId } from '~helpers/strongLexiconPublications'
+import { requiresStrongLexiconCore } from '~helpers/strongLexiconCore'
 import { createOfflineCopyId, type OfflineCopyIdentity } from '~helpers/offlineCopyId'
 import { getOnboardingResourceSelectionId } from './onboardingResourceSelectionId'
 import { getCommentaryByPublicationId } from '~helpers/commentaryCatalog'
@@ -201,7 +201,7 @@ export const createDownloadItemFromOnboardingSelection = (
   if (resource.kind === 'strong-lexicon') {
     const moduleId = resource.moduleId ?? 'core'
     const item = createStrongLexiconModuleDownloadItem(moduleId)
-    return isStandaloneStrongModule(moduleId)
+    return !requiresStrongLexiconCore(moduleId)
       ? item
       : {
           ...item,

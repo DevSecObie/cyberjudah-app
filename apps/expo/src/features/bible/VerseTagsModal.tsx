@@ -1,8 +1,8 @@
+import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import { forwardRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TouchableOpacity, View, type ViewProps } from 'react-native'
-import IconTile, { ICON_TILE_SIZE } from '~common/ui/IconTile'
-import { ListSeparator } from '~common/ui/ListSection'
+import * as NativeUI from 'react-native'
+import { TouchableOpacity } from 'react-native'
 import { useSelector } from 'react-redux'
 import { twMerge } from '~common/ui/classNames'
 
@@ -17,24 +17,54 @@ import Text from '~common/ui/Text'
 import { EMPTY_ARRAY } from '~helpers/emptyReferences'
 import verseToReference from '~helpers/verseToReference'
 import { RootState } from '~redux/modules/reducer'
-import {
-  makeTaggedItemsForVerseSelector,
-  TaggedItem,
-  type DisplayedVersions,
-} from '~redux/selectors/bible'
+import { makeTaggedItemsForVerseSelector, TaggedItem } from '~redux/selectors/bible'
+import type { Theme as AppTheme } from '~themes'
 
-/** A row of the sheet, with a hairline from where its text starts. */
-const ItemRow = ({ children, className, ...props }: ViewProps & { className?: string }) => (
-  <View {...props} className={twMerge('flex-row items-center px-[16px] py-[12px]', className)}>
-    {children}
-    <ListSeparator inset={16 + ICON_TILE_SIZE + 12} overlay />
-  </View>
-)
+const ItemRow = (
+  componentProps: Omit<UIComponentProps<typeof NativeUI.View>, 'theme'> & {
+    theme?: AppTheme
+    className?: string
+  }
+) => {
+  const { theme: _themeOverride, className, ...props } = componentProps
+
+  const resolvedClassName = twMerge(
+    'flex-row items-center p-[15px] border-b-[1px] border-b-border',
+    className
+  )
+  return (
+    <NativeUI.View
+      {...props}
+      className={resolvedClassName}
+      style={[props.style] as UIComponentProps<typeof NativeUI.View>['style']}
+    />
+  )
+}
+
+const IconContainer = (
+  componentProps: Omit<UIComponentProps<typeof NativeUI.View>, 'theme'> & {
+    theme?: AppTheme
+    className?: string
+  }
+) => {
+  const { theme: _themeOverride, className, ...props } = componentProps
+
+  const resolvedClassName = twMerge(
+    'w-[36px] h-[36px] rounded-[12px] bg-light-grey items-center justify-center mr-[12px]',
+    className
+  )
+  return (
+    <NativeUI.View
+      {...props}
+      className={resolvedClassName}
+      style={[props.style] as UIComponentProps<typeof NativeUI.View>['style']}
+    />
+  )
+}
 
 interface VerseTagsModalProps {
   verseKey: string | null
-  // Every version on screen in parallel reading
-  version: DisplayedVersions
+  version: string
 }
 
 const getItemIcon = (type: TaggedItem['type']): 'edit-3' | 'file-text' | 'link' => {
@@ -84,13 +114,13 @@ const TaggedItemRow = ({ item, onEditTags }: { item: TaggedItem; onEditTags: () 
   return (
     <TouchableOpacity accessibilityRole="button" onPress={onEditTags}>
       <ItemRow>
-        <IconTile tint={item.type === 'annotation' ? 'secondary' : 'primary'} className="mr-[12px]">
+        <IconContainer>
           <FeatherIcon
             name={icon}
-            size={16}
+            size={18}
             color={item.type === 'annotation' ? 'secondary' : 'primary'}
           />
-        </IconTile>
+        </IconContainer>
         <Box className="overflow-hidden border-continuous flex-[1]">
           <HStack className="overflow-hidden border-continuous gap-[6px] items-center">
             <Text className="font-bold text-[14px]">{label}</Text>

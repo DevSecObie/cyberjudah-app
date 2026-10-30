@@ -1,5 +1,3 @@
-import { StudyRowsCard } from '~common/ui/StudySection'
-import CommentarySectionRow, { formatCommentarySectionRange } from './CommentarySectionRow'
 import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
 import { commentaryContext } from '~features/study-assistant/resourceContext'
 import CommentIcon from '~common/CommentIcon'
@@ -13,7 +11,7 @@ import Empty from '~common/Empty'
 import Header from '~common/Header'
 import Loading from '~common/Loading'
 import ScrollView from '~common/ui/ScrollView'
-import Box, { TouchableBox, usePageBottomInset } from '~common/ui/Box'
+import Box, { TouchableBox } from '~common/ui/Box'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
 import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
@@ -22,7 +20,6 @@ import ResourceUnavailableView from '~features/resources/ResourceUnavailableView
 import { useResourceAccess } from '~features/resources/resourceAccess'
 import { resourceFailureFromAccessError } from '~features/resources/resourceFailure'
 import { getBook } from '~helpers/bibleBookCatalog'
-import { getCommentaryBookLabel } from './commentaryBookLabel'
 import { resourceQueryKeys } from '~helpers/resourceQueryKeys'
 import { staticResourceQueryOptions } from '~helpers/queryOptions'
 import { getDefaultBibleTab, type CommentaryResourceTab, useBibleTabActions } from '~state/tabs'
@@ -37,8 +34,6 @@ import {
   parseCommentaryResourceParams,
 } from './commentaryResourceParams'
 import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
-import { useRecordHistory } from '~features/history/useRecordHistory'
-import { getCommentaryResourceHistoryEntry } from './commentaryResourceHistory'
 const formatRange = (start: number, end: number) => (start === end ? `${start}` : `${start}–${end}`)
 
 const CommentaryResourceTabScreen = ({
@@ -49,7 +44,6 @@ const CommentaryResourceTabScreen = ({
   const pushRouteOnce = usePushRouteOnce()
   const [tab, setTab] = useAtom(commentaryAtom)
   const scrollRef = React.useRef<React.ComponentRef<typeof ScrollView>>(null)
-  const bottomInset = usePageBottomInset()
   const parsed = parseCommentaryResourceParams({
     projectionId: tab.data?.projectionId,
     book: String(tab.data?.book ?? ''),
@@ -119,8 +113,7 @@ const CommentaryResourceTabScreen = ({
     ? query.data?.sections.find(candidate => candidate.id === tab.data.sectionId)
     : undefined
   useAssistantResourceContext(`tab:${tab.id}`, commentaryContext(tab.data, titleSection))
-  useRecordHistory(getCommentaryResourceHistoryEntry(parsed, tab.data.sectionId, titleSection))
-  const titleBookLabel = parsed ? getCommentaryBookLabel(parsed.book) : undefined
+  const titleBookLabel = parsed ? (getBook(parsed.book)?.Nom ?? String(parsed.book)) : undefined
   const desiredTabTitle =
     parsed && titleBookLabel
       ? formatCommentaryResourceTabTitle({
@@ -172,9 +165,9 @@ const CommentaryResourceTabScreen = ({
 
   if (!parsed) {
     return (
-      <FormSheetScreen className="bg-canvas" isFormSheet={false}>
-        <Box className="overflow-hidden border-continuous flex-[1] bg-canvas">
-          <Header title={t('Commentaires')} />
+      <FormSheetScreen isFormSheet={false}>
+        <Box className="overflow-hidden border-continuous flex-[1] bg-light-grey">
+          <Header background title={t('Commentaires')} />
           <ResourceUnavailableView
             title={t('commentaries.resource.invalid')}
             failure={{ cause: 'not-found', recoveries: [] }}
@@ -199,14 +192,15 @@ const CommentaryResourceTabScreen = ({
     sectionIndex !== undefined && sectionIndex >= 0
       ? query.data?.sections[sectionIndex + 1]
       : undefined
-  const bookLabel = getCommentaryBookLabel(book)
+  const bookLabel = getBook(book)?.Nom ?? String(book)
   const passage = section
     ? `${bookLabel} ${chapter}:${formatRange(section.rangeStartVerse, section.rangeEndVerse)}`
     : undefined
   return (
-    <FormSheetScreen className="bg-canvas" isFormSheet={false}>
-      <Box className="overflow-hidden border-continuous flex-[1] bg-canvas">
+    <FormSheetScreen isFormSheet={false}>
+      <Box className="overflow-hidden border-continuous flex-[1] bg-light-grey">
         <Header
+          background
           title={entry.author}
           subTitle={passage}
           rightComponent={
@@ -252,12 +246,7 @@ const CommentaryResourceTabScreen = ({
           ) : (
             <ScrollView
               ref={scrollRef}
-              backgroundColor="canvas"
-              contentContainerStyle={{
-                maxWidth: 600,
-                padding: 18,
-                paddingBottom: 32 + bottomInset,
-              }}
+              contentContainerStyle={{ maxWidth: 600, padding: 18, paddingBottom: 32 }}
             >
               <CommentarySectionCard
                 entry={entry}
@@ -283,14 +272,13 @@ const CommentaryResourceTabScreen = ({
         ) : (
           <ScrollView
             stickyHeaderIndices={[1]}
-            backgroundColor="canvas"
-            contentContainerStyle={{ maxWidth: 600, padding: 18, paddingBottom: 32 + bottomInset }}
+            contentContainerStyle={{ maxWidth: 600, padding: 18, paddingBottom: 32 }}
           >
             <CommentaryRoomIntro entry={entry} language={projection.language} />
 
-            <Box className="overflow-hidden border-continuous flex-row items-center justify-between mx-[-18px] px-[18px] py-[8px] bg-canvas z-[10]">
+            <Box className="overflow-hidden border-continuous flex-row items-center justify-between mx-[-18px] px-[18px] py-[8px] bg-light-grey z-[10]">
               <TouchableBox
-                className="overflow-hidden border-continuous bg-surface rounded-full h-[32px] px-[12px] flex-row items-center"
+                className="overflow-hidden border-continuous bg-light-grey rounded-[20px] h-[32px] px-[12px] flex-row items-center"
                 onPress={() => {
                   openCommentaryBookSelector({
                     openBookSelector,
@@ -332,17 +320,13 @@ const CommentaryResourceTabScreen = ({
                 message={t('commentaries.resource.emptyChapter')}
               />
             ) : (
-              <Box className="overflow-hidden border-continuous mt-[16px]">
-                <StudyRowsCard>
-                  {query.data.sections.map(candidate => (
-                    <CommentarySectionRow
+              <Box className="overflow-hidden border-continuous mt-[16px] gap-[12px]">
+                {query.data.sections.map(candidate => {
+                  return (
+                    <TouchableBox
+                      className="overflow-hidden border-continuous bg-reverse rounded-[20px] px-[17px] py-[14px]"
                       key={candidate.id}
-                      rangeLabel={formatCommentarySectionRange(
-                        t,
-                        candidate.rangeStartVerse,
-                        candidate.rangeEndVerse
-                      )}
-                      preview={candidate.preview}
+                      activeOpacity={0.62}
                       onPress={() =>
                         pushRouteOnce({
                           pathname: '/commentary-entry',
@@ -354,9 +338,33 @@ const CommentaryResourceTabScreen = ({
                           },
                         })
                       }
-                    />
-                  ))}
-                </StudyRowsCard>
+                      accessibilityRole="button"
+                      style={{
+                        shadowColor: 'rgb(89,131,240)',
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 7,
+                        elevation: 1,
+                        overflow: 'visible',
+                      }}
+                    >
+                      <Box className="overflow-hidden border-continuous flex-row items-start">
+                        <Box className="overflow-hidden border-continuous px-[10px] py-[5px] rounded-[12px] bg-light-primary">
+                          <Text className="text-primary font-bold text-[12px]">
+                            {formatRange(candidate.rangeStartVerse, candidate.rangeEndVerse)}
+                          </Text>
+                        </Box>
+                        <Text
+                          className="ml-[13px] flex-[1] text-grey text-[14px] leading-[20px]"
+                          numberOfLines={2}
+                        >
+                          {candidate.preview}
+                        </Text>
+                        <FeatherIcon name="chevron-right" size={20} color="grey" />
+                      </Box>
+                    </TouchableBox>
+                  )
+                })}
               </Box>
             )}
           </ScrollView>

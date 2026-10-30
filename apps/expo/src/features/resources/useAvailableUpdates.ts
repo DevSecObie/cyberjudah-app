@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom } from 'jotai/react'
-import { useEffect, useEffectEvent } from 'react'
+import { useEffect } from 'react'
 import { Platform } from 'react-native'
 
 import atomWithAsyncStorage from '~helpers/atomWithAsyncStorage'
@@ -40,10 +40,8 @@ export const useMarkAvailableUpdatesSeen = () => {
   const setSeen = useSetAtom(seenResourceUpdatesAtom)
   const signature = [...updates].map(([id, update]) => `${id}=${update}`).join('|')
 
-  // `updates` is rebuilt on every render; its signature decides when to mark them seen.
-  const markSeen = useEffectEvent(() => setSeen(seen => markUpdatesSeen(updates, seen)))
-
   useEffect(() => {
-    markSeen()
+    setSeen(seen => markUpdatesSeen(updates, seen))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signature, setSeen])
 }

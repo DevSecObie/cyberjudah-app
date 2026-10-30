@@ -1,18 +1,22 @@
+import { resolveFontFamily } from '~themes/styleValues'
+import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import sectionListGetItemLayout from 'react-native-section-list-get-item-layout'
 import { PrimitiveAtom } from 'jotai/vanilla'
 import { useTranslation } from 'react-i18next'
-import { getLanguage } from '~i18n'
 import AlphabetList from '~common/AlphabetList'
 import Empty from '~common/Empty'
-import FiltersHeader from '~common/FiltersHeader'
+import Header from '~common/Header'
 import Loading from '~common/Loading'
 import SearchInput from '~common/SearchInput'
+import SectionTitle from '~common/SectionTitle'
 import Box from '~common/ui/Box'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
-import { ListSectionTitle } from '~common/ui/ListSection'
 import SectionList from '~common/ui/SectionList'
+import Text from '~common/ui/Text'
+import { MenuView, type MenuAction } from '~common/ui/MenuView'
+import { FeatherIcon } from '~common/ui/Icon'
 import { getFirstLetterFrom } from '~helpers/alphabet'
 import {
   getDefaultDictionaryWork,
@@ -23,7 +27,7 @@ import {
 import { useResourceAccess } from '~features/resources/resourceAccess'
 import { DictionaryTab } from '../../state/tabs'
 import { useInfiniteResultsByLetterOrSearch, useSearchValue } from '../lexique/useUtilities'
-import DictionnaireItem, { DICTIONNAIRE_ITEM_HEIGHT } from './DictionnaireItem'
+import DictionnaireItem from './DictionnaireItem'
 import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
 import { useResolveNewTabSelection } from '~features/app-switcher/utils/useResolveNewTabSelection'
 import { useAtom } from 'jotai/react'
@@ -36,6 +40,7 @@ import {
   resourceFailureFromAvailability,
 } from '~features/resources/resourceFailure'
 import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
+import { toast } from '~helpers/toast'
 type DictionaryRow = DictionarySummary | DictionaryDirectoryItem
 
 interface DictionarySection {
@@ -43,12 +48,9 @@ interface DictionarySection {
   data: DictionaryRow[]
 }
 
-/** A letter title: 16 above, an 18 line, 6 below. */
-const SECTION_HEADER_HEIGHT = 40
-
 const getDictionaryItemLayout = sectionListGetItemLayout({
-  getItemHeight: () => DICTIONNAIRE_ITEM_HEIGHT,
-  getSectionHeaderHeight: () => SECTION_HEADER_HEIGHT,
+  getItemHeight: () => 60,
+  getSectionHeaderHeight: () => 50,
   getSeparatorHeight: () => 0,
   getSectionFooterHeight: () => 0,
 })
@@ -95,13 +97,14 @@ const DictionaryListScreen = ({
   newTabId,
   onWordSelect,
 }: DictionaryListScreenProps) => {
+  const stylingTheme = useStylingTheme()
+
   const { t } = useTranslation()
   const resources = useResourceAccess()
   const pushRouteOnce = usePushRouteOnce()
   const isConnected = useConnection()
   const [dictionaryResourceLanguage, setDictionaryResourceLanguage] =
     useResourceLanguage('DICTIONNAIRE')
-  const appLanguage = getLanguage()
   const [dictionaryTab, setDictionaryTab] = useAtom(dictionaryAtom)
   const resolveNewTabSelection = useResolveNewTabSelection(newTabId)
   const canGoBackInStack = useCanGoBackInStack()
@@ -246,6 +249,13 @@ const DictionaryListScreen = ({
         directory: true,
       },
     }))
+    toast(
+      t('menu.languageChanged', {
+        language: t(
+          language === 'fr' ? 'versionCatalog.language.fr' : 'versionCatalog.language.en'
+        ),
+      })
+    )
   }
 
   const selectDirectory = () => {
@@ -363,59 +373,71 @@ const DictionaryListScreen = ({
   }
 
   return (
-    // The letter bar sits fixed under the list: while it shows, the page stays above the home
-    // indicator and the tab bar.
-    <FormSheetScreen isFormSheet={isFormSheet} reserveBottom={!searchValue}>
+    <FormSheetScreen isFormSheet={isFormSheet}>
       <Box className="overflow-hidden border-continuous flex-[1] bg-reverse">
-        <FiltersHeader
+        <Header
           hasBackButton={showBackButton}
           title={t('Dictionnaire')}
-          onReset={() => {
-            if (dictionaryResourceLanguage !== appLanguage) selectLanguage(appLanguage)
-            else selectDirectory()
-          }}
-          filters={[
-            {
-              key: 'language',
-              icon: 'globe',
-              label: t('menu.language'),
-              value: t(`versionCatalog.language.${dictionaryResourceLanguage}`),
-              active: dictionaryResourceLanguage !== appLanguage,
-              onPress: () => {},
-              options: (['fr', 'en'] as const).map(language => ({
-                key: language,
-                label: t(`versionCatalog.language.${language}`),
-                selected: dictionaryResourceLanguage === language,
-                onSelect: () => selectLanguage(language),
-              })),
-            },
-            ...(catalogDictionaries.length
-              ? [
+          rightComponent={
+            <MenuView
+              tabActions
+              actions={
+                [
                   {
-                    key: 'dictionary-source',
-                    icon: 'book' as const,
-                    label: t('Dictionnaire'),
-                    value: directoryRequested ? t('Tous') : selectedDictionary.abbreviation,
-                    active: !directoryRequested,
-                    onPress: () => {},
-                    options: [
+                    id: 'language',
+                    title: `${t('menu.language')}: ${t(
+                      dictionaryResourceLanguage === 'fr'
+                        ? 'versionCatalog.language.fr'
+                        : 'versionCatalog.language.en'
+                    )}`,
+                    image: 'globe',
+                  },
+                  {
+                    id: 'dictionary-source',
+                    title: `${t('Dictionnaire')}: ${
+                      directoryRequested ? t('Tous') : selectedDictionary.abbreviation
+                    }`,
+                    image: 'book',
+                    subactions: [
                       {
-                        key: 'directory',
-                        label: t('Tous les dictionnaires'),
-                        selected: directoryRequested,
-                        onSelect: selectDirectory,
+                        id: 'directory',
+                        title: t('Tous les dictionnaires'),
+                        state: directoryRequested ? ('on' as const) : undefined,
                       },
                       ...catalogDictionaries.map(dictionary => ({
-                        key: dictionary.resource.work,
-                        label: dictionary.abbreviation,
-                        selected: !directoryRequested && dictionary.resource.work === selectedWork,
-                        onSelect: () => selectDictionary(dictionary),
+                        id: `dictionary:${dictionary.resource.work}`,
+                        title: dictionary.abbreviation,
+                        state:
+                          !directoryRequested && dictionary.resource.work === selectedWork
+                            ? ('on' as const)
+                            : undefined,
                       })),
                     ],
                   },
-                ]
-              : []),
-          ]}
+                ] satisfies MenuAction[]
+              }
+              onPressAction={({ nativeEvent }) => {
+                if (nativeEvent.event === 'language') {
+                  selectLanguage(dictionaryResourceLanguage === 'fr' ? 'en' : 'fr')
+                  return
+                }
+                if (nativeEvent.event === 'directory') {
+                  selectDirectory()
+                  return
+                }
+                if (nativeEvent.event.startsWith('dictionary:')) {
+                  const work = nativeEvent.event.slice('dictionary:'.length)
+                  const dictionary = catalogDictionaries.find(item => item.resource.work === work)
+                  if (dictionary) selectDictionary(dictionary)
+                }
+              }}
+              accessibilityLabel={t('Options du dictionnaire')}
+            >
+              <Box className="overflow-hidden border-continuous flex-row items-center justify-center h-[54px] w-[54px]">
+                <FeatherIcon name="more-vertical" size={18} />
+              </Box>
+            </MenuView>
+          }
         >
           <Box className="overflow-hidden border-continuous pb-[10px] px-[20px]">
             <SearchInput
@@ -425,14 +447,13 @@ const DictionaryListScreen = ({
               onDelete={() => setSearchValue('')}
             />
           </Box>
-        </FiltersHeader>
-        <Box className="overflow-hidden border-continuous flex-[1]">
+        </Header>
+        <Box className="overflow-hidden border-continuous flex-[1] pt-[20px]">
           {isLoading ? (
             <Loading message={t('Chargement...')} />
           ) : sectionResults.length ? (
             <SectionList<DictionaryRow, DictionarySection>
-              renderItem={({ item, index, section }) => {
-                const hasSeparator = index < section.data.length - 1
+              renderItem={({ item }) => {
                 if ('sources' in item) {
                   const source =
                     item.sources.find(
@@ -462,7 +483,6 @@ const DictionaryListScreen = ({
                       onSelect={() =>
                         selectWord(source.word, dictionary, source.id, item.correspondenceId)
                       }
-                      hasSeparator={hasSeparator}
                     />
                   )
                 }
@@ -470,7 +490,6 @@ const DictionaryListScreen = ({
                   <DictionnaireItem
                     word={item.word}
                     onSelect={() => selectWord(item.word, selectedDictionary, item.id)}
-                    hasSeparator={hasSeparator}
                   />
                 )
               }}
@@ -482,11 +501,14 @@ const DictionaryListScreen = ({
                 getDictionaryItemLayout((data || []) as DictionarySection[], index)
               }
               renderSectionHeader={({ section: { title } }) => (
-                <Box className="bg-reverse" style={{ height: SECTION_HEADER_HEIGHT }}>
-                  <ListSectionTitle className="ml-[20px] mt-[16px] mb-[6px] leading-[18px]">
+                <SectionTitle color="secondary">
+                  <Text
+                    className="font-bold text-[16px] text-reverse"
+                    style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+                  >
                     {title}
-                  </ListSectionTitle>
-                </Box>
+                  </Text>
+                </SectionTitle>
               )}
               stickySectionHeadersEnabled
               sections={sectionResults}

@@ -1,4 +1,4 @@
-import { resolveThemeColor, titleFontStyle } from '~themes/styleValues'
+import { resolveThemeColor, resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { Feather } from '@expo/vector-icons'
 import type { RefObject } from 'react'
@@ -62,7 +62,7 @@ const OfflineSetupFolderReviewHeader = ({
           numberOfLines={1}
           style={{
             color: resolveThemeColor(stylingTheme, palette.onSheet) || stylingTheme.colors.default,
-            ...titleFontStyle(stylingTheme),
+            fontFamily: resolveFontFamily(stylingTheme.fontFamily.title),
           }}
         >
           {context.title}

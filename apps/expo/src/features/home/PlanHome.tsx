@@ -6,15 +6,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import Link from '~common/Link'
 import type { Plan } from '~common/types'
 import Box from '~common/ui/Box'
-import Card from '~common/ui/Card'
 import Text from '~common/ui/Text'
 import { FeatherIcon } from '~common/ui/Icon'
-import { ListRow, ListSeparator } from '~common/ui/ListSection'
-import {
-  useComputedPlanItems,
-  useDownloadFollowedPlans,
-  useUpdatePlans,
-} from '~features/plans/plan.hooks'
+import { useComputedPlanItems, useUpdatePlans } from '~features/plans/plan.hooks'
 import { getEditorialKind } from '~features/plans/readingCalendar'
 import { hasPlanParticipation } from '~features/plans/planProgress'
 import FollowedPlanCard from '~features/plans/FollowedPlanCard'
@@ -22,9 +16,6 @@ import useLanguage from '~helpers/useLanguage'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import { addPlan } from '~redux/modules/plan'
 import type { RootState } from '~redux/modules/reducer'
-
-/** Where the text of a `FollowedPlanCard` row starts: its padding, its 40-point cover and the gap. */
-const FOLLOWED_PLAN_TEXT_INSET = 16 + 40 + 12
 
 const readResponseText = async (response: Response): Promise<string> => {
   if (!response.ok) {
@@ -75,25 +66,11 @@ const useGetFirstPlans = () => {
   }, [hasPlan, lang, dispatch])
 }
 
-/** « À découvrir », the link to the plan catalogue. */
-export const PlansExploreLink = () => {
+const PlanHome = ({ compact = false }: { compact?: boolean }) => {
   const { t } = useTranslation()
-  return (
-    <Link
-      route="Plans"
-      className="flex-row items-center gap-[6px] py-[12px]"
-      accessibilityLabel={t('readingPlans.explorePlans')}
-    >
-      <Text className="text-link text-[13px] font-bold">{t('readingPlans.explore')}</Text>
-    </Link>
-  )
-}
-
-/** Reading plans the reader has started, with their participation. */
-export const useFollowedPlans = () => {
   const plans = useComputedPlanItems()
   const participations = useSelector((state: RootState) => state.plan.ongoingPlans)
-  return plans.flatMap(plan => {
+  const followed = plans.flatMap(plan => {
     const participation = participations.find(item => item.id === plan.id)
     return getEditorialKind(plan) === 'reading-plan' &&
       participation &&
@@ -101,44 +78,47 @@ export const useFollowedPlans = () => {
       ? [{ plan, participation }]
       : []
   })
-}
-
-/**
- * Followed reading plans as rows, or an invitation to explore them. The home places it under
- * its « Mes plans » title, inside the gutters. Progress syncs but plan content is per device,
- * so the home downloads the content of followed plans this device lacks.
- */
-const PlanHome = () => {
-  const { t } = useTranslation()
-  const followed = useFollowedPlans()
   useUpdatePlans()
   useGetFirstPlans()
-  useDownloadFollowedPlans()
 
   if (!followed.length) {
     return (
-      <Card>
-        <ListRow
-          route="Plans"
-          accessibilityLabel={t('readingPlans.explorePlans')}
-          icon={<FeatherIcon name="book-open" size={18} color="primary" />}
-          iconTint="primary"
-          label={t('readingPlans.explorePlans')}
-          description={t('readingPlans.readAtYourPace')}
-        />
-      </Card>
+      <Box className={compact ? '' : 'bg-light-grey px-[20px] pt-[20px]'}>
+        <Link route="Plans" accessibilityLabel={t('readingPlans.explorePlans')}>
+          <Box className="bg-reverse rounded-[20px] p-[18px] flex-row items-center gap-[14px]">
+            <Box className="w-[48px] h-[48px] rounded-[14px] bg-light-grey items-center justify-center">
+              <FeatherIcon name="book-open" size={24} color="primary" />
+            </Box>
+            <Box className="flex-1 gap-[5px]">
+              <Text className="text-default font-bold text-[16px]">
+                {t('readingPlans.explorePlans')}
+              </Text>
+              <Text className="text-grey text-[13px]">{t('readingPlans.readAtYourPace')}</Text>
+            </Box>
+            <FeatherIcon name="chevron-right" size={20} color="primary" />
+          </Box>
+        </Link>
+      </Box>
     )
   }
 
   return (
-    <Card>
-      {followed.map(({ plan, participation }, index) => (
-        <Box key={plan.id}>
-          {index > 0 && <ListSeparator inset={FOLLOWED_PLAN_TEXT_INSET} />}
-          <FollowedPlanCard plan={plan} participation={participation} />
-        </Box>
+    <Box className={compact ? 'gap-[16px]' : 'bg-light-grey px-[20px] pt-[20px] gap-[12px]'}>
+      <Box className="flex-row items-center justify-between gap-[12px]">
+        <Text className="text-default font-bold text-[16px]">{t('readingPlans.yours')}</Text>
+        <Link
+          route="Plans"
+          className="flex-row items-center gap-[6px] py-[12px]"
+          accessibilityLabel={t('readingPlans.explorePlans')}
+        >
+          <Text className="text-primary text-[13px] font-bold">{t('readingPlans.explore')}</Text>
+          <FeatherIcon name="chevron-right" size={16} color="primary" />
+        </Link>
+      </Box>
+      {followed.map(({ plan, participation }) => (
+        <FollowedPlanCard key={plan.id} plan={plan} participation={participation} />
       ))}
-    </Card>
+    </Box>
   )
 }
 

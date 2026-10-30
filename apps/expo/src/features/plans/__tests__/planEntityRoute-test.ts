@@ -8,19 +8,12 @@ describe('getPlanEntityRoute', () => {
   it('opens a passage of several chapters in plan mode, bounded by its last chapter', () => {
     expect(route({ type: 'Chapter', id: 'a', chapters: '1|1-3' })).toEqual({
       pathname: '/bible-view',
-      params: {
-        book: '1',
-        chapter: '1',
-        planEndChapter: '3',
-        planId: 'plan',
-        readingSliceId: 'day-1',
-        entitySliceId: 'element',
-      },
+      params: { book: '1', chapter: '1', planEndChapter: '3' },
     })
   })
 
   it('bounds a single chapter to itself', () => {
-    expect(route({ type: 'Chapter', id: 'a', chapters: '66|22' })?.params).toMatchObject({
+    expect(route({ type: 'Chapter', id: 'a', chapters: '66|22' })?.params).toEqual({
       book: '66',
       chapter: '22',
       planEndChapter: '22',
@@ -35,9 +28,6 @@ describe('getPlanEntityRoute', () => {
       focusVerses: '[1,2,3,4]',
       contextDisplayMode: 'focused',
       planEndChapter: '1',
-      planId: 'plan',
-      readingSliceId: 'day-1',
-      entitySliceId: 'element',
     })
     expect(route({ type: 'Verse', verses: '1|11:32' })?.params.focusVerses).toBe('[32]')
   })

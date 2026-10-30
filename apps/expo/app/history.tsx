@@ -1,1 +1,1 @@
-export { default } from '~features/history/HistoryScreen'
+export { default } from '~features/bible/HistoryScreen'

@@ -22,10 +22,8 @@ export interface LinkProps<R extends keyof MainStackProps> extends Pick<
   | 'accessibilityLabel'
   | 'accessibilityRole'
   | 'accessibilityState'
-  | 'delayLongPress'
   | 'disabled'
   | 'onAccessibilityAction'
-  | 'onLongPress'
 > {
   route?: R
   href?: string

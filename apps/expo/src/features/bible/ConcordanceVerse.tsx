@@ -1,7 +1,7 @@
+import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
-import { titleFontStyle } from '~themes/styleValues'
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import * as NativeUI from 'react-native'
 import type { TextStyle } from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
@@ -16,7 +16,7 @@ import type { TFunction } from 'react-i18next'
 import type { Verse } from '~common/types'
 
 const VerseText = (
-  componentProps: Omit<UIComponentProps<typeof View>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof NativeUI.View>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
@@ -25,37 +25,33 @@ const VerseText = (
 
   const resolvedClassName = twMerge('flex-[1] flex-wrap items-start flex-row', className)
   return (
-    <View
+    <NativeUI.View
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof View>['style']}
+      style={[props.style] as UIComponentProps<typeof NativeUI.View>['style']}
     />
   )
 }
 
 const Container = (
-  componentProps: Omit<UIComponentProps<typeof TouchableOpacity>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof NativeUI.TouchableOpacity>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
 ) => {
   const { theme: _themeOverride, className, ...props } = componentProps
 
-  const resolvedClassName = twMerge('pt-[10px] pb-[10px]', className)
+  const resolvedClassName = twMerge('pt-[10px] pb-[10px] border-b-[1px] border-b-border', className)
   return (
-    <TouchableOpacity
+    <NativeUI.TouchableOpacity
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof TouchableOpacity>['style']}
+      style={[props.style] as UIComponentProps<typeof NativeUI.TouchableOpacity>['style']}
     />
   )
 }
 
 type Props = {
-  /** Classes of the row, after its defaults, such as the margin of a card's row. */
-  className?: string
-  /** A hairline under the row. A card or a list that draws its own separators leaves it out. */
-  separated?: boolean
   onOpenVerse: (verse: Verse) => void
   t: TFunction<'translation', undefined>
   verse: Verse
@@ -65,8 +61,6 @@ type Props = {
 }
 
 const ConcordanceVerse = ({
-  className,
-  separated = true,
   verse,
   onOpenVerse,
   t,
@@ -84,8 +78,6 @@ const ConcordanceVerse = ({
 
   return (
     <Container
-      className={twMerge(separated && 'border-b-separator', className)}
-      style={separated ? { borderBottomWidth: StyleSheet.hairlineWidth } : undefined}
       accessibilityRole="button"
       accessibilityLabel={`${bookName} ${chapterNumber}:${verseNumber}`}
       onPress={() => onOpenVerse(verse)}
@@ -93,9 +85,7 @@ const ConcordanceVerse = ({
       <Text
         className="text-[16px] mb-[5px]"
         style={{
-          ...(textStyle?.fontFamily
-            ? { fontFamily: textStyle.fontFamily }
-            : titleFontStyle(stylingTheme)),
+          fontFamily: textStyle?.fontFamily || resolveFontFamily(stylingTheme.fontFamily.title),
           ...referenceTextStyle,
         }}
       >

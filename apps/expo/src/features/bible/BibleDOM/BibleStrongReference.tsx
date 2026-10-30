@@ -5,52 +5,55 @@ import { useDispatch } from './DispatchProvider'
 import { SelectedCode } from '~common/types'
 import { RootState } from '~redux/modules/reducer'
 import { scaleFontSize } from './scaleFontSize'
-import { noSelect } from './utils'
+import { isDarkTheme, noSelect } from './utils'
 import { getDisabledStyles } from './disabledStyles'
 import { scaleLineHeight } from './scaleLineHeight'
 import { getStrongReferenceNumber, type StrongIdentity } from '~helpers/strongIdentities'
 import { dispatchStrongSelection } from './strongSelectionAction'
 import type { StrongSelectionMorphology } from '~helpers/strongSelection'
 import UntranslatedStrongMarker from './UntranslatedStrongMarker'
-import { referenceHalo } from './referenceHalo'
 
 const StyledReference = styled('span')<
   RootStyles & {
     isSelected: boolean
+    isParallel?: boolean
     isDisabled?: boolean
     $isUntranslated?: boolean
-    $isTransliteration?: boolean
   }
 >(
   ({
     isSelected,
+    isParallel,
     isDisabled,
     $isUntranslated,
-    $isTransliteration,
     settings: { theme, colors, fontFamily, fontSizeScale, lineHeight },
   }) => ({
     fontFamily,
     ...noSelect,
     color: isSelected ? colors[theme].reverse : colors[theme].primary,
     backgroundColor: isSelected ? colors[theme].primary : 'inherit',
-    fontSize: scaleFontSize(16, fontSizeScale),
-    lineHeight: scaleLineHeight(30, lineHeight, fontSizeScale),
-    // An untranslated reference is a bare marker, without the halo
-    ...($isUntranslated ? {} : referenceHalo(theme)),
+    fontSize: scaleFontSize(isParallel ? 14 : 16, fontSizeScale),
+    lineHeight: scaleLineHeight(isParallel ? 24 : 30, lineHeight, fontSizeScale),
+    '@media (min-width: 768px)': {
+      fontSize: scaleFontSize(16, fontSizeScale),
+      lineHeight: scaleLineHeight(30, lineHeight, fontSizeScale),
+    },
+    boxShadow: isDarkTheme(theme)
+      ? `0 0 10px 0 rgba(255, 255, 255, 0.1)`
+      : `0 0 10px 0 rgba(0, 0, 0, 0.2)`,
     borderRadius: '8px',
     paddingInlineEnd: '4px',
     paddingInlineStart: '4px',
     paddingBlock: '4px',
     wordBreak: 'break-word',
     marginInline: '4px',
-    // A transliteration keeps its own letter case, even inside small caps (DIEU, SEIGNEUR).
-    ...($isTransliteration ? { fontStyle: 'italic', fontVariant: 'normal' } : {}),
     ...($isUntranslated
       ? {
           width: scaleFontSize(24, fontSizeScale),
           height: scaleFontSize(24, fontSizeScale),
           padding: 0,
           borderRadius: '50%',
+          boxShadow: 'none',
           backgroundColor: 'transparent',
           verticalAlign: 'middle',
         }
@@ -69,11 +72,11 @@ export const BibleStrongRef = ({
   version,
   identities,
   morphologies,
-  transliterations,
   occurrenceId,
   word,
   chapter,
   verse,
+  isParallel,
   isDisabled,
   selectedCode,
   settings,
@@ -82,12 +85,11 @@ export const BibleStrongRef = ({
   version: string
   identities: StrongIdentity[]
   morphologies?: StrongSelectionMorphology[]
-  /** Shown in place of the codes in the Strong transliteration mode. */
-  transliterations?: string[]
   occurrenceId: string
   word?: string
   chapter?: string | number
   verse?: string | number
+  isParallel?: boolean
   isDisabled?: boolean
   selectedCode?: SelectedCode | null
   settings: RootState['user']['bible']['settings']
@@ -101,7 +103,6 @@ export const BibleStrongRef = ({
     numericReferences.length > 0 &&
     numericReferences.includes(getStrongReferenceNumber(selectedCode?.reference ?? '') ?? '')
   const isUntranslated = !word
-  const transliteration = transliterations?.join(' · ')
   const colors = settings.colors[settings.theme]
 
   const openStrongSelection = (
@@ -130,9 +131,9 @@ export const BibleStrongRef = ({
       }
       data-ignore-verse-touch
       isSelected={isSelected}
+      isParallel={isParallel}
       isDisabled={isDisabled}
       $isUntranslated={isUntranslated}
-      $isTransliteration={Boolean(transliteration) && !isUntranslated}
       settings={settings}
     >
       {isUntranslated ? (
@@ -141,7 +142,7 @@ export const BibleStrongRef = ({
           backgroundColor={colors.lightPrimary}
         />
       ) : (
-        transliteration || identities.map(identity => identity.code).join(' · ')
+        identities.map(identity => identity.code).join(' · ')
       )}
     </StyledReference>
   )

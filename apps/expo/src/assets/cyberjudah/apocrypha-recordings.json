@@ -1,0 +1,134 @@
+{
+  "origin": "https://cyberjudah.io/api/audio",
+  "books": {
+    "69": {
+      "slug": "tobit",
+      "reader": "glenn-obrien",
+      "chapters": [
+        1,
+        2,
+        3,
+        4,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        14
+      ]
+    },
+    "70": {
+      "slug": "judith",
+      "reader": "ancientchristian",
+      "chapters": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ]
+    },
+    "72": {
+      "slug": "wisdom-of-solomon",
+      "reader": "librivox-volunteer",
+      "chapters": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ]
+    },
+    "76": {
+      "slug": "song-of-the-three-children",
+      "reader": "david-shamp",
+      "chapters": [
+        1
+      ]
+    },
+    "77": {
+      "slug": "susanna",
+      "reader": "david-shamp",
+      "chapters": [
+        1
+      ]
+    },
+    "79": {
+      "slug": "prayer-of-manasseh",
+      "reader": "david-shamp",
+      "chapters": [
+        1
+      ]
+    },
+    "80": {
+      "slug": "1-maccabees",
+      "reader": "ancientchristian",
+      "chapters": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ]
+    },
+    "81": {
+      "slug": "2-maccabees",
+      "reader": "ancientchristian",
+      "chapters": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ]
+    }
+  }
+}

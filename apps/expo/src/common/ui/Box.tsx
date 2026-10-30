@@ -1,6 +1,6 @@
 import { motify, MotiTransitionProp, StyleValueWithReplacedTransforms } from '@alloc/moti'
 import { ImageStyle } from 'expo-image'
-import React, { createContext, useContext } from 'react'
+import React from 'react'
 import { Platform, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
@@ -44,79 +44,27 @@ export const VStack = ({ className, ...props }: BoxProps) => (
   <Box {...props} className={twMerge('flex-col', className)} />
 )
 
-/**
- * The space a page's scroll content keeps at its end so that its last item clears the home
- * indicator and, in a tab, the bottom tab bar. Provided by SafeAreaBox (0 when the page reserves
- * its bottom); read above it, in the component that renders the page container, it is the same
- * home indicator and tab bar height.
- */
-const PageBottomInsetContext = createContext<number | null>(null)
-
-export const usePageBottomInset = () => {
-  const { bottomBarHeight } = useBottomBarHeightInTab()
-  return useContext(PageBottomInsetContext) ?? bottomBarHeight
-}
-
-/**
- * Set by the container that clears the right safe area (a landscape iPhone's camera), so the
- * containers nested in it do not clear it again.
- */
-const RightInsetClearedContext = createContext(false)
-
-/** Read the right safe area left to clear, and mark it cleared for the children. */
-export const useRightInsetToClear = () => {
-  const insets = useSafeAreaInsets()
-  return useContext(RightInsetClearedContext) ? 0 : insets.right
-}
-
-export const RightInsetCleared = ({ children }: { children: React.ReactNode }) => (
-  <RightInsetClearedContext.Provider value>{children}</RightInsetClearedContext.Provider>
-)
-
 export const SafeAreaBox = ({
   isPadding = true,
-  reserveBottom = false,
   className,
   style,
-  children,
   ...props
 }: BoxProps & {
   isPadding?: boolean
-  /**
-   * Keep the page above the home indicator and the tab bar. Only for a page with fixed content
-   * at its bottom (a form, a toolbar, an editor): a page that scrolls runs to the bottom edge and
-   * its scroll view pads its own content with usePageBottomInset().
-   */
-  reserveBottom?: boolean
 }) => {
   const insets = useSafeAreaInsets()
-  const rightInset = useRightInsetToClear()
   const { bottomBarHeight } = useBottomBarHeightInTab()
-  const bottomSpace = isPadding ? bottomBarHeight : insets.bottom
   return (
     <Box
       {...props}
       style={[
-        // The right inset clears a landscape iPhone's camera; the workspace sidebar covers the left.
         isPadding
-          ? {
-              paddingTop: insets.top,
-              paddingRight: rightInset,
-              paddingBottom: reserveBottom ? bottomSpace : 0,
-            }
-          : {
-              marginTop: insets.top,
-              marginRight: rightInset,
-              marginBottom: reserveBottom ? bottomSpace : 0,
-            },
+          ? { paddingTop: insets.top, paddingBottom: bottomBarHeight }
+          : { marginTop: insets.top, marginBottom: insets.bottom },
         style,
       ]}
       className={twMerge('flex-1 bg-reverse overflow-hidden border-continuous', className)}
-    >
-      <PageBottomInsetContext.Provider value={reserveBottom ? 0 : bottomSpace}>
-        <RightInsetCleared>{children}</RightInsetCleared>
-      </PageBottomInsetContext.Provider>
-    </Box>
+    />
   )
 }
 

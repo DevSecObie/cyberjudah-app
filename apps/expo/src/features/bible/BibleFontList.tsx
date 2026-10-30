@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { Platform, ScrollView, StyleSheet } from 'react-native'
+import { Platform, ScrollView } from 'react-native'
 import { TouchableBox } from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import { FeatherIcon } from '~common/ui/Icon'
@@ -25,16 +25,15 @@ export default function BibleFontList({ onSelect }: { onSelect?: () => void }) {
           className={
             isWeb
               ? 'w-full h-[44px] flex-row items-center gap-3 p-3 rounded-lg hover:bg-[#80808015]'
-              : 'min-h-[56px] px-[20px] py-[12px] flex-row items-center border-separator'
+              : 'min-h-[56px] px-[20px] py-[12px] flex-row items-center border-b border-border'
           }
-          style={isWeb ? undefined : { borderBottomWidth: StyleSheet.hairlineWidth }}
           onPress={() => {
             dispatch(setFontFamily(font))
             onSelect?.()
           }}
         >
           <Text
-            className={font === selectedFont ? 'flex-1 text-link' : 'flex-1 text-default'}
+            className={font === selectedFont ? 'flex-1 text-primary' : 'flex-1 text-default'}
             style={{ fontFamily: font, fontSize: isWeb ? 14 : 18 }}
           >
             {font}

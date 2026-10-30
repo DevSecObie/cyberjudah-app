@@ -4,20 +4,19 @@ import { getWordAnnotationAnchorRange } from '~redux/modules/user/wordAnnotation
 export const getAnnotationInlineAnchorKey = ({
   wordAnnotations,
   relationItemsByAnnotation,
-  versions,
+  version,
   relationsAreInline,
   tagsAreInline,
 }: {
   wordAnnotations: WordAnnotationsObj
   relationItemsByAnnotation: Record<string, readonly unknown[]>
-  // Every version on screen
-  versions: readonly string[]
+  version: string
   relationsAreInline: boolean
   tagsAreInline: boolean
 }): string =>
   Object.entries(wordAnnotations)
     .flatMap(([annotationId, annotation]) => {
-      if (!versions.includes(annotation.version)) return []
+      if (annotation.version !== version) return []
       const hasRelations =
         relationsAreInline && (relationItemsByAnnotation[annotationId]?.length || 0) > 0
       const hasTags = tagsAreInline && Object.keys(annotation.tags || {}).length > 0
@@ -26,7 +25,7 @@ export const getAnnotationInlineAnchorKey = ({
       const anchorRange = getWordAnnotationAnchorRange(annotation, 'end')
       if (!anchorRange) return []
       return [
-        `${annotationId}:${annotation.version}:${anchorRange.verseKey}:${anchorRange.endWordIndex}:${Number(
+        `${annotationId}:${anchorRange.verseKey}:${anchorRange.endWordIndex}:${Number(
           hasRelations
         )}:${Number(hasTags)}`,
       ]

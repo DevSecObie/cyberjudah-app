@@ -1,11 +1,9 @@
 import { m, useReducedMotion, type Transition } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 
-import { radii } from '~common/ui/surfaces'
 import { getPassageMediaEmbedUrl, type ResolvedPassageMedia } from '../passageMedia'
 import { OPEN_PASSAGE_MEDIA_SOURCE } from './dispatch'
 import { useDispatch } from './DispatchProvider'
-import { INTERFACE_FONT } from './interfaceFont'
 import PassageMediaImage from './PassageMediaImage'
 import { useTranslations } from './TranslationsContext'
 
@@ -73,12 +71,13 @@ const PassageMediaPlayer = ({
           boxSizing: 'border-box',
           overflow: 'hidden',
           border: `2px solid ${borderColor}`,
-          borderRadius: radii.control,
+          borderRadius: 11,
+          boxShadow: '0 7px 22px rgba(0, 0, 0, 0.25)',
           background: 'transparent',
         }}
       >
         <m.iframe
-          src={getPassageMediaEmbedUrl(item.providerId)}
+          src={getPassageMediaEmbedUrl(item.providerId, item.startSeconds)}
           title={item.title}
           allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
           allowFullScreen
@@ -103,12 +102,12 @@ const PassageMediaPlayer = ({
         }}
         style={{
           appearance: 'none',
-          border: 0,
-          borderRadius: radii.pill,
-          padding: '8px 13px',
+          border: `1px solid ${borderColor}`,
+          borderRadius: 999,
+          padding: '7px 12px',
           background: buttonBackgroundColor,
           color: buttonColor,
-          fontFamily: INTERFACE_FONT,
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
           fontSize: 12,
           lineHeight: 1.2,
           fontWeight: 650,

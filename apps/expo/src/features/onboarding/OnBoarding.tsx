@@ -10,6 +10,9 @@ import useLanguage from '~helpers/useLanguage'
 import { setDefaultBibleVersion } from '~redux/modules/user'
 import { isOnboardingCompletedAtom } from './atom'
 import AbelOnboarding from './AbelOnboarding'
+import CyberJudahTour from './CyberJudahTour'
+
+const IS_CYBERJUDAH = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
 import SelectResources from './SelectResources'
 import ResourceSetupChoice from './ResourceSetupChoice'
 const useOptionalOnboarding = () => {
@@ -73,7 +76,11 @@ const OnBoarding = () => {
           onAccessibilityEscape={completeOnboarding}
         >
           {step === 'abel' ? (
-            <AbelOnboarding onComplete={() => setStep('choice')} />
+            IS_CYBERJUDAH ? (
+              <CyberJudahTour onComplete={() => setStep('choice')} />
+            ) : (
+              <AbelOnboarding onComplete={() => setStep('choice')} />
+            )
           ) : step === 'choice' ? (
             <ResourceSetupChoice
               onContinueOnline={completeOnboarding}

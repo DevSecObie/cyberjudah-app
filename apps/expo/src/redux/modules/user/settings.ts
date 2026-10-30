@@ -173,3 +173,7 @@ export const setSettingsInlineCommentaries = createAction<string[]>(
 export const setSettingsInlineCommentariesEnabled = createAction<boolean>(
   'user/SET_SETTINGS_INLINE_COMMENTARIES_ENABLED'
 )
+
+export const setSettingsCyberJudahTagsEnabled = createAction<boolean>(
+  'user/SET_SETTINGS_CYBERJUDAH_TAGS_ENABLED'
+)

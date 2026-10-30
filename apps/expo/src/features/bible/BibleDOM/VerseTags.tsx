@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import { styled } from 'goober'
 import Feather from '@expo/vector-icons/Feather'
-import { personalContentIcons } from '~common/personalContent'
-import { resolveUniverseColors } from '~themes/universeColors'
 import { scaleFontSize } from './scaleFontSize'
 import { OPEN_HIGHLIGHT_TAGS, NAVIGATE_TO_TAG } from './dispatch'
 import { RootStyles, TaggedVerse } from './BibleDOMWrapper'
@@ -132,9 +130,9 @@ const VerseTags = ({ tag, settings, isDisabled, onOpenTags }: Props) => {
 
       <InlineItemIconWrapper settings={settings} isButton onClick={handleTagIconClick}>
         <Feather
-          name={personalContentIcons.tags}
+          name="tag"
           size={Number(scaleFontSize(14, settings.fontSizeScale).replace('px', ''))}
-          color={resolveUniverseColors(colors[theme], 'tags').foreground}
+          color={colors[theme].primary}
         />
       </InlineItemIconWrapper>
 

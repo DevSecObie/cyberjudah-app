@@ -2,6 +2,7 @@ import { useAtom } from 'jotai/react'
 import { useSelector } from 'react-redux'
 import * as StoreReview from 'expo-store-review'
 import { Linking, Platform } from 'react-native'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 
 import { appRatingAtom, AppRatingState } from '~state/appRating'
 import { RootState } from '~redux/modules/reducer'
@@ -117,7 +118,9 @@ export function useAppRating() {
         await StoreReview.requestReview()
       }
     } catch {
-      // Fallback: open store page directly
+      // Fallback: open store page directly. CyberJudah's prompt never sends anyone to
+      // Bible Strong's listing; the native review rates the app it is shown in.
+      if (usesCyberJudahEditorial()) return
       const storeUrl =
         Platform.OS === 'ios'
           ? 'https://apps.apple.com/fr/app/bible-strong/id1454738221?mt=8'

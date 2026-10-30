@@ -45,3 +45,29 @@ describe('Strong lexicon acquired with a Strong Bible index', () => {
     ).toBe('simple-fr')
   })
 })
+
+describe('Strong lexicon acquired with the CyberJudah Strong index', () => {
+  const profile = process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+  afterEach(() => {
+    if (profile === undefined) delete process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+    else process.env.EXPO_PUBLIC_RESOURCE_PROFILE = profile
+  })
+
+  // 304 crashed on download with MOBILE_RESOURCE_CATALOG_ENTRY_MISSING:strong-lexicon:simple-en.
+  it('pairs no lexicon the catalog does not publish, so the KJV and its index still download', () => {
+    process.env.EXPO_PUBLIC_RESOURCE_PROFILE = 'cyberjudah'
+    jest.isolateModules(() => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const isolated = require('../strongIndexLexicon') as typeof import('../strongIndexLexicon')
+      expect(isolated.getStrongIndexLexiconModuleId(registry(), 'en')).toBeUndefined()
+      expect(isolated.getStrongIndexLexiconModuleId(registry(), 'fr')).toBeUndefined()
+      // Pairing Bible Strong's simple lexicon is exactly what crashed the download.
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const items =
+        require('~helpers/strongLexiconDownloadItems') as typeof import('~helpers/strongLexiconDownloadItems')
+      expect(() => items.createStrongLexiconModuleDownloadItem('simple-en')).toThrow(
+        'MOBILE_RESOURCE_CATALOG_ENTRY_MISSING:strong-lexicon:simple-en'
+      )
+    })
+  })
+})
