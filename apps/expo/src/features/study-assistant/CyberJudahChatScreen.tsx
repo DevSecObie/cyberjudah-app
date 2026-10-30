@@ -24,7 +24,6 @@ import { selectUserLoginInfo } from '~redux/selectors/user'
 import { storage } from '~helpers/storage'
 import Box, { HStack } from '~common/ui/Box'
 import Container from '~common/ui/Container'
-import Header from '~common/Header'
 import Text from '~common/ui/Text'
 import { FeatherIcon } from '~common/ui/Icon'
 import AskInteractiveAnswer from './AskInteractiveAnswer'
@@ -89,6 +88,26 @@ export function modelLabel(model: CyberJudahModel | undefined) {
     return /haiku/i.test(model.id) ? 'Pro Fast' : /opus/i.test(model.id) ? 'Pro Max' : 'Pro'
   if (/deepseek/i.test(model.id)) return 'Deep'
   return 'Standard'
+}
+
+/** A model's name as a reader would say it: "gemma-4-26b-a4b-it" reads "Gemma 4 26B". */
+export function modelName(model: CyberJudahModel | undefined) {
+  if (!model) return 'Standard'
+  const name = model.name || model.id.split('/').pop() || model.id
+  if (/\s/.test(name)) return name
+  return name
+    .replace(/-(\d{4}|it|instruct|a\d+b|fp8|awq)(?=-|$)/gi, '')
+    .split('-')
+    .map(word =>
+      /^\d+b$/i.test(word)
+        ? word.toUpperCase()
+        : /^deepseek$/i.test(word)
+          ? 'DeepSeek'
+          : /^v\d/i.test(word)
+            ? word.toUpperCase()
+            : word.charAt(0).toUpperCase() + word.slice(1)
+    )
+    .join(' ')
 }
 
 const MODEL_NOTES: Record<string, string> = {
@@ -276,6 +295,9 @@ function AccountChat({ account }: { account: string }) {
   const active = useRef<AbortController | null>(null)
   const mounted = useRef(true)
   const scroll = useRef<ScrollView>(null)
+  // The question just sent: once laid out, it is scrolled to the top and the answer grows below it.
+  const anchor = useRef('')
+  const [viewport, setViewport] = useState(0)
   const input = useRef<TextInput>(null)
   const nearBottom = useRef(true)
   const [awayFromEnd, setAwayFromEnd] = useState(false)
@@ -370,7 +392,8 @@ function AccountChat({ account }: { account: string }) {
     setError('')
     setConsent(null)
     setStatus(t('assistant.cyberjudah.searching'))
-    nearBottom.current = true
+    nearBottom.current = false
+    anchor.current = turn.id
     setAwayFromEnd(false)
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
     const deadline = setTimeout(() => controller.abort(), 130000)
@@ -499,7 +522,7 @@ function AccountChat({ account }: { account: string }) {
   const ink = { color: p.text1 }
   const quiet = { color: p.text3 }
   const card = { backgroundColor: p.surface1, borderWidth: 0.5, borderColor: p.edge }
-  const modelLine = modelLabel(selected)
+  const modelLine = modelName(selected)
   // Deep research: the stronger reasoning model, one tap on and off, when the account has it.
   const deepModel = models.find(m => modelLabel(m) === 'Deep')
   const deepOn = !!deepModel && model === deepModel.id
@@ -522,8 +545,10 @@ function AccountChat({ account }: { account: string }) {
               v.contentSize.height - v.layoutMeasurement.height - v.contentOffset.y < 100
             if (awayFromEnd === nearBottom.current) setAwayFromEnd(!nearBottom.current)
           }}
+          onLayout={e => setViewport(e.nativeEvent.layout.height)}
           onContentSizeChange={() => {
-            if (nearBottom.current) scroll.current?.scrollToEnd({ animated: false })
+            // Opening a saved chat lands on its end; a streaming answer is never chased downward.
+            if (nearBottom.current && !busy) scroll.current?.scrollToEnd({ animated: false })
           }}
           contentContainerStyle={{
             paddingHorizontal: 18,
@@ -639,7 +664,23 @@ function AccountChat({ account }: { account: string }) {
             </Box>
           )}
           {allTurns.map((turn, i) => (
-            <Box key={turn.id} style={{ marginBottom: 28 }}>
+            <Box
+              key={turn.id}
+              onLayout={e => {
+                if (anchor.current !== turn.id) return
+                anchor.current = ''
+                const y = e.nativeEvent.layout.y - (insets.top + 64)
+                scroll.current?.scrollTo({ y: Math.max(0, y), animated: true })
+              }}
+              style={{
+                marginBottom: 28,
+                // The latest exchange can always rise to the top of the screen.
+                minHeight:
+                  i === allTurns.length - 1 && viewport
+                    ? Math.max(0, viewport - (insets.top + 72) - 24)
+                    : undefined,
+              }}
+            >
               {/* Your question: a subtle filled pill on the right. Content stays off the glass layer. */}
               <Box
                 className="mb-6 self-end rounded-[22px] px-4 py-[10px]"
@@ -1077,16 +1118,31 @@ function AccountChat({ account }: { account: string }) {
         presentationStyle="pageSheet"
       >
         <Container className="bg-reverse">
-          <Header
-            title={
-              panel === 'history'
+          {/* A sheet header as in the Claude app: a round close button and a centred title. */}
+          <HStack className="items-center px-5 pb-2 pt-5">
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('Fermer')}
+              onPress={() => setPanel(null)}
+              className="h-11 w-11 items-center justify-center rounded-full"
+              style={({ pressed }) => ({
+                backgroundColor: p.surface1,
+                borderWidth: 1,
+                borderColor: p.edge,
+                opacity: pressed ? 0.6 : 1,
+              })}
+            >
+              <FeatherIcon name="x" size={20} style={{ color: p.text1 }} />
+            </Pressable>
+            <Text
+              className="flex-1 text-center"
+              style={[ink, { fontSize: 18, fontWeight: '700', marginRight: 44 }]}
+            >
+              {panel === 'history'
                 ? t('askChat.yourChats', { defaultValue: 'Your chats' })
-                : t('askChat.model', { defaultValue: 'Model' })
-            }
-            rightComponent={
-              <IconButton name="x" label={t('Fermer')} onPress={() => setPanel(null)} />
-            }
-          />
+                : t('askChat.selectModel', { defaultValue: 'Select model' })}
+            </Text>
+          </HStack>
           <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: insets.bottom + 20 }}>
             {panel === 'history' ? (
               <>
@@ -1153,55 +1209,65 @@ function AccountChat({ account }: { account: string }) {
               </>
             ) : (
               <>
-                <Text className="mb-2 text-sm" style={{ color: p.text3 }}>
-                  {t('askChat.modelNotice', {
-                    defaultValue:
-                      'These models use the free Ask allowance. Availability depends on the shared daily limit.',
-                  })}
-                </Text>
                 {models.length ? (
-                  // The included models first, then Pro; CyberJudah's names only, never a model id.
+                  // One rounded group per tier: each row the model's name and what it is for, a tick on
+                  // the chosen one, as in the Claude app's model sheet.
                   [
-                    ['Included', models.filter(m => m.id.startsWith('@cf/'))] as const,
+                    ['', models.filter(m => m.id.startsWith('@cf/'))] as const,
                     ['Pro', models.filter(m => !m.id.startsWith('@cf/'))] as const,
                   ]
                     .filter(([, list]) => list.length)
                     .map(([group, list]) => (
-                      <Box key={group} className="mb-2 gap-2">
-                        <Text
-                          style={{ color: p.text3, fontSize: 13, fontWeight: '600', marginTop: 8 }}
-                        >
-                          {group}
-                        </Text>
-                        {list.map(item => (
-                          <Pressable
-                            key={item.id}
-                            accessibilityRole="radio"
-                            accessibilityState={{ checked: item.id === model }}
-                            onPress={() => {
-                              setModel(item.id)
-                              setPanel(null)
-                            }}
-                            className="min-h-14 flex-row items-center gap-3 rounded-[14px] p-3"
-                            style={{
-                              backgroundColor: p.surface2,
-                              borderWidth: item.id === model ? 2 : 0,
-                              borderColor: p.accent,
-                            }}
+                      <Box key={group || 'included'} className="mb-5">
+                        {!!group && (
+                          <Text
+                            style={[
+                              quiet,
+                              { fontSize: 13, fontWeight: '600', marginBottom: 8, marginLeft: 4 },
+                            ]}
                           >
-                            <Box className="flex-1">
-                              <Text style={{ color: p.text1, fontWeight: '600' }}>
-                                {modelLabel(item)}
-                              </Text>
-                              <Text style={{ color: p.text3, fontSize: 13, marginTop: 2 }}>
-                                {MODEL_NOTES[modelLabel(item)]}
-                              </Text>
-                            </Box>
-                            {item.id === model && (
-                              <FeatherIcon name="check" size={18} style={{ color: p.accent }} />
-                            )}
-                          </Pressable>
-                        ))}
+                            {group}
+                          </Text>
+                        )}
+                        <Box
+                          className="overflow-hidden rounded-3xl"
+                          style={{ backgroundColor: p.surface1 }}
+                        >
+                          {list.map((item, row) => (
+                            <Pressable
+                              key={item.id}
+                              accessibilityRole="radio"
+                              accessibilityState={{ checked: item.id === model }}
+                              onPress={() => {
+                                void Haptics.selectionAsync().catch(() => {})
+                                setModel(item.id)
+                                setPanel(null)
+                              }}
+                              className="flex-row items-center px-5"
+                              style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+                            >
+                              <Box
+                                className="flex-1 flex-row items-center py-[18px]"
+                                style={{
+                                  borderTopWidth: row ? 1 : 0,
+                                  borderTopColor: p.edge,
+                                }}
+                              >
+                                <Box className="flex-1">
+                                  <Text style={[ink, { fontSize: 18, fontWeight: '500' }]}>
+                                    {modelName(item)}
+                                  </Text>
+                                  <Text style={[quiet, { fontSize: 15, marginTop: 4 }]}>
+                                    {MODEL_NOTES[modelLabel(item)]}
+                                  </Text>
+                                </Box>
+                                {item.id === model && (
+                                  <FeatherIcon name="check" size={22} style={{ color: p.accent }} />
+                                )}
+                              </Box>
+                            </Pressable>
+                          ))}
+                        </Box>
                       </Box>
                     ))
                 ) : (
@@ -1212,6 +1278,12 @@ function AccountChat({ account }: { account: string }) {
                     })}
                   </Text>
                 )}
+                <Text className="mb-4 px-1 text-sm" style={{ color: p.text3 }}>
+                  {t('askChat.modelNotice', {
+                    defaultValue:
+                      'These models use the free Ask allowance. Availability depends on the shared daily limit.',
+                  })}
+                </Text>
                 <AskCreditsCard account={account} purchasesEnabled={purchasesEnabled} />
               </>
             )}
