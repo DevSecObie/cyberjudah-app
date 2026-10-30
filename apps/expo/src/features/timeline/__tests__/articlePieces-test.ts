@@ -1,4 +1,4 @@
-import { articlePieces } from '../articlePieces'
+import { articlePieces, withoutDisagreements } from '../articlePieces'
 
 describe('articlePieces', () => {
   it('turns each class the article cites into one piece at its moment', () => {
@@ -35,5 +35,15 @@ describe('articlePieces', () => {
         at: undefined,
       },
     ])
+  })
+})
+
+describe('withoutDisagreements', () => {
+  it('leaves out the disagreements section and the pointer to it', () => {
+    expect(
+      withoutDisagreements(
+        'Documented history\n\nUncertainty\n\nThe figures differ between accounts (see disagreements).\n\nWhere sources disagree\n\nThe date\n\nOne book gives 30 March.'
+      )
+    ).toBe('Documented history\n\nUncertainty\n\nThe figures differ between accounts.')
   })
 })

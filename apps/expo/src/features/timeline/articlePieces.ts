@@ -37,3 +37,13 @@ export const articlePieces = (article: string): ArticlePiece[] => {
   }
   return pieces
 }
+
+/**
+ * The classes are the authority: an event shows no "Where sources disagree" section, the last
+ * section the Timeline build writes, nor a pointer to it.
+ */
+export const withoutDisagreements = (article: string) =>
+  article
+    .split(/\n\s*\nWhere sources disagree\s*\n/)[0]
+    .replace(/\s*\(see disagreements\)/gi, '')
+    .trimEnd()

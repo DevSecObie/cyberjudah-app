@@ -10,7 +10,7 @@ import { getPassageMediaEmbedUrl } from '~features/bible/passageMedia'
 import { getCommentaryBibleViewRoute } from '~features/commentaries/commentaryReferenceNavigation'
 import { parseInlineBibleReferences } from '~helpers/bcvParser'
 import { useTheme } from '~themes/ThemeProvider'
-import { articlePieces, type ArticlePiece } from './articlePieces'
+import { articlePieces, type ArticlePiece, withoutDisagreements } from './articlePieces'
 
 // An event's article as the Timeline writes it: paragraphs, where a class it cites is a line
 // "Title — date — time" followed by the class's link at that moment. The class becomes a card that
@@ -138,7 +138,7 @@ const TimelineArticle = ({ article }: { article: string }) => {
   }
   return (
     <View style={{ marginTop: 20 }}>
-      {articlePieces(article).map((piece, index) =>
+      {articlePieces(withoutDisagreements(article)).map((piece, index) =>
         piece.kind === 'class' ? (
           <ClassCard key={index} piece={piece} />
         ) : (
