@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import {
-  ActivityIndicator,
   Alert,
+  Animated,
+  Easing,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -30,6 +31,8 @@ import AskInteractiveAnswer from './AskInteractiveAnswer'
 import AskCreditsCard from './AskCreditsCard'
 import AskProgress from './AskProgress'
 import AskGlassBackdrop from './AskGlassBackdrop'
+import { ThemeProvider } from '~themes/ThemeProvider'
+import { ASK_THEME } from './askTheme'
 import { useAskPalette } from './askPalette'
 import {
   askCyberJudah,
@@ -98,6 +101,13 @@ const MODEL_NOTES: Record<string, string> = {
   'Pro Max': 'The strongest reasoning',
 }
 
+const STARTER_ICONS: React.ComponentProps<typeof FeatherIcon>['name'][] = [
+  'sunrise',
+  'users',
+  'book-open',
+  'calendar',
+]
+
 const STARTERS = [
   ['Why do we keep the Passover?', 'The feast, from the law to Christ'],
   ['Who are the twelve tribes today?', 'Where the scattered nation is now'],
@@ -151,11 +161,54 @@ function GlassCircle({
       disabled={disabled}
       onPress={onPress}
       className="h-11 w-11 items-center justify-center rounded-full"
-      style={({ pressed }) => ({ opacity: disabled ? 0.4 : pressed ? 0.7 : 1 })}
+      style={({ pressed }) => ({ opacity: disabled ? 0.55 : pressed ? 0.7 : 1 })}
     >
       <AskGlassBackdrop radius={22} />
-      <FeatherIcon name={name} size={19} />
+      <FeatherIcon name={name} size={19} style={{ color: '#ECEEF3' }} />
     </Pressable>
+  )
+}
+
+/** A gold dot that breathes while CyberJudah is thinking or writing. */
+function ThinkingDot({ color }: { color: string }) {
+  const pulse = useRef(new Animated.Value(0.35)).current
+  useEffect(() => {
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, {
+          toValue: 1,
+          duration: 700,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulse, {
+          toValue: 0.35,
+          duration: 700,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+      ])
+    )
+    loop.start()
+    return () => loop.stop()
+  }, [pulse])
+  return (
+    <Animated.View
+      style={{
+        width: 9,
+        height: 9,
+        borderRadius: 5,
+        backgroundColor: color,
+        opacity: pulse,
+        transform: [
+          { scale: pulse.interpolate({ inputRange: [0.35, 1], outputRange: [0.8, 1.15] }) },
+        ],
+        shadowColor: color,
+        shadowOpacity: 0.9,
+        shadowRadius: 6,
+        shadowOffset: { width: 0, height: 0 },
+      }}
+    />
   )
 }
 
@@ -191,7 +244,12 @@ function ActionPill({
 export default function CyberJudahChatScreen() {
   const { id } = useSelector(selectUserLoginInfo)
   // Remount on account changes: no previous user's transcript, consent, callbacks or drafts survive.
-  return <AccountChat key={id || 'signed-out'} account={id || ''} />
+  // Ask runs in its own midnight-and-gold theme (askTheme.ts) whatever the reader's app theme is.
+  return (
+    <ThemeProvider theme={ASK_THEME} scope="black">
+      <AccountChat key={id || 'signed-out'} account={id || ''} />
+    </ThemeProvider>
+  )
 }
 
 function AccountChat({ account }: { account: string }) {
@@ -210,6 +268,8 @@ function AccountChat({ account }: { account: string }) {
   const [panel, setPanel] = useState<'history' | 'models' | null>(null)
   const [models, setModels] = useState<CyberJudahModel[]>([])
   const [model, setModel] = useState('')
+  const [defaultModel, setDefaultModel] = useState('')
+  const [focused, setFocused] = useState(false)
   const [questionLimit, setQuestionLimit] = useState(400)
   const [purchasesEnabled, setPurchasesEnabled] = useState(false)
   const [consent, setConsent] = useState<{
@@ -244,6 +304,7 @@ function AccountChat({ account }: { account: string }) {
         if (!mounted.current) return
         setModels(result.models)
         setModel(result.default)
+        setDefaultModel(result.default)
         setQuestionLimit(result.maxQuestionLength)
         setPurchasesEnabled(result.purchasesEnabled)
       })
@@ -446,10 +507,13 @@ function AccountChat({ account }: { account: string }) {
   const quiet = { color: p.text3 }
   const card = { backgroundColor: p.surface1, borderWidth: 0.5, borderColor: p.edge }
   const modelLine = modelLabel(selected)
+  // Deep research: the stronger reasoning model, one tap on and off, when the account has it.
+  const deepModel = models.find(m => modelLabel(m) === 'Deep')
+  const deepOn = !!deepModel && model === deepModel.id
   const canSend = !!account && question.trim().length >= 2
 
   return (
-    <Container className="bg-reverse">
+    <Container className="bg-reverse" style={{ backgroundColor: p.canvas }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -479,62 +543,102 @@ function AccountChat({ account }: { account: string }) {
           }}
         >
           {!allTurns.length && (
-            // The welcome, as in Perplexity: the lion in a soft glow, a serif line, one sentence.
-            <Box className="flex-1 items-center justify-center px-6 pb-6">
-              <Box
-                className="items-center justify-center rounded-full"
-                style={{
-                  width: 200,
-                  height: 200,
-                  backgroundColor: p.accentSoft,
-                  shadowColor: p.accent,
-                  shadowOpacity: 0.45,
-                  shadowRadius: 60,
-                  shadowOffset: { width: 0, height: 0 },
-                  opacity: 0.9,
-                }}
-              >
-                <Image
-                  source={require('~assets/images/icon.png')}
-                  style={{ width: 112, height: 112, borderRadius: 26 }}
-                  accessible={false}
-                />
+            // The welcome: the lion in a warm gold glow, a serif headline and four suggested prompts.
+            <Box className="flex-1 justify-center pb-4">
+              <Box className="items-center">
+                <Box
+                  className="items-center justify-center rounded-full"
+                  style={{
+                    width: 132,
+                    height: 132,
+                    backgroundColor: 'rgba(245,158,11,0.08)',
+                    borderWidth: 1,
+                    borderColor: 'rgba(245,158,11,0.18)',
+                    shadowColor: p.accent,
+                    shadowOpacity: 0.55,
+                    shadowRadius: 48,
+                    shadowOffset: { width: 0, height: 0 },
+                  }}
+                >
+                  <Image
+                    source={require('~assets/images/icon.png')}
+                    style={{ width: 84, height: 84, borderRadius: 20 }}
+                    accessible={false}
+                  />
+                </Box>
+                <Text
+                  className="mt-8 text-center"
+                  style={[
+                    ink,
+                    {
+                      fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+                      fontSize: 30,
+                      lineHeight: 37,
+                      letterSpacing: -0.4,
+                      maxWidth: 340,
+                    },
+                  ]}
+                >
+                  {t('askChat.explore', { defaultValue: 'What would you like to explore today?' })}
+                </Text>
+                <Text
+                  className="mt-3 text-center"
+                  style={[quiet, { fontSize: 15, lineHeight: 22, maxWidth: 320 }]}
+                >
+                  {t('askChat.introShort', {
+                    defaultValue:
+                      'Answers from the classes, the notes and the Scripture, with sources you can check.',
+                  })}
+                </Text>
               </Box>
-              <Text
-                className="mt-10 text-center"
-                style={[
-                  ink,
-                  {
-                    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
-                    fontSize: 30,
-                    lineHeight: 36,
-                    letterSpacing: -0.3,
-                  },
-                ]}
-              >
-                {t('askChat.welcome', { defaultValue: 'What would you like to learn?' })}
-              </Text>
-              <Text
-                className="mt-3 text-center"
-                style={[quiet, { fontSize: 15, lineHeight: 21, maxWidth: 320 }]}
-              >
-                {t('askChat.introShort', {
-                  defaultValue:
-                    'Answers from the classes, the notes and the Scripture, with sources you can check.',
-                })}
-              </Text>
-              {!account && (
+              {account ? (
+                <Box className="mt-8 flex-row flex-wrap justify-between" style={{ rowGap: 10 }}>
+                  {STARTERS.map(([title, subtitle], i) => (
+                    <Pressable
+                      key={title}
+                      onPress={() => void send(title)}
+                      accessibilityRole="button"
+                      className="rounded-2xl p-[14px]"
+                      style={({ pressed }) => ({
+                        width: '48.6%',
+                        minHeight: 104,
+                        backgroundColor: pressed ? p.surface2 : p.surface1,
+                        borderWidth: 1,
+                        borderColor: pressed ? 'rgba(245,158,11,0.35)' : p.edge,
+                        transform: [{ scale: pressed ? 0.98 : 1 }],
+                      })}
+                    >
+                      <FeatherIcon
+                        name={STARTER_ICONS[i] ?? 'search'}
+                        size={17}
+                        style={{ color: p.accent }}
+                      />
+                      <Text
+                        style={[
+                          ink,
+                          { fontSize: 15, fontWeight: '600', lineHeight: 20, marginTop: 10 },
+                        ]}
+                      >
+                        {t(`askChat.starter${i}Title`, { defaultValue: title })}
+                      </Text>
+                      <Text style={[quiet, { fontSize: 13, lineHeight: 18, marginTop: 3 }]}>
+                        {t(`askChat.starter${i}Detail`, { defaultValue: subtitle })}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </Box>
+              ) : (
                 <Pressable
                   onPress={() => router.push('/profile')}
                   accessibilityRole="button"
-                  className="mt-10 min-h-[52px] w-full items-center justify-center rounded-full"
+                  className="mt-10 min-h-[52px] w-full items-center justify-center self-center rounded-full"
                   style={({ pressed }) => ({
                     maxWidth: 340,
-                    backgroundColor: p.text1,
-                    opacity: pressed ? 0.8 : 1,
+                    backgroundColor: p.accent,
+                    opacity: pressed ? 0.85 : 1,
                   })}
                 >
-                  <Text style={{ color: p.canvas, fontSize: 17, fontWeight: '500' }}>
+                  <Text style={{ color: p.onAccent, fontSize: 17, fontWeight: '600' }}>
                     {t('assistant.signIn')}
                   </Text>
                 </Pressable>
@@ -546,7 +650,13 @@ function AccountChat({ account }: { account: string }) {
               {/* Your question: a subtle filled pill on the right. Content stays off the glass layer. */}
               <Box
                 className="mb-6 self-end rounded-[22px] px-4 py-[10px]"
-                style={{ maxWidth: '82%', backgroundColor: p.surface2 }}
+                style={{
+                  maxWidth: '82%',
+                  backgroundColor: p.surface2,
+                  borderWidth: 1,
+                  borderColor: p.edgeStrong,
+                  borderBottomRightRadius: 8,
+                }}
               >
                 <QuestionText
                   text={turn.question}
@@ -604,7 +714,7 @@ function AccountChat({ account }: { account: string }) {
                           <FeatherIcon
                             name="corner-down-right"
                             size={15}
-                            style={{ color: p.text3 }}
+                            style={{ color: p.accent }}
                           />
                           <Text className="flex-1" style={[ink, { fontSize: 15 }]}>
                             {followup}
@@ -732,7 +842,7 @@ function AccountChat({ account }: { account: string }) {
                 accessibilityLiveRegion="polite"
               >
                 <AskGlassBackdrop radius={18} />
-                <ActivityIndicator size="small" color={p.text3} />
+                <ThinkingDot color={p.accent} />
                 <Text
                   numberOfLines={1}
                   style={[ink, { fontSize: 14, fontWeight: '500', maxWidth: 240 }]}
@@ -760,35 +870,22 @@ function AccountChat({ account }: { account: string }) {
           className="w-full self-center px-3 pt-2"
           style={{ maxWidth: 744, paddingBottom: Math.max(insets.bottom, 8) }}
         >
-          {!allTurns.length && !!account && (
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              keyboardShouldPersistTaps="handled"
-              className="mb-2"
-              contentContainerStyle={{ gap: 8, paddingHorizontal: 2 }}
-            >
-              {STARTERS.map(([title, subtitle], i) => (
-                <Pressable
-                  key={title}
-                  onPress={() => void send(title)}
-                  accessibilityRole="button"
-                  className="rounded-[18px] px-4 py-[10px]"
-                  style={({ pressed }) => ({ maxWidth: 240, opacity: pressed ? 0.7 : 1 })}
-                >
-                  <AskGlassBackdrop radius={18} />
-                  <Text numberOfLines={1} style={[ink, { fontSize: 14, fontWeight: '600' }]}>
-                    {t(`askChat.starter${i}Title`, { defaultValue: title })}
-                  </Text>
-                  <Text numberOfLines={1} style={[quiet, { fontSize: 13, marginTop: 1 }]}>
-                    {t(`askChat.starter${i}Detail`, { defaultValue: subtitle })}
-                  </Text>
-                </Pressable>
-              ))}
-            </ScrollView>
-          )}
-          <Box className="rounded-[28px] px-2 pb-2 pt-1">
-            <AskGlassBackdrop radius={28} />
+          <Box
+            className="rounded-[26px] px-2 pb-2 pt-1"
+            style={{
+              backgroundColor: p.surface1,
+              borderWidth: 1,
+              borderColor: busy
+                ? 'rgba(245,158,11,0.55)'
+                : focused
+                  ? 'rgba(245,158,11,0.35)'
+                  : p.edgeStrong,
+              shadowColor: p.accent,
+              shadowOpacity: busy ? 0.35 : focused ? 0.18 : 0,
+              shadowRadius: 18,
+              shadowOffset: { width: 0, height: 0 },
+            }}
+          >
             <TextInput
               ref={input}
               multiline
@@ -800,11 +897,14 @@ function AccountChat({ account }: { account: string }) {
                   ? t('askChat.signInToAsk', { defaultValue: 'Sign in to ask' })
                   : allTurns.length
                     ? t('askChat.followUp', { defaultValue: 'Ask a follow-up' })
-                    : 'Ask CyberJudah'
+                    : t('askChat.askAnything', { defaultValue: 'Ask anything about the teachings' })
               }
-              placeholderTextColor={p.text4}
+              placeholderTextColor={p.text3}
               accessibilityLabel={t('assistant.cyberjudah.placeholder')}
               editable={!!account}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              selectionColor={p.accent}
               style={{
                 color: p.text1,
                 fontSize: 17,
@@ -820,28 +920,55 @@ function AccountChat({ account }: { account: string }) {
                 accessibilityRole="button"
                 accessibilityLabel={t('askChat.options', { defaultValue: 'Models and credits' })}
                 onPress={() => setPanel('models')}
-                disabled={busy || !account}
+                disabled={!account}
                 className="h-9 w-9 items-center justify-center rounded-full"
                 style={({ pressed }) => ({
-                  backgroundColor: p.surface2,
-                  opacity: busy || !account ? 0.4 : pressed ? 0.6 : 1,
+                  borderWidth: 1,
+                  borderColor: p.edgeStrong,
+                  opacity: pressed ? 0.6 : 1,
                 })}
               >
                 <FeatherIcon name="plus" size={19} style={{ color: p.text1 }} />
               </Pressable>
+              {!!deepModel && (
+                <Pressable
+                  accessibilityRole="switch"
+                  accessibilityState={{ checked: deepOn }}
+                  accessibilityLabel={t('askChat.deep', { defaultValue: 'Deep research' })}
+                  onPress={() => {
+                    void Haptics.selectionAsync().catch(() => {})
+                    setModel(deepOn ? defaultModel : deepModel.id)
+                  }}
+                  className="h-9 flex-row items-center gap-[6px] rounded-full px-3"
+                  style={({ pressed }) => ({
+                    backgroundColor: deepOn ? p.accentSoft : 'transparent',
+                    borderWidth: 1,
+                    borderColor: deepOn ? 'rgba(245,158,11,0.45)' : p.edgeStrong,
+                    opacity: pressed ? 0.6 : 1,
+                  })}
+                >
+                  <FeatherIcon
+                    name="zap"
+                    size={14}
+                    style={{ color: deepOn ? p.accent : p.text1 }}
+                  />
+                  <Text
+                    style={{ color: deepOn ? p.accent : p.text1, fontSize: 14, fontWeight: '500' }}
+                  >
+                    {t('askChat.deepShort', { defaultValue: 'Deep' })}
+                  </Text>
+                </Pressable>
+              )}
               <Pressable
                 onPress={() => setPanel('models')}
-                disabled={busy || !account}
+                disabled={!account}
                 accessibilityRole="button"
                 accessibilityLabel={`${t('askChat.chooseModel', { defaultValue: 'Choose a model' })}: ${modelLine}`}
-                className="h-9 flex-row items-center gap-1 rounded-full px-[14px]"
-                style={({ pressed }) => ({
-                  backgroundColor: p.surface2,
-                  opacity: busy || !account ? 0.4 : pressed ? 0.6 : 1,
-                })}
+                className="h-9 flex-row items-center gap-1 rounded-full px-3"
+                style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
               >
                 <Text style={[ink, { fontSize: 14, fontWeight: '500' }]}>{modelLine}</Text>
-                <FeatherIcon name="chevron-down" size={13} style={{ color: p.text3 }} />
+                <FeatherIcon name="chevron-down" size={13} style={{ color: p.text1 }} />
               </Pressable>
               <Box className="flex-1" />
               {/* The mic opens the keyboard on the question, where iOS dictation is one tap away. */}
@@ -849,12 +976,9 @@ function AccountChat({ account }: { account: string }) {
                 accessibilityRole="button"
                 accessibilityLabel={t('askChat.dictate', { defaultValue: 'Speak your question' })}
                 onPress={() => input.current?.focus()}
-                disabled={busy || !account}
+                disabled={!account}
                 className="h-9 w-9 items-center justify-center rounded-full"
-                style={({ pressed }) => ({
-                  backgroundColor: p.surface2,
-                  opacity: busy || !account ? 0.4 : pressed ? 0.6 : 1,
-                })}
+                style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
               >
                 <FeatherIcon name="mic" size={18} style={{ color: p.text1 }} />
               </Pressable>
@@ -864,17 +988,19 @@ function AccountChat({ account }: { account: string }) {
                 disabled={!busy && !canSend}
                 onPress={() => (busy ? active.current?.abort() : void send())}
                 className="h-9 w-9 items-center justify-center rounded-full"
-                style={{ backgroundColor: busy ? p.text1 : canSend ? p.accent : p.surface2 }}
+                style={{
+                  backgroundColor: busy || canSend ? p.accent : 'rgba(245,158,11,0.22)',
+                }}
               >
                 {busy ? (
                   <Box
-                    style={{ width: 11, height: 11, borderRadius: 2, backgroundColor: p.canvas }}
+                    style={{ width: 11, height: 11, borderRadius: 2, backgroundColor: p.onAccent }}
                   />
                 ) : (
                   <FeatherIcon
                     name="arrow-up"
                     size={19}
-                    style={{ color: canSend ? p.onAccent : p.text4 }}
+                    style={{ color: canSend ? p.onAccent : 'rgba(245,158,11,0.8)' }}
                   />
                 )}
               </Pressable>

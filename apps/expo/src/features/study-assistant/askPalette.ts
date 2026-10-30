@@ -1,7 +1,6 @@
 import { useTheme } from '~themes/ThemeProvider'
 
-/** cyberjudah.io/app's Ask colour roles mapped onto the app's own (Bible Strong) theme tokens, so
- * Ask keeps the site's layout but looks like the rest of the app in every theme. */
+/** Ask's colour roles, read from the theme Ask runs in (askTheme.ts) so every Ask part agrees. */
 export type AskPalette = {
   canvas: string
   surface1: string
@@ -13,6 +12,7 @@ export type AskPalette = {
   onAccent: string
   accentSoft: string
   edge: string
+  edgeStrong: string
 }
 
 export function useAskPalette(): AskPalette {
@@ -20,13 +20,14 @@ export function useAskPalette(): AskPalette {
   return {
     canvas: colors.reverse,
     surface1: colors.lightGrey,
-    surface2: colors.lightGrey,
+    surface2: '#1A2236',
     text1: colors.default,
     text3: colors.grey,
-    text4: colors.grey,
+    text4: colors.darkGrey,
     accent: colors.primary,
-    onAccent: '#ffffff',
+    onAccent: '#0B0F19',
     accentSoft: colors.lightPrimary,
     edge: colors.border,
+    edgeStrong: 'rgba(255,255,255,0.12)',
   }
 }
