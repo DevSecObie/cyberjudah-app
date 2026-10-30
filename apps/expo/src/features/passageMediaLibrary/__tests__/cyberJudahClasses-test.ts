@@ -9,6 +9,7 @@ jest.mock('~helpers/storage', () => ({
 }))
 
 import {
+  classNotesToBlocks,
   filterClassLibrary,
   getCachedClassById,
   loadClassLibrary,
@@ -97,5 +98,42 @@ describe('CyberJudah class library', () => {
     const failing = jest.fn(async () => ({ ok: false, status: 503 })) as unknown as typeof fetch
     await expect(loadClassLibrary(failing)).rejects.toThrow('CYBERJUDAH_CLASSES_UNAVAILABLE:503')
     expect(readCachedClassLibrary()).toHaveLength(7)
+  })
+})
+
+describe('classNotesToBlocks', () => {
+  it('reads the notes into the blocks the app draws', () => {
+    const blocks = classNotesToBlocks(
+      [
+        '## Scriptures Opened',
+        '',
+        'The **first** point, at *[[10:04](https://www.youtube.com/watch?v=P4cR6i32U80&t=604s)]*.',
+        '',
+        'Precepts:',
+        '',
+        '- A precept',
+        '  - Under it',
+        '',
+        '---',
+        '[Class Notes Index](/classes)',
+      ].join('\n'),
+      'P4cR6i32U80'
+    )
+    expect(blocks.map(block => block.type)).toEqual([
+      'heading',
+      'paragraph',
+      'paragraph',
+      'list',
+      'rule',
+    ])
+    expect(blocks[1]).toMatchObject({
+      type: 'paragraph',
+      html: expect.stringContaining('<a class="ts" href="cyberjudah-seek:604">10:04</a>'),
+    })
+    expect(blocks[2]).toEqual({ type: 'paragraph', html: 'Precepts', variant: 'label' })
+    expect(blocks[3]).toMatchObject({
+      type: 'list',
+      items: [[{ type: 'paragraph' }, { type: 'list' }]],
+    })
   })
 })
