@@ -109,7 +109,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     ...(isCyberJudah ? ['./plugins/withCyberJudahBilling.js'] : []),
     'expo-sharing',
-    'expo-router',
+    // The web export splits each screen into its own file: as one file it passes Cloudflare's
+    // 25 MB limit, and a phone browser would download every screen before showing the first.
+    ['expo-router', { asyncRoutes: { web: true, default: false } }],
     'expo-asset',
     'expo-image',
     'expo-sqlite',

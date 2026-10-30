@@ -1,0 +1,2 @@
+- The web version builds again: class search no longer pulls the phone's database code into the web bundle (a web stand-in, like the other databases).
+- On the web each screen loads as its own file. As one file the app was 26.9 MB, over Cloudflare's 25 MB limit for a single file; the largest is now 23.4 MB. The iPhone and Android builds are unchanged.
