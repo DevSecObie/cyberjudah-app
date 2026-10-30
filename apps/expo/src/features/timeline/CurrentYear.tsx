@@ -3,25 +3,22 @@ import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { twMerge } from '~common/ui/classNames'
 import React from 'react'
 import { Platform, TextInput } from 'react-native'
-import Animated, {
+import {
   Extrapolation,
   SharedValue,
   interpolate,
-  useAnimatedProps,
+  useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
 } from 'react-native-reanimated'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { scheduleOnRN } from 'react-native-worklets'
+import { useBottomBarHeightInTab } from '~features/app-switcher/context/TabContext'
 import Link from '~common/Link'
 import Box, { AnimatedBox } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import { useMediaQueriesArray } from '~helpers/useMediaQueries'
 import { wpUI } from '~helpers/utils'
 import { offset } from './constants'
-const AnimatedTextInput = Animated.createAnimatedComponent(TextInput)
-type AnimatedTextInputAnimatedProps = React.ComponentProps<
-  typeof AnimatedTextInput
->['animatedProps']
 
 const LinkBox = (props: React.ComponentProps<typeof Box> & React.ComponentProps<typeof Link>) => (
   <Box
@@ -56,6 +53,17 @@ const CurrentYear = ({
   nextColor?: string
 }) => {
   const stylingTheme = useStylingTheme()
+  const { bottomBarHeight } = useBottomBarHeightInTab()
+  const [currentYear, setCurrentYear] = React.useState(year.get())
+  // A native TextInput can restore its stale default text when a sheet closes.
+  // Keep its displayed value in sync with the UI-thread year instead.
+  useAnimatedReaction(
+    () => year.get(),
+    (value, previous) => {
+      if (value !== previous) scheduleOnRN(setCurrentYear, value)
+    },
+    [year]
+  )
 
   const r = useMediaQueriesArray()
   const progressInSection = useDerivedValue(() => {
@@ -72,7 +80,7 @@ const CurrentYear = ({
     <AnimatedBox
       className="overflow-hidden border-continuous absolute left-[0px] right-[0px]"
       style={[
-        { height: r([30, 40, 60, 60]), bottom: useSafeAreaInsets().bottom },
+        { height: r([30, 40, 60, 60]), bottom: bottomBarHeight },
         useAnimatedStyle(() => ({
           transform: [{ translateX: lineX.get() }],
         })),
@@ -119,15 +127,10 @@ const CurrentYear = ({
         pointerEvents="none"
         style={{ left: offset - 50, backgroundColor: resolveThemeColor(stylingTheme, color) }}
       >
-        <AnimatedTextInput
+        <TextInput
           underlineColorAndroid="transparent"
           editable={false}
-          animatedProps={
-            useAnimatedProps<{ text: string }>(() => ({
-              text: year.get(),
-            })) as unknown as AnimatedTextInputAnimatedProps
-          }
-          defaultValue={year.get()}
+          value={currentYear}
           style={{
             color: 'white',
             width: 120,

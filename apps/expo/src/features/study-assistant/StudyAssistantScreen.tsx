@@ -12,10 +12,12 @@ import { selectUserLoginInfo } from '~redux/selectors/user'
 import { useTranslation } from 'react-i18next'
 import { useLocalSearchParams } from 'expo-router'
 import Box, { HStack } from '~common/ui/Box'
+import Container from '~common/ui/Container'
 import Text from '~common/ui/Text'
 import Header from '~common/Header'
 import { useTheme } from '~themes/ThemeProvider'
 import AssistantMarkdown from './AssistantMarkdown'
+import CyberJudahChatScreen from './CyberJudahChatScreen'
 import { askAssistant } from './client'
 import { assistantAccessible, assistantAvailable } from './assistantConfig'
 import {
@@ -96,7 +98,7 @@ function Sources({ sources }: { sources: CyberJudahSource[] }) {
     </Box>
   )
 }
-export default function StudyAssistantScreen() {
+function BibleStrongAssistantScreen() {
   const { t } = useTranslation()
   const { id: userId } = useSelector(selectUserLoginInfo)
   const { colors } = useTheme()
@@ -238,7 +240,7 @@ export default function StudyAssistantScreen() {
     void send(consentFor.question)
   }
   return (
-    <Box className="flex-1 bg-reverse">
+    <Container>
       <Header
         title={t(keyOf('assistant.title'))}
         hasBackButton
@@ -377,6 +379,10 @@ export default function StudyAssistantScreen() {
           </Pressable>
         </HStack>
       </KeyboardAvoidingView>
-    </Box>
+    </Container>
   )
+}
+
+export default function StudyAssistantScreen() {
+  return isCyberJudahAssistant ? <CyberJudahChatScreen /> : <BibleStrongAssistantScreen />
 }

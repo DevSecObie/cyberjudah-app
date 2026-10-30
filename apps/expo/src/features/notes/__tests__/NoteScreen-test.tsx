@@ -15,9 +15,14 @@ jest.mock('~navigation/pageTransition', () => ({
 jest.mock('../NoteDetailTabScreen', () => ({ __esModule: true, default: () => null }))
 
 let tree: ReactTestRenderer
-beforeEach(() => jest.clearAllMocks())
+beforeEach(() => {
+  jest.useFakeTimers()
+  jest.clearAllMocks()
+})
 afterEach(() => {
   act(() => tree.unmount())
+  jest.runOnlyPendingTimers()
+  jest.useRealTimers()
 })
 
 it.each([false, true])(

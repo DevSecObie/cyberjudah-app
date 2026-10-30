@@ -1,6 +1,7 @@
 import * as FileSystem from 'expo-file-system/legacy'
 import * as Sentry from '@sentry/react-native'
-import * as SQLite from 'expo-sqlite'
+import type * as SQLite from 'expo-sqlite'
+import { openSQLiteDatabase } from '~helpers/sqliteConnection'
 import { getSharedSqliteDirPath } from '~helpers/databaseTypes'
 import { appLogger } from '~helpers/agentObservability'
 import { isMalformedDatabaseError, isReleasedHandleError } from '~helpers/sqliteErrors'
@@ -206,11 +207,7 @@ export async function openBiblesDb(): Promise<SQLite.SQLiteDatabase> {
       if (!dirInfo.exists) {
         await FileSystem.makeDirectoryAsync(dir, { intermediates: true })
       }
-      const instance = await SQLite.openDatabaseAsync(
-        databaseBiblesName,
-        { useNewConnection: true },
-        dir
-      )
+      const instance = await openSQLiteDatabase(databaseBiblesName, { useNewConnection: true }, dir)
 
       await instance.execAsync(`
         PRAGMA journal_mode = WAL;

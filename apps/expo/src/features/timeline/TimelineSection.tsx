@@ -1,6 +1,9 @@
 import { type SheetRef } from '~common/sheet'
 import React from 'react'
 import { useSharedValue } from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useBottomBarHeightInTab } from '~features/app-switcher/context/TabContext'
+import { useMediaQueriesArray } from '~helpers/useMediaQueries'
 import Box from '~common/ui/Box'
 import { useOpenInNewTab } from '~features/app-switcher/utils/useOpenInNewTab'
 import generateUUID from '~helpers/generateUUID'
@@ -24,6 +27,8 @@ import { calculateLabel, rowGap, rowHeight, rows } from './constants'
 import { layoutTimelineRows } from './layoutTimelineRows'
 import { ShallowTimelineSection, TimelineSection as TimelineSectionProps } from './types'
 import { useTimelineDetails } from './TimelineResourceBoundary'
+import { offset, rowToPx } from './constants'
+import { getTimelineFocusEvent } from './timelineViewport'
 interface Props extends TimelineSectionProps {
   onPrev: () => void
   onNext: () => void
@@ -73,6 +78,9 @@ const Timeline = ({
   const openInNewTab = useOpenInNewTab()
   const pushRouteOnce = usePushRouteOnce()
   const lang = useTimelineLanguage()
+  const insets = useSafeAreaInsets()
+  const { bottomBarHeight } = useBottomBarHeightInTab()
+  const responsive = useMediaQueriesArray()
 
   const timeline = useTimelineDetails()
   const eventDetailSlugs = new Set(timeline.map(e => e.slug))
@@ -107,6 +115,7 @@ const Timeline = ({
     endYear,
     interval,
   })
+  const initialEvent = getTimelineFocusEvent(events, startYear, endYear, entrance)
 
   const layout = React.useMemo(
     () =>
@@ -206,6 +215,16 @@ const Timeline = ({
         isLast={isLast}
         isReady={isReady}
         entrance={entrance}
+        initialFocus={
+          initialEvent && {
+            x: yearsToPx(initialEvent.start) + offset,
+            y: rowToPx(initialEvent.row),
+          }
+        }
+        contentInsets={{
+          top: (isFormSheet ? 0 : insets.top) + 54,
+          bottom: bottomBarHeight + responsive([30, 40, 60, 60]),
+        }}
       >
         <Box
           className="overflow-hidden border-continuous"

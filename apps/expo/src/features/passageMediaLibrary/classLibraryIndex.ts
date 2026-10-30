@@ -1,9 +1,13 @@
 import NetInfo from '@react-native-community/netinfo'
 import * as FileSystem from 'expo-file-system/legacy'
-import { openSQLiteDatabase, type SQLiteDatabase } from '~helpers/sqlite'
+import { openSQLiteDatabase, type SQLiteDatabase } from '~helpers/sqliteConnection'
 import { useEffect, useSyncExternalStore } from 'react'
 import { AppState, Platform } from 'react-native'
 import { storage } from '~helpers/storage'
+import {
+  installAtomicResourceFile,
+  restoreOrphanedResourceBackup,
+} from '~helpers/atomicResourceFile'
 import { ftsQuery, momentOf } from './classIndexQuery'
 
 // The class search kept on the phone: the library every notes publish builds (all the notes, with
@@ -34,6 +38,7 @@ const setState = (next: ClassIndexState) => {
   listeners.forEach(listener => listener())
 }
 let database: Promise<SQLiteDatabase> | null = null
+let downloadInFlight: Promise<void> | undefined
 
 // The server may send the same version's ETag weak or strong (W/"…"), depending on whether the
 // response was compressed on the way: compare the tag itself.
@@ -59,14 +64,14 @@ export const refreshClassIndexState = async () => {
     setState({ status: 'absent' })
     return state
   }
-  const info = await FileSystem.getInfoAsync(FILE).catch(() => ({ exists: false }))
+  await restoreOrphanedResourceBackup(FILE, `${FILE}.backup`)
+  const info = await FileSystem.getInfoAsync(FILE)
   setState({ status: info.exists ? 'ready' : 'absent' })
   return state
 }
 
 /** Downloads (or replaces) the library, unpacked, and checks it opens before using it. */
-export const downloadClassIndex = async () => {
-  if (state.status === 'downloading') return
+const performClassIndexDownload = async () => {
   const installed = (await FileSystem.getInfoAsync(FILE)).exists
   setState({ status: 'downloading', progress: 0, installed })
   try {
@@ -91,12 +96,15 @@ export const downloadClassIndex = async () => {
     } finally {
       await check.closeAsync()
     }
-    if (database) {
-      await (await database).closeAsync().catch(() => {})
-      database = null
-    }
-    await FileSystem.deleteAsync(FILE, { idempotent: true })
-    await FileSystem.moveAsync({ from: PART, to: FILE })
+    await installAtomicResourceFile({
+      candidatePath: PART,
+      destinationPath: FILE,
+      beforeSwap: async () => {
+        const previous = database
+        database = null
+        if (previous) await (await previous).closeAsync()
+      },
+    })
     const etag = sameVersion(headerOf(result.headers, 'etag'))
     if (etag) storage.set(ETAG_KEY, etag)
     storage.set(CHECKED_KEY, Date.now())
@@ -106,6 +114,17 @@ export const downloadClassIndex = async () => {
     setState({ status: 'failed', error: (error as Error).message })
     void refreshClassIndexState()
   }
+}
+
+export const downloadClassIndex = (): Promise<void> => {
+  // Reserve the job before the first filesystem await: simultaneous foreground events
+  // must not both write or remove the same partial download.
+  if (!downloadInFlight) {
+    downloadInFlight = performClassIndexDownload().finally(() => {
+      downloadInFlight = undefined
+    })
+  }
+  return downloadInFlight
 }
 
 /** Removes the library from this phone. */
@@ -204,7 +223,7 @@ export const searchClassIndex = async (query: string, limit = 40): Promise<Class
 /**
  * Like a game's update when it opens: each time the app opens or comes back, the classes are
  * downloaded if they are not on this phone yet, or again if newer ones have been published. Only
- * on Wi-Fi; on mobile data the Search tab offers the download instead.
+ * on Wi-Fi; on mobile data, Downloads in More offers it instead.
  */
 export const keepClassIndexCurrent = async () => {
   if (Platform.OS === 'web') return

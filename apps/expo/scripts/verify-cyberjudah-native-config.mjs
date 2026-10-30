@@ -11,6 +11,12 @@ if (platform === 'android') {
     config.client.some(c => c.client_info.android_client_info?.package_name === 'io.cyberjudah.app')
   )
 } else if (platform === 'ios') {
+  const podProperties = JSON.parse(await readFile(join(app, 'ios/Podfile.properties.json'), 'utf8'))
+  assert.equal(
+    podProperties['ios.buildReactNativeFromSource'],
+    'true',
+    'The native scheduler patch requires React Native to be compiled from source'
+  )
   const files = await readdir(join(app, 'ios'), { recursive: true })
   const path = files.find(f => f.endsWith('/GoogleService-Info.plist') && !f.startsWith('Pods/'))
   assert(path, 'Generated iOS Firebase configuration is missing')

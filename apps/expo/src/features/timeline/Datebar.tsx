@@ -2,7 +2,7 @@ import { resolveThemeColor, resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import React from 'react'
 import { SharedValue, useAnimatedStyle } from 'react-native-reanimated'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useBottomBarHeightInTab } from '~features/app-switcher/context/TabContext'
 import Box, { AnimatedBox } from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import { offset } from './constants'
@@ -24,6 +24,7 @@ const Datebar = ({
   color: string
 }) => {
   const stylingTheme = useStylingTheme()
+  const { bottomBarHeight } = useBottomBarHeightInTab()
 
   const { t } = useTimelineTranslation()
   const values: number[] = []
@@ -38,7 +39,7 @@ const Datebar = ({
         {
           paddingLeft: offset,
           width: width,
-          bottom: useSafeAreaInsets().bottom,
+          bottom: bottomBarHeight,
           shadowColor: 'rgb(89,131,240)',
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.1,
