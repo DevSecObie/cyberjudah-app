@@ -32,7 +32,13 @@ describe('searchSaidInClass', () => {
     expect(result).toEqual({
       signedIn: true,
       more: true,
-      hits: [expect.objectContaining({ start: 300, excerpt: '… the slave ships …' })],
+      hits: [
+        expect.objectContaining({
+          start: 300,
+          excerpt: '… the slave ships …',
+          marked: '… the {{slave}} {{ships}} …',
+        }),
+      ],
     })
   })
 

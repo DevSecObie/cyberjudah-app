@@ -552,6 +552,7 @@ const SQLiteSearchScreen = ({
             chip: formatMoment(hit.start),
             subtitle: hit.date,
             description: hit.excerpt,
+            classExcerpt: hit.marked,
             classVideo: hit.video,
             classStart: hit.start,
             thumbnailUrl:
@@ -562,11 +563,11 @@ const SQLiteSearchScreen = ({
 
   // Where a class's own recording says the words, its result plays from that exact second and
   // quotes what was said, as the site's search does; the notes only give the nearest heading.
-  const saidByWork = new Map<string, { start: number; excerpt: string }>()
+  const saidByWork = new Map<string, { start: number; excerpt: string; marked: string }>()
   for (const hit of saidInClassQuery.data?.hits ?? []) {
     const workId = readCachedClassLibrary()?.find(row => row.providerId === hit.video)?.workId
     if (workId && !saidByWork.has(workId))
-      saidByWork.set(workId, { start: hit.start, excerpt: hit.excerpt })
+      saidByWork.set(workId, { start: hit.start, excerpt: hit.excerpt, marked: hit.marked })
   }
   const classResults: SearchEntityResult[] = shouldSearchClasses
     ? [
@@ -582,6 +583,7 @@ const SQLiteSearchScreen = ({
               saidByWork.get(item.workId)?.excerpt ||
               item.snippet ||
               [item.date, item.teacher].filter(Boolean).join(' · '),
+            classExcerpt: saidByWork.get(item.workId)?.marked,
             classWorkId: item.workId,
             classStart: saidByWork.get(item.workId)?.start ?? item.start,
             thumbnailUrl: item.thumbnailUrl,
