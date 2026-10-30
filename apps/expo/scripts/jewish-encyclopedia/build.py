@@ -10,13 +10,17 @@ text is taken from anywhere else, and nothing is written that the printed page d
 every article ends with its volume and page and a link to the printed page.
 
 OCR repairs are limited to what the scans themselves settle: a word broken across a line is
-joined only when the joined word is commoner in the twelve volumes, and a misread letter pair
-(li for h, rn for m) is repaired only when the repaired word is far commoner there.
+joined only when the joined word is commoner in the twelve volumes, and a misspelt word is
+repaired only when one of the scanner's usual misreadings (li for h, rn for m, c for e, ...)
+turns it into a word that is far commoner there. A word in english-words.txt is never changed,
+and a name or foreign word is changed only when the misspelling is nearly unique and one
+spelling is clearly the common one.
 Scripture references in the Jewish Encyclopedia's style (Ex. xvii. 9) link to the KJV verse
 when that verse exists in the KJV with the Apocrypha; any other reference stays plain text.
 """
 import bisect
 import collections
+import functools
 import html
 import json
 import re
@@ -43,6 +47,16 @@ except ImportError:  # same Indel similarity as rapidfuzz, slower
 
 HERE = Path(__file__).resolve().parent
 TITLE = "The Jewish Encyclopedia (1901–1906)"
+
+
+# The scanner's usual misreadings, as (printed scan, likely word).
+MISREAD = [
+    ("rn", "m"), ("li", "h"), ("tli", "th"), ("ii", "u"), ("ii", "n"), ("cl", "d"), ("vv", "w"),
+    ("in", "m"), ("ni", "m"), ("u", "n"), ("n", "u"), ("c", "e"), ("e", "c"), ("o", "c"),
+    ("c", "o"), ("e", "o"), ("o", "e"), ("l", "i"), ("i", "l"), ("t", "l"), ("l", "t"),
+    ("f", "t"), ("t", "f"), ("h", "b"), ("b", "h"), ("I", "l"), ("l", "I"), ("y", "v"),
+    ("v", "y"), ("f", "l"), ("l", "f"), ("C", "G"), ("G", "C"), ("O", "C"), ("E", "F"), ("F", "E"),
+]
 
 
 def load_corpus(library):
@@ -258,15 +272,43 @@ def build(source, output):
 
     freq = collections.Counter(re.findall(r"[A-Za-z]+", s))
 
+    english = {w for w in (HERE / "english-words.txt").read_text().split() if not w.startswith("#")}
+
+    def misreadings(word):
+        for a, b in MISREAD:
+            i = word.find(a)
+            while i >= 0:
+                yield word[:i] + b + word[i + len(a):]
+                i = word.find(a, i + 1)
+
+    def best(options, minimum, factor, count, only_english=True):
+        options = [c for c in options if (c.lower() in english or not only_english) and freq[c] >= minimum]
+        options = [c for c in options if freq[c] >= factor * max(1, count)]
+        return max(options, key=lambda c: freq[c], default=None)
+
+    @functools.cache
     def repair(word):
-        if freq[word] >= 20:
+        count = freq[word]
+        if len(word) < 3 or word.lower() in english:
             return word
-        for a, b in (("li", "h"), ("tli", "th"), ("rn", "m")):
-            if a in word:
-                fixed = word.replace(a, b)
-                if freq[fixed] >= 200 and freq[fixed] >= 50 * max(1, freq[word]):
-                    return fixed
-        return word
+        one = set(misreadings(word))
+        # A garbled English word ("tlie"): only the letter-pair misreadings once the garble is common.
+        # Short words ("soll", German) take only those too.
+        pairs = {c for c in one if len(c) != len(word)} if count > 2 or len(word) < 5 else one
+        fixed = best(pairs, 100, 50, count)
+        if not fixed and count < 20:
+            # li for h, rn for m in a name ("Sliabbetliai") once the repaired name is far commoner.
+            fixed = best({word.replace(a, b) for a, b in (("li", "h"), ("tli", "th"), ("rn", "m"))} - {word}, 200, 50, count, False)
+        if not fixed and count <= 2 and len(word) >= 5:
+            fixed = best({d for c in one for d in misreadings(c)} - one, 200, 200, count)
+        if not fixed and count <= 2 and len(word) >= 5:
+            # A name or foreign word: only when one spelling clearly wins.
+            ranked = sorted(one, key=lambda c: freq[c], reverse=True)
+            if ranked and freq[ranked[0]] >= 300 and freq[ranked[0]] >= 150 * count:
+                if len(ranked) == 1 or freq[ranked[0]] > 5 * freq[ranked[1]]:
+                    fixed = ranked[0]
+        # The repaired spelling can itself be a common misreading ("tiis" -> "liis" -> "his").
+        return repair(fixed) if fixed else word
 
     def join(m):
         a, b = m.group(1), m.group(2)
