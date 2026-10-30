@@ -52,9 +52,9 @@ Verification: the exact bundled SQLite C source reproduces the original heap-use
 
 ```sh
 clang -O0 -g -fsanitize=address -DSQLITE_ENABLE_FTS5 \
-  -I apps/expo/node_modules/expo-sqlite/ios \
+  -I apps/expo/node_modules/expo-sqlite/vendor/sqlite3 \
   apps/expo/scripts/check-sqlite-fts-close.c \
-  apps/expo/node_modules/expo-sqlite/ios/sqlite3.c \
+  apps/expo/node_modules/expo-sqlite/vendor/sqlite3/sqlite3.c \
   -o /tmp/cyberjudah-fts-close-repro
 /tmp/cyberjudah-fts-close-repro
 ```

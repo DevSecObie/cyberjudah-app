@@ -1,5 +1,5 @@
 /* Regression diagnostic for expo/expo#38168. Compile against the installed
- * expo-sqlite/ios/sqlite3.c with -DSQLITE_ENABLE_FTS5 -fsanitize=address.
+ * expo-sqlite/vendor/sqlite3/sqlite3.c with -DSQLITE_ENABLE_FTS5 -fsanitize=address.
  * Default: 100 safe FTS/query/integrity/close cycles. Argument "unsafe":
  * reproduce Expo's blanket finalization and its FTS5 use-after-free.
  * Uses synthetic in-memory data only; never opens an application database.
