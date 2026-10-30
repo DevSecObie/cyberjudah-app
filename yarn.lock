@@ -2588,7 +2588,7 @@ __metadata:
     react-blurhash: "npm:^0.3.0"
     react-dom: "npm:19.2.3"
     react-i18next: "npm:11.18.6"
-    react-native: "npm:0.86.3"
+    react-native: "patch:react-native@npm%3A0.86.3#~/.yarn/patches/react-native-npm-0.86.3-a26c4d71a9.patch"
     react-native-ease: "npm:^0.4.0"
     react-native-edge-to-edge: "npm:^1.4.3"
     react-native-enriched-markdown: "npm:1.0.2"
@@ -29199,6 +29199,57 @@ multer@emadalam/multer:
   bin:
     react-native: cli.js
   checksum: 10c0/a8354c58be9ca1509c48d4c06194f4be4b902c17ef6f4fc5bdfb05960b079b156b453998c69ed08ee0a4d60b00aeac7eaf8a9cfc428d24bec46304c06063b4c0
+  languageName: node
+  linkType: hard
+
+"react-native@patch:react-native@npm%3A0.86.3#~/.yarn/patches/react-native-npm-0.86.3-a26c4d71a9.patch":
+  version: 0.86.3
+  resolution: "react-native@patch:react-native@npm%3A0.86.3#~/.yarn/patches/react-native-npm-0.86.3-a26c4d71a9.patch::version=0.86.3&hash=9eec2d"
+  dependencies:
+    "@react-native/assets-registry": "npm:0.86.3"
+    "@react-native/codegen": "npm:0.86.3"
+    "@react-native/community-cli-plugin": "npm:0.86.3"
+    "@react-native/gradle-plugin": "npm:0.86.3"
+    "@react-native/js-polyfills": "npm:0.86.3"
+    "@react-native/normalize-colors": "npm:0.86.3"
+    "@react-native/virtualized-lists": "npm:0.86.3"
+    abort-controller: "npm:^3.0.0"
+    anser: "npm:^1.4.9"
+    ansi-regex: "npm:^5.0.0"
+    babel-plugin-syntax-hermes-parser: "npm:0.36.0"
+    base64-js: "npm:^1.5.1"
+    commander: "npm:^12.0.0"
+    flow-enums-runtime: "npm:^0.0.6"
+    hermes-compiler: "npm:250829098.0.17"
+    invariant: "npm:^2.2.4"
+    memoize-one: "npm:^5.0.0"
+    metro-runtime: "npm:^0.84.3"
+    metro-source-map: "npm:^0.84.3"
+    nullthrows: "npm:^1.1.1"
+    pretty-format: "npm:^29.7.0"
+    promise: "npm:^8.3.0"
+    react-devtools-core: "npm:^6.1.5"
+    react-refresh: "npm:^0.14.0"
+    regenerator-runtime: "npm:^0.13.2"
+    scheduler: "npm:0.27.0"
+    semver: "npm:^7.1.3"
+    stacktrace-parser: "npm:^0.1.10"
+    tinyglobby: "npm:^0.2.15"
+    whatwg-fetch: "npm:^3.0.0"
+    ws: "npm:^7.5.10"
+    yargs: "npm:^17.6.2"
+  peerDependencies:
+    "@react-native/jest-preset": 0.86.3
+    "@types/react": ^19.1.1
+    react: ^19.2.3
+  peerDependenciesMeta:
+    "@react-native/jest-preset":
+      optional: true
+    "@types/react":
+      optional: true
+  bin:
+    react-native: cli.js
+  checksum: 10c0/cd5945a6018cc0c753b094fc20366943b0b29187493e947eb6da3fe443ebc10071e52afcfdd314078aa648958aa15a755872514884acd5a606d0538e70109b21
   languageName: node
   linkType: hard
 

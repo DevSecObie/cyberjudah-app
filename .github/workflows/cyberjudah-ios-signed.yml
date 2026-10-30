@@ -12,7 +12,7 @@ jobs:
   ios-signed:
     if: github.repository == 'DevSecObie/cyberjudah-app'
     runs-on: macos-26
-    timeout-minutes: 90
+    timeout-minutes: 120
     env:
       CI: '1'
       EXPO_NO_TELEMETRY: '1'
@@ -51,6 +51,11 @@ jobs:
           node-version: 22
       - run: corepack enable
       - run: yarn workspaces focus @bible-strong/expo
+      - name: Verify the native scheduler guard is enabled
+        run: |
+          clang++ -std=c++20 -I apps/expo/node_modules/react-native/ReactCommon \
+            apps/expo/scripts/check-ios-scheduler-guard.cpp -o "$RUNNER_TEMP/scheduler-guard"
+          "$RUNNER_TEMP/scheduler-guard"
       - name: Use only the CyberJudah staging settings
         run: |
           cp apps/expo/.env.cyberjudah.example apps/expo/.env.local
@@ -85,6 +90,8 @@ jobs:
           workspace=$(find apps/expo/ios -maxdepth 1 -name '*.xcworkspace' -print -quit)
           scheme=$(basename "$workspace" .xcworkspace)
           xcodebuild -workspace "$workspace" -scheme "$scheme" -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/CyberJudah-Staging.xcarchive" archive > "$RUNNER_TEMP/ios-build.log" 2>&1 || { tail -100 "$RUNNER_TEMP/ios-build.log"; exit 1; }
+          # A header patch alone is ineffective when Expo uses the prebuilt React core.
+          grep -E 'CompileC .*RCTReactNativeFactory\.(o|mm)' "$RUNNER_TEMP/ios-build.log" > /dev/null || { echo 'Native factory was not compiled from the patched sources'; exit 1; }
           app=$(find "$RUNNER_TEMP/CyberJudah-Staging.xcarchive/Products/Applications" -maxdepth 1 -name '*.app' -print -quit)
           codesign --verify --deep --strict "$app"
           node apps/expo/scripts/verify-cyberjudah-bundle.mjs "$app/main.jsbundle"

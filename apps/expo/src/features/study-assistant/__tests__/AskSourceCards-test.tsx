@@ -7,6 +7,9 @@ import { act, create, type ReactTestRenderer } from 'react-test-renderer'
 import AskSourceCards from '../AskSourceCards'
 
 const mockOpen = jest.fn().mockResolvedValue(undefined)
+jest.mock('../useOpenStudySource', () => ({
+  useOpenStudySource: () => mockOpen,
+}))
 function mockHost(name: string) {
   return ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) =>
     React.createElement(name, props, children)
@@ -51,7 +54,12 @@ it('keeps text-only sources compact without a blank artwork block', () => {
     })
   ).toHaveLength(0)
   act(() => view.root.findByType('Pressable' as never).props.onPress())
-  expect(mockOpen).toHaveBeenCalledWith('https://cyberjudah.io/studies/faith')
+  expect(mockOpen).toHaveBeenCalledWith({
+    n: 1,
+    kind: 'study',
+    title: 'Faith and works',
+    url: '/studies/faith',
+  })
 })
 
 it('keeps a video thumbnail and timestamp link, then collapses failed artwork gracefully', () => {
@@ -73,7 +81,9 @@ it('keeps a video thumbnail and timestamp link, then collapses failed artwork gr
   })
   expect(view.root.findByType('Image' as never).props.source.uri).toContain('abcdefghijk')
   act(() => view.root.findByType('Pressable' as never).props.onPress())
-  expect(mockOpen).toHaveBeenLastCalledWith('https://www.youtube.com/watch?v=abcdefghijk&t=90s')
+  expect(mockOpen).toHaveBeenLastCalledWith(
+    expect.objectContaining({ video: 'abcdefghijk', t: 90 })
+  )
   let failures = 0
   while (view.root.findAllByType('Image' as never).length && failures < 6) {
     act(() => view.root.findByType('Image' as never).props.onError())

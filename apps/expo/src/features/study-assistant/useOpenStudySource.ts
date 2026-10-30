@@ -11,16 +11,19 @@ export function useOpenStudySource() {
   const router = useRouter()
   const links = useOpenSiteLink()
   return async (source: CyberJudahSource) => {
-    if (source.video) {
+    if (source.video && /^[A-Za-z0-9_-]{11}$/.test(source.video)) {
       const rows = readCachedClassLibrary() ?? (await loadClassLibrary().catch(() => []))
       const item = rows.find(row => row.providerId === source.video)
-      if (item) {
-        router.push({
-          pathname: '/(explore)/passage-media-player',
-          params: { workId: item.workId, start: String(source.t ?? 0) },
-        })
-        return
-      }
+      // Transcript search also finds recordings outside the published class catalog.
+      // The existing player supports those by video ID and retains the cited time.
+      router.push({
+        pathname: '/(explore)/passage-media-player',
+        params: {
+          ...(item ? { workId: item.workId } : { video: source.video, title: source.title }),
+          start: String(source.t ?? 0),
+        },
+      })
+      return
     }
     const route = studySourceRoute(source)
     if (route) {

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Linking, Pressable, ScrollView } from 'react-native'
+import { Pressable, ScrollView } from 'react-native'
 import { Image } from 'expo-image'
 import { useTranslation } from 'react-i18next'
 import Box, { HStack } from '~common/ui/Box'
@@ -8,6 +8,7 @@ import { FeatherIcon } from '~common/ui/Icon'
 import { sourceLink, timestamp, type CyberJudahSource } from './cyberJudahAsk'
 import { sourceThumbnails } from './cyberJudahSourceArtwork'
 import { CYBERJUDAH_PORTRAITS } from '~features/lexique/cyberJudahPortraits'
+import { useOpenStudySource } from './useOpenStudySource'
 
 function portrait(source: CyberJudahSource) {
   const id = /^\/(?:person)\/([a-z0-9-]+)$/.exec(source.url)?.[1]
@@ -43,6 +44,7 @@ export default function AskSourceCards({
   onOpenSource?: (source: CyberJudahSource) => void
 }) {
   const { t } = useTranslation()
+  const openSource = useOpenStudySource()
   if (!sources.length) return null
   return (
     <Box className="mt-5 gap-2">
@@ -66,11 +68,7 @@ export default function AskSourceCards({
               disabled={!link}
               accessibilityRole="link"
               accessibilityLabel={`${source.n}. ${source.title}${moment ? `, ${moment}` : ''}`}
-              onPress={() =>
-                onOpenSource
-                  ? onOpenSource(source)
-                  : link && void Linking.openURL(link).catch(() => {})
-              }
+              onPress={() => (onOpenSource ? onOpenSource(source) : void openSource(source))}
               className="w-56 overflow-hidden rounded-2xl bg-light-grey"
               style={({ pressed }) => ({ opacity: pressed ? 0.75 : 1 })}
             >
