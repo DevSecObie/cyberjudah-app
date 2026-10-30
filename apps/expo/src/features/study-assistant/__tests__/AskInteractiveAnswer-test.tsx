@@ -95,5 +95,29 @@ it('keeps the existing answer available when a saved program is invalid', async 
   expect(tree.root.findAll(n => n.type === ('Markdown' as never))[0].props.text).toContain(
     'The lesson'
   )
+  const markdown = tree.root.findAll(n => n.type === ('Markdown' as never))[0]
+  act(() => markdown.props.onLinkPress('https://cyberjudah.io/classes/a'))
+  expect(mockOpen).toHaveBeenCalledWith(turn.sources[0])
+  await act(async () => tree.unmount())
+})
+
+it('shows a supported factual answer without an automatic teacher disclaimer or repeated section labels', async () => {
+  let tree!: ReactTestRenderer
+  await act(async () => {
+    tree = create(
+      <AskInteractiveAnswer
+        streaming={false}
+        turn={{
+          ...turn,
+          teachingFound: false,
+          ui: 'root = StudyAnswer([Context("Abraham is the person in this entry. [2]", [2]), Sources([2])])',
+        }}
+      />
+    )
+  })
+  expect(tree.root.findAll(n => n.type === ('Markdown' as never))[0].props.text).toContain(
+    'Abraham'
+  )
+  expect(JSON.stringify(tree.toJSON())).not.toMatch(/askStudy\.(noTeaching|teaching|context)/)
   await act(async () => tree.unmount())
 })

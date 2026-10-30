@@ -32,23 +32,11 @@ type StudyContext = {
 const StudyContext = createContext<StudyContext>({ sources: [], streaming: false, open: () => {} })
 const refs = z.array(z.number().int().min(1).max(24)).min(1).max(8)
 
-function Explanation({
-  text,
-  citations,
-  kind,
-}: {
-  text: string
-  citations: number[]
-  kind: 'teaching' | 'reference'
-}) {
+function Explanation({ text, citations }: { text: string; citations: number[] }) {
   const context = useContext(StudyContext)
-  const { t } = useTranslation()
   const sources = context.sources.filter(s => citations.includes(s.n))
   return (
     <Box className="mb-4 gap-2">
-      <Text className="text-[13px] text-grey">
-        {t(kind === 'teaching' ? 'askStudy.teaching' : 'askStudy.context')}
-      </Text>
       <AssistantMarkdown
         text={linkedAnswer(text, sources, sourceLink)}
         streaming={context.streaming}
@@ -122,13 +110,13 @@ const Teaching = defineComponent({
   name: 'Teaching',
   description: 'Source-backed explanation of the recorded teaching.',
   props: z.object({ text: z.string().min(1).max(6000), citations: refs }),
-  component: ({ props }) => <Explanation {...props} kind="teaching" />,
+  component: ({ props }) => <Explanation {...props} />,
 })
 const Context = defineComponent({
   name: 'Context',
   description: 'Supporting reference context.',
   props: z.object({ text: z.string().min(1).max(4000), citations: refs }),
-  component: ({ props }) => <Explanation {...props} kind="reference" />,
+  component: ({ props }) => <Explanation {...props} />,
 })
 const Sources = defineComponent({
   name: 'Sources',
@@ -256,13 +244,18 @@ export default function AskInteractiveAnswer({
   onAsk?: (question: string) => void
 }) {
   const open = useOpenStudySource()
-  const { t } = useTranslation()
   const fallback = (
     <>
       {!!turn.answer && (
         <AssistantMarkdown
           text={linkedAnswer(turn.answer, turn.sources, sourceLink)}
           streaming={streaming}
+          onLinkPress={url => {
+            const source = turn.sources.find(item => sourceLink(item) === url)
+            if (!source) return false
+            void open(source)
+            return true
+          }}
         />
       )}
       <AskStudyCards turn={turn} streaming={streaming} />
@@ -281,9 +274,6 @@ export default function AskInteractiveAnswer({
       }}
     >
       <StudyBoundary key={turn.id} fallback={fallback}>
-        {!streaming && !turn.teachingFound && (
-          <Text className="mb-4 text-sm leading-6 text-grey">{t('askStudy.noTeaching')}</Text>
-        )}
         <Renderer
           response={turn.ui}
           library={interactiveStudyLibrary}

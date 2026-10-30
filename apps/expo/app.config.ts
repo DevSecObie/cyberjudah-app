@@ -2,7 +2,7 @@ import { ExpoConfig, ConfigContext } from 'expo/config'
 
 const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
 // CyberJudah keeps its own TestFlight version while using Bible Strong's 27.2 mobile UI.
-const APP_VERSION = isCyberJudah ? '28.1.0' : '27.2.0'
+const APP_VERSION = isCyberJudah ? '28.2.0' : '27.2.0'
 // Patch releases share a runtime and receive the same OTA updates. Any native change must
 // ship in a new major or minor version, which creates a new runtime.
 const [majorVersion, minorVersion] = APP_VERSION.split('.')
@@ -69,7 +69,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       process.env.BUNDLE_IDENTIFIER ??
       (isCyberJudah ? 'io.cyberjudah.app.dev' : 'com.smontlouis.biblestrong.dev'),
     appleTeamId: isCyberJudah ? process.env.CYBERJUDAH_APPLE_TEAM_ID : undefined,
-    buildNumber: isCyberJudah ? '306' : '297',
+    buildNumber: isCyberJudah ? '307' : '297',
     googleServicesFile:
       process.env.IOS_GOOGLE_SERVICES_FILE ??
       (isCyberJudah
@@ -126,6 +126,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         ios: {
           deploymentTarget: '16.4',
+          // The scheduler lifetime patch must be compiled into RN, not bypassed by its prebuilt core.
+          ...(isCyberJudah ? { buildReactNativeFromSource: true } : {}),
           useFrameworks: 'static',
           forceStaticLinking: [
             'RNFBApp',
