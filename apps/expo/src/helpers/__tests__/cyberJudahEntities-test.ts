@@ -125,6 +125,7 @@ describe('CyberJudah People module', () => {
       )
       .all()
     expect(links).toEqual([
+      { relation: 'offspring', target: 'Abel', certainty: 'Scripturally confirmed' },
       { relation: 'offspring', target: 'Cain', certainty: 'Scripturally confirmed' },
       { relation: 'offspring', target: 'Seth', certainty: 'Scripturally confirmed' },
       { relation: 'partner', target: 'Eve', certainty: 'Scripturally confirmed' },
