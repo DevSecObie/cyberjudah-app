@@ -137,3 +137,37 @@ describe('classNotesToBlocks', () => {
     })
   })
 })
+
+describe('In the News', () => {
+  it('moves each timed item out of its own section into Scriptures Opened', () => {
+    const seek = (t: number) => `*[[0:${t}](https://www.youtube.com/watch?v=P4cR6i32U80&t=${t}s)]*`
+    const blocks = classNotesToBlocks(
+      [
+        '## In The News',
+        '',
+        `- ${seek(30)} **A news report**`,
+        '- A report with no moment',
+        '',
+        '## Scriptures Opened',
+        '',
+        'A point.',
+        '',
+        '## In Closing',
+      ].join('\n'),
+      'P4cR6i32U80'
+    )
+    expect(blocks.map(block => block.type)).toEqual([
+      'heading',
+      'list',
+      'heading',
+      'paragraph',
+      'news',
+      'heading',
+    ])
+    expect(blocks[1]).toMatchObject({ items: [[{ html: 'A report with no moment' }]] })
+    expect(blocks[4]).toMatchObject({
+      type: 'news',
+      blocks: [{ html: expect.stringContaining('A news report') }],
+    })
+  })
+})

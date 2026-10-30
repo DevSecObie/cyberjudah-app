@@ -350,6 +350,8 @@ export type NoteBlock =
   | { type: 'reading'; blocks: NoteBlock[] }
   | { type: 'quote'; blocks: NoteBlock[] }
   | { type: 'list'; items: NoteBlock[][] }
+  /** Something the class brought out from the news, placed where in the class it came up. */
+  | { type: 'news'; blocks: NoteBlock[] }
   | {
       type: 'verse'
       title?: string
@@ -465,9 +467,89 @@ const notesLines = (markdown: string) =>
     // The class index and full-session links at the foot are the website's own navigation.
     .filter(line => !/^\[Class Notes Index\]/.test(line))
 
+const plainText = (html: string) => html.replace(/<[^>]+>/g, '').trim()
+const seekOf = (html: string) => {
+  const match = new RegExp(`href="${CLASS_SEEK_PREFIX}(\\d+)"`).exec(html)
+  return match ? Number(match[1]) : undefined
+}
+const firstSeek = (blocks: NoteBlock[]): number | undefined => {
+  for (const block of blocks) {
+    const seconds =
+      block.type === 'verse'
+        ? block.seek && seekOf(`href="${block.seek.href}"`)
+        : block.type === 'heading' || block.type === 'paragraph'
+          ? seekOf(block.html)
+          : block.type === 'list'
+            ? firstSeek(block.items.flat())
+            : 'blocks' in block
+              ? firstSeek(block.blocks)
+              : undefined
+    if (seconds !== undefined) return seconds
+  }
+  return undefined
+}
+const sectionEnd = (blocks: NoteBlock[], start: number) => {
+  const heading = blocks[start]
+  const level = heading.type === 'heading' ? heading.level : 2
+  let end = start + 1
+  while (end < blocks.length) {
+    const block = blocks[end]
+    if (block.type === 'heading' && block.level <= level) break
+    end++
+  }
+  return end
+}
+
+/**
+ * The notes list what a class brought out from the news in a section of its own, each item with
+ * its moment in the class. Each one that has a moment goes into "Scriptures Opened" where the class
+ * came to it, before the first scripture opened after it; the rest stay where they were.
+ */
+const placeNewsInOrder = (blocks: NoteBlock[]): NoteBlock[] => {
+  const isHeading = (block: NoteBlock, pattern: RegExp) =>
+    block.type === 'heading' && pattern.test(plainText(block.html))
+  const newsAt = blocks.findIndex(block => isHeading(block, /^in the news$/i))
+  if (newsAt < 0 || !blocks.some(block => isHeading(block, /^scriptures opened$/i))) return blocks
+  const newsEnd = sectionEnd(blocks, newsAt)
+  const timed: { seconds: number; blocks: NoteBlock[] }[] = []
+  const kept: NoteBlock[] = []
+  for (const block of blocks.slice(newsAt + 1, newsEnd)) {
+    if (block.type !== 'list') {
+      kept.push(block)
+      continue
+    }
+    const untimed = block.items.filter(item => {
+      const seconds = firstSeek(item)
+      if (seconds === undefined) return true
+      timed.push({ seconds, blocks: item })
+      return false
+    })
+    if (untimed.length) kept.push({ ...block, items: untimed })
+  }
+  if (!timed.length) return blocks
+  timed.sort((left, right) => left.seconds - right.seconds)
+  const rest = [
+    ...blocks.slice(0, newsAt),
+    ...(kept.length ? [blocks[newsAt], ...kept] : []),
+    ...blocks.slice(newsEnd),
+  ]
+  const scripturesAt = rest.findIndex(block => isHeading(block, /^scriptures opened$/i))
+  const scripturesEnd = sectionEnd(rest, scripturesAt)
+  const out = rest.slice(0, scripturesAt + 1)
+  let next = 0
+  for (const block of rest.slice(scripturesAt + 1, scripturesEnd)) {
+    const seconds = block.type === 'verse' ? firstSeek([block]) : undefined
+    while (seconds !== undefined && next < timed.length && timed[next].seconds < seconds)
+      out.push({ type: 'news', blocks: timed[next++].blocks })
+    out.push(block)
+  }
+  while (next < timed.length) out.push({ type: 'news', blocks: timed[next++].blocks })
+  return [...out, ...rest.slice(scripturesEnd)]
+}
+
 /** The notes as blocks for the app's own components. */
 export const classNotesToBlocks = (markdown: string, videoId: string): NoteBlock[] =>
-  blocksOf(notesLines(markdown), videoId)
+  placeNewsInOrder(blocksOf(notesLines(markdown), videoId))
 
 /** The notes as HTML: headings, scripture quotes, precepts nested under each verse. */
 export const classNotesToHtml = (markdown: string, videoId: string): string =>
