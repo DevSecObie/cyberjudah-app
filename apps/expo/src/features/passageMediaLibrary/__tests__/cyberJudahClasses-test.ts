@@ -161,12 +161,13 @@ describe('In the News', () => {
       'list',
       'heading',
       'paragraph',
-      'news',
+      'aside',
       'heading',
     ])
     expect(blocks[1]).toMatchObject({ items: [[{ html: 'A report with no moment' }]] })
     expect(blocks[4]).toMatchObject({
-      type: 'news',
+      type: 'aside',
+      label: 'In the News',
       blocks: [{ html: expect.stringContaining('A news report') }],
     })
   })
