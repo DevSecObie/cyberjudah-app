@@ -10,6 +10,7 @@ import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTyp
 import Header from '~common/Header'
 import Box, { TouchableBox, VStack } from '~common/ui/Box'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
+import ScrollView from '~common/ui/ScrollView'
 import Text from '~common/ui/Text'
 import {
   formatPassageMediaDuration,
@@ -38,7 +39,7 @@ const PassageMediaPlayerScreen = () => {
   const preferredLanguage = useLanguage()
   const language =
     requestedLanguage === 'fr' || requestedLanguage === 'en' ? requestedLanguage : preferredLanguage
-  const { width: windowWidth } = useWindowDimensions()
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions()
   const [playerError, setPlayerError] = useState<string>()
   const classPlayerRef = useRef<WebView>(null)
   const router = useRouter()
@@ -150,13 +151,19 @@ const PassageMediaPlayerScreen = () => {
                 </VStack>
               </VStack>
             </Box>
-            {/* The notes scroll inside their own page: a long class drawn as one page as tall as
-                itself can come up blank. A failed load says so and can be tried again. */}
-            <Box className="flex-[1] items-center bg-reverse pt-[8px]">
+            <ScrollView
+              backgroundColor="reverse"
+              contentContainerStyle={{
+                alignItems: 'center',
+                paddingHorizontal: 16,
+                paddingTop: 16,
+              }}
+            >
+              {/* A failed load says so and can be tried again, rather than leaving the space empty. */}
               {notes.data ? (
-                <Box style={{ width: playerWidth, flex: 1 }}>
+                <Box style={{ width: playerWidth }}>
                   <ClassNotesView
-                    fill
+                    maxHeight={windowHeight - 120}
                     html={notes.data}
                     onLinkPress={href => {
                       if (href.startsWith(CLASS_SEEK_PREFIX)) {
@@ -191,7 +198,7 @@ const PassageMediaPlayerScreen = () => {
                   )}
                 </VStack>
               ) : null}
-            </Box>
+            </ScrollView>
           </>
         ) : (
           <Box className="overflow-hidden border-continuous py-[60px] px-[20px] items-center justify-center">

@@ -4,6 +4,7 @@ import { useWindowDimensions } from 'react-native'
 import Header from '~common/Header'
 import Loading from '~common/Loading'
 import Box, { SafeAreaBox, VStack } from '~common/ui/Box'
+import ScrollView from '~common/ui/ScrollView'
 import Text from '~common/ui/Text'
 import ClassNotesPdfButton from '~features/notesExport/ClassNotesPdfButton'
 import { longDate } from '~features/notesExport/notePdf'
@@ -23,7 +24,7 @@ const PublishedNoteScreen = () => {
   const theme = useTheme()
   const { open } = useOpenSiteLink()
   const { path = '' } = useLocalSearchParams<{ path?: string }>()
-  const { width } = useWindowDimensions()
+  const { width, height: windowHeight } = useWindowDimensions()
   const note = useQuery({
     queryKey: ['cyberjudah-published-note', path],
     queryFn: async () => {
@@ -47,9 +48,10 @@ const PublishedNoteScreen = () => {
       {note.isPending ? (
         <Loading />
       ) : note.data ? (
-        // The notes scroll inside their own page: a long note drawn as one page as tall as itself
-        // can come up blank.
-        <VStack className="flex-[1] items-center px-[16px] pt-[20px]">
+        <ScrollView
+          backgroundColor="reverse"
+          contentContainerStyle={{ alignItems: 'center', paddingHorizontal: 16, paddingTop: 20 }}
+        >
           <VStack className="gap-[6px] mb-[12px]" style={{ width: contentWidth }}>
             <Text
               className="text-[24px] leading-[30px]"
@@ -63,10 +65,14 @@ const PublishedNoteScreen = () => {
                 .join(' · ')}
             </Text>
           </VStack>
-          <Box style={{ width: contentWidth, flex: 1 }}>
-            <ClassNotesView fill html={note.data.html} onLinkPress={open} />
+          <Box style={{ width: contentWidth }}>
+            <ClassNotesView
+              maxHeight={windowHeight - 120}
+              html={note.data.html}
+              onLinkPress={open}
+            />
           </Box>
-        </VStack>
+        </ScrollView>
       ) : (
         <Box className="py-[60px] px-[20px] items-center">
           <Text className="text-grey text-center">
