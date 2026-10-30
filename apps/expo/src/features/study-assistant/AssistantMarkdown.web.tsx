@@ -16,9 +16,11 @@ export default function AssistantMarkdown({
   streaming,
   sources = [],
   widgets = [],
+  onLinkPress,
 }: {
   text: string
   streaming: boolean
+  onLinkPress?: (url: string) => boolean
   sources?: StudySource[]
   widgets?: StudyWidget[]
 }) {
@@ -60,7 +62,14 @@ export default function AssistantMarkdown({
               return <span>{children}</span>
             const url = href ? safeLink(href) : undefined
             return url ? (
-              <a href={url} target="_blank" rel="noopener noreferrer">
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={event => {
+                  if (onLinkPress?.(url)) event.preventDefault()
+                }}
+              >
                 {children}
               </a>
             ) : (

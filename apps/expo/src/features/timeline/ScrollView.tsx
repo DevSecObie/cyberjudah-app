@@ -1,4 +1,4 @@
-import React, { memo, ReactNode, useEffect, useState } from 'react'
+import React, { memo, ReactNode, useEffect, useRef, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
@@ -12,6 +12,8 @@ import Animated, {
 } from 'react-native-reanimated'
 import { scheduleOnRN } from 'react-native-worklets'
 import { wpUI } from '~helpers/utils'
+import { offset, offsetTop } from './constants'
+import { getTimelineViewport } from './timelineViewport'
 
 function friction(value: number) {
   'worklet'
@@ -296,6 +298,8 @@ function friction(value: number) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    minHeight: 0,
+    overflow: 'hidden',
   },
 })
 
@@ -311,6 +315,8 @@ interface ScrollViewProps {
   isLast?: boolean
   isReady: SharedValue<number>
   entrance: 0 | 1
+  initialFocus?: { x: number; y: number }
+  contentInsets?: { top: number; bottom: number }
 }
 
 export default memo(
@@ -326,25 +332,55 @@ export default memo(
     isLast,
     isReady,
     entrance,
+    initialFocus,
+    contentInsets,
   }: ScrollViewProps) => {
     const [containerHeight, setContainerHeight] = useState(0)
     const [containerWidth, setContainerWidth] = useState(0)
     const opacity = useSharedValue(0)
     const canStartAnimation = useSharedValue(0)
+    const initialized = useRef(false)
+    const viewport = getTimelineViewport({
+      width,
+      height,
+      viewportWidth: containerWidth,
+      viewportHeight: containerHeight,
+      focus: initialFocus,
+      markerOffset: offset,
+      topOffset: offsetTop,
+      entrance,
+    })
     const upperBoundX = 0
-    const lowerBoundX = -1 * (width - containerWidth)
+    const lowerBoundX = viewport.minX
     const upperBoundY = 0
-    const lowerBoundY = -1 * (height - containerHeight)
+    const lowerBoundY = viewport.minY
     const deltaX = useSharedValue(0)
     const deltaY = useSharedValue(0)
 
     useEffect(() => {
-      if (canStartAnimation.get() === 0) {
-        x.set(entrance ? wpUI(100) : lowerBoundX - wpUI(100))
+      if (!containerWidth || !containerHeight) return
+      if (!initialized.current) {
+        initialized.current = true
+        x.set(entrance ? containerWidth : lowerBoundX - containerWidth)
+        y.set(viewport.y)
         canStartAnimation.set(withDelay(1500, withTiming(1, { duration: 0 })))
+      } else if (isReady.get()) {
+        // A resized workspace must not leave the chart beyond its new bounds.
+        x.set(Math.max(lowerBoundX, Math.min(0, x.get())))
+        y.set(Math.max(lowerBoundY, Math.min(0, y.get())))
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [
+      containerWidth,
+      containerHeight,
+      lowerBoundX,
+      lowerBoundY,
+      entrance,
+      viewport.y,
+      canStartAnimation,
+      isReady,
+      x,
+      y,
+    ])
 
     useAnimatedReaction(
       () => canStartAnimation.get(),
@@ -353,7 +389,7 @@ export default memo(
           if (!isReady.get()) {
             opacity.set(1)
             x.set(
-              withTiming(entrance ? 0 : lowerBoundX, { duration: 1000 }, () => {
+              withTiming(viewport.x, { duration: 1000 }, () => {
                 isReady.set(1)
               })
             )
@@ -452,7 +488,10 @@ export default memo(
 
     return (
       <View
-        style={styles.container}
+        style={[
+          styles.container,
+          { marginTop: contentInsets?.top ?? 0, marginBottom: contentInsets?.bottom ?? 0 },
+        ]}
         onLayout={({
           nativeEvent: {
             layout: { height: h, width: w },

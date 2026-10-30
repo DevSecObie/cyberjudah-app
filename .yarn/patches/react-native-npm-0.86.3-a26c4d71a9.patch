@@ -1,0 +1,17 @@
+diff --git a/ReactCommon/react/featureflags/ReactNativeFeatureFlagsOverridesOSSStable.h b/ReactCommon/react/featureflags/ReactNativeFeatureFlagsOverridesOSSStable.h
+index fdabd7bab1f03966dc04ba9a462465daeccf8ae3..93200e4cc986d6a448b6fa90a34c286b1c91d44f 100644
+--- a/ReactCommon/react/featureflags/ReactNativeFeatureFlagsOverridesOSSStable.h
++++ b/ReactCommon/react/featureflags/ReactNativeFeatureFlagsOverridesOSSStable.h
+@@ -13,6 +13,12 @@ namespace facebook::react {
+ 
+ class ReactNativeFeatureFlagsOverridesOSSStable : public ReactNativeFeatureFlagsDefaults {
+  public:
++  // CyberJudah: protect pending native commands after a screen/surface is torn down.
++  // Upstream fix: https://github.com/react/react-native/pull/56680
++  bool enableSchedulerDelegateInvalidation() override
++  {
++    return true;
++  }
+   bool enableBridgelessArchitecture() override
+   {
+     return true;

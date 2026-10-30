@@ -14,6 +14,7 @@ const ignoredDirs = new Set(['node_modules', '.git'])
 
 const allowedExpoSqliteFiles = new Set([
   'apps/expo/src/helpers/sqlite.ts',
+  'apps/expo/src/helpers/sqliteConnection.ts',
   'apps/expo/src/helpers/biblesDb.ts',
   'apps/expo/src/helpers/getSQLTransaction.ts',
 ])

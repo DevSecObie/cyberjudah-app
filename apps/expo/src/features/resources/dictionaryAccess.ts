@@ -149,7 +149,7 @@ const UPSTREAM_DICTIONARY_WORKS: readonly DictionaryWork[] = (
   offlineDownload: true,
 }))
 
-// CyberJudah's own reference works: a download only, never read from Bible Strong's servers.
+// CyberJudah's own published references, served by our API with optional Offline copies.
 const CYBERJUDAH_DICTIONARY_WORKS: readonly DictionaryWork[] =
   process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
     ? [
@@ -170,7 +170,7 @@ const CYBERJUDAH_DICTIONARY_WORKS: readonly DictionaryWork[] =
           source: 'CyberJudah library (archive.org scans)',
           attribution:
             'The Jewish Encyclopedia, Isidore Singer, editor (1901–1906). Public domain.',
-          onlineAccess: false,
+          onlineAccess: true,
           offlineDownload: true,
         },
       ]
@@ -182,7 +182,7 @@ export const KNOWN_DICTIONARY_WORKS: readonly DictionaryWork[] = [
 ]
 
 const isDownloadOnlyDictionaryWork = (work: DictionaryWorkId | undefined) =>
-  CYBERJUDAH_DICTIONARY_WORKS.some(item => item.resource.work === work)
+  CYBERJUDAH_DICTIONARY_WORKS.some(item => item.resource.work === work && !item.onlineAccess)
 
 export type DictionaryAccess = {
   listWorks?: (language?: ResourceLanguage) => Promise<DictionaryWork[]>
@@ -1331,7 +1331,7 @@ export const createHybridDictionaryAccess = ({
       if (await isOnline()) {
         try {
           const works = (await online.listWorks?.(language)) ?? []
-          // The server lists only what it serves; our download-only works are listed here.
+          // Include our own publication alongside the upstream dictionary catalog.
           return [
             ...works,
             ...CYBERJUDAH_DICTIONARY_WORKS.filter(

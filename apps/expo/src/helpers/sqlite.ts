@@ -1,5 +1,6 @@
 import * as FileSystem from 'expo-file-system/legacy'
-import * as SQLite from 'expo-sqlite'
+import type * as SQLite from 'expo-sqlite'
+import { openSQLiteDatabase } from './sqliteConnection'
 import {
   databaseDictionnaireName,
   databaseMhyName,
@@ -21,9 +22,7 @@ import { restoreOrphanedResourceBackup } from './atomicResourceFile'
 
 export type SQLiteDatabase = SQLite.SQLiteDatabase
 
-export const openSQLiteDatabase = (
-  ...args: Parameters<typeof SQLite.openDatabaseAsync>
-): ReturnType<typeof SQLite.openDatabaseAsync> => SQLite.openDatabaseAsync(...args)
+export { openSQLiteDatabase } from './sqliteConnection'
 
 // Original DB class for backward compatibility
 class DB {
@@ -40,7 +39,7 @@ class DB {
     return new Promise(async (resolve, reject) => {
       try {
         this.db = await appLogger.measure('database', 'legacy.open', () =>
-          SQLite.openDatabaseAsync(this.name)
+          openSQLiteDatabase(this.name)
         )
         console.log(`[DBManager] ${this.name} loaded`)
         resolve(true)
@@ -137,7 +136,7 @@ class LanguageAwareDB {
         'database',
         'language_aware.open',
         () =>
-          SQLite.openDatabaseAsync(
+          openSQLiteDatabase(
             fileName,
             {
               useNewConnection: true,

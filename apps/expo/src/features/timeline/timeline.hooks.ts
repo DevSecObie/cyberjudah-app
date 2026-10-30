@@ -2,12 +2,8 @@ import { useTimelineTranslation } from './useTimelineLanguage'
 import { viewportWidth, wp, wpUI } from '~helpers/utils'
 import { mapRange, offset, scrollViewHeight } from './constants'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
-import {
-  Extrapolation,
-  interpolate,
-  useDerivedValue,
-  useSharedValue,
-} from 'react-native-reanimated'
+import { getTimelineContentWidth, getTimelineYearAtMarker } from './timelineViewport'
+import { interpolate, useDerivedValue, useSharedValue } from 'react-native-reanimated'
 
 export const useTimeline = ({
   startYear,
@@ -24,7 +20,7 @@ export const useTimeline = ({
   const ratio = 100 / interval // 1 year = 1px with ratio = 1
   const scrollViewWidth = Math.abs(startYear - endYear) * ratio
 
-  const width = scrollViewWidth + wp(100)
+  const width = getTimelineContentWidth(scrollViewWidth, wp(100), offset)
   const height = scrollViewHeight + 200
 
   const yearNow = new Date().getFullYear()
@@ -41,9 +37,12 @@ export const useTimeline = ({
   })
 
   const year = useDerivedValue(() => {
-    const currentTimelineX = offset + lineX.get() - x.get()
-    const currentYearNb = Math.round(
-      interpolate(currentTimelineX, [0, scrollViewWidth], [startYear, endYear], Extrapolation.CLAMP)
+    const currentYearNb = getTimelineYearAtMarker(
+      x.get(),
+      lineX.get(),
+      scrollViewWidth,
+      startYear,
+      endYear
     )
 
     if (currentYearNb >= yearNow && !isCyberJudah) {
