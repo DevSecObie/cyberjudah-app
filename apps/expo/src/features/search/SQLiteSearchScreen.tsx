@@ -108,9 +108,6 @@ import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import { findClasses, findClassesOnDevice } from '~features/passageMediaLibrary/classSearch'
 import { formatMoment, searchSaidInClass } from '~features/passageMediaLibrary/saidInClass'
 import {
-  CLASS_INDEX_DOWNLOAD_MB,
-  downloadClassIndex,
-  isClassIndexOutdated,
   isClassIndexSearchable,
   searchClassIndex,
   useClassIndexState,
@@ -132,7 +129,6 @@ type Props = {
 const MIN_SEARCH_LENGTH = SEARCH_MIN_QUERY_LENGTH
 // The class search needs a word of some length: two letters match nearly every class.
 const MIN_CLASS_SEARCH_LENGTH = 3
-const CLASS_INDEX_OFFER_ID = 'cyberjudah-class-index-offer'
 const SAID_IN_CLASS_SIGN_IN_ID = 'cyberjudah-said-in-class-sign-in'
 const SEARCH_ALPHABET_FOOTER_HEIGHT = 70
 
@@ -509,12 +505,6 @@ const SQLiteSearchScreen = ({
     itemFilters.classes !== false &&
     trimmedSearchValue.length >= MIN_CLASS_SEARCH_LENGTH
   const classIndex = useClassIndexState()
-  const classIndexOutdated = useQuery({
-    queryKey: ['cyberjudah-class-index-outdated'],
-    queryFn: () => isClassIndexOutdated(),
-    enabled: usesCyberJudahEditorial() && classIndex.status === 'ready',
-    staleTime: Infinity,
-  })
   const classQuery = useQuery({
     queryKey: ['cyberjudah-search-classes', trimmedSearchValue, isClassIndexSearchable(classIndex)],
     queryFn: () => {
@@ -568,41 +558,8 @@ const SQLiteSearchScreen = ({
           })
         )
 
-  // The offer to keep the classes on this phone, as the first row of the Classes section.
-  const classIndexOffer: SearchEntityResult | undefined =
-    classIndex.status === 'downloading' && classIndex.installed
-      ? undefined
-      : classIndex.status === 'downloading'
-        ? {
-            id: CLASS_INDEX_OFFER_ID,
-            type: 'classes',
-            iconType: 'classes',
-            title: 'Downloading the classes…',
-            description: `${Math.round(classIndex.progress * 100)}%. Searches will take milliseconds, even offline.`,
-          }
-        : classIndex.status === 'absent' || classIndex.status === 'failed'
-          ? {
-              id: CLASS_INDEX_OFFER_ID,
-              type: 'classes',
-              iconType: 'classes',
-              title:
-                classIndex.status === 'failed'
-                  ? 'The download did not finish. Tap to try again'
-                  : 'Search every class instantly',
-              description: `Keep the classes on this phone (about ${CLASS_INDEX_DOWNLOAD_MB} MB, once): searches take milliseconds, even offline, and open at the moment the words were said.`,
-            }
-          : classIndexOutdated.data
-            ? {
-                id: CLASS_INDEX_OFFER_ID,
-                type: 'classes',
-                iconType: 'classes',
-                title: 'New classes are out. Tap to update',
-                description: `Download the classes again (about ${CLASS_INDEX_DOWNLOAD_MB} MB) to search the newest ones on this phone.`,
-              }
-            : undefined
   const classResults: SearchEntityResult[] = shouldSearchClasses
     ? [
-        ...(classIndexOffer ? [classIndexOffer] : []),
         ...(classQuery.data ?? []).map(
           (item): SearchEntityResult => ({
             id: `class:${item.notesPath}`,
@@ -906,11 +863,6 @@ const SQLiteSearchScreen = ({
   const openSearchItem = (item: SearchEntityResult) => {
     dismissSearchInput()
     if (!isShowingPreviousResults) recordResultOpened(item)
-    if (item.id === CLASS_INDEX_OFFER_ID) {
-      if (classIndex.status !== 'downloading')
-        void downloadClassIndex().then(() => classIndexOutdated.refetch())
-      return
-    }
     if (item.id === SAID_IN_CLASS_SIGN_IN_ID) {
       router.push('/login')
       return
