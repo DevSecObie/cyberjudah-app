@@ -439,7 +439,10 @@ function AccountChat({ account }: { account: string }) {
               />
               <Text
                 className="mt-4 text-center"
-                style={[ink, { fontSize: 28, fontWeight: '700', letterSpacing: -0.5, lineHeight: 34 }]}
+                style={[
+                  ink,
+                  { fontSize: 28, fontWeight: '700', letterSpacing: -0.5, lineHeight: 34 },
+                ]}
               >
                 {t('askChat.welcome', { defaultValue: 'What would you like to learn?' })}
               </Text>
@@ -462,7 +465,11 @@ function AccountChat({ account }: { account: string }) {
                     className="rounded-2xl px-[14px] py-[13px]"
                     style={({ pressed }) => [
                       card,
-                      { width: '48.5%', minHeight: 86, opacity: !account ? 0.4 : pressed ? 0.75 : 1 },
+                      {
+                        width: '48.5%',
+                        minHeight: 86,
+                        opacity: !account ? 0.4 : pressed ? 0.75 : 1,
+                      },
                     ]}
                   >
                     <Text style={[ink, { fontSize: 15, fontWeight: '600', lineHeight: 20 }]}>
@@ -535,32 +542,40 @@ function AccountChat({ account }: { account: string }) {
                       </Text>
                     </Box>
                   )}
-                  {!busy &&
-                    !turn.ui &&
-                    i === chat.turns.length - 1 &&
-                    !!turn.followups?.length && (
-                      <Box className="mt-3 gap-2">
-                        {turn.followups.map(followup => (
-                          <Pressable
-                            key={followup}
-                            onPress={() => void send(followup)}
-                            className="min-h-11 flex-row items-center gap-[10px] rounded-xl px-[14px] py-[10px]"
-                            style={({ pressed }) => [card, { opacity: pressed ? 0.75 : 1 }]}
+                  {!busy && !turn.ui && i === chat.turns.length - 1 && !!turn.followups?.length && (
+                    <Box className="mt-3 gap-2">
+                      {turn.followups.map(followup => (
+                        <Pressable
+                          key={followup}
+                          onPress={() => void send(followup)}
+                          className="min-h-11 flex-row items-center gap-[10px] rounded-xl px-[14px] py-[10px]"
+                          style={({ pressed }) => [card, { opacity: pressed ? 0.75 : 1 }]}
+                        >
+                          <FeatherIcon
+                            name="arrow-up-right"
+                            size={14}
+                            style={{ color: p.accent }}
+                          />
+                          <Text
+                            className="flex-1"
+                            style={[ink, { fontSize: 15, fontWeight: '500' }]}
                           >
-                            <FeatherIcon name="arrow-up-right" size={14} style={{ color: p.accent }} />
-                            <Text className="flex-1" style={[ink, { fontSize: 15, fontWeight: '500' }]}>
-                              {followup}
-                            </Text>
-                          </Pressable>
-                        ))}
-                      </Box>
-                    )}
+                            {followup}
+                          </Text>
+                        </Pressable>
+                      ))}
+                    </Box>
+                  )}
                   {/* Copy, Retry and Report: always there, quiet until used. */}
                   <HStack className="-ml-2 mt-2 flex-wrap items-center gap-1">
                     {!!turn.answer && (
                       <ActionPill
                         icon={copied === turn.id ? 'check' : 'copy'}
-                        label={copied === turn.id ? t('askChat.copied', { defaultValue: 'Copied' }) : t('askChat.copyShort', { defaultValue: 'Copy' })}
+                        label={
+                          copied === turn.id
+                            ? t('askChat.copied', { defaultValue: 'Copied' })
+                            : t('askChat.copyShort', { defaultValue: 'Copy' })
+                        }
                         color={p.text3}
                         onPress={() => {
                           Clipboard.setString(turn.answer)
@@ -580,7 +595,11 @@ function AccountChat({ account }: { account: string }) {
                     {!!turn.answer && (
                       <ActionPill
                         icon={reported.includes(turn.id) ? 'check' : 'flag'}
-                        label={reported.includes(turn.id) ? t('askChat.reported', { defaultValue: 'Reported' }) : t('askChat.reportShort', { defaultValue: 'Report' })}
+                        label={
+                          reported.includes(turn.id)
+                            ? t('askChat.reported', { defaultValue: 'Reported' })
+                            : t('askChat.reportShort', { defaultValue: 'Report' })
+                        }
                         color={p.text3}
                         onPress={() => report(turn)}
                         disabled={reported.includes(turn.id)}
@@ -640,10 +659,14 @@ function AccountChat({ account }: { account: string }) {
             </Box>
           )}
           {!account && (
-            <Box className="mt-2 gap-3 rounded-2xl px-4 py-[14px]" style={[card, { borderLeftWidth: 3, borderLeftColor: p.accent }]}>
+            <Box
+              className="mt-2 gap-3 rounded-2xl px-4 py-[14px]"
+              style={[card, { borderLeftWidth: 3, borderLeftColor: p.accent }]}
+            >
               <Text style={[quiet, { fontSize: 15 }]}>
                 {t('askChat.signInNote', {
-                  defaultValue: 'Sign in to your CyberJudah account to use Ask and keep your chats.',
+                  defaultValue:
+                    'Sign in to your CyberJudah account to use Ask and keep your chats.',
                 })}
               </Text>
               <Pressable
@@ -651,7 +674,9 @@ function AccountChat({ account }: { account: string }) {
                 className="self-start rounded-full px-5 py-3"
                 style={{ backgroundColor: p.accent }}
               >
-                <Text style={{ color: p.onAccent, fontWeight: '600' }}>{t('assistant.signIn')}</Text>
+                <Text style={{ color: p.onAccent, fontWeight: '600' }}>
+                  {t('assistant.signIn')}
+                </Text>
               </Pressable>
             </Box>
           )}
@@ -721,7 +746,9 @@ function AccountChat({ account }: { account: string }) {
               }}
             >
               {busy ? (
-                <Box style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: p.canvas }} />
+                <Box
+                  style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: p.canvas }}
+                />
               ) : (
                 <FeatherIcon
                   name="arrow-up"
@@ -766,7 +793,11 @@ function AccountChat({ account }: { account: string }) {
           <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: insets.bottom + 20 }}>
             {panel === 'history' ? (
               <>
-                <Pressable onPress={startNew} className="mb-4 flex-row items-center gap-2 rounded-full p-4" style={{ backgroundColor: p.surface2 }}>
+                <Pressable
+                  onPress={startNew}
+                  className="mb-4 flex-row items-center gap-2 rounded-full p-4"
+                  style={{ backgroundColor: p.surface2 }}
+                >
                   <FeatherIcon name="edit" size={18} style={{ color: p.text1 }} />
                   <Text style={{ color: p.text1, fontWeight: '600' }}>{t('assistant.new')}</Text>
                 </Pressable>
@@ -788,7 +819,9 @@ function AccountChat({ account }: { account: string }) {
                       }}
                       className="flex-1 py-3"
                     >
-                      <Text numberOfLines={2} style={{ color: p.text1, fontWeight: '500' }}>{item.title}</Text>
+                      <Text numberOfLines={2} style={{ color: p.text1, fontWeight: '500' }}>
+                        {item.title}
+                      </Text>
                       <Text className="mt-1 text-xs" style={{ color: p.text3 }}>
                         {new Date(item.updatedAt).toLocaleDateString()}
                       </Text>
@@ -833,14 +866,22 @@ function AccountChat({ account }: { account: string }) {
                   // As on cyberjudah.io/app: the free models first, then each provider's.
                   [
                     ['Free, Always', models.filter(m => m.id.startsWith('@cf/'))] as const,
-                    ...[...new Set(models.filter(m => !m.id.startsWith('@cf/')).map(m => m.provider))].map(
-                      g => [g, models.filter(m => !m.id.startsWith('@cf/') && m.provider === g)] as const
+                    ...[
+                      ...new Set(models.filter(m => !m.id.startsWith('@cf/')).map(m => m.provider)),
+                    ].map(
+                      g =>
+                        [
+                          g,
+                          models.filter(m => !m.id.startsWith('@cf/') && m.provider === g),
+                        ] as const
                     ),
                   ]
                     .filter(([, list]) => list.length)
                     .map(([group, list]) => (
                       <Box key={group} className="mb-2 gap-2">
-                        <Text style={{ color: p.text3, fontSize: 13, fontWeight: '600', marginTop: 8 }}>
+                        <Text
+                          style={{ color: p.text3, fontSize: 13, fontWeight: '600', marginTop: 8 }}
+                        >
                           {group}
                         </Text>
                         {list.map(item => (
@@ -862,11 +903,15 @@ function AccountChat({ account }: { account: string }) {
                             <Box className="flex-1">
                               <Text style={{ color: p.text1, fontWeight: '600' }}>{item.name}</Text>
                               {!!item.what && (
-                                <Text style={{ color: p.text3, fontSize: 13, marginTop: 2 }}>{item.what}</Text>
+                                <Text style={{ color: p.text3, fontSize: 13, marginTop: 2 }}>
+                                  {item.what}
+                                </Text>
                               )}
                             </Box>
                             {item.id.startsWith('@cf/') && (
-                              <Text style={{ color: p.accent, fontSize: 13, fontWeight: '600' }}>Free</Text>
+                              <Text style={{ color: p.accent, fontSize: 13, fontWeight: '600' }}>
+                                Free
+                              </Text>
                             )}
                             {item.id === model && (
                               <FeatherIcon name="check" size={18} style={{ color: p.accent }} />

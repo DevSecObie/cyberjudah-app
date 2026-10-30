@@ -84,17 +84,27 @@ export default function AskSourceCards({
                     className="h-5 min-w-5 items-center justify-center rounded-full px-[5px]"
                     style={{ backgroundColor: p.accentSoft }}
                   >
-                    <Text style={{ color: p.accent, fontSize: 11, fontWeight: '700' }}>{source.n}</Text>
+                    <Text style={{ color: p.accent, fontSize: 11, fontWeight: '700' }}>
+                      {source.n}
+                    </Text>
                   </Box>
                   <Text
                     className="flex-1"
                     numberOfLines={1}
-                    style={{ color: p.text3, fontSize: 11.5, fontWeight: '500', textTransform: 'capitalize' }}
+                    style={{
+                      color: p.text3,
+                      fontSize: 11.5,
+                      fontWeight: '500',
+                      textTransform: 'capitalize',
+                    }}
                   >
                     {moment}
                   </Text>
                 </HStack>
-                <Text numberOfLines={2} style={{ color: p.text1, fontSize: 15, fontWeight: '500', lineHeight: 20 }}>
+                <Text
+                  numberOfLines={2}
+                  style={{ color: p.text1, fontSize: 15, fontWeight: '500', lineHeight: 20 }}
+                >
                   {source.title}
                 </Text>
                 {!!source.excerpt && (
