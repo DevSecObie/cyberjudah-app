@@ -103,6 +103,13 @@ import {
   getSearchAnalyticsInputKind,
 } from './searchAnalyticsModel'
 import { createSearchExperienceController } from './searchExperience'
+import { useRouter } from 'expo-router'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
+import { findClasses } from '~features/passageMediaLibrary/classSearch'
+import {
+  loadClassLibrary,
+  readCachedClassLibrary,
+} from '~features/passageMediaLibrary/cyberJudahClasses'
 type Props = {
   searchValue: string
   setSearchValue: (value: string) => void
@@ -114,6 +121,8 @@ type Props = {
 }
 
 const MIN_SEARCH_LENGTH = SEARCH_MIN_QUERY_LENGTH
+// The class search needs a word of some length: two letters match nearly every class.
+const MIN_CLASS_SEARCH_LENGTH = 3
 const SEARCH_ALPHABET_FOOTER_HEIGHT = 70
 
 type DictionaryRow = DictionarySearchRow
@@ -140,6 +149,7 @@ const SQLiteSearchScreen = ({
   const { t, i18n } = useTranslation()
   const theme = useTheme()
   const keyboardFooterBottom = useKeyboardFooterBottom(SEARCH_ALPHABET_FOOTER_HEIGHT)
+  const router = useRouter()
   const openCatalogTab = useOpenInNewTab()
   const openStudyObject = useOpenStudyObject()
   const resources = useResourceAccess()
@@ -482,6 +492,33 @@ const SQLiteSearchScreen = ({
     ...(shouldSearchNave ? [naveQuery] : []),
   ])
 
+  // CyberJudah's classes: every class whose notes say the words, from the site's search of the notes.
+  const shouldSearchClasses =
+    usesCyberJudahEditorial() &&
+    itemFilters.classes !== false &&
+    trimmedSearchValue.length >= MIN_CLASS_SEARCH_LENGTH
+  const classQuery = useQuery({
+    queryKey: ['cyberjudah-search-classes', trimmedSearchValue],
+    queryFn: () =>
+      findClasses(trimmedSearchValue, async () => readCachedClassLibrary() ?? loadClassLibrary()),
+    enabled: shouldSearchClasses,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+  })
+  const classResults: SearchEntityResult[] = shouldSearchClasses
+    ? (classQuery.data ?? []).map(item => ({
+        id: `class:${item.notesPath}`,
+        type: 'classes',
+        iconType: 'classes',
+        title: item.title,
+        chip: item.series,
+        subtitle: [item.date, item.teacher].filter(Boolean).join(' · '),
+        description: item.snippet || [item.date, item.teacher].filter(Boolean).join(' · '),
+        classWorkId: item.workId,
+        classStart: item.start,
+      }))
+    : []
+
   const catalogScopes = (['commentary', 'plan', 'timeline'] as const).filter(
     type => itemFilters[type]
   )
@@ -516,6 +553,7 @@ const SQLiteSearchScreen = ({
     strongResults,
     dictionaryResults,
     naveResults,
+    classResults,
     passageResults: mergedPassages,
     totalPassageCount: totalCount,
     semanticSearchError,
@@ -530,6 +568,7 @@ const SQLiteSearchScreen = ({
       strong: isStrongSearching,
       dictionary: isDictionarySearching,
       nave: isNaveSearching,
+      classes: shouldSearchClasses && classQuery.isFetching,
     },
     t,
   })
@@ -764,6 +803,13 @@ const SQLiteSearchScreen = ({
   const openSearchItem = (item: SearchEntityResult) => {
     dismissSearchInput()
     if (!isShowingPreviousResults) recordResultOpened(item)
+    if (item.type === 'classes' && item.classWorkId) {
+      router.push({
+        pathname: '/(explore)/passage-media-player',
+        params: { workId: item.classWorkId, start: String(item.classStart ?? 0) },
+      })
+      return
+    }
     if (item.catalogResult) {
       void catalogSelection.select({ ...item.catalogResult.tab, id: generateUUID() })
       return

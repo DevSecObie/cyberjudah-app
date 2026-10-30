@@ -13,6 +13,7 @@ const sourceLabels: Record<SearchItemType, string> = {
   commentary: 'tabs.commentary',
   plan: 'Plans',
   timeline: 'tabs.timeline',
+  classes: 'Classes',
   notes: 'Notes',
   studies: 'Études',
   links: 'Liens',

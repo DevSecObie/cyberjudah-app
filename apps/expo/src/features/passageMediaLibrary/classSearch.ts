@@ -65,3 +65,21 @@ export const classesForHits = (
     return [{ ...item, snippet: hit.snippet }]
   })
 }
+
+export type ClassSearchResult = CyberJudahClass & { snippet: string; start?: number }
+
+/**
+ * The classes for the Search tab: every class, Captains and Hidden History episode whose notes
+ * say the words, best first, with the passage that says them.
+ */
+export const findClasses = async (
+  query: string,
+  loadLibrary: () => Promise<CyberJudahClass[]>,
+  fetcher: typeof fetch = fetch
+): Promise<ClassSearchResult[]> => {
+  const [hits, classes] = await Promise.all([
+    searchInsideClasses(query, ALL_KINDS, fetcher),
+    loadLibrary(),
+  ])
+  return classesForHits(hits, classes)
+}

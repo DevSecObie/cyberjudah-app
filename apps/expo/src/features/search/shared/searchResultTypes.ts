@@ -26,6 +26,9 @@ export type SearchEntityResult = {
   passageReason?: string
   referenceSegment?: BibleReferenceSegment
   matches?: readonly FuseResultMatch[]
+  /** A CyberJudah class to open in the player, and the moment to start at. */
+  classWorkId?: string
+  classStart?: number
 }
 
 export type SearchEntityResultWithEndpoint = SearchEntityResult & {
