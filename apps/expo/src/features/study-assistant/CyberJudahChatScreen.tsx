@@ -19,12 +19,12 @@ import { storage } from '~helpers/storage'
 import Box, { HStack } from '~common/ui/Box'
 import Container from '~common/ui/Container'
 import Header from '~common/Header'
-import Back from '~common/Back'
 import Text from '~common/ui/Text'
 import { FeatherIcon } from '~common/ui/Icon'
 import AskInteractiveAnswer from './AskInteractiveAnswer'
 import AskCreditsCard from './AskCreditsCard'
 import AskProgress from './AskProgress'
+import AskGlassBackdrop from './AskGlassBackdrop'
 import { useAskPalette } from './askPalette'
 import {
   askCyberJudah,
@@ -141,7 +141,6 @@ function AccountChat({ account }: { account: string }) {
     retry: boolean
   } | null>(null)
   const [copied, setCopied] = useState('')
-  const [focused, setFocused] = useState(false)
   const p = useAskPalette()
   const [reported, setReported] = useState<string[]>([])
   const active = useRef<AbortController | null>(null)
@@ -369,51 +368,40 @@ function AccountChat({ account }: { account: string }) {
     : t('askChat.freeModel', { defaultValue: 'Answers from the teachings' })
 
   return (
-    <Container style={{ backgroundColor: p.canvas }}>
-      {/* cyberjudah.io/app's bar: your chats, the title with the model under it, a new chat. */}
-      <HStack
-        className="items-center px-1"
-        style={{ paddingTop: insets.top + 4, paddingBottom: 6, backgroundColor: p.canvas }}
+    <Container className="bg-reverse">
+      <Header
+        title="Ask CyberJudah"
+        fontSize={16}
+        hasBackButton
+        rightComponent={
+          <HStack className="pr-2">
+            <IconButton
+              name="clock"
+              label={t('askChat.history', { defaultValue: 'Your chats' })}
+              onPress={() => setPanel('history')}
+              disabled={busy || !account}
+            />
+            <IconButton
+              name="edit"
+              label={t('assistant.new', { defaultValue: 'New chat' })}
+              onPress={startNew}
+              disabled={busy || !allTurns.length}
+            />
+          </HStack>
+        }
       >
-        <HStack className="w-[96px] items-center">
-          {router.canGoBack() && (
-            <Back padding>
-              <FeatherIcon name="arrow-left" size={20} style={ink} />
-            </Back>
-          )}
-          <IconButton
-            name="clock"
-            color={p.text1}
-            label={t('askChat.history', { defaultValue: 'Your chats' })}
-            onPress={() => setPanel('history')}
-            disabled={busy || !account}
-          />
-        </HStack>
         <Pressable
           onPress={() => setPanel('models')}
           disabled={busy || !account}
           accessibilityRole="button"
           accessibilityLabel={`${t('askChat.chooseModel', { defaultValue: 'Choose a model' })}: ${modelLine}`}
-          className="flex-1 items-center py-1"
+          className="mx-5 mb-3 min-h-11 flex-row items-center gap-2 self-start rounded-full px-3 py-2"
         >
-          <Text style={[ink, { fontSize: 16, fontWeight: '600', letterSpacing: -0.2 }]}>
-            Ask CyberJudah
-          </Text>
-          <Text numberOfLines={1} style={[quiet, { fontSize: 12, marginTop: 1 }]}>
-            {modelLine}
-            {account ? ' ▾' : ''}
-          </Text>
+          <AskGlassBackdrop radius={100} />
+          <Text className="text-xs">{modelLine}</Text>
+          <FeatherIcon name="chevron-down" size={14} color="grey" />
         </Pressable>
-        <HStack className="w-[96px] items-center justify-end">
-          <IconButton
-            name="edit"
-            color={p.text1}
-            label={t('assistant.new', { defaultValue: 'New chat' })}
-            onPress={startNew}
-            disabled={busy || !allTurns.length}
-          />
-        </HStack>
-      </HStack>
+      </Header>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -690,26 +678,13 @@ function AccountChat({ account }: { account: string }) {
           className="w-full self-center px-3 pt-2"
           style={{ maxWidth: 744, paddingBottom: Math.max(insets.bottom, 8) }}
         >
-          <HStack
-            className="items-end gap-[6px] py-[6px] pl-[10px] pr-[6px]"
-            style={{
-              borderRadius: 26,
-              backgroundColor: p.overlay,
-              borderWidth: 1,
-              borderColor: focused ? p.accent : p.edge,
-              shadowColor: '#000',
-              shadowOpacity: p.dark ? 0.4 : 0.12,
-              shadowRadius: 16,
-              shadowOffset: { width: 0, height: 6 },
-            }}
-          >
+          <HStack className="items-end rounded-3xl p-2">
+            <AskGlassBackdrop />
             <TextInput
               multiline
               maxLength={questionLimit}
               value={question}
               onChangeText={setQuestion}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
               placeholder={
                 !account
                   ? t('askChat.signInToAsk', { defaultValue: 'Sign in to ask' })
@@ -777,7 +752,7 @@ function AccountChat({ account }: { account: string }) {
         onRequestClose={() => setPanel(null)}
         presentationStyle="pageSheet"
       >
-        <Container style={{ backgroundColor: p.canvas }}>
+        <Container className="bg-reverse">
           <Header
             title={
               panel === 'history'
