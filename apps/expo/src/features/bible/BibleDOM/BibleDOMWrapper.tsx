@@ -1,6 +1,7 @@
 import { getPassageContextHeaderHeight } from '../passagePreviewPresentation'
 import type { LabeledCommentaryChip } from './InlineCommentaryChips'
-import { OPEN_INLINE_COMMENTARY } from './dispatch'
+import { OPEN_INLINE_COMMENTARY, OPEN_VERSE_PRECEPTS, OPEN_VERSE_TAG } from './dispatch'
+import { verseTagRoute } from '~features/versePrecepts/verseTags'
 import { useResourcesLanguageValue } from '~state/resourcesLanguage'
 import { previewHistoryAtom } from '~features/bibleReferencePreview/state'
 import { createReaderPreview } from '~features/bibleReferencePreview/readerPreview'
@@ -278,6 +279,7 @@ export type WebViewProps = {
   versesWithNonHighlightTags?: Record<number, boolean>
   onOpenVerseTagsModal?: (verseKey: string) => void
   onOpenCanonicalBibleNote?: (note: CanonicalBibleNote) => void
+  onOpenVersePrecept?: (verse: number, label: string) => void
   onOpenStudyRelationsModal?: (target: StudyRelationsModalTarget) => void
   isFormSheet?: boolean
   // Enter annotation mode from double-tap
@@ -287,6 +289,13 @@ export type WebViewProps = {
   inlineCommentaries?: {
     introduction: LabeledCommentaryChip[]
     afterVerses: Record<number, LabeledCommentaryChip[]>
+    /** The scriptures the classes read with each verse, shown after it as precept chips. */
+    preceptChips?: Record<number, { key: string; label: string }[]>
+    /** CyberJudah's precept and law tags on each verse. */
+    verseTags?: Record<
+      number,
+      { key: string; label: string; kind: 'precept' | 'law'; at: string }[]
+    >
   }
   onOpenInlineCommentary?: (chip: LabeledCommentaryChip) => void
   chapterEntities: StrongLexiconChapterEntity[]
@@ -401,6 +410,7 @@ export const BibleDOMWrapper = ({
   onOpenCrossVersionModal,
   onOpenVerseTagsModal,
   onOpenCanonicalBibleNote,
+  onOpenVersePrecept,
   setUnifiedTagsModal,
   bibleAtom,
   goToPrevChapter,
@@ -913,6 +923,25 @@ export const BibleDOMWrapper = ({
               chip.revision === payload.revision
           )
           if (chip) onOpenInlineCommentary?.(chip)
+        }
+        break
+      }
+      case OPEN_VERSE_TAG: {
+        const payload = action.payload
+        if (
+          isRecord(payload) &&
+          typeof payload.key === 'string' &&
+          /^[pl]:[A-Za-z0-9.-]+$/.test(payload.key)
+        ) {
+          const at = typeof payload.at === 'string' ? payload.at : ''
+          pushRouteOnce(verseTagRoute(payload.key, at))
+        }
+        break
+      }
+      case OPEN_VERSE_PRECEPTS: {
+        const payload = action.payload
+        if (isRecord(payload) && typeof payload.label === 'string' && Number(payload.verse) > 0) {
+          onOpenVersePrecept?.(Number(payload.verse), payload.label)
         }
         break
       }

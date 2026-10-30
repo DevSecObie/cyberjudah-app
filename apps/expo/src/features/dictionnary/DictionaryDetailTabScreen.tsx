@@ -6,6 +6,7 @@ import { twMerge } from '~common/ui/classNames'
 import { resolveThemeColor } from '~themes/colorValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import React, { useEffect, useRef } from 'react'
+import { Linking } from 'react-native'
 import { useQuery } from '@tanstack/react-query'
 import { MenuView, type MenuAction } from '~common/ui/MenuView'
 import { useSelector } from 'react-redux'
@@ -277,6 +278,9 @@ const DictionnaryDetailScreen = ({
       const route = getCommentaryBibleViewRoute(href.slice('bible://'.length))
       if (route) pushRouteOnce(route)
       else toast.error('Impossible de charger cette référence biblique.')
+    } else if (/^https:\/\/archive\.org\//.test(href)) {
+      // A reference work's link to its printed page
+      void Linking.openURL(href).catch(() => {})
     } else if (href.startsWith('strong://')) {
       const code = href.slice('strong://'.length).trim().toUpperCase()
       if (/^[HG]\d+[A-Z]?$/u.test(code)) {

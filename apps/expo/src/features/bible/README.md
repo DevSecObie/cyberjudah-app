@@ -7,12 +7,14 @@ La feature Bible est le cœur de l'application Bible Strong. Elle fournit une ex
 ## Fonctionnalités principales
 
 ### Navigation biblique
+
 - Navigation intuitive par livre, chapitre et verset
 - Support des gestes de swipe pour naviguer entre chapitres
 - Historique de navigation avec accès rapide
 - Système d'onglets permettant plusieurs Bibles ouvertes simultanément
 
 ### Affichage du texte
+
 - Support de multiples versions bibliques (LSG, Martin, Darby, etc.)
 - Mode parallèle pour comparer plusieurs versions côte à côte
 - Affichage interlinéaire (texte original avec traduction)
@@ -38,6 +40,7 @@ lecture normale, sans fermer l'aperçu. Fermer la feuille reste une action de
 navigation distincte.
 
 ### Annotations et étude
+
 - Système de surlignage avec 8 couleurs prédéfinies
 - Prise de notes sur les versets
 - Tags personnalisés pour catégoriser les versets
@@ -45,12 +48,14 @@ navigation distincte.
 - Commentaires bibliques intégrés
 
 ### Audio
+
 - Lecture audio des chapitres (streaming ou TTS)
 - Contrôles de lecture avancés (vitesse, pause, navigation)
 - Suivi automatique du verset en cours de lecture
 - Mode lecture continue
 
 ### Outils de recherche
+
 - Recherche dans le texte biblique
 - Concordance pour trouver les occurrences d'un mot
 - Comparaison de versets entre différentes versions
@@ -101,6 +106,7 @@ BibleScreen/
 ### Navigation
 
 La navigation utilise un système d'actions Redux :
+
 - `NAVIGATE_TO_BIBLE_VIEW` : Navigation vers une référence biblique
 - `NAVIGATE_TO_STRONG` : Accès au lexique Strong
 - `SWIPE_LEFT/RIGHT` : Navigation entre chapitres
@@ -114,11 +120,11 @@ La navigation utilise un système d'actions Redux :
 dispatch({
   type: 'NAVIGATE_TO_BIBLE_VIEW',
   payload: {
-    book: 43,      // Jean
+    book: 43, // Jean
     chapter: 3,
     verse: 16,
-    version: 'LSG'
-  }
+    version: 'LSG',
+  },
 })
 ```
 
@@ -128,24 +134,27 @@ dispatch({
 const { open } = useBookAndVersionSelector()
 open({
   type: 'book',
-  onSelect: (book) => {
+  onSelect: book => {
     // Navigation vers le livre sélectionné
-  }
+  },
 })
 ```
 
 ### Surligner un verset
 
 ```typescript
-dispatch(updateHighlight({
-  verses: { 'GEN.1.1': true },
-  color: 'color-69D2E7'  // Couleur prédéfinie
-}))
+dispatch(
+  updateHighlight({
+    verses: { 'GEN.1.1': true },
+    color: 'color-69D2E7', // Couleur prédéfinie
+  })
+)
 ```
 
 ## Personnalisation
 
 ### Thèmes disponibles
+
 - `default` : Thème clair par défaut
 - `dark` : Mode sombre
 - `sepia` : Ton sépia pour une lecture confortable
@@ -153,6 +162,7 @@ dispatch(updateHighlight({
 - `black` : Contraste élevé
 
 ### Paramètres de lecture
+
 - Taille de police : 10 niveaux disponibles
 - Interligne : 5 niveaux disponibles
 - Mode de lecture : Normal ou Paragraphe
@@ -168,6 +178,7 @@ dispatch(updateHighlight({
 ## Points d'extension
 
 Pour ajouter une nouvelle fonctionnalité :
+
 1. Créer le composant dans le dossier approprié
 2. Ajouter l'état nécessaire (atom Jotai ou action Redux)
 3. Intégrer dans `BibleViewer` si nécessaire

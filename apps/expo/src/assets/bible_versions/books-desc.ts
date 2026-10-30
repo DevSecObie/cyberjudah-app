@@ -850,15 +850,26 @@ const cyberJudahApocrypha: Book[] = cyberJudahBooks
     Chapitres: Math.max(...book.chapters),
   }))
 const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+// CyberJudah keeps the 1611 order: the Apocrypha stands between the Testaments.
 const books: readonly Book[] = isCyberJudah
-  ? [...upstreamBooks.filter(book => book.Numero <= 66), ...cyberJudahApocrypha]
+  ? [
+      ...upstreamBooks.filter(book => book.Numero <= 39),
+      ...cyberJudahApocrypha,
+      ...upstreamBooks.filter(book => book.Numero >= 40 && book.Numero <= 66),
+    ]
   : upstreamBooks
+const sectionsWithin = (from: number, to: number) =>
+  upstreamSections
+    .map(section => ({
+      ...section,
+      data: section.data.filter(book => book.Numero >= from && book.Numero <= to),
+    }))
+    .filter(section => section.data.length)
 export const sections = isCyberJudah
   ? [
-      ...upstreamSections
-        .map(section => ({ ...section, data: section.data.filter(book => book.Numero <= 66) }))
-        .filter(section => section.data.length),
+      ...sectionsWithin(1, 39),
       { title: 'Apocrypha', data: cyberJudahApocrypha },
+      ...sectionsWithin(40, 66),
     ]
   : upstreamSections
 export default books

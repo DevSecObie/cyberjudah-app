@@ -6,6 +6,7 @@ import {
   NAVIGATE_TO_VERSE_STUDY_RELATIONS,
   OPEN_BOOKMARK_MODAL,
   OPEN_CANONICAL_BIBLE_NOTE,
+  OPEN_VERSE_PRECEPTS,
   OPEN_CROSS_VERSION_MODAL,
   OPEN_VERSE_TAGS_MODAL,
 } from './dispatch'
@@ -16,6 +17,7 @@ import { scaleLineHeight } from './scaleLineHeight'
 import BookmarkIcon from './BookmarkIcon'
 import RelationsCount from './RelationsCount'
 import RelationsText from './RelationsText'
+import CyberJudahVerseTags, { type CyberJudahVerseTag } from './CyberJudahVerseTags'
 import TagsIndicator from './TagsIndicator'
 import { RootState } from '~redux/modules/reducer'
 import { useDispatch } from './DispatchProvider'
@@ -502,6 +504,10 @@ interface Props {
   redWords?: Record<string, { start: number; end: number }[]> | null
   passageMedia?: ResolvedPassageMedia[]
   passageMediaGallerySections: PassageMediaGallerySection[]
+  // The scriptures the classes read with this verse, opened from the italic "p" before it (as the "i" opens a note).
+  preceptChips?: { key: string; label: string }[]
+  // CyberJudah's precept and law tags on this verse (read-only).
+  cyberJudahTags?: CyberJudahVerseTag[]
 }
 
 const Verse = ({
@@ -537,6 +543,8 @@ const Verse = ({
   redWords,
   passageMedia,
   passageMediaGallerySections,
+  preceptChips,
+  cyberJudahTags,
 }: Props) => {
   const dispatch = useDispatch()
   const translations = useTranslations()
@@ -803,6 +811,32 @@ const Verse = ({
               {verse.Verset}{' '}
             </NumberText>
           )}
+          {!!preceptChips?.length && !isSelectionMode && (
+            <CanonicalNoteButton
+              settings={settings}
+              type="button"
+              isDisabled={annotationMode}
+              disabled={annotationMode}
+              aria-label={annotationMode ? undefined : 'Precepts'}
+              data-ignore-verse-touch
+              data-note-label="p"
+              // The KJV's own notes take Georgia; the classes' precepts take the system face.
+              style={{ fontFamily: '-apple-system, system-ui, sans-serif', fontWeight: 400 }}
+              onClick={
+                annotationMode
+                  ? undefined
+                  : event => {
+                      event.preventDefault()
+                      event.stopPropagation()
+                      dispatch({
+                        type: OPEN_VERSE_PRECEPTS,
+                        payload: { verse: Number(verse.Verset), label: '' },
+                      })
+                    }
+              }
+            />
+          )}
+
           {bookmark && !isSelectionMode && (
             <BookmarkIcon
               settings={settings}
@@ -892,6 +926,13 @@ const Verse = ({
         )}
         {tag && settings.tagsDisplay === 'inline' && (
           <VerseTags settings={settings} tag={tag} isDisabled={annotationMode} />
+        )}
+        {!!cyberJudahTags?.length && !isSelectionMode && (
+          <CyberJudahVerseTags
+            tags={cyberJudahTags}
+            settings={settings}
+            isDisabled={annotationMode}
+          />
         )}
         {relationItems &&
           (settings.relationsDisplay || 'inline') === 'inline' &&

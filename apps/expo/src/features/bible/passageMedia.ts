@@ -84,6 +84,10 @@ export type ResolvedPassageMedia = Pick<
   attributionLabel: string
   reference: string
   strongCodes: string[]
+  /** Where playing starts: the moment a class read the verse. */
+  startSeconds?: number
+  /** Shown under the title, e.g. a class's teacher and date. */
+  subtitle?: string
 }
 
 export type ResolvedPassageMediaChapter = {
@@ -91,6 +95,13 @@ export type ResolvedPassageMediaChapter = {
   isIntroductionStartChapter: boolean
   afterVerses: Record<number, ResolvedPassageMedia[]>
   chapterResources: ResolvedPassageMedia[]
+  /** The chapter gallery's own sections, in place of Bible Strong's (CyberJudah's classes). */
+  gallerySections?: {
+    id: 'chapter-resources' | 'passages'
+    title: string
+    items: ResolvedPassageMedia[]
+    showAllLabel?: string
+  }[]
 }
 
 export type ResolvedPassageMediaLibraryItem = ResolvedPassageMedia & {
@@ -122,9 +133,10 @@ const PASSAGE_MEDIA_APP_ID = usesCyberJudahEditorial()
   ? 'io.cyberjudah.app'
   : 'com.smontlouis.biblestrong'
 
-export const getPassageMediaEmbedUrl = (providerId: string): string =>
+export const getPassageMediaEmbedUrl = (providerId: string, startSeconds = 0): string =>
   `${PASSAGE_MEDIA_PLAYER_URL}?v=${encodeURIComponent(providerId)}` +
-  `&appId=${encodeURIComponent(PASSAGE_MEDIA_APP_ID)}`
+  `&appId=${encodeURIComponent(PASSAGE_MEDIA_APP_ID)}` +
+  (startSeconds > 0 ? `&start=${Math.floor(startSeconds)}` : '')
 
 type ResolvePassageMediaChapterInput = {
   book: number

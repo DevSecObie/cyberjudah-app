@@ -1,0 +1,80 @@
+/* eslint-disable import/first */
+
+const mockStore = new Map<string, string>()
+jest.mock('~helpers/storage', () => ({
+  storage: {
+    getString: (key: string) => mockStore.get(key),
+    set: (key: string, value: string) => mockStore.set(key, value),
+  },
+}))
+
+import { studyNoteHeading, studySections, toStudyNotes } from '../publishedNotes'
+
+const index = [
+  {
+    kind: 'study',
+    title: 'Genesis 2: Eden',
+    url: '/study/genesis/2',
+    book: 'Genesis',
+    chapters: [2, 2],
+    range: 'Genesis 2',
+  },
+  {
+    kind: 'study',
+    title: 'Genesis 1: The Beginning',
+    url: '/study/genesis/1',
+    book: 'Genesis',
+    chapters: [1, 1],
+    range: 'Genesis 1',
+  },
+  { kind: 'class', title: 'A class', url: '/classes/2026/x', videoId: 'abcdefghijk' },
+  {
+    kind: 'study',
+    title: 'Exodus 1: Bondage',
+    url: '/study/exodus/1',
+    book: 'Exodus',
+    chapters: [1, 1],
+    range: 'Exodus 1',
+  },
+  { kind: 'study', title: 'Bad', url: 'javascript:alert(1)', book: 'Exodus' },
+]
+
+describe('published notes', () => {
+  it('lists only study notes, a section per book with chapters in order', () => {
+    const sections = studySections(toStudyNotes(index))
+    expect(sections.map(s => s.title)).toEqual(['Genesis', 'Exodus'])
+    expect(sections[0].data.map(n => n.url)).toEqual(['/study/genesis/1', '/study/genesis/2'])
+  })
+
+  it('orders the books as the 1611 has them: the Apocrypha between the Testaments', () => {
+    const notes = toStudyNotes(
+      ['Matthew', '1 Esdras', 'Malachi', 'Acts', 'Genesis', 'Sirach'].map((book, i) => ({
+        kind: 'study',
+        title: `${book} 1: x`,
+        url: `/study/b${i}/1`,
+        book,
+        chapters: [1, 1],
+      }))
+    )
+    expect(studySections(notes).map(s => s.title)).toEqual([
+      'Genesis',
+      'Malachi',
+      '1 Esdras',
+      'Sirach',
+      'Matthew',
+      'Acts',
+    ])
+  })
+
+  it('searches titles and ranges', () => {
+    expect(
+      studySections(toStudyNotes(index), 'eden')
+        .flatMap(s => s.data)
+        .map(n => n.url)
+    ).toEqual(['/study/genesis/2'])
+  })
+
+  it('drops the reference before the colon in a study title', () => {
+    expect(studyNoteHeading('Genesis 1: The Beginning')).toBe('The Beginning')
+  })
+})

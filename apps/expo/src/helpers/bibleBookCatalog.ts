@@ -86,7 +86,12 @@ const THEOTEX_SEPTUAGINT_BOOK_ORDER = [
 ]
 
 const BOOK_ORDER_BY_CANON: Record<BibleCanonId, number[]> = {
-  'kjv-1611': Array.from({ length: 81 }, (_, index) => index + 1),
+  // The 1611 order: the Old Testament, the Apocrypha between the Testaments, then the New.
+  'kjv-1611': [
+    ...Array.from({ length: 39 }, (_, index) => index + 1),
+    ...Array.from({ length: 15 }, (_, index) => index + 67),
+    ...NEW_TESTAMENT,
+  ],
   'protestant-66': PROTESTANT_BOOK_ORDER,
   'catholic-73': CATHOLIC_BOOK_ORDER,
   'clementine-vulgate': CLEMENTINE_BOOK_ORDER,

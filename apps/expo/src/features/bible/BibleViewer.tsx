@@ -1,6 +1,9 @@
 import { previewHistoryAtom } from '~features/bibleReferencePreview/state'
 import { getCommentaryByPublicationId } from '~helpers/commentaryCatalog'
 import { getInlineCommentaryResources } from '~features/commentaries/inlineCommentarySelection'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
+import { loadChapterPrecepts, preceptChipsByVerse } from '~features/versePrecepts/versePrecepts'
+import { chapterVerseTags } from '~features/versePrecepts/verseTags'
 import {
   placeInlineCommentaries,
   summarizeInlineCommentaryChip,
@@ -139,6 +142,7 @@ import { shouldUseSharedBibleDOM } from './sharedBibleDOMPlatform'
 import SnapshotPlaceholder from './SnapshotPlaceholder'
 import VerseTagsModal from './VerseTagsModal'
 import CanonicalBibleNoteSheet from './CanonicalBibleNoteSheet'
+import VersePreceptsSheet from '~features/versePrecepts/VersePreceptsSheet'
 import StrongSelectionSheet from './StrongSelectionSheet'
 import {
   getBibleViewerPersonalData,
@@ -151,6 +155,12 @@ import {
   shouldDismissStrongSelectionForViewerState,
 } from './strongSelectionLifecycle'
 import { getPassageMediaForChapter } from './passageMedia'
+import {
+  bookNameOf,
+  loadChapterClasses,
+  toClassPassageMedia,
+  withClassPassageMedia,
+} from './classMoments'
 import {
   getSelectionAnnotationDeletionImpact,
   requiresSelectionAnnotationDeletionConfirmation,
@@ -248,6 +258,8 @@ const BibleViewer = ({
   const verseTagsModal = useSheet()
   const [verseTagsModalKey, setVerseTagsModalKey] = useState<string | null>(null)
   const canonicalBibleNoteModal = useSheet()
+  const versePreceptsModal = useSheet()
+  const [preceptOpen, setPreceptOpen] = useState<{ verse: number; label: string } | null>(null)
   const [canonicalBibleNote, setCanonicalBibleNote] = useState<CanonicalBibleNote | null>(null)
   const strongSelectionModal = useSheet()
   const strongSelectionModalRef = strongSelectionModal.getRef()
@@ -482,6 +494,17 @@ const BibleViewer = ({
     retry: false,
     networkMode: 'always',
   })
+  // The italic "p" before a verse opens the precepts the classes read with it.
+  const preceptQuery = useQuery({
+    queryKey: ['cyberjudah-chapter-precepts', book.Numero, chapter],
+    queryFn: () => loadChapterPrecepts(book.Numero, chapter),
+    enabled: extrasEnabled && usesCyberJudahEditorial(),
+    staleTime: 60 * 60 * 1000,
+    // The chapter opens while the phone may still be reconnecting; try again shortly.
+    retry: 3,
+    retryDelay: attempt => 1000 * 2 ** attempt,
+    networkMode: 'always',
+  })
   const inlinePlacement = placeInlineCommentaries(
     inlineCommentaryQuery.data?.indexes ?? [],
     isContextFocused && focusVerses?.length
@@ -513,6 +536,11 @@ const BibleViewer = ({
         chips.map(labelInlineChip),
       ])
     ),
+    preceptChips: preceptChipsByVerse(preceptQuery.data ?? []),
+    verseTags:
+      usesCyberJudahEditorial() && settings.cyberJudahTagsEnabled !== false
+        ? chapterVerseTags(book.Numero, chapter)
+        : undefined,
   }
 
   const redWordsUnavailable =
@@ -638,12 +666,37 @@ const BibleViewer = ({
   const [displayedBook, setDisplayedBook] = useState(book.Numero)
   const [displayedChapter, setDisplayedChapter] = useState(chapter)
   const [displayedVersion, setDisplayedVersion] = useState(version)
-  const passageMedia = contextualInformationDisplay
-    ? getPassageMediaForChapter({
-        book: displayedBook,
+  // The classes' pictures after the verses they taught, as in the Telegram app.
+  const classMediaQuery = useQuery({
+    queryKey: ['cyberjudah-chapter-classes', displayedBook, displayedChapter],
+    queryFn: () => loadChapterClasses(displayedBook, displayedChapter),
+    select: data =>
+      toClassPassageMedia(data, {
+        bookName: bookNameOf(displayedBook),
         chapter: displayedChapter,
-        language: lang,
-      })
+        sectionTitles: {
+          taught: t('bible.passageMedia.sections.taughtFrom', {
+            reference: `${bookNameOf(displayedBook)} ${displayedChapter}`,
+          }),
+          read: t('bible.passageMedia.sections.readInClass'),
+          showAll: t('bible.passageMedia.showAll'),
+        },
+      }),
+    enabled: contextualInformationDisplay && usesCyberJudahEditorial(),
+    staleTime: 60 * 60 * 1000,
+    retry: 3,
+    retryDelay: attempt => 1000 * 2 ** attempt,
+    networkMode: 'always',
+  })
+  const passageMedia = contextualInformationDisplay
+    ? withClassPassageMedia(
+        getPassageMediaForChapter({
+          book: displayedBook,
+          chapter: displayedChapter,
+          language: lang,
+        }),
+        classMediaQuery.data
+      )
     : EMPTY_PASSAGE_MEDIA
 
   // Handler for entering annotation mode (from SelectedVersesModal)
@@ -1337,6 +1390,10 @@ const BibleViewer = ({
     versesWithNonHighlightTags: viewerPersonalData.versesWithNonHighlightTags,
     onOpenVerseTagsModal: hidePersonalBibleData ? undefined : handleOpenVerseTagsModal,
     onOpenCanonicalBibleNote: handleOpenCanonicalBibleNote,
+    onOpenVersePrecept: (verse: number, label: string) => {
+      setPreceptOpen({ verse, label })
+      versePreceptsModal.open()
+    },
     onOpenStudyRelationsModal: hidePersonalBibleData ? undefined : openVerseStudyRelationsModal,
     // Double-tap to enter annotation mode
     onEnterAnnotationMode: hidePersonalBibleData
@@ -1732,6 +1789,15 @@ const BibleViewer = ({
         ref={verseTagsModal.getRef()}
         verseKey={verseTagsModalKey}
         version={displayedVersion}
+      />
+      <VersePreceptsSheet
+        sheetRef={versePreceptsModal.getRef()}
+        bookNumber={book.Numero}
+        bookName={book.Nom}
+        chapter={chapter}
+        verse={preceptOpen?.verse ?? null}
+        precepts={preceptQuery.data ?? []}
+        onReferencePress={handleCanonicalBibleReferencePress}
       />
       <CanonicalBibleNoteSheet
         sheetRef={canonicalBibleNoteModal.getRef()}

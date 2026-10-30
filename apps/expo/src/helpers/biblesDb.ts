@@ -182,6 +182,19 @@ async function closeUnsafe(): Promise<void> {
 // Lifecycle
 // ---------------------------------------------------------------------------
 
+/**
+ * A transaction on the open connection. expo-sqlite's exclusive transaction opens a second
+ * connection and closes it afterwards, and closing a connection that has loaded the verses_fts
+ * (FTS5) table crashes natively (EXC_BAD_ACCESS in sqlite3Fts5IndexClose). Writes are already
+ * serialized by withWriteLock, so the open connection is used instead.
+ */
+async function withBiblesTransaction(
+  database: SQLite.SQLiteDatabase,
+  task: (txn: SQLite.SQLiteDatabase) => Promise<void>
+): Promise<void> {
+  await database.withTransactionAsync(() => task(database))
+}
+
 export async function openBiblesDb(): Promise<SQLite.SQLiteDatabase> {
   if (db) return db
   if (openPromise) return openPromise
@@ -436,7 +449,7 @@ async function ensureBibleSearchIndex(database: SQLite.SQLiteDatabase): Promise<
     ftsColumns.some(column => column.name === 'stemmed_text')
 
   if (requiresRebuild) {
-    await database.withExclusiveTransactionAsync(async txn => {
+    await withBiblesTransaction(database, async txn => {
       await txn.execAsync(`
         DROP TABLE IF EXISTS verses_fts_vocab;
         DROP TABLE IF EXISTS verses_fts;
@@ -854,7 +867,7 @@ export function insertBibleVersion(
     withWriteLock(async () => {
       const d = await getDb()
 
-      await d.withExclusiveTransactionAsync(async txn => {
+      await withBiblesTransaction(d, async txn => {
         await txn.execAsync(`PRAGMA busy_timeout = ${WRITE_LOCK_TIMEOUT_MS}`)
         // Delete existing data for this version first (re-download case)
         await deleteVersionFromSearchIndex(txn, version)
@@ -1055,7 +1068,7 @@ export function removeBibleVersion(version: string): Promise<void> {
     withWriteLock(async () => {
       const d = await getDb()
 
-      await d.withExclusiveTransactionAsync(async txn => {
+      await withBiblesTransaction(d, async txn => {
         await txn.execAsync(`PRAGMA busy_timeout = ${WRITE_LOCK_TIMEOUT_MS}`)
         await deleteVersionFromSearchIndex(txn, version)
         await txn.runAsync('DELETE FROM verses WHERE version = ?', [version])

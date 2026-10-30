@@ -1,3 +1,4 @@
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import ContactDeveloperSheet from './ContactDeveloperSheet'
 import { goBackOrHome } from '~navigation/goBackOrHome'
 import { resolveUniverseColors } from '~themes/universeColors'
@@ -21,6 +22,7 @@ import NaveIcon from '~common/NaveIcon'
 import { type SheetRef } from '~common/sheet'
 import Box, { SafeAreaBox } from '~common/ui/Box'
 import CardLinkItem from '~common/ui/CardLinkItem'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import { FeatherIcon, MaterialIcon } from '~common/ui/Icon'
 import IconCircle from '~common/ui/IconCircle'
 import NotificationDot from '~common/ui/NotificationDot'
@@ -284,6 +286,59 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
             </Text>
             <FeatherIcon name="chevron-right" size={20} color="grey" />
           </CardLinkItem>
+          {usesCyberJudahEditorial() && (
+            <>
+              <CardLinkItem onPress={() => router.push('/(library)/precepts')}>
+                <IconCircle bg={resolveUniverseColors(theme.colors, 'nave').background}>
+                  <FeatherIcon name="layers" size={20} color="grey" />
+                </IconCircle>
+                <Text className="flex-[1] text-[15px]">Precepts</Text>
+                <FeatherIcon name="chevron-right" size={20} color="grey" />
+              </CardLinkItem>
+              <CardLinkItem onPress={() => router.push('/(library)/law')}>
+                <IconCircle bg={resolveUniverseColors(theme.colors, 'nave').background}>
+                  <MaterialCommunityIcons name="scale-balance" size={20} color="grey" />
+                </IconCircle>
+                <Text className="flex-[1] text-[15px]">Handbook of the Law</Text>
+                <FeatherIcon name="chevron-right" size={20} color="grey" />
+              </CardLinkItem>
+              <CardLinkItem onPress={() => router.push('/(library)/study-notes')}>
+                <IconCircle bg={resolveUniverseColors(theme.colors, 'nave').background}>
+                  <FeatherIcon name="file-text" size={20} color="grey" />
+                </IconCircle>
+                <Text className="flex-[1] text-[15px]">4 Chapters a Day</Text>
+                <FeatherIcon name="chevron-right" size={20} color="grey" />
+              </CardLinkItem>
+              <CardLinkItem onPress={() => router.push('/(library)/encyclopedia')}>
+                <IconCircle bg={resolveUniverseColors(theme.colors, 'nave').background}>
+                  <FeatherIcon name="book" size={20} color="grey" />
+                </IconCircle>
+                <Text className="flex-[1] text-[15px]">Encyclopedia</Text>
+                <FeatherIcon name="chevron-right" size={20} color="grey" />
+              </CardLinkItem>
+              <CardLinkItem onPress={() => router.push('/(library)/topics')}>
+                <IconCircle bg={resolveUniverseColors(theme.colors, 'nave').background}>
+                  <FeatherIcon name="tag" size={20} color="grey" />
+                </IconCircle>
+                <Text className="flex-[1] text-[15px]">Topics</Text>
+                <FeatherIcon name="chevron-right" size={20} color="grey" />
+              </CardLinkItem>
+              <CardLinkItem onPress={() => router.push('/(library)/false-doctrines')}>
+                <IconCircle bg={resolveUniverseColors(theme.colors, 'nave').background}>
+                  <FeatherIcon name="alert-triangle" size={20} color="grey" />
+                </IconCircle>
+                <Text className="flex-[1] text-[15px]">False Doctrines</Text>
+                <FeatherIcon name="chevron-right" size={20} color="grey" />
+              </CardLinkItem>
+              <CardLinkItem onPress={() => router.push('/(library)/glossary')}>
+                <IconCircle bg={resolveUniverseColors(theme.colors, 'nave').background}>
+                  <FeatherIcon name="list" size={20} color="grey" />
+                </IconCircle>
+                <Text className="flex-[1] text-[15px]">Glossary</Text>
+                <FeatherIcon name="chevron-right" size={20} color="grey" />
+              </CardLinkItem>
+            </>
+          )}
           <CardLinkItem route="Plans" isLast>
             <IconCircle bg="rgba(107, 114, 128, 0.1)">
               <MaterialIcon name="playlist-add-check" size={20} color="grey" />

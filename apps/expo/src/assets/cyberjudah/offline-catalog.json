@@ -1,8 +1,8 @@
 {
   "format": "bible-strong-mobile-resource-catalog",
   "schemaVersion": 1,
-  "generatedAt": "2026-10-25T15:12:31.261Z",
-  "resourceCount": 5,
+  "generatedAt": "2026-10-30T03:32:29.671Z",
+  "resourceCount": 6,
   "resources": {
     "bible:KJV": {
       "id": "bible:KJV",
@@ -92,24 +92,45 @@
     },
     "strong-lexicon:entities": {
       "id": "strong-lexicon:entities",
-      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/bible_entities.cyberjudah.sqlite.zip?sha256=96776ff7f1a1cd809dbc27a40366bd8b99f212c315acb4eb7cd3b22805fdabcb",
+      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/bible_entities.cyberjudah.sqlite.zip?sha256=d22a1e41c39d9d20bf1bfe36ead7b6755a9eba188cfd9471d1e6c1e7b857eadb",
       "file": "bible_entities.cyberjudah.sqlite.zip",
       "entry": "bible_entities.cyberjudah.sqlite",
       "entries": {
         "canonical": {
           "entry": "bible_entities.cyberjudah.sqlite",
-          "sha256": "af6a42132091df07fe934ab8298d3a0027733505a5b7937f88d009c9fabf8ac6",
+          "sha256": "40a0e29ff17ef0c32d01d959df02546a2ce108eab449b7737a565532f606f6fd",
           "bytes": 4452352
         }
       },
-      "archiveSha256": "96776ff7f1a1cd809dbc27a40366bd8b99f212c315acb4eb7cd3b22805fdabcb",
-      "archiveBytes": 853074,
-      "contentSha256": "af6a42132091df07fe934ab8298d3a0027733505a5b7937f88d009c9fabf8ac6",
+      "archiveSha256": "d22a1e41c39d9d20bf1bfe36ead7b6755a9eba188cfd9471d1e6c1e7b857eadb",
+      "archiveBytes": 853037,
+      "contentSha256": "40a0e29ff17ef0c32d01d959df02546a2ce108eab449b7737a565532f606f6fd",
       "contentBytes": 4452352,
       "installedBytes": 4452352,
-      "peakInstallationBytes": 9757778,
+      "peakInstallationBytes": 9757741,
       "strategy": "archive-extract",
-      "resourceRevision": "cj-entities-1dcf6ff23cee05997006d5944c20bf1bd90940acdcbf1b6d9ff06c42086dd8fb"
+      "resourceRevision": "cj-entities-b701875483820bd0186b6a2ee40d8265672162b70c6112c019b2fd32bf462e23"
+    },
+    "database:JEWISH_ENCYCLOPEDIA:en": {
+      "id": "database:JEWISH_ENCYCLOPEDIA:en",
+      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/dictionaries/dictionary-jewish-encyclopedia-en.sqlite.zip?sha256=0c0e7c5be1211a9ae60321452625d2dc7ce8a035730884323300c0b92bca37ab",
+      "file": "dictionaries/dictionary-jewish-encyclopedia-en.sqlite.zip",
+      "entry": "dictionnaire.sqlite",
+      "entries": {
+        "canonical": {
+          "entry": "dictionnaire.sqlite",
+          "sha256": "920007a0866f302e93a4f36680d60b951331f27698dd36d73b9595a60d7669b9",
+          "bytes": 65773568
+        }
+      },
+      "archiveSha256": "0c0e7c5be1211a9ae60321452625d2dc7ce8a035730884323300c0b92bca37ab",
+      "archiveBytes": 22612534,
+      "contentSha256": "920007a0866f302e93a4f36680d60b951331f27698dd36d73b9595a60d7669b9",
+      "contentBytes": 65773568,
+      "resourceRevision": "dictionary-jewish-encyclopedia-en-920007a0866f302e93a4",
+      "installedBytes": 65773568,
+      "peakInstallationBytes": 154159670,
+      "strategy": "archive-extract"
     }
   }
 }

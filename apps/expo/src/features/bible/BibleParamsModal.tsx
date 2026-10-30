@@ -39,10 +39,12 @@ import {
   setSettingsRedWordsDisplay,
   setSettingsRelationsDisplay,
   setSettingsTagsDisplay,
+  setSettingsCyberJudahTagsEnabled,
   setSettingsTextDisplay,
 } from '~redux/modules/user'
 import { colorPickerModalAtom } from '~state/app'
 import TouchableIcon from './TouchableIcon'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import TouchableSvgIcon from './TouchableSvgIcon'
 
 export const HalfContainer = (
@@ -225,6 +227,9 @@ const BibleParamsModal = ({
         : 'inline')
   )
   const tagsDisplay = useSelector((state: RootState) => state.user.bible.settings.tagsDisplay)
+  const cyberJudahTagsEnabled = useSelector(
+    (state: RootState) => state.user.bible.settings.cyberJudahTagsEnabled !== false
+  )
   const press = useSelector((state: RootState) => state.user.bible.settings.press)
   const redWordsDisplay = useSelector(
     (state: RootState) => state.user.bible.settings.redWordsDisplay
@@ -479,6 +484,22 @@ const BibleParamsModal = ({
               }}
             />
           </HalfContainer>
+          {usesCyberJudahEditorial() && (
+            <HalfContainer border>
+              <Text className={inline ? 'flex-[5] text-[14px]' : 'flex-[5]'}>
+                Precept & law tags
+              </Text>
+              <Text className="ml-[5px] text-[12px] font-bold">
+                {cyberJudahTagsEnabled ? t('Activé') : t('Désactivé')}
+              </Text>
+              <TouchableIcon
+                accessibilityLabel="Precept & law tags"
+                isSelected={cyberJudahTagsEnabled}
+                name="tag"
+                onPress={() => dispatch(setSettingsCyberJudahTagsEnabled(!cyberJudahTagsEnabled))}
+              />
+            </HalfContainer>
+          )}
           <HalfContainer border>
             <Text className={inline ? 'flex-[5] text-[14px]' : 'flex-[5]'}>
               {t('Contexte et médias')}

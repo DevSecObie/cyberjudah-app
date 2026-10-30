@@ -17,6 +17,10 @@ import {
   StrongEntitySummaryCard,
 } from './StrongDetailUI'
 import { StrongEntityRelationGraph } from './StrongEntityRelationGraph'
+import CyberJudahPersonSections from './CyberJudahPersonSections'
+import { loadCyberJudahPerson } from './cyberJudahPerson'
+import { useQuery } from '@tanstack/react-query'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import { splitStrongEntityRelations } from './strongEntityPresentation'
 import type { StrongReadingTypography } from './strongEditorialHtmlStyles'
 type Props = {
@@ -43,6 +47,16 @@ const StrongEntityPage = ({
   onOpenEntityRelation,
 }: Props) => {
   const { t } = useTranslation()
+  // CyberJudah's People data names the person's tribe, shown at the top as in Telegram.
+  const cyberJudahPerson = useQuery({
+    queryKey: ['cyberjudah-person', entity?.uniqueName],
+    queryFn: () => loadCyberJudahPerson(entity!.uniqueName),
+    enabled: usesCyberJudahEditorial() && entity?.category === 'person',
+    staleTime: 60 * 60 * 1000,
+    networkMode: 'always',
+    retry: 1,
+  })
+  const tribe = (cyberJudahPerson.data as { tribe?: string } | undefined)?.tribe || undefined
   if (loading) return <Loading message={t('Chargement...')} />
   if (!entity) {
     return <Empty message={t('strongDetail.entity.unavailable')} />
@@ -61,6 +75,7 @@ const StrongEntityPage = ({
     >
       <StrongEntitySummaryCard
         entity={entity}
+        eyebrowDetail={tribe}
         expanded
         readingTypography={readingTypography}
         onOpenBibleReference={onOpenBibleReference}
@@ -134,6 +149,14 @@ const StrongEntityPage = ({
         >
           <StrongEntityRelationList relations={remaining} onOpenEntity={onOpenEntityRelation} />
         </StrongEditorialSection>
+      )}
+
+      {usesCyberJudahEditorial() && entity.category === 'person' && (
+        <CyberJudahPersonSections
+          uniqueName={entity.uniqueName}
+          onOpenBibleReference={onOpenBibleReference}
+          onOpenEntityProfile={onOpenEntityProfile}
+        />
       )}
     </ScrollView>
   )

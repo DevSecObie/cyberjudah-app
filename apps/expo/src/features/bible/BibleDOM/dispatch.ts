@@ -78,3 +78,5 @@ export const isPersonalBibleDataAction = (actionType: string): boolean =>
   PERSONAL_BIBLE_DATA_ACTIONS.has(actionType)
 
 export const OPEN_INLINE_COMMENTARY = 'OPEN_INLINE_COMMENTARY'
+export const OPEN_VERSE_PRECEPTS = 'OPEN_VERSE_PRECEPTS'
+export const OPEN_VERSE_TAG = 'OPEN_VERSE_TAG'
