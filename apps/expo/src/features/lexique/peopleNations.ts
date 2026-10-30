@@ -2,7 +2,8 @@
 // classes teach (Genesis 10): from the published People data, by a person's own people or the
 // nearest father in their line who heads a nation (Esau is Edom, Lot's sons are Moab and Ammon,
 // Ham's sons are Cush, Mizraim, Phut and Canaan, and so on). The Greeks and Romans, the Herods and
-// the Greek kings of the Maccabees are Edom. Everyone else is shown as an Israelite.
+// the Greek kings of the Maccabees are Edom, but not the Israelites called Greeks because Israel was
+// in Greek captivity (Titus, Cornelius, Paul's helpers). Everyone else is shown as an Israelite.
 export type PeopleNation =
   | 'ammon'
   | 'aram'
@@ -69,7 +70,6 @@ export const PEOPLE_NATIONS: Record<string, PeopleNation> = {
   'aridatha-est-9-8': 'edom',
   'arioch-jdt-1-6': 'elam',
   'arisai-est-9-9': 'edom',
-  'aristarchus-act-19-29': 'edom',
   'arkite-gen-10-17': 'canaan',
   'arvadite-gen-10-18': 'canaan',
   'ashdodites-neh-4-7': 'mizraim',
@@ -104,16 +104,13 @@ export const PEOPLE_NATIONS: Record<string, PeopleNation> = {
   'claudius-lysias-act-23-26': 'edom',
   'cleopatra-1ma-10-57': 'edom',
   'cleopatra-esg-11-1': 'edom',
-  'cornelius-act-10-1': 'edom',
   'cush-gen-10-6': 'cush',
   'dalphon-est-9-7': 'edom',
-  'damaris-act-17-34': 'edom',
   'damascenes-2co-11-32': 'aram',
   'darius-dan-5-31': 'japheth',
   'dedan-gen-10-7': 'cush',
   'demetrius-1ma-10-67': 'edom',
   'demetrius-1ma-7-1': 'edom',
-  'dionysius-act-17-34': 'edom',
   'dishon-gen-36-25': 'canaan',
   'dodanim-gen-10-4': 'javan',
   'doeg-1sa-21-7': 'edom',
@@ -139,7 +136,6 @@ export const PEOPLE_NATIONS: Record<string, PeopleNation> = {
   'ethiopian-num-12-1': 'cush',
   'felix-act-23-24': 'edom',
   'festus-act-24-27': 'edom',
-  'gaius-act-19-29': 'edom',
   'gallio-act-18-12': 'edom',
   'gatam-gen-36-11': 'edom',
   'gazathites-jos-13-3': 'mizraim',
@@ -275,7 +271,6 @@ export const PEOPLE_NATIONS: Record<string, PeopleNation> = {
   'sabtecha-gen-10-7': 'cush',
   'seba-gen-10-7': 'cush',
   'seleucus-2ma-3-3': 'edom',
-  'sergius-paulus-act-13-7': 'edom',
   'shallum-1ch-2-40': 'mizraim',
   'shammah-gen-36-13': 'edom',
   'sheba-gen-10-7': 'cush',
@@ -295,7 +290,6 @@ export const PEOPLE_NATIONS: Record<string, PeopleNation> = {
   'temanites-job-2-11': 'edom',
   'tiberius-luk-3-1': 'edom',
   'tiras-gen-10-2': 'japheth',
-  'titus-2co-2-13': 'edom',
   'titus-manlius-2ma-11-34': 'edom',
   'tobiah-neh-2-10': 'ammon',
   'togarmah-gen-10-3': 'gomer',
