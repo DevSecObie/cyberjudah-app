@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Box from '~common/ui/Box'
 import Button from '~common/ui/Button'
 import Paragraph from '~common/ui/Paragraph'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import { useAppRating } from './useAppRating'
 interface Props {
   modalRef: React.RefObject<SheetRef | null>
@@ -17,6 +18,7 @@ const RatingPrompt = ({ modalRef, onClose }: Props) => {
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const { acceptRating, remindLater, declineRating } = useAppRating()
+  const title = t(usesCyberJudahEditorial() ? 'rating.titleCyberJudah' : 'rating.title')
 
   const handleAccept = () => {
     onClose()
@@ -37,7 +39,7 @@ const RatingPrompt = ({ modalRef, onClose }: Props) => {
 
   return (
     <Sheet
-      modalTitle={t('rating.title')}
+      modalTitle={title}
       ref={modalRef}
       detachedOffset={insets.bottom + 50}
       dismissible={false}
@@ -56,7 +58,7 @@ const RatingPrompt = ({ modalRef, onClose }: Props) => {
             />
           </Box>
           <Paragraph className="text-center font-bold" fontFamily="text">
-            {t('rating.title')}
+            {title}
           </Paragraph>
           <Paragraph
             className="text-center mt-[5px] mb-[20px] mx-[5px]"
