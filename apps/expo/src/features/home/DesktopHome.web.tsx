@@ -210,7 +210,7 @@ export default function DesktopHome() {
                 <div className="bs-home-learning">
                   <LearningCard
                     title={t('passageMediaLibrary.title')}
-                    source={require('~assets/images/home/explore/courses-videos.webp')}
+                    source={require('~assets/images/home/courses-videos.jpg')}
                     onPress={() => pushRoute({ pathname: '/(library)/passage-media' })}
                   />
                   <LearningCard
@@ -225,7 +225,7 @@ export default function DesktopHome() {
                   />
                   <LearningCard
                     title={t('home.desktop.timeline')}
-                    source={require('~assets/images/home/explore/timeline.webp')}
+                    source={require('~assets/images/home/bible-timeline.jpg')}
                     route="TimelineHome"
                   />
                 </div>
