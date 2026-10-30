@@ -20,6 +20,8 @@ import TimelineHeader from './TimelineHeader'
 import { buildPublicTimelineIndexPath } from './publicTimelineRoutes'
 import { getPublicSiteUrl } from '~helpers/publicSiteLinks'
 import { useTimeline } from './timeline.hooks'
+import { calculateLabel, rowGap, rowHeight, rows } from './constants'
+import { layoutTimelineRows } from './layoutTimelineRows'
 import { ShallowTimelineSection, TimelineSection as TimelineSectionProps } from './types'
 import { useTimelineDetails } from './TimelineResourceBoundary'
 interface Props extends TimelineSectionProps {
@@ -91,11 +93,35 @@ const Timeline = ({
     })
   }
 
-  const { x, y, lineX, year, width, height, yearsToPx, calculateEventWidth } = useTimeline({
+  const {
+    x,
+    y,
+    lineX,
+    year,
+    width,
+    height: baseHeight,
+    yearsToPx,
+    calculateEventWidth,
+  } = useTimeline({
     startYear,
     endYear,
     interval,
   })
+
+  const layout = React.useMemo(
+    () =>
+      layoutTimelineRows({
+        id,
+        events,
+        yearsToPx,
+        calculateEventWidth,
+        calculateLabel: (start, end) => String(calculateLabel(start, end, lang)),
+      }),
+    // yearsToPx and calculateEventWidth only change with the years of the section.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [id, events, startYear, endYear, interval, lang]
+  )
+  const height = baseHeight + (layout.rowCount - rows) * (rowHeight + rowGap)
 
   if (!isCurrent) {
     return null
@@ -198,7 +224,7 @@ const Timeline = ({
             className="overflow-hidden border-continuous relative bg-light-grey"
             style={{ width: width, height: height }}
           >
-            {events.map(event => (
+            {layout.events.map(event => (
               <TimelineEvent
                 x={x}
                 key={event.id}
