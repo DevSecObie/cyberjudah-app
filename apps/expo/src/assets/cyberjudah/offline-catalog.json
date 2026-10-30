@@ -1,8 +1,8 @@
 {
   "format": "bible-strong-mobile-resource-catalog",
   "schemaVersion": 1,
-  "generatedAt": "2026-10-25T15:12:31.261Z",
-  "resourceCount": 5,
+  "generatedAt": "2026-10-30T02:37:00.253Z",
+  "resourceCount": 6,
   "resources": {
     "bible:KJV": {
       "id": "bible:KJV",
@@ -110,6 +110,27 @@
       "peakInstallationBytes": 9757741,
       "strategy": "archive-extract",
       "resourceRevision": "cj-entities-b701875483820bd0186b6a2ee40d8265672162b70c6112c019b2fd32bf462e23"
+    },
+    "database:JEWISH_ENCYCLOPEDIA:en": {
+      "id": "database:JEWISH_ENCYCLOPEDIA:en",
+      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/dictionaries/dictionary-jewish-encyclopedia-en.sqlite.zip?sha256=7af9c3c684c69c75153a3fd265e6e9cd988d9ad0f9b186262b10a18628a4680b",
+      "file": "dictionaries/dictionary-jewish-encyclopedia-en.sqlite.zip",
+      "entry": "dictionnaire.sqlite",
+      "entries": {
+        "canonical": {
+          "entry": "dictionnaire.sqlite",
+          "sha256": "0a8a3b616ea576697c6d03dd220ae08e492de6682a29a107c89ecf2b11220f04",
+          "bytes": 65802240
+        }
+      },
+      "archiveSha256": "7af9c3c684c69c75153a3fd265e6e9cd988d9ad0f9b186262b10a18628a4680b",
+      "archiveBytes": 22644800,
+      "contentSha256": "0a8a3b616ea576697c6d03dd220ae08e492de6682a29a107c89ecf2b11220f04",
+      "contentBytes": 65802240,
+      "resourceRevision": "dictionary-jewish-encyclopedia-en-0a8a3b616ea576697c6d",
+      "installedBytes": 65802240,
+      "peakInstallationBytes": 154249280,
+      "strategy": "archive-extract"
     }
   }
 }

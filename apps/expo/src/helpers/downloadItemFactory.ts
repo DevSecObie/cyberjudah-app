@@ -407,11 +407,22 @@ export function createDictionaryDirectoryDownloadItem(): DownloadItem {
   }
 }
 
+const hasDictionaryDirectoryInCatalog = () => {
+  try {
+    getMobileResourceCatalogEntry('dictionary-directory')
+    return true
+  } catch {
+    return false
+  }
+}
+
 export const createDictionaryDownloadPlan = (
   identity: Extract<OfflineCopyIdentity, { kind: 'dictionary' }>,
   isDirectoryAvailable = false
 ): DownloadItem[] => {
-  if (isDirectoryAvailable) return [createDictionaryDownloadItem(identity)]
+  // A catalog without the shared index (CyberJudah's) installs the dictionary on its own.
+  if (isDirectoryAvailable || !hasDictionaryDirectoryInCatalog())
+    return [createDictionaryDownloadItem(identity)]
   const directory = createDictionaryDirectoryDownloadItem()
   return [directory, { ...createDictionaryDownloadItem(identity), dependsOnId: directory.id }]
 }
