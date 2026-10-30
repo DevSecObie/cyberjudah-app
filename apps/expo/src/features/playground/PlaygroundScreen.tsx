@@ -5,6 +5,7 @@ import { ThemeSelectionOverrideContext } from '~common/ThemeSelectionOverrideCon
 import type { CurrentTheme } from '~common/types'
 import Box from '~common/ui/Box'
 import AbelOnboarding from '~features/onboarding/AbelOnboarding'
+import CyberJudahTour from '~features/onboarding/CyberJudahTour'
 import SelectResources from '~features/onboarding/SelectResources'
 import themes from '~themes'
 import PlaygroundHome from './PlaygroundHome'
@@ -24,7 +25,11 @@ const PlaygroundScreen = () => {
   const renderView = () => {
     if (view === 'html-benchmark') return <HTMLRenderingBenchmark onBack={() => setView('home')} />
     if (view === 'abel-onboarding') {
-      return <AbelOnboarding completionMode="confirmation" onComplete={() => setView('home')} />
+      return process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah' ? (
+        <CyberJudahTour onComplete={() => setView('home')} />
+      ) : (
+        <AbelOnboarding completionMode="confirmation" onComplete={() => setView('home')} />
+      )
     }
 
     if (view === 'offline-setup') {
