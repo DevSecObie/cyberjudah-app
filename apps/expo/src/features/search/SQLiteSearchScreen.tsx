@@ -105,7 +105,14 @@ import {
 import { createSearchExperienceController } from './searchExperience'
 import { useRouter } from 'expo-router'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
-import { findClasses } from '~features/passageMediaLibrary/classSearch'
+import { findClasses, findClassesOnDevice } from '~features/passageMediaLibrary/classSearch'
+import {
+  CLASS_INDEX_DOWNLOAD_MB,
+  downloadClassIndex,
+  isClassIndexOutdated,
+  searchClassIndex,
+  useClassIndexState,
+} from '~features/passageMediaLibrary/classLibraryIndex'
 import {
   loadClassLibrary,
   readCachedClassLibrary,
@@ -123,6 +130,7 @@ type Props = {
 const MIN_SEARCH_LENGTH = SEARCH_MIN_QUERY_LENGTH
 // The class search needs a word of some length: two letters match nearly every class.
 const MIN_CLASS_SEARCH_LENGTH = 3
+const CLASS_INDEX_OFFER_ID = 'cyberjudah-class-index-offer'
 const SEARCH_ALPHABET_FOOTER_HEIGHT = 70
 
 type DictionaryRow = DictionarySearchRow
@@ -497,26 +505,75 @@ const SQLiteSearchScreen = ({
     usesCyberJudahEditorial() &&
     itemFilters.classes !== false &&
     trimmedSearchValue.length >= MIN_CLASS_SEARCH_LENGTH
+  const classIndex = useClassIndexState()
+  const classIndexOutdated = useQuery({
+    queryKey: ['cyberjudah-class-index-outdated'],
+    queryFn: isClassIndexOutdated,
+    enabled: usesCyberJudahEditorial() && classIndex.status === 'ready',
+    staleTime: Infinity,
+  })
   const classQuery = useQuery({
-    queryKey: ['cyberjudah-search-classes', trimmedSearchValue],
-    queryFn: () =>
-      findClasses(trimmedSearchValue, async () => readCachedClassLibrary() ?? loadClassLibrary()),
+    queryKey: ['cyberjudah-search-classes', trimmedSearchValue, classIndex.status === 'ready'],
+    queryFn: () => {
+      const library = async () => readCachedClassLibrary() ?? loadClassLibrary()
+      // On this phone when the class library is kept here; from the site until then.
+      return classIndex.status === 'ready'
+        ? findClassesOnDevice(trimmedSearchValue, library, searchClassIndex).catch(() =>
+            findClasses(trimmedSearchValue, library)
+          )
+        : findClasses(trimmedSearchValue, library)
+    },
     enabled: shouldSearchClasses,
     staleTime: 5 * 60 * 1000,
     retry: 1,
   })
+  // The offer to keep the classes on this phone, as the first row of the Classes section.
+  const classIndexOffer: SearchEntityResult | undefined =
+    classIndex.status === 'downloading'
+      ? {
+          id: CLASS_INDEX_OFFER_ID,
+          type: 'classes',
+          iconType: 'classes',
+          title: 'Downloading the classes…',
+          description: `${Math.round(classIndex.progress * 100)}%. Searches will take milliseconds, even offline.`,
+        }
+      : classIndex.status === 'absent' || classIndex.status === 'failed'
+        ? {
+            id: CLASS_INDEX_OFFER_ID,
+            type: 'classes',
+            iconType: 'classes',
+            title:
+              classIndex.status === 'failed'
+                ? 'The download did not finish. Tap to try again'
+                : 'Search every class instantly',
+            description: `Keep the classes on this phone (about ${CLASS_INDEX_DOWNLOAD_MB} MB, once): searches take milliseconds, even offline, and open at the moment the words were said.`,
+          }
+        : classIndexOutdated.data
+          ? {
+              id: CLASS_INDEX_OFFER_ID,
+              type: 'classes',
+              iconType: 'classes',
+              title: 'New classes are out. Tap to update',
+              description: `Download the classes again (about ${CLASS_INDEX_DOWNLOAD_MB} MB) to search the newest ones on this phone.`,
+            }
+          : undefined
   const classResults: SearchEntityResult[] = shouldSearchClasses
-    ? (classQuery.data ?? []).map(item => ({
-        id: `class:${item.notesPath}`,
-        type: 'classes',
-        iconType: 'classes',
-        title: item.title,
-        chip: item.series,
-        subtitle: [item.date, item.teacher].filter(Boolean).join(' · '),
-        description: item.snippet || [item.date, item.teacher].filter(Boolean).join(' · '),
-        classWorkId: item.workId,
-        classStart: item.start,
-      }))
+    ? [
+        ...(classIndexOffer ? [classIndexOffer] : []),
+        ...(classQuery.data ?? []).map(
+          (item): SearchEntityResult => ({
+            id: `class:${item.notesPath}`,
+            type: 'classes',
+            iconType: 'classes',
+            title: item.title,
+            chip: item.series,
+            subtitle: [item.date, item.teacher].filter(Boolean).join(' · '),
+            description: item.snippet || [item.date, item.teacher].filter(Boolean).join(' · '),
+            classWorkId: item.workId,
+            classStart: item.start,
+          })
+        ),
+      ]
     : []
 
   const catalogScopes = (['commentary', 'plan', 'timeline'] as const).filter(
@@ -803,6 +860,11 @@ const SQLiteSearchScreen = ({
   const openSearchItem = (item: SearchEntityResult) => {
     dismissSearchInput()
     if (!isShowingPreviousResults) recordResultOpened(item)
+    if (item.id === CLASS_INDEX_OFFER_ID) {
+      if (classIndex.status !== 'downloading')
+        void downloadClassIndex().then(() => classIndexOutdated.refetch())
+      return
+    }
     if (item.type === 'classes' && item.classWorkId) {
       router.push({
         pathname: '/(explore)/passage-media-player',
