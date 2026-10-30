@@ -61,6 +61,9 @@ const TimelineEvent = ({
   const [width] = React.useState(() => calculateEventWidth(start, end, isFixed))
 
   const label = calculateLabel(start, end, lang)
+  // Many CyberJudah events have no picture yet: the text then takes the picture's
+  // place instead of leaving an empty slot at the end of the card.
+  const textSize = image ? descSize : descSize + imageSize
 
   const onOpenEvent = () => {
     if (!hasDetails) return
@@ -144,7 +147,7 @@ const TimelineEvent = ({
     >
       <AnimatedBox
         className="px-[10px] py-[6px] relative items-center justify-center"
-        style={[{ width: descSize }, styles]}
+        style={[{ width: textSize }, styles]}
       >
         <Text className="text-[12px]" numberOfLines={2}>
           {getLegacyLocalizedField(lang, { fr: title, en: titleEn })}
@@ -152,17 +155,19 @@ const TimelineEvent = ({
         <Box className="border-continuous overflow-hidden border-b-[1px] border-border" />
         <Text className="text-[10px] text-center">{label}</Text>
       </AnimatedBox>
-      <Box
-        className="overflow-hidden border-continuous ml-auto rounded-tr-[10px] rounded-br-[10px]"
-        style={{ width: imageSize }}
-      >
-        <Image
-          style={{ width: imageSize, height: '100%' }}
-          source={{
-            uri: image,
-          }}
-        />
-      </Box>
+      {image ? (
+        <Box
+          className="overflow-hidden border-continuous ml-auto rounded-tr-[10px] rounded-br-[10px]"
+          style={{ width: imageSize }}
+        >
+          <Image
+            style={{ width: imageSize, height: '100%' }}
+            source={{
+              uri: image,
+            }}
+          />
+        </Box>
+      ) : null}
     </LinkBox>
   )
 }
