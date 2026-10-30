@@ -1,25 +1,19 @@
 # CyberJudah iPhone staging signing
 
-The staging workflow compiles a real iPhone archive with signing disabled. This checks native compilation; an unsigned archive cannot be installed on an iPhone. No certificate, provisioning profile, App Store submission, or TestFlight upload is included.
+Apple membership was verified active on 2026-10-28. Team: `M8DUMWBXLH`. The staging app is `io.cyberjudah.app.dev`, already registered in Firebase.
 
-## Ready in this repository
+`cyberjudah-ios-signed.yml` is an export-only build: it compiles on GitHub’s macOS runner, signs the archive with the approved staging assets, verifies the signature and exports an IPA. It does not upload to App Store Connect, submit for review or publish. An App Store-signed IPA is intended for a later authorized TestFlight upload, not direct device installation.
 
-- Bundle identifier: `io.cyberjudah.app.dev`, already registered with Firebase.
-- CyberJudah Firebase configuration and Google OAuth URL scheme.
-- Sign in with Apple entitlement, background audio, tablet support and the original Bible Strong native interface.
-- `CYBERJUDAH_APPLE_TEAM_ID` build input and export settings template.
-- Build artifact: `CyberJudah-staging-iPhone-unsigned` in the staging workflow.
+## Signing assets
 
-## Once the owner has Apple access
+The owner approved the staging App ID, distribution certificate, App Store profile and encrypted CI secrets on 2026-10-28. All three Apple resources were created and the profile verified with Sign in with Apple, Associated Domains and production App Attest. Certificate and profile expire 2027-10-28. Keep the private key and P12 password outside source control. The workflow reads only these encrypted repository secrets:
 
-1. Enroll in the Apple Developer Program and accept Apple's agreements personally. This is required for TestFlight distribution.
-2. Install full Xcode and add the Apple account in Xcode Settings → Accounts.
-3. Register `io.cyberjudah.app.dev` in that Apple team; enable Sign in with Apple and Associated Domains. Register the same team ID in the existing Firebase iOS dev app. Configure Apple sign-in service credentials before claiming Apple login is ready.
-4. Create a staging app record in App Store Connect using that bundle identifier.
-5. Set `CYBERJUDAH_APPLE_TEAM_ID` to the actual team ID, regenerate the iOS project, and choose that team under Signing & Capabilities. Rebuild a signed Release archive in Xcode. Do not treat the unsigned CI zip as a signed installer.
-6. Copy `ExportOptions.plist.example` outside source control and replace the team placeholder. Its destination is **export**, so using it does not upload or publish. Xcode can export a signed archive after the team, certificate and profiles are available.
-7. With separate owner approval, upload the signed build through Xcode's Organizer to TestFlight. Install through TestFlight and test Google/Apple login, notes and highlights sync, guest reading, downloads and airplane-mode reading.
+- `IOS_STAGING_CERTIFICATE_BASE64`: the distribution certificate and matching private key in a password-protected P12.
+- `IOS_STAGING_CERTIFICATE_PASSWORD`: that P12 password.
+- `IOS_STAGING_PROFILE_BASE64`: the App Store profile for `M8DUMWBXLH.io.cyberjudah.app.dev`.
 
-The first public store version remains free reading and study. Paid Ask and store purchases are deferred. Keep staging on the staging data namespace.
+The preflight rejects a different team, bundle ID, expired profile, device/development profile or missing capabilities. It sets signing only on the application target, leaving Pods’ target settings intact. The keychain is temporary and removed at job completion; signing files are not artifact outputs.
 
-References: [Apple beta distribution](https://developer.apple.com/documentation/xcode/distributing-your-app-for-beta-testing-and-releases/), [Apple app signing](https://help.apple.com/xcode/mac/current/en.lproj/dev3a05256b8.html), [TestFlight](https://developer.apple.com/testflight/).
+Run the signed workflow on the reviewed signing branch after the secrets are configured. Continue to use the unsigned staging workflow for compile-only checks. App Store Connect app creation, Apple provider credentials, TestFlight upload and physical-device acceptance remain separate steps; do not report them complete from a successful archive alone. The first public store release is free reading and study.
+
+References: [GitHub’s certificate and profile setup](https://docs.github.com/en/actions/how-tos/deploy/deploy-to-third-party-platforms/sign-xcode-applications), [Apple manual signing](https://help.apple.com/xcode/mac/current/en.lproj/devcac6ab5b3.html), [Apple TestFlight distribution](https://help.apple.com/xcode/mac/current/en.lproj/dev2539d985f.html).
