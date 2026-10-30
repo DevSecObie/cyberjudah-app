@@ -10,6 +10,8 @@ import { type SheetRef } from '~common/sheet'
 import Box from '~common/ui/Box'
 import Container from '~common/ui/Container'
 import SectionList from '~common/ui/SectionList'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
+import ClassIndexDownloadCard from '~features/passageMediaLibrary/ClassIndexDownloadCard'
 import DownloadableItem from './components/DownloadableItem'
 import StorageSummaryCard from './components/StorageSummaryCard'
 import type { StatusFilter, LangFilter } from './components/FilterChipRow'
@@ -587,6 +589,7 @@ const DownloadsScreen = () => {
           ListHeaderComponent={
             <>
               <StorageSummaryCard />
+              {usesCyberJudahEditorial() && <ClassIndexDownloadCard />}
               <AvailableUpdatesWidget
                 count={itemsToUpdate.length}
                 onPress={() => updatesRef.current?.present()}

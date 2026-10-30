@@ -9,6 +9,7 @@ jest.mock('~helpers/storage', () => ({
 }))
 
 import {
+  classNotesToBlocks,
   filterClassLibrary,
   getCachedClassById,
   loadClassLibrary,
@@ -97,5 +98,106 @@ describe('CyberJudah class library', () => {
     const failing = jest.fn(async () => ({ ok: false, status: 503 })) as unknown as typeof fetch
     await expect(loadClassLibrary(failing)).rejects.toThrow('CYBERJUDAH_CLASSES_UNAVAILABLE:503')
     expect(readCachedClassLibrary()).toHaveLength(7)
+  })
+})
+
+describe('classNotesToBlocks', () => {
+  it('reads the notes into the blocks the app draws', () => {
+    const blocks = classNotesToBlocks(
+      [
+        '## Scriptures Opened',
+        '',
+        'The **first** point, at *[[10:04](https://www.youtube.com/watch?v=P4cR6i32U80&t=604s)]*.',
+        '',
+        'Precepts:',
+        '',
+        '- A precept',
+        '  - Under it',
+        '',
+        '---',
+        '[Class Notes Index](/classes)',
+      ].join('\n'),
+      'P4cR6i32U80'
+    )
+    expect(blocks.map(block => block.type)).toEqual([
+      'heading',
+      'paragraph',
+      'paragraph',
+      'list',
+      'rule',
+    ])
+    expect(blocks[1]).toMatchObject({
+      type: 'paragraph',
+      html: expect.stringContaining('<a class="ts" href="cyberjudah-seek:604">10:04</a>'),
+    })
+    expect(blocks[2]).toEqual({ type: 'paragraph', html: 'Precepts', variant: 'label' })
+    expect(blocks[3]).toMatchObject({
+      type: 'list',
+      items: [[{ type: 'paragraph' }, { type: 'list' }]],
+    })
+  })
+})
+
+describe('In the News', () => {
+  it('moves each timed item out of its own section into Scriptures Opened', () => {
+    const seek = (t: number) => `*[[0:${t}](https://www.youtube.com/watch?v=P4cR6i32U80&t=${t}s)]*`
+    const blocks = classNotesToBlocks(
+      [
+        '## In The News',
+        '',
+        `- ${seek(30)} **A news report**`,
+        '- A report with no moment',
+        '',
+        '## Scriptures Opened',
+        '',
+        'A point.',
+        '',
+        '## In Closing',
+      ].join('\n'),
+      'P4cR6i32U80'
+    )
+    expect(blocks.map(block => block.type)).toEqual([
+      'heading',
+      'list',
+      'heading',
+      'paragraph',
+      'aside',
+      'heading',
+    ])
+    expect(blocks[1]).toMatchObject({ items: [[{ html: 'A report with no moment' }]] })
+    expect(blocks[4]).toMatchObject({
+      type: 'aside',
+      label: 'In the News',
+      blocks: [{ html: expect.stringContaining('A news report') }],
+    })
+  })
+})
+
+describe('notes HTML', () => {
+  it('reads what the class showed, and the artwork, and drops the series line', () => {
+    const blocks = classNotesToBlocks(
+      [
+        '<p class="taught">IUIC in the ClassRoom · 2026-01-01</p>',
+        '',
+        '<figure class="class-hero">',
+        '  <img src="/static/class-images/a.jpg" alt="Class artwork">',
+        '</figure>',
+        '',
+        '<figure class="shown" data-t="334"><a href="https://www.youtube.com/watch?v=P4cR6i32U80&t=334s" data-t="334"><span class="frame shown__frame" style="background-image:url(https://frames.example/s.jpg);background-size:300% 300%;background-position:50% 100%;background-repeat:no-repeat"></span><span class="shown__at">5:34</span></a></figure>',
+      ].join('\n'),
+      'P4cR6i32U80'
+    )
+    expect(blocks).toEqual([
+      { type: 'image', uri: 'https://cyberjudah.io/static/class-images/a.jpg' },
+      {
+        type: 'shown',
+        seconds: 334,
+        href: 'cyberjudah-seek:334',
+        label: '5:34',
+        sheet: 'https://frames.example/s.jpg',
+        x: 50,
+        y: 100,
+      },
+    ])
   })
 })

@@ -8,6 +8,8 @@ export const universeColors = {
   dictionary: 'secondary',
   nave: 'quint',
   commentary: '#26A69A',
+  // CyberJudah's classes, in the assembly's purple.
+  classes: '#6A3FB5',
   references: 'quart',
   study: 'tertiary',
   notes: 'color2',

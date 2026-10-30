@@ -2,6 +2,7 @@ import { twMerge } from '~common/ui/classNames'
 import { resolveThemeColor } from '~themes/colorValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { TouchableOpacity } from 'react-native'
+import { Image } from 'expo-image'
 import type { FuseResultMatch } from 'fuse.js'
 import { HStack, VStack } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
@@ -203,9 +204,27 @@ export const SearchEntityResultRow = ({
         accessibilityRole="button"
         onPress={onPress}
         activeOpacity={0.7}
-        style={{ flex: 1, minWidth: 0, paddingHorizontal: 20, paddingVertical: 12 }}
+        style={{
+          flex: 1,
+          minWidth: 0,
+          paddingHorizontal: 20,
+          paddingVertical: 12,
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 12,
+        }}
       >
-        <VStack className="overflow-hidden border-continuous">
+        {item.thumbnailUrl ? (
+          <Image
+            source={{ uri: item.thumbnailUrl }}
+            contentFit="cover"
+            cachePolicy="memory-disk"
+            transition={120}
+            accessibilityIgnoresInvertColors
+            style={{ width: 96, height: 54, borderRadius: 8 }}
+          />
+        ) : null}
+        <VStack className="overflow-hidden border-continuous flex-[1]">
           <HStack className="overflow-hidden border-continuous items-center gap-[6px] mb-[2px]">
             <HighlightedText value={item.title} match={getMatchForKey(item, 'title')} bold />
             {item.chip ? <Chip>{item.chip}</Chip> : null}

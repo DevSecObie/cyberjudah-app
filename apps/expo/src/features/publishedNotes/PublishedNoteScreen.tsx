@@ -4,13 +4,12 @@ import { useWindowDimensions } from 'react-native'
 import Header from '~common/Header'
 import Loading from '~common/Loading'
 import Box, { SafeAreaBox, VStack } from '~common/ui/Box'
-import ScrollView from '~common/ui/ScrollView'
 import Text from '~common/ui/Text'
 import ClassNotesPdfButton from '~features/notesExport/ClassNotesPdfButton'
 import { longDate } from '~features/notesExport/notePdf'
-import ClassNotesView from '~features/passageMediaLibrary/ClassNotesView'
+import ClassNotesList from '~features/passageMediaLibrary/ClassNotesList'
 import {
-  classNotesToHtml,
+  classNotesToBlocks,
   loadPublishedNote,
 } from '~features/passageMediaLibrary/cyberJudahClasses'
 import { resolveFontFamily } from '~themes/styleValues'
@@ -29,7 +28,7 @@ const PublishedNoteScreen = () => {
     queryKey: ['cyberjudah-published-note', path],
     queryFn: async () => {
       const published = await loadPublishedNote(path)
-      return { ...published, html: classNotesToHtml(published.body, '') }
+      return { ...published, blocks: classNotesToBlocks(published.body, '') }
     },
     enabled: !!path,
     staleTime: 60 * 60 * 1000,
@@ -48,27 +47,27 @@ const PublishedNoteScreen = () => {
       {note.isPending ? (
         <Loading />
       ) : note.data ? (
-        <ScrollView
-          backgroundColor="reverse"
-          contentContainerStyle={{ alignItems: 'center', paddingHorizontal: 16, paddingTop: 20 }}
-        >
-          <VStack className="gap-[6px] mb-[12px]" style={{ width: contentWidth }}>
-            <Text
-              className="text-[24px] leading-[30px]"
-              style={{ fontFamily: resolveFontFamily(theme.fontFamily.title) }}
-            >
-              {note.data.title}
-            </Text>
-            <Text className="text-grey text-[14px]">
-              {[KIND[note.data.kind ?? ''], longDate(note.data.date), note.data.teacher]
-                .filter(Boolean)
-                .join(' · ')}
-            </Text>
-          </VStack>
-          <Box style={{ width: contentWidth }}>
-            <ClassNotesView html={note.data.html} onLinkPress={open} />
-          </Box>
-        </ScrollView>
+        // The note in the app's own views, laid out a block at a time as it scrolls.
+        <ClassNotesList
+          blocks={note.data.blocks}
+          width={contentWidth}
+          onLinkPress={open}
+          header={
+            <VStack className="gap-[6px] mb-[12px] self-center" style={{ width: contentWidth }}>
+              <Text
+                className="text-[24px] leading-[30px]"
+                style={{ fontFamily: resolveFontFamily(theme.fontFamily.title) }}
+              >
+                {note.data.title}
+              </Text>
+              <Text className="text-grey text-[14px]">
+                {[KIND[note.data.kind ?? ''], longDate(note.data.date), note.data.teacher]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </Text>
+            </VStack>
+          }
+        />
       ) : (
         <Box className="py-[60px] px-[20px] items-center">
           <Text className="text-grey text-center">
