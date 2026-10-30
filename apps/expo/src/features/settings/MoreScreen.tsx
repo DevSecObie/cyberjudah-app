@@ -302,6 +302,20 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
                 <Text className="flex-[1] text-[15px]">Handbook of the Law</Text>
                 <FeatherIcon name="chevron-right" size={20} color="grey" />
               </CardLinkItem>
+              <CardLinkItem onPress={() => router.push('/(library)/study-notes')}>
+                <IconCircle bg={resolveUniverseColors(theme.colors, 'nave').background}>
+                  <FeatherIcon name="file-text" size={20} color="grey" />
+                </IconCircle>
+                <Text className="flex-[1] text-[15px]">4 Chapters a Day</Text>
+                <FeatherIcon name="chevron-right" size={20} color="grey" />
+              </CardLinkItem>
+              <CardLinkItem onPress={() => router.push('/(library)/encyclopedia')}>
+                <IconCircle bg={resolveUniverseColors(theme.colors, 'nave').background}>
+                  <FeatherIcon name="book" size={20} color="grey" />
+                </IconCircle>
+                <Text className="flex-[1] text-[15px]">Encyclopedia</Text>
+                <FeatherIcon name="chevron-right" size={20} color="grey" />
+              </CardLinkItem>
             </>
           )}
           <CardLinkItem route="Plans" isLast>

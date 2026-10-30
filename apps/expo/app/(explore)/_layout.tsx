@@ -34,6 +34,7 @@ const ExploreLayout = () => {
         <Stack.Screen name="passage-media-player" />
         <Stack.Screen name="case-study" />
         <Stack.Screen name="precept" />
+        <Stack.Screen name="published-note" />
         <Stack.Screen name="law-section" />
         <Stack.Screen name="passage-resources" />
       </Stack>

@@ -1,6 +1,7 @@
 import type { ResolvedPassageMediaLibraryItem } from '~features/bible/passageMedia'
 import { cyberJudahSiteLinkToOsis } from '~helpers/cyberJudahSiteLinks'
 import { storage } from '~helpers/storage'
+import type { PublishedNote } from '~features/notesExport/notePdf'
 
 // The classes come from CyberJudah's published class feeds (the ones the Telegram app lists), so
 // a newly published class appears without an app update. The last list read is kept on the
@@ -350,21 +351,27 @@ export const classNotesToHtml = (markdown: string, videoId: string): string =>
     videoId
   )
 
-/** A class's published notes; Bible links open in the reader, timestamps seek the video. */
-export const loadClassNotes = async (
+/** A published note as the data set serves it: its Markdown and its title, date and teacher. */
+export const loadPublishedNote = async (
   notesPath: string,
-  videoId: string,
   fetcher: typeof fetch = fetch
-): Promise<string> => {
+): Promise<PublishedNote & { body: string }> => {
   if (!/^\/[a-z0-9/_-]+$/i.test(notesPath)) throw new Error('CYBERJUDAH_NOTES_PATH_INVALID')
   const response = await fetcher(`${DATA_ORIGIN}/api/notes${notesPath}.json`, {
     headers: { accept: 'application/json' },
   })
   if (!response.ok) throw new Error(`CYBERJUDAH_NOTES_UNAVAILABLE:${response.status}`)
-  const note = (await response.json()) as { body?: unknown }
+  const note = (await response.json()) as PublishedNote
   if (typeof note.body !== 'string' || !note.body.trim()) throw new Error('CYBERJUDAH_NOTES_EMPTY')
-  return classNotesToHtml(note.body, videoId)
+  return note as PublishedNote & { body: string }
 }
+
+/** A class's published notes; Bible links open in the reader, timestamps seek the video. */
+export const loadClassNotes = async (
+  notesPath: string,
+  videoId: string,
+  fetcher: typeof fetch = fetch
+): Promise<string> => classNotesToHtml((await loadPublishedNote(notesPath, fetcher)).body, videoId)
 
 export const getCachedClassById = (workId: string): CyberJudahClass | null =>
   readCachedClassLibrary()?.find(item => item.workId === workId) ?? null

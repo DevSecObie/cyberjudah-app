@@ -2626,5 +2626,10 @@
   "passageMediaLibrary.show": "Show or series",
   "passageMediaLibrary.everyShow": "Every show",
   "passageMediaLibrary.latest": "Latest class",
-  "passageMediaLibrary.seeAll": "See all {{count}}"
+  "passageMediaLibrary.seeAll": "See all {{count}}",
+  "notesExport.savePdf": "Save as PDF",
+  "notesExport.exportAll": "Export these notes as a PDF",
+  "notesExport.myNotes": "My notes",
+  "notesExport.noteFor": "Note on {{reference}}",
+  "notesExport.pdfError": "The PDF could not be made just now. Try again in a moment."
 }

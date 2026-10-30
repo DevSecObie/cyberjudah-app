@@ -2654,5 +2654,10 @@
   "passageMediaLibrary.show": "Émission ou série",
   "passageMediaLibrary.everyShow": "Toutes les émissions",
   "passageMediaLibrary.latest": "Dernier cours",
-  "passageMediaLibrary.seeAll": "Tout voir ({{count}})"
+  "passageMediaLibrary.seeAll": "Tout voir ({{count}})",
+  "notesExport.savePdf": "Enregistrer en PDF",
+  "notesExport.exportAll": "Exporter ces notes en PDF",
+  "notesExport.myNotes": "Mes notes",
+  "notesExport.noteFor": "Note pour {{reference}}",
+  "notesExport.pdfError": "Le PDF n'a pas pu être créé. Réessayez dans un instant."
 }

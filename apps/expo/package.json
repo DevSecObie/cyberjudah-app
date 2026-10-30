@@ -124,6 +124,7 @@
     "debounce": "^1.2.0",
     "deprecated-react-native-prop-types": "^4.0.0",
     "effect": "3.22.1",
+    "entities": "^6.0.1",
     "expo": "patch:expo@npm%3A57.0.26#~/.yarn/patches/expo-npm-57.0.26-ca881e2652.patch",
     "expo-application": "~57.0.3",
     "expo-asset": "~57.0.18",
@@ -163,8 +164,10 @@
     "lottie-react-native": "~7.3.8",
     "lucide-react": "^1.47.0",
     "lunr-languages": "^1.9.0",
+    "marked": "^17.0.6",
     "metro": "patch:metro@npm%3A0.84.5#~/.yarn/patches/metro-npm-0.84.5-9aabe2ab0f.patch",
     "motion": "^13.0.0",
+    "pdf-lib": "^1.17.1",
     "postinstall-postinstall": "^2.1.0",
     "pressto": "^0.6.0",
     "promise": "^8.3.0",
@@ -268,7 +271,7 @@
       "^expo/virtual/env$": "<rootDir>/test/jestExpoEnvMock.js"
     },
     "transformIgnorePatterns": [
-      "/node_modules/(?!@bible-strong/bible-reference-parser/)"
+      "/node_modules/(?!@bible-strong/bible-reference-parser/|marked/)"
     ]
   },
   "staticFeatureFlags": {

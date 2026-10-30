@@ -39,9 +39,12 @@ export default function FiltersHeader({
   filters,
   onReset,
   buttonOnly = false,
+  rightComponent,
 }: {
   title: string
   children?: ReactNode
+  /** Shown before the filter button, such as an export action. */
+  rightComponent?: ReactNode
   buttonOnly?: boolean
   hasBackButton?: boolean
   filters: FiltersHeaderItem[]
@@ -170,6 +173,7 @@ export default function FiltersHeader({
           <Box className="w-[15px]" />
         )}
         <Text className="flex-1 text-[14px] font-bold">{title}</Text>
+        {rightComponent}
         {filterButton}
       </PageContent>
       {children && <PageContent>{children}</PageContent>}
