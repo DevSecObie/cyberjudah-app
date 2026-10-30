@@ -338,18 +338,140 @@ const blocksToHtml = (lines: string[], videoId: string): string => {
   return out.join('')
 }
 
+/**
+ * The notes as the app's own blocks, for drawing with native components: the same reading as
+ * blocksToHtml, kept as a tree so a long class is laid out a block at a time. Inline text stays
+ * the small HTML that `inline` makes (links, bold, italic, verse numbers).
+ */
+export type NoteBlock =
+  | { type: 'heading'; level: number; html: string }
+  | { type: 'paragraph'; html: string; variant?: 'label' | 'passage' }
+  | { type: 'rule' }
+  | { type: 'reading'; blocks: NoteBlock[] }
+  | { type: 'quote'; blocks: NoteBlock[] }
+  | { type: 'list'; items: NoteBlock[][] }
+  | {
+      type: 'verse'
+      title?: string
+      seek?: { href: string; label: string }
+      target: string
+      blocks: NoteBlock[]
+    }
+
+const blocksOf = (lines: string[], videoId: string): NoteBlock[] => {
+  const out: NoteBlock[] = []
+  let i = 0
+  const isBlank = (line?: string) => !line || !line.trim()
+  while (i < lines.length) {
+    const line = lines[i]
+    if (isBlank(line)) {
+      i++
+      continue
+    }
+    const heading = /^(#{1,4})\s+(.*)$/.exec(line)
+    if (heading) {
+      out.push({
+        type: 'heading',
+        level: Math.min(heading[1].length, 4),
+        html: inline(heading[2], videoId),
+      })
+      i++
+    } else if (/^-{3,}\s*$/.test(line)) {
+      out.push({ type: 'rule' })
+      i++
+    } else if (/^<div class="reading">/.test(line)) {
+      const body: string[] = []
+      i++
+      while (i < lines.length && !/^<\/div>/.test(lines[i])) body.push(lines[i++])
+      i++
+      out.push({ type: 'reading', blocks: blocksOf(body, videoId) })
+    } else if (/^<\/?div\b/.test(line)) {
+      i++
+    } else if (line.startsWith('>')) {
+      const body: string[] = []
+      while (i < lines.length && lines[i].startsWith('>'))
+        body.push(lines[i++].replace(/^>\s?/, ''))
+      const quote = blocksOf(body, videoId)
+      const html = blocksToHtml(body, videoId)
+      if (/<a href="bible:\/\//.test(html)) {
+        const last = out.at(-1)
+        const passage =
+          last?.type === 'paragraph' && last.variant === 'passage' ? last.html : undefined
+        if (passage) out.pop()
+        const verses = [...html.matchAll(/<a href="bible:\/\/([^"]+)">/g)].map(match => match[1])
+        const seek = passage ? /<a class="ts" href="([^"]*)">([^<]*)<\/a>/.exec(passage) : null
+        out.push({
+          type: 'verse',
+          title: passage ? /<a href="[^"]*">([^<]+)<\/a>/.exec(passage)?.[1] : undefined,
+          seek: seek ? { href: seek[1], label: seek[2] } : undefined,
+          target:
+            verses.length > 1 ? `${verses[0]}-${verses[verses.length - 1]}` : (verses[0] ?? ''),
+          blocks: quote,
+        })
+      } else {
+        out.push({ type: 'quote', blocks: quote })
+      }
+    } else if (isListItem(line)) {
+      const items: NoteBlock[][] = []
+      while (i < lines.length && isListItem(lines[i])) {
+        const body = [lines[i].replace(/^[-*]\s+/, '')]
+        i++
+        while (i < lines.length) {
+          if (isBlank(lines[i])) {
+            let next = i
+            while (next < lines.length && isBlank(lines[next])) next++
+            if (next < lines.length && indentOf(lines[next]) >= 2) {
+              while (i < next) body.push(lines[i++].trim())
+              continue
+            }
+            break
+          }
+          if (indentOf(lines[i]) < 2) break
+          body.push(lines[i++].replace(/^ {2}/, ''))
+        }
+        items.push(blocksOf(body, videoId))
+        let next = i
+        while (next < lines.length && isBlank(lines[next])) next++
+        if (next < lines.length && isListItem(lines[next])) i = next
+      }
+      out.push({ type: 'list', items })
+    } else {
+      const body: string[] = []
+      while (
+        i < lines.length &&
+        !isBlank(lines[i]) &&
+        !/^(#{1,4}\s|>|-{3,}\s*$|<\/?div\b)/.test(lines[i]) &&
+        !isListItem(lines[i])
+      ) {
+        body.push(lines[i++].trim())
+      }
+      const text = body.join(' ')
+      if (/^Precepts:$/.test(text))
+        out.push({ type: 'paragraph', html: 'Precepts', variant: 'label' })
+      else if (/^\*\*\[/.test(text))
+        out.push({ type: 'paragraph', html: inline(text, videoId), variant: 'passage' })
+      else out.push({ type: 'paragraph', html: inline(text, videoId) })
+    }
+  }
+  return out
+}
+
+const notesLines = (markdown: string) =>
+  markdown
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/\r/g, '')
+    .split('\n')
+    .map(line => line.replace(/\s+$/, ''))
+    // The class index and full-session links at the foot are the website's own navigation.
+    .filter(line => !/^\[Class Notes Index\]/.test(line))
+
+/** The notes as blocks for the app's own components. */
+export const classNotesToBlocks = (markdown: string, videoId: string): NoteBlock[] =>
+  blocksOf(notesLines(markdown), videoId)
+
 /** The notes as HTML: headings, scripture quotes, precepts nested under each verse. */
 export const classNotesToHtml = (markdown: string, videoId: string): string =>
-  blocksToHtml(
-    markdown
-      .replace(/<!--[\s\S]*?-->/g, '')
-      .replace(/\r/g, '')
-      .split('\n')
-      .map(line => line.replace(/\s+$/, ''))
-      // The class index and full-session links at the foot are the website's own navigation.
-      .filter(line => !/^\[Class Notes Index\]/.test(line)),
-    videoId
-  )
+  blocksToHtml(notesLines(markdown), videoId)
 
 /** A published note as the data set serves it: its Markdown and its title, date and teacher. */
 export const loadPublishedNote = async (
@@ -372,6 +494,14 @@ export const loadClassNotes = async (
   videoId: string,
   fetcher: typeof fetch = fetch
 ): Promise<string> => classNotesToHtml((await loadPublishedNote(notesPath, fetcher)).body, videoId)
+
+/** A class's notes as the app's own blocks. */
+export const loadClassNoteBlocks = async (
+  notesPath: string,
+  videoId: string,
+  fetcher: typeof fetch = fetch
+): Promise<NoteBlock[]> =>
+  classNotesToBlocks((await loadPublishedNote(notesPath, fetcher)).body, videoId)
 
 export const getCachedClassById = (workId: string): CyberJudahClass | null =>
   readCachedClassLibrary()?.find(item => item.workId === workId) ?? null
