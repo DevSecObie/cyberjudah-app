@@ -35,10 +35,15 @@ const PassageMediaPlayerScreen = () => {
     workId,
     language: requestedLanguage,
     start,
+    video,
+    title: videoTitle,
   } = useLocalSearchParams<{
     workId?: string
     language?: string
     start?: string
+    /** A recording the class library does not list (Said in Class), by its video and title. */
+    video?: string
+    title?: string
   }>()
   const startSeconds = /^\d{1,6}$/.test(start ?? '') ? Number(start) : 0
   const preferredLanguage = useLanguage()
@@ -48,7 +53,18 @@ const PassageMediaPlayerScreen = () => {
   const [playerError, setPlayerError] = useState<string>()
   const classPlayerRef = useRef<WebView>(null)
   const router = useRouter()
-  const item = workId ? (getPassageMediaById(workId, language) ?? getCachedClassById(workId)) : null
+  const item = workId
+    ? (getPassageMediaById(workId, language) ?? getCachedClassById(workId))
+    : video && /^[\w-]{11}$/.test(video)
+      ? ({
+          workId: `cyberjudah-recording-${video}`,
+          editionId: `cyberjudah-recording-${video}`,
+          providerId: video,
+          title: videoTitle ?? '',
+          durationSeconds: 0,
+          attributionLabel: 'CyberJudah',
+        } as unknown as NonNullable<ReturnType<typeof getPassageMediaById>>)
+      : null
   // A class's notes come from the class library, even when the catalog also lists the video.
   const cachedClass = workId ? getCachedClassById(workId) : null
   const notesPath =
