@@ -216,22 +216,22 @@ export const getSearchResultsModel = ({
           }),
         ]
       : []),
-    ...(itemFilters.classes && (classResults.length || loading.classes)
-      ? [
-          getSection({
-            id: 'classes',
-            title: t('Classes'),
-            items: classResults,
-            itemFilterType: 'classes',
-          }),
-        ]
-      : []),
     ...(itemFilters.classes && (saidInClassResults.length || loading.saidInClass)
       ? [
           getSection({
             id: 'saidInClass',
             title: t('Said in Class'),
             items: saidInClassResults,
+            itemFilterType: 'classes',
+          }),
+        ]
+      : []),
+    ...(itemFilters.classes && (classResults.length || loading.classes)
+      ? [
+          getSection({
+            id: 'classes',
+            title: t('Classes'),
+            items: classResults,
             itemFilterType: 'classes',
           }),
         ]
