@@ -49,7 +49,7 @@ const readCache = <T>(key: string): T[] | null => {
 const isNotePath = (url: unknown): url is string =>
   typeof url === 'string' && /^\/[a-z0-9/_-]+$/i.test(url)
 
-/** The study notes in the notes index, in the order the data set lists the books. */
+/** The study notes in the notes index. */
 export const toStudyNotes = (rows: unknown): StudyNoteRow[] =>
   (Array.isArray(rows) ? (rows as IndexRow[]) : [])
     .filter(row => row?.kind === 'study' && row.title && isNotePath(row.url))
@@ -70,7 +70,99 @@ export const loadStudyNotes = async (fetcher: typeof fetch = fetch) => {
   return notes
 }
 
-/** The study notes a search leaves, a section per book, chapters in order (as in Telegram). */
+// The King James Bible's 1611 order: the Old Testament, the Apocrypha, then the New Testament.
+// Some Apocrypha books go by more than one name in the data set.
+const KJV_1611_ORDER = [
+  'Genesis',
+  'Exodus',
+  'Leviticus',
+  'Numbers',
+  'Deuteronomy',
+  'Joshua',
+  'Judges',
+  'Ruth',
+  '1 Samuel',
+  '2 Samuel',
+  '1 Kings',
+  '2 Kings',
+  '1 Chronicles',
+  '2 Chronicles',
+  'Ezra',
+  'Nehemiah',
+  'Esther',
+  'Job',
+  'Psalms',
+  'Proverbs',
+  'Ecclesiastes',
+  'Song of Solomon',
+  'Isaiah',
+  'Jeremiah',
+  'Lamentations',
+  'Ezekiel',
+  'Daniel',
+  'Hosea',
+  'Joel',
+  'Amos',
+  'Obadiah',
+  'Jonah',
+  'Micah',
+  'Nahum',
+  'Habakkuk',
+  'Zephaniah',
+  'Haggai',
+  'Zechariah',
+  'Malachi',
+  '1 Esdras',
+  '2 Esdras',
+  'Tobit',
+  'Judith',
+  ['Rest of Esther', 'Esther (Greek)'],
+  'Wisdom of Solomon',
+  ['Ecclesiasticus', 'Sirach'],
+  'Baruch',
+  ['Epistle of Jeremy', 'Epistle of Jeremiah'],
+  'Song of the Three Children',
+  'Susanna',
+  'Bel and the Dragon',
+  ['Prayer of Manasses', 'Prayer of Manasseh'],
+  '1 Maccabees',
+  '2 Maccabees',
+  'Matthew',
+  'Mark',
+  'Luke',
+  'John',
+  'Acts',
+  'Romans',
+  '1 Corinthians',
+  '2 Corinthians',
+  'Galatians',
+  'Ephesians',
+  'Philippians',
+  'Colossians',
+  '1 Thessalonians',
+  '2 Thessalonians',
+  '1 Timothy',
+  '2 Timothy',
+  'Titus',
+  'Philemon',
+  'Hebrews',
+  'James',
+  '1 Peter',
+  '2 Peter',
+  '1 John',
+  '2 John',
+  '3 John',
+  'Jude',
+  'Revelation',
+]
+const BOOK_RANK = new Map(
+  KJV_1611_ORDER.flatMap((names, rank) =>
+    (Array.isArray(names) ? names : [names]).map(name => [name.toLowerCase(), rank] as const)
+  )
+)
+const bookRank = (book: string) => BOOK_RANK.get(book.toLowerCase()) ?? KJV_1611_ORDER.length
+
+/** The study notes a search leaves, a section per book in the 1611 order, chapters in order. */
 export const studySections = (notes: StudyNoteRow[] | undefined, query = '') => {
   const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean)
   const byBook = new Map<string, StudyNoteRow[]>()
@@ -79,10 +171,12 @@ export const studySections = (notes: StudyNoteRow[] | undefined, query = '') => 
     if (!words.every(word => text.includes(word))) continue
     byBook.set(note.book, [...(byBook.get(note.book) ?? []), note])
   }
-  return [...byBook.entries()].map(([title, data]) => ({
-    title,
-    data: [...data].sort((a, b) => a.chapter - b.chapter),
-  }))
+  return [...byBook.entries()]
+    .sort(([a], [b]) => bookRank(a) - bookRank(b))
+    .map(([title, data]) => ({
+      title,
+      data: [...data].sort((a, b) => a.chapter - b.chapter),
+    }))
 }
 
 /** "Genesis 1: The Generations of the Heavens" without the reference before the colon. */
