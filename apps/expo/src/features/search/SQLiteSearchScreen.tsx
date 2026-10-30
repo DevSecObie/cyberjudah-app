@@ -508,7 +508,7 @@ const SQLiteSearchScreen = ({
   const classIndex = useClassIndexState()
   const classIndexOutdated = useQuery({
     queryKey: ['cyberjudah-class-index-outdated'],
-    queryFn: isClassIndexOutdated,
+    queryFn: () => isClassIndexOutdated(),
     enabled: usesCyberJudahEditorial() && classIndex.status === 'ready',
     staleTime: Infinity,
   })
