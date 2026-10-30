@@ -1,0 +1,3 @@
+- KJV audio in the Apocrypha plays CyberJudah's own LibriVox recordings from cyberjudah.io (Tobit, Judith, Wisdom of Solomon, Song of the Three Children, Susanna, Prayer of Manasses, 1 and 2 Maccabees). Before, every Apocrypha chapter asked wordpocket.org for a file it does not have (it carries only the 66 books).
+- A chapter with no recording yet (1 and 2 Esdras, Rest of Esther, Ecclesiasticus, Baruch, Epistle of Jeremy, Bel and the Dragon, Tobit 5 and 13) is read by the reader voice, so the play button still works; the player is never given an empty address.
+- The list of recordings is apps/expo/src/assets/cyberjudah/apocrypha-recordings.json, built from cyberjudah data/audio/kjv (chapters with verse timings).

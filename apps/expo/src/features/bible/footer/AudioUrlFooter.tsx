@@ -73,7 +73,8 @@ const getBookTracks = (
       artist: bibleVersion?.name,
       artwork: require('~assets/images/icon.png'),
     }))
-    return tracks
+    // A chapter without a recording has no URL; the player must never be handed an empty one.
+    return tracks.filter(track => track.url)
   } catch (error) {
     appLogger.captureError('download', 'audio.book_tracks_failed', error, {
       versionId: version,
