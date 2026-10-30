@@ -8,9 +8,8 @@ import YoutubePlayer from '~helpers/react-native-youtube-iframe'
 import WebView from 'react-native-webview'
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes'
 import Header from '~common/Header'
-import Box, { VStack } from '~common/ui/Box'
+import Box, { TouchableBox, VStack } from '~common/ui/Box'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
-import ScrollView from '~common/ui/ScrollView'
 import Text from '~common/ui/Text'
 import {
   formatPassageMediaDuration,
@@ -151,17 +150,13 @@ const PassageMediaPlayerScreen = () => {
                 </VStack>
               </VStack>
             </Box>
-            <ScrollView
-              backgroundColor="reverse"
-              contentContainerStyle={{
-                alignItems: 'center',
-                paddingHorizontal: 16,
-                paddingTop: 16,
-              }}
-            >
-              {!!notes.data && (
-                <Box style={{ width: playerWidth }}>
+            {/* The notes scroll inside their own page: a long class drawn as one page as tall as
+                itself can come up blank. A failed load says so and can be tried again. */}
+            <Box className="flex-[1] items-center bg-reverse pt-[8px]">
+              {notes.data ? (
+                <Box style={{ width: playerWidth, flex: 1 }}>
                   <ClassNotesView
+                    fill
                     html={notes.data}
                     onLinkPress={href => {
                       if (href.startsWith(CLASS_SEEK_PREFIX)) {
@@ -184,8 +179,19 @@ const PassageMediaPlayerScreen = () => {
                     }}
                   />
                 </Box>
-              )}
-            </ScrollView>
+              ) : notesPath ? (
+                <VStack className="py-[40px] px-[20px] items-center gap-[12px]">
+                  <Text className="text-grey text-center">
+                    {notes.isError ? 'The notes did not load.' : 'Loading the notes…'}
+                  </Text>
+                  {notes.isError && (
+                    <TouchableBox accessibilityRole="button" onPress={() => notes.refetch()}>
+                      <Text className="text-primary text-[15px]">Try again</Text>
+                    </TouchableBox>
+                  )}
+                </VStack>
+              ) : null}
+            </Box>
           </>
         ) : (
           <Box className="overflow-hidden border-continuous py-[60px] px-[20px] items-center justify-center">
