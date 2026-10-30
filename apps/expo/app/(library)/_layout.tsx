@@ -30,6 +30,9 @@ const LibraryLayout = () => {
       <Stack.Screen name="law" />
       <Stack.Screen name="study-notes" />
       <Stack.Screen name="encyclopedia" />
+      <Stack.Screen name="topics" />
+      <Stack.Screen name="false-doctrines" />
+      <Stack.Screen name="glossary" />
     </Stack>
   )
 }

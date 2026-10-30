@@ -316,6 +316,27 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
                 <Text className="flex-[1] text-[15px]">Encyclopedia</Text>
                 <FeatherIcon name="chevron-right" size={20} color="grey" />
               </CardLinkItem>
+              <CardLinkItem onPress={() => router.push('/(library)/topics')}>
+                <IconCircle bg={resolveUniverseColors(theme.colors, 'nave').background}>
+                  <FeatherIcon name="tag" size={20} color="grey" />
+                </IconCircle>
+                <Text className="flex-[1] text-[15px]">Topics</Text>
+                <FeatherIcon name="chevron-right" size={20} color="grey" />
+              </CardLinkItem>
+              <CardLinkItem onPress={() => router.push('/(library)/false-doctrines')}>
+                <IconCircle bg={resolveUniverseColors(theme.colors, 'nave').background}>
+                  <FeatherIcon name="alert-triangle" size={20} color="grey" />
+                </IconCircle>
+                <Text className="flex-[1] text-[15px]">False Doctrines</Text>
+                <FeatherIcon name="chevron-right" size={20} color="grey" />
+              </CardLinkItem>
+              <CardLinkItem onPress={() => router.push('/(library)/glossary')}>
+                <IconCircle bg={resolveUniverseColors(theme.colors, 'nave').background}>
+                  <FeatherIcon name="list" size={20} color="grey" />
+                </IconCircle>
+                <Text className="flex-[1] text-[15px]">Glossary</Text>
+                <FeatherIcon name="chevron-right" size={20} color="grey" />
+              </CardLinkItem>
             </>
           )}
           <CardLinkItem route="Plans" isLast>
