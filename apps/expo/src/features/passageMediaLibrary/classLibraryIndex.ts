@@ -1,6 +1,8 @@
+import NetInfo from '@react-native-community/netinfo'
 import * as FileSystem from 'expo-file-system/legacy'
 import * as SQLite from 'expo-sqlite'
-import { useSyncExternalStore } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
+import { AppState } from 'react-native'
 import { storage } from '~helpers/storage'
 import { ftsQuery, momentOf } from './classIndexQuery'
 
@@ -107,11 +109,11 @@ export const removeClassIndex = async () => {
 
 /**
  * Whether a newer library has been published since this one: a light check (its ETag), at most
- * twice a day. The app asks before downloading it again.
+ * twice a day unless asked now.
  */
-export const isClassIndexOutdated = async (): Promise<boolean> => {
+export const isClassIndexOutdated = async ({ now = false } = {}): Promise<boolean> => {
   const last = storage.getNumber(CHECKED_KEY) ?? 0
-  if (Date.now() - last < CHECK_EVERY_MS) return false
+  if (!now && Date.now() - last < CHECK_EVERY_MS) return false
   try {
     const response = await fetch(URL, { method: 'HEAD' })
     storage.set(CHECKED_KEY, Date.now())
@@ -178,3 +180,28 @@ export const searchClassIndex = async (query: string, limit = 40): Promise<Class
     start: momentOf(row.body, query),
   }))
 }
+
+/**
+ * Like a game's update when it opens: each time the app opens or comes back, the classes are
+ * downloaded if they are not on this phone yet, or again if newer ones have been published. Only
+ * on Wi-Fi; on mobile data the Search tab offers the download instead.
+ */
+export const keepClassIndexCurrent = async () => {
+  const network = await NetInfo.fetch()
+  if (!network.isConnected || (network.type !== 'wifi' && network.type !== 'ethernet')) return
+  const current = await refreshClassIndexState()
+  if (current.status === 'downloading') return
+  if (current.status !== 'ready' || (await isClassIndexOutdated({ now: true })))
+    await downloadClassIndex()
+}
+
+/** Keeps the classes current while the app runs: on opening, and each time it comes back. */
+export const useKeepClassIndexCurrent = (enabled: boolean) =>
+  useEffect(() => {
+    if (!enabled) return
+    void keepClassIndexCurrent()
+    const subscription = AppState.addEventListener('change', next => {
+      if (next === 'active') void keepClassIndexCurrent()
+    })
+    return () => subscription.remove()
+  }, [enabled])

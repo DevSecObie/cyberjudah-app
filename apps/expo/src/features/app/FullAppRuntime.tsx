@@ -25,6 +25,8 @@ import { BookSelectorSheetProvider } from '~features/bible/BookSelectorSheet/Boo
 import { StrongAudioProvider } from '~features/bible/StrongAudioProvider'
 import { FeatureOnboardingModal } from '~features/feature-onboarding'
 import OnBoardingModal from '~features/onboarding/OnBoarding'
+import { useKeepClassIndexCurrent } from '~features/passageMediaLibrary/classLibraryIndex'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import LocalMigrationGate from '~features/migrations/LocalMigrationGate'
 import { appLogger } from '~helpers/agentObservability'
 import { createFormSheetOptions } from '~navigation/formSheetOptions'
@@ -60,8 +62,15 @@ const PostMigrationStartup = ({ children }: { children: ReactNode }) => {
       {children}
       <ReadingReminders />
       {resourcesReady && <DeferredVerseOfTheDayPrefetch />}
+      {resourcesReady && <ClassIndexKeeper />}
     </>
   )
+}
+
+/** CyberJudah's classes, kept on the phone for instant search and updated as the app opens. */
+const ClassIndexKeeper = () => {
+  useKeepClassIndexCurrent(usesCyberJudahEditorial())
+  return null
 }
 
 const DeferredModals = () => {
