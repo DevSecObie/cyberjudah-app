@@ -47,6 +47,10 @@
       const searchParams = new URLSearchParams(window.location.search)
       const videoId = searchParams.get('v') || ''
       const requestedAppId = searchParams.get('appId') || ''
+      // Where to start, in whole seconds: the moment a class read the verse.
+      const start = /^\d{1,6}$/.test(searchParams.get('start') || '')
+        ? searchParams.get('start')
+        : ''
       const appId = /^[A-Za-z0-9.-]+$/.test(requestedAppId)
         ? requestedAppId
         : 'com.smontlouis.biblestrong'
@@ -62,6 +66,7 @@
           origin: window.location.origin,
           widget_referrer: `https://${appId}`,
         })
+        if (start && start !== '0') playerParams.set('start', start)
         const iframe = document.createElement('iframe')
 
         iframe.src =

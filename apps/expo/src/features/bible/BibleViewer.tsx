@@ -156,6 +156,12 @@ import {
 } from './strongSelectionLifecycle'
 import { getPassageMediaForChapter } from './passageMedia'
 import {
+  bookNameOf,
+  loadChapterClasses,
+  toClassPassageMedia,
+  withClassPassageMedia,
+} from './classMoments'
+import {
   getSelectionAnnotationDeletionImpact,
   requiresSelectionAnnotationDeletionConfirmation,
 } from './annotationDeletionImpact'
@@ -660,12 +666,37 @@ const BibleViewer = ({
   const [displayedBook, setDisplayedBook] = useState(book.Numero)
   const [displayedChapter, setDisplayedChapter] = useState(chapter)
   const [displayedVersion, setDisplayedVersion] = useState(version)
-  const passageMedia = contextualInformationDisplay
-    ? getPassageMediaForChapter({
-        book: displayedBook,
+  // The classes' pictures after the verses they taught, as in the Telegram app.
+  const classMediaQuery = useQuery({
+    queryKey: ['cyberjudah-chapter-classes', displayedBook, displayedChapter],
+    queryFn: () => loadChapterClasses(displayedBook, displayedChapter),
+    select: data =>
+      toClassPassageMedia(data, {
+        bookName: bookNameOf(displayedBook),
         chapter: displayedChapter,
-        language: lang,
-      })
+        sectionTitles: {
+          taught: t('bible.passageMedia.sections.taughtFrom', {
+            reference: `${bookNameOf(displayedBook)} ${displayedChapter}`,
+          }),
+          read: t('bible.passageMedia.sections.readInClass'),
+          showAll: t('bible.passageMedia.showAll'),
+        },
+      }),
+    enabled: contextualInformationDisplay && usesCyberJudahEditorial(),
+    staleTime: 60 * 60 * 1000,
+    retry: 3,
+    retryDelay: attempt => 1000 * 2 ** attempt,
+    networkMode: 'always',
+  })
+  const passageMedia = contextualInformationDisplay
+    ? withClassPassageMedia(
+        getPassageMediaForChapter({
+          book: displayedBook,
+          chapter: displayedChapter,
+          language: lang,
+        }),
+        classMediaQuery.data
+      )
     : EMPTY_PASSAGE_MEDIA
 
   // Handler for entering annotation mode (from SelectedVersesModal)
