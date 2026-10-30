@@ -111,6 +111,7 @@ import {
   CLASS_INDEX_DOWNLOAD_MB,
   downloadClassIndex,
   isClassIndexOutdated,
+  isClassIndexSearchable,
   searchClassIndex,
   useClassIndexState,
 } from '~features/passageMediaLibrary/classLibraryIndex'
@@ -515,11 +516,11 @@ const SQLiteSearchScreen = ({
     staleTime: Infinity,
   })
   const classQuery = useQuery({
-    queryKey: ['cyberjudah-search-classes', trimmedSearchValue, classIndex.status === 'ready'],
+    queryKey: ['cyberjudah-search-classes', trimmedSearchValue, isClassIndexSearchable(classIndex)],
     queryFn: () => {
       const library = async () => readCachedClassLibrary() ?? loadClassLibrary()
       // On this phone when the class library is kept here; from the site until then.
-      return classIndex.status === 'ready'
+      return isClassIndexSearchable(classIndex)
         ? findClassesOnDevice(trimmedSearchValue, library, searchClassIndex).catch(() =>
             findClasses(trimmedSearchValue, library)
           )
@@ -569,34 +570,36 @@ const SQLiteSearchScreen = ({
 
   // The offer to keep the classes on this phone, as the first row of the Classes section.
   const classIndexOffer: SearchEntityResult | undefined =
-    classIndex.status === 'downloading'
-      ? {
-          id: CLASS_INDEX_OFFER_ID,
-          type: 'classes',
-          iconType: 'classes',
-          title: 'Downloading the classes…',
-          description: `${Math.round(classIndex.progress * 100)}%. Searches will take milliseconds, even offline.`,
-        }
-      : classIndex.status === 'absent' || classIndex.status === 'failed'
+    classIndex.status === 'downloading' && classIndex.installed
+      ? undefined
+      : classIndex.status === 'downloading'
         ? {
             id: CLASS_INDEX_OFFER_ID,
             type: 'classes',
             iconType: 'classes',
-            title:
-              classIndex.status === 'failed'
-                ? 'The download did not finish. Tap to try again'
-                : 'Search every class instantly',
-            description: `Keep the classes on this phone (about ${CLASS_INDEX_DOWNLOAD_MB} MB, once): searches take milliseconds, even offline, and open at the moment the words were said.`,
+            title: 'Downloading the classes…',
+            description: `${Math.round(classIndex.progress * 100)}%. Searches will take milliseconds, even offline.`,
           }
-        : classIndexOutdated.data
+        : classIndex.status === 'absent' || classIndex.status === 'failed'
           ? {
               id: CLASS_INDEX_OFFER_ID,
               type: 'classes',
               iconType: 'classes',
-              title: 'New classes are out. Tap to update',
-              description: `Download the classes again (about ${CLASS_INDEX_DOWNLOAD_MB} MB) to search the newest ones on this phone.`,
+              title:
+                classIndex.status === 'failed'
+                  ? 'The download did not finish. Tap to try again'
+                  : 'Search every class instantly',
+              description: `Keep the classes on this phone (about ${CLASS_INDEX_DOWNLOAD_MB} MB, once): searches take milliseconds, even offline, and open at the moment the words were said.`,
             }
-          : undefined
+          : classIndexOutdated.data
+            ? {
+                id: CLASS_INDEX_OFFER_ID,
+                type: 'classes',
+                iconType: 'classes',
+                title: 'New classes are out. Tap to update',
+                description: `Download the classes again (about ${CLASS_INDEX_DOWNLOAD_MB} MB) to search the newest ones on this phone.`,
+              }
+            : undefined
   const classResults: SearchEntityResult[] = shouldSearchClasses
     ? [
         ...(classIndexOffer ? [classIndexOffer] : []),

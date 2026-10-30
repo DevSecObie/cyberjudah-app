@@ -222,7 +222,9 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
               <IconCircle bg="rgba(89, 131, 240, 0.1)">
                 <FeatherIcon name="message-circle" size={20} color="primary" />
               </IconCircle>
-              <Text className="flex-[1] text-[15px]">{t('assistant.title')}</Text>
+              <Text className="flex-[1] text-[15px]">
+                {t(isCyberJudah ? 'assistant.cyberjudah.title' : 'assistant.title')}
+              </Text>
               <FeatherIcon name="chevron-right" size={20} color="grey" />
             </CardLinkItem>
           )}

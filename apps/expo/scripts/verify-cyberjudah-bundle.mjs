@@ -20,5 +20,6 @@ const required = [settings.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID, 'King James Version
 const missing = required.filter(value => !value || !bundle.includes(value))
 if (missing.length) throw new Error(`Bundle is missing CyberJudah settings: ${missing.join(', ')}`)
 // Bible Strong's own Firebase sender: its Google client fallback or its environment files.
-if (bundle.includes('204116128917')) throw new Error('Bundle contains Bible Strong Firebase settings')
+if (bundle.includes('204116128917'))
+  throw new Error('Bundle contains Bible Strong Firebase settings')
 console.log(`${bundlePath}: CyberJudah public settings verified in the shipped bundle`)

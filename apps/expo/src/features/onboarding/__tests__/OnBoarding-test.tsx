@@ -73,6 +73,13 @@ jest.mock('../AbelOnboarding', () => {
     React.createElement('AbelOnboarding', { ...props, testID: 'abel-onboarding' })
 })
 
+// This suite tests the parent flow; the native CyberJudah tour is a separate screen.
+jest.mock('../CyberJudahTour', () => {
+  const React = jest.requireActual<typeof import('react')>('react')
+  return (props: Record<string, unknown>) =>
+    React.createElement('CyberJudahTour', { ...props, testID: 'abel-onboarding' })
+})
+
 jest.mock('../SelectResources', () => {
   const React = jest.requireActual<typeof import('react')>('react')
   return (props: Record<string, unknown>) =>

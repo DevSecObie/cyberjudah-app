@@ -1,3 +1,5 @@
+import type { DictionaryWork } from '../../resources/dictionaryAccess'
+
 jest.mock('expo/virtual/env', () => ({ env: process.env }))
 jest.mock('expo-file-system/legacy', () => ({ documentDirectory: '/documents/' }))
 jest.mock('~i18n', () => ({
@@ -14,6 +16,24 @@ jest.mock('~helpers/resourcePublication', () => ({
 jest.mock('~helpers/offlineCopy', () => jest.requireActual('../../../helpers/offlineCopyId'))
 
 const previousProfile = process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+const publishedDictionary: DictionaryWork = {
+  resource: {
+    kind: 'dictionary',
+    work: 'jewish-encyclopedia',
+    language: 'en',
+    revision: 'catalog',
+  },
+  resourceId: 'JEWISH_ENCYCLOPEDIA',
+  title: 'The Jewish Encyclopedia (1901–1906)',
+  abbreviation: 'Jewish Encyclopedia',
+  authors: ['Isidore Singer, editor'],
+  description: 'Historical reference',
+  edition: '1901–1906',
+  source: 'CyberJudah library',
+  attribution: 'Public domain',
+  onlineAccess: true,
+  offlineDownload: true,
+}
 afterEach(() => {
   if (previousProfile === undefined) delete process.env.EXPO_PUBLIC_RESOURCE_PROFILE
   else process.env.EXPO_PUBLIC_RESOURCE_PROFILE = previousProfile
@@ -30,11 +50,18 @@ describe('native Downloads with the published resource catalog', () => {
           '../../../helpers/mobileResourceCatalog'
         )
         // Real catalog and download factories: no catch-all catalog mock can hide a missing entry.
-        const sections = buildDownloadCatalogSections(lang, (key: string) => key, [])
+        const sections = buildDownloadCatalogSections(lang, (key: string) => key, [
+          publishedDictionary,
+        ])
         const ids = sections.flatMap((section: { data: { id: string }[] }) =>
           section.data.map(item => item.id)
         )
-        expect(ids.sort()).toEqual(Object.keys(MOBILE_RESOURCE_CATALOG.resources).sort())
+        // Dictionary UI identities are first-class; the artifact catalog still uses database:*.
+        const catalogIds = ids.map((id: string) =>
+          id.startsWith('dictionary:') ? `database:${id.split(':').slice(2).join(':')}` : id
+        )
+        expect(catalogIds.sort()).toEqual(Object.keys(MOBILE_RESOURCE_CATALOG.resources).sort())
+        expect(ids).toContain('dictionary:jewish-encyclopedia:JEWISH_ENCYCLOPEDIA:en')
         expect(ids).toContain('bible:KJV')
         expect(ids).toContain('bible-strong:KJV')
         expect(ids).toContain('database:TIMELINE:en')

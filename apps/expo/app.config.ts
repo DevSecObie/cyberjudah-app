@@ -2,7 +2,7 @@ import { ExpoConfig, ConfigContext } from 'expo/config'
 
 const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
 // CyberJudah keeps its own TestFlight version while using Bible Strong's 27.2 mobile UI.
-const APP_VERSION = isCyberJudah ? '28.0.1' : '27.2.0'
+const APP_VERSION = isCyberJudah ? '28.1.0' : '27.2.0'
 // Patch releases share a runtime and receive the same OTA updates. Any native change must
 // ship in a new major or minor version, which creates a new runtime.
 const [majorVersion, minorVersion] = APP_VERSION.split('.')
@@ -69,7 +69,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       process.env.BUNDLE_IDENTIFIER ??
       (isCyberJudah ? 'io.cyberjudah.app.dev' : 'com.smontlouis.biblestrong.dev'),
     appleTeamId: isCyberJudah ? process.env.CYBERJUDAH_APPLE_TEAM_ID : undefined,
-    buildNumber: isCyberJudah ? '305' : '297',
+    buildNumber: isCyberJudah ? '306' : '297',
     googleServicesFile:
       process.env.IOS_GOOGLE_SERVICES_FILE ??
       (isCyberJudah
@@ -80,11 +80,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     infoPlist: {
       UIBackgroundModes: ['audio'],
       NSAppTransportSecurity: {
-        NSExceptionDomains: {
-          'timeline.biblehistory.com': {
-            NSExceptionAllowsInsecureHTTPLoads: true,
-          },
-        },
+        ...(isCyberJudah
+          ? {}
+          : {
+              NSExceptionDomains: {
+                'timeline.biblehistory.com': { NSExceptionAllowsInsecureHTTPLoads: true },
+              },
+            }),
       },
       ITSAppUsesNonExemptEncryption: false,
       CFBundleAllowMixedLocalizations: true,
@@ -105,6 +107,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     favicon: './assets/images/icon-2.png',
   },
   plugins: [
+    ...(isCyberJudah ? ['./plugins/withCyberJudahBilling.js'] : []),
     'expo-sharing',
     'expo-router',
     'expo-asset',
@@ -135,7 +138,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         },
         android: {
           targetSdkVersion: 36,
-          usesCleartextTraffic: true,
+          usesCleartextTraffic:
+            !isCyberJudah || process.env.EAS_BUILD_PROFILE?.startsWith('development') === true,
           extraMavenRepos: ['../../node_modules/@notifee/react-native/android/libs'],
         },
       },
@@ -143,10 +147,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-font',
       {
-        fonts: [
-          './src/assets/fonts/LiterataBook-Regular.otf',
-          './src/assets/fonts/Inter-Bold.ttf',
-        ],
+        fonts: ['./src/assets/fonts/LiterataBook-Regular.otf', './src/assets/fonts/Inter-Bold.ttf'],
       },
     ],
     [

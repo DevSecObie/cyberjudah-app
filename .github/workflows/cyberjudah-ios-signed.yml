@@ -58,6 +58,14 @@ jobs:
           rm -f apps/expo/.env.production apps/expo/.env.staging apps/expo/.env.development
       - run: yarn workspace @bible-strong/expo typecheck
       - run: yarn workspace @bible-strong/expo test --runInBand
+      - name: Verify FTS database close with the bundled SQLite implementation
+        run: |
+          clang -O0 -g -fsanitize=address -DSQLITE_ENABLE_FTS5 \
+            -I apps/expo/node_modules/expo-sqlite/ios \
+            apps/expo/scripts/check-sqlite-fts-close.c \
+            apps/expo/node_modules/expo-sqlite/ios/sqlite3.c \
+            -o "$RUNNER_TEMP/sqlite-fts-close"
+          "$RUNNER_TEMP/sqlite-fts-close"
       - name: Give the CyberJudah settings to the native build
         # Build 303's bundle came out without them although Expo loaded .env.local, so every
         # later process, including the Xcode bundle phase and its Metro workers, gets them too.

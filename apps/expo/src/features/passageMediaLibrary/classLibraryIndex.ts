@@ -1,9 +1,13 @@
 import NetInfo from '@react-native-community/netinfo'
 import * as FileSystem from 'expo-file-system/legacy'
-import * as SQLite from 'expo-sqlite'
+import { openSQLiteDatabase, type SQLiteDatabase } from '~helpers/sqliteConnection'
 import { useEffect, useSyncExternalStore } from 'react'
 import { AppState } from 'react-native'
 import { storage } from '~helpers/storage'
+import {
+  installAtomicResourceFile,
+  restoreOrphanedResourceBackup,
+} from '~helpers/atomicResourceFile'
 import { ftsQuery, momentOf } from './classIndexQuery'
 
 // The class search kept on the phone: the library every notes publish builds (all the notes, with
@@ -23,7 +27,8 @@ export const CLASS_INDEX_DOWNLOAD_MB = 56
 
 export type ClassIndexState =
   | { status: 'unknown' | 'absent' | 'ready' }
-  | { status: 'downloading'; progress: number }
+  /** `installed`: an older copy is still here and searched until the new one replaces it. */
+  | { status: 'downloading'; progress: number; installed: boolean }
   | { status: 'failed'; error: string }
 
 let state: ClassIndexState = { status: 'unknown' }
@@ -32,45 +37,52 @@ const setState = (next: ClassIndexState) => {
   state = next
   listeners.forEach(listener => listener())
 }
-let database: Promise<SQLite.SQLiteDatabase> | null = null
+let database: Promise<SQLiteDatabase> | null = null
+let downloadInFlight: Promise<void> | undefined
+
+// The server may send the same version's ETag weak or strong (W/"…"), depending on whether the
+// response was compressed on the way: compare the tag itself.
+const sameVersion = (etag?: string | null) => (etag ?? '').replace(/^W\//, '').trim()
+const headerOf = (headers: Record<string, string> | undefined, name: string) =>
+  Object.entries(headers ?? {}).find(([key]) => key.toLowerCase() === name)?.[1]
+
+/** Whether the classes can be searched on this phone now, while an update downloads too. */
+export const isClassIndexSearchable = (current: ClassIndexState) =>
+  current.status === 'ready' || (current.status === 'downloading' && current.installed)
 
 const open = () =>
-  (database ??= SQLite.openDatabaseAsync(NAME, { useNewConnection: true }, DIRECTORY).then(
-    async db => {
-      await db.execAsync('PRAGMA query_only = ON;')
-      return db
-    }
-  ))
+  (database ??= openSQLiteDatabase(NAME, { useNewConnection: true }, DIRECTORY).then(async db => {
+    await db.execAsync('PRAGMA query_only = ON;')
+    return db
+  }))
 
 /** Whether the library is on this phone (checked once, then kept in step with downloads). */
 export const refreshClassIndexState = async () => {
   if (state.status === 'downloading') return state
+  await restoreOrphanedResourceBackup(FILE, `${FILE}.backup`)
   const info = await FileSystem.getInfoAsync(FILE)
   setState({ status: info.exists ? 'ready' : 'absent' })
   return state
 }
 
 /** Downloads (or replaces) the library, unpacked, and checks it opens before using it. */
-export const downloadClassIndex = async () => {
-  if (state.status === 'downloading') return
-  setState({ status: 'downloading', progress: 0 })
+const performClassIndexDownload = async () => {
+  const installed = (await FileSystem.getInfoAsync(FILE)).exists
+  setState({ status: 'downloading', progress: 0, installed })
   try {
     await FileSystem.makeDirectoryAsync(DIRECTORY, { intermediates: true }).catch(() => {})
     await FileSystem.deleteAsync(PART, { idempotent: true })
     const download = FileSystem.createDownloadResumable(URL, PART, {}, ({ totalBytesWritten }) =>
       setState({
         status: 'downloading',
+        installed,
         // The bytes come in unpacked, about three times the size sent.
         progress: Math.min(0.99, totalBytesWritten / (CLASS_INDEX_DOWNLOAD_MB * 2.9 * 1048576)),
       })
     )
     const result = await download.downloadAsync()
     if (!result || result.status !== 200) throw new Error(`HTTP ${result?.status ?? 'none'}`)
-    const check = await SQLite.openDatabaseAsync(
-      `${NAME}.part`,
-      { useNewConnection: true },
-      DIRECTORY
-    )
+    const check = await openSQLiteDatabase(`${NAME}.part`, { useNewConnection: true }, DIRECTORY)
     try {
       const row = await check.getFirstAsync<{ n: number }>(
         "SELECT count(*) AS n FROM notes WHERE kind IN ('class', 'captains', 'history')"
@@ -79,13 +91,16 @@ export const downloadClassIndex = async () => {
     } finally {
       await check.closeAsync()
     }
-    if (database) {
-      await (await database).closeAsync().catch(() => {})
-      database = null
-    }
-    await FileSystem.deleteAsync(FILE, { idempotent: true })
-    await FileSystem.moveAsync({ from: PART, to: FILE })
-    const etag = result.headers?.etag ?? result.headers?.ETag
+    await installAtomicResourceFile({
+      candidatePath: PART,
+      destinationPath: FILE,
+      beforeSwap: async () => {
+        const previous = database
+        database = null
+        if (previous) await (await previous).closeAsync()
+      },
+    })
+    const etag = sameVersion(headerOf(result.headers, 'etag'))
     if (etag) storage.set(ETAG_KEY, etag)
     storage.set(CHECKED_KEY, Date.now())
     setState({ status: 'ready' })
@@ -94,6 +109,17 @@ export const downloadClassIndex = async () => {
     setState({ status: 'failed', error: (error as Error).message })
     void refreshClassIndexState()
   }
+}
+
+export const downloadClassIndex = (): Promise<void> => {
+  // Reserve the job before the first filesystem await: simultaneous foreground events
+  // must not both write or remove the same partial download.
+  if (!downloadInFlight) {
+    downloadInFlight = performClassIndexDownload().finally(() => {
+      downloadInFlight = undefined
+    })
+  }
+  return downloadInFlight
 }
 
 /** Removes the library from this phone. */
@@ -117,8 +143,16 @@ export const isClassIndexOutdated = async ({ now = false } = {}): Promise<boolea
   try {
     const response = await fetch(URL, { method: 'HEAD' })
     storage.set(CHECKED_KEY, Date.now())
-    const etag = response.headers.get('etag')
-    return !!etag && etag !== storage.getString(ETAG_KEY)
+    const etag = sameVersion(response.headers.get('etag'))
+    if (!etag) return false
+    const kept = storage.getString(ETAG_KEY)
+    // A copy downloaded before its version was recorded: take this as its version, not a reason
+    // to download it all again.
+    if (!kept) {
+      storage.set(ETAG_KEY, etag)
+      return false
+    }
+    return sameVersion(kept) !== etag
   } catch {
     return false
   }
