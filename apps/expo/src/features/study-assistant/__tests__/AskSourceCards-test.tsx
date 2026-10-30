@@ -27,6 +27,7 @@ jest.mock('~common/ui/Box', () => ({
 }))
 jest.mock('~common/ui/Text', () => ({ __esModule: true, default: mockHost('Text') }))
 jest.mock('~common/ui/Icon', () => ({ FeatherIcon: mockHost('Icon') }))
+jest.mock('../AskGlassBackdrop', () => ({ __esModule: true, default: () => null }))
 jest.mock('../askPalette', () => ({
   useAskPalette: () => ({
     canvas: '#fff',

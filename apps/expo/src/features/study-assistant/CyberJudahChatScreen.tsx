@@ -48,6 +48,23 @@ import {
   saveChatTurn,
 } from './cyberJudahConversationRepository'
 
+/** What a reader sees for a model: CyberJudah's own names, never a provider's model id. */
+export function modelLabel(model: CyberJudahModel | undefined) {
+  if (!model) return 'Standard'
+  if (/anthropic|claude/i.test(`${model.provider} ${model.id}`))
+    return /haiku/i.test(model.id) ? 'Pro Fast' : /opus/i.test(model.id) ? 'Pro Max' : 'Pro'
+  if (/deepseek/i.test(model.id)) return 'Deep'
+  return 'Standard'
+}
+
+const MODEL_NOTES: Record<string, string> = {
+  Standard: 'Quick answers from the classes and the library',
+  Deep: 'Thinks longer for harder questions',
+  Pro: 'Careful reasoning for study',
+  'Pro Fast': 'Quick answers on Pro',
+  'Pro Max': 'The strongest reasoning',
+}
+
 const STARTERS = [
   ['Why do we keep the Passover?', 'The feast, from the law to Christ'],
   ['Who are the twelve tribes today?', 'Where the scattered nation is now'],
@@ -82,7 +99,34 @@ function IconButton({
   )
 }
 
-/** A response action as on cyberjudah.io/app: an icon and its word, quiet until pressed. */
+/** A round Liquid Glass button for the bar, as in the Claude and ChatGPT apps. */
+function GlassCircle({
+  name,
+  label,
+  onPress,
+  disabled = false,
+}: {
+  name: React.ComponentProps<typeof FeatherIcon>['name']
+  label: string
+  onPress: () => void
+  disabled?: boolean
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      disabled={disabled}
+      onPress={onPress}
+      className="h-11 w-11 items-center justify-center rounded-full"
+      style={({ pressed }) => ({ opacity: disabled ? 0.4 : pressed ? 0.7 : 1 })}
+    >
+      <AskGlassBackdrop radius={22} />
+      <FeatherIcon name={name} size={19} />
+    </Pressable>
+  )
+}
+
+/** A response action under an answer: a quiet icon, as in the Claude and ChatGPT apps. */
 function ActionPill({
   icon,
   label,
@@ -102,11 +146,11 @@ function ActionPill({
       accessibilityLabel={label}
       disabled={disabled}
       onPress={onPress}
-      className="min-h-9 flex-row items-center gap-[6px] rounded-full px-[10px]"
-      style={({ pressed }) => ({ opacity: disabled ? 0.4 : pressed ? 0.6 : 1 })}
+      hitSlop={4}
+      className="h-9 w-9 items-center justify-center rounded-full"
+      style={({ pressed }) => ({ opacity: disabled ? 0.4 : pressed ? 0.5 : 1 })}
     >
-      <FeatherIcon name={icon} size={16} style={{ color }} />
-      <Text style={{ color, fontSize: 13, fontWeight: '500' }}>{label}</Text>
+      <FeatherIcon name={icon} size={17} style={{ color }} />
     </Pressable>
   )
 }
@@ -146,6 +190,7 @@ function AccountChat({ account }: { account: string }) {
   const active = useRef<AbortController | null>(null)
   const mounted = useRef(true)
   const scroll = useRef<ScrollView>(null)
+  const input = useRef<TextInput>(null)
   const nearBottom = useRef(true)
   const selected = models.find(item => item.id === model)
 
@@ -363,45 +408,38 @@ function AccountChat({ account }: { account: string }) {
   const ink = { color: p.text1 }
   const quiet = { color: p.text3 }
   const card = { backgroundColor: p.surface1, borderWidth: 0.5, borderColor: p.edge }
-  const modelLine = selected
-    ? `${selected.name.replace(/^Claude /, '')}${selected.id.startsWith('@cf/') ? ' · free' : ''}`
-    : t('askChat.freeModel', { defaultValue: 'Answers from the teachings' })
+  const modelLine = modelLabel(selected)
+  const canSend = !!account && question.trim().length >= 2
 
   return (
     <Container className="bg-reverse">
-      <Header
-        title="Ask CyberJudah"
-        fontSize={16}
-        hasBackButton
-        rightComponent={
-          <HStack className="pr-2">
-            <IconButton
-              name="clock"
-              label={t('askChat.history', { defaultValue: 'Your chats' })}
-              onPress={() => setPanel('history')}
-              disabled={busy || !account}
-            />
-            <IconButton
-              name="edit"
-              label={t('assistant.new', { defaultValue: 'New chat' })}
-              onPress={startNew}
-              disabled={busy || !allTurns.length}
-            />
-          </HStack>
-        }
+      {/* No bar: round Liquid Glass buttons float over the page, as in the Claude and ChatGPT apps. */}
+      <HStack
+        className="items-center justify-between px-4"
+        style={{ paddingTop: insets.top + 6, paddingBottom: 6 }}
       >
-        <Pressable
-          onPress={() => setPanel('models')}
-          disabled={busy || !account}
-          accessibilityRole="button"
-          accessibilityLabel={`${t('askChat.chooseModel', { defaultValue: 'Choose a model' })}: ${modelLine}`}
-          className="mx-5 mb-3 min-h-11 flex-row items-center gap-2 self-start rounded-full px-3 py-2"
-        >
-          <AskGlassBackdrop radius={100} />
-          <Text className="text-xs">{modelLine}</Text>
-          <FeatherIcon name="chevron-down" size={14} color="grey" />
-        </Pressable>
-      </Header>
+        <HStack className="gap-2">
+          {router.canGoBack() && (
+            <GlassCircle
+              name="chevron-left"
+              label={t('Retour', { defaultValue: 'Back' })}
+              onPress={() => router.back()}
+            />
+          )}
+          <GlassCircle
+            name="menu"
+            label={t('askChat.history', { defaultValue: 'Your chats' })}
+            onPress={() => setPanel('history')}
+            disabled={busy || !account}
+          />
+        </HStack>
+        <GlassCircle
+          name="edit"
+          label={t('assistant.new', { defaultValue: 'New chat' })}
+          onPress={startNew}
+          disabled={busy || !allTurns.length}
+        />
+      </HStack>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -430,84 +468,45 @@ function AccountChat({ account }: { account: string }) {
           }}
         >
           {!allTurns.length && (
-            // The welcome: the lion, a question, a line, and four ways in.
-            <Box className="flex-1 items-center justify-center py-7">
+            // The welcome: the lion and one line, centred, as in the Claude app.
+            <Box className="flex-1 items-center justify-center px-6">
               <Image
                 source={require('~assets/images/icon.png')}
-                style={{ width: 76, height: 76, borderRadius: 18 }}
+                style={{ width: 56, height: 56, borderRadius: 14 }}
                 accessible={false}
               />
               <Text
-                className="mt-4 text-center"
+                className="mt-5 text-center"
                 style={[
                   ink,
-                  { fontSize: 28, fontWeight: '700', letterSpacing: -0.5, lineHeight: 34 },
+                  { fontSize: 26, fontWeight: '600', letterSpacing: -0.4, lineHeight: 32 },
                 ]}
               >
                 {t('askChat.welcome', { defaultValue: 'What would you like to learn?' })}
               </Text>
               <Text
-                className="mt-3 text-center"
-                style={[quiet, { fontSize: 15, lineHeight: 22, maxWidth: 330 }]}
+                className="mt-2 text-center"
+                style={[quiet, { fontSize: 15, lineHeight: 21, maxWidth: 320 }]}
               >
-                {t('askChat.intro', {
-                  defaultValue:
-                    'Ask about anything that was taught. Every answer comes from the classes, the notes, the law and the Scripture, and shows where it came from.',
+                {t('askChat.introShort', {
+                  defaultValue: 'Answers from the classes, the notes and the Scripture.',
                 })}
               </Text>
-              <Box className="mt-5 w-full flex-row flex-wrap" style={{ gap: 10 }}>
-                {STARTERS.map(([title, subtitle], i) => (
-                  <Pressable
-                    key={title}
-                    onPress={() => void send(title)}
-                    disabled={!account}
-                    accessibilityRole="button"
-                    className="rounded-2xl px-[14px] py-[13px]"
-                    style={({ pressed }) => [
-                      card,
-                      {
-                        width: '48.5%',
-                        minHeight: 86,
-                        opacity: !account ? 0.4 : pressed ? 0.75 : 1,
-                      },
-                    ]}
-                  >
-                    <Text style={[ink, { fontSize: 15, fontWeight: '600', lineHeight: 20 }]}>
-                      {t(`askChat.starter${i}Title`, { defaultValue: title })}
-                    </Text>
-                    <Text style={[quiet, { fontSize: 13, lineHeight: 18, marginTop: 4 }]}>
-                      {t(`askChat.starter${i}Detail`, { defaultValue: subtitle })}
-                    </Text>
-                  </Pressable>
-                ))}
-              </Box>
             </Box>
           )}
           {allTurns.map((turn, i) => (
             <Box key={turn.id} style={{ marginBottom: 28 }}>
-              {/* Your question: a quiet bubble on the right. */}
+              {/* Your question: a subtle rounded pill on the right. */}
               <Box
-                className="mb-5 self-end px-4 py-[11px]"
-                style={{
-                  maxWidth: '84%',
-                  backgroundColor: p.surface2,
-                  borderRadius: 20,
-                  borderBottomRightRadius: 6,
-                }}
+                className="mb-6 self-end rounded-[22px] px-4 py-[10px]"
+                style={{ maxWidth: '82%' }}
               >
+                <AskGlassBackdrop radius={22} />
                 <Text selectable style={[ink, { fontSize: 16, lineHeight: 24 }]}>
                   {turn.question}
                 </Text>
               </Box>
-              {/* CyberJudah's answer: the lion and the name, then the research and the prose. */}
-              <HStack className="mb-2 items-center gap-2">
-                <Image
-                  source={require('~assets/images/icon.png')}
-                  style={{ width: 24, height: 24, borderRadius: 6 }}
-                  accessible={false}
-                />
-                <Text style={[ink, { fontSize: 13, fontWeight: '600' }]}>CyberJudah</Text>
-              </HStack>
+              {/* CyberJudah's answer: full width, no bubble. */}
               <AskProgress
                 question={turn.question}
                 steps={turn.steps ?? []}
@@ -543,31 +542,32 @@ function AccountChat({ account }: { account: string }) {
                     </Box>
                   )}
                   {!busy && !turn.ui && i === chat.turns.length - 1 && !!turn.followups?.length && (
-                    <Box className="mt-3 gap-2">
+                    <Box className="mt-4">
                       {turn.followups.map(followup => (
                         <Pressable
                           key={followup}
                           onPress={() => void send(followup)}
-                          className="min-h-11 flex-row items-center gap-[10px] rounded-xl px-[14px] py-[10px]"
-                          style={({ pressed }) => [card, { opacity: pressed ? 0.75 : 1 }]}
+                          className="min-h-11 flex-row items-center gap-[10px] py-[10px]"
+                          style={({ pressed }) => ({
+                            opacity: pressed ? 0.6 : 1,
+                            borderTopWidth: 0.5,
+                            borderTopColor: p.edge,
+                          })}
                         >
                           <FeatherIcon
-                            name="arrow-up-right"
-                            size={14}
-                            style={{ color: p.accent }}
+                            name="corner-down-right"
+                            size={15}
+                            style={{ color: p.text3 }}
                           />
-                          <Text
-                            className="flex-1"
-                            style={[ink, { fontSize: 15, fontWeight: '500' }]}
-                          >
+                          <Text className="flex-1" style={[ink, { fontSize: 15 }]}>
                             {followup}
                           </Text>
                         </Pressable>
                       ))}
                     </Box>
                   )}
-                  {/* Copy, Retry and Report: always there, quiet until used. */}
-                  <HStack className="-ml-2 mt-2 flex-wrap items-center gap-1">
+                  {/* Copy, Retry and Report: quiet icons under the answer. */}
+                  <HStack className="-ml-2 mt-1 items-center">
                     {!!turn.answer && (
                       <ActionPill
                         icon={copied === turn.id ? 'check' : 'copy'}
@@ -698,14 +698,43 @@ function AccountChat({ account }: { account: string }) {
             </Text>
           </Pressable>
         )}
-        {/* The composer: a solid capsule, the send button round in the accent. */}
+        {/* The composer: one Liquid Glass card with the question on top and its controls below, as in
+            the Claude and ChatGPT apps. Ways in sit above it while the chat is empty. */}
         <Box
           className="w-full self-center px-3 pt-2"
           style={{ maxWidth: 744, paddingBottom: Math.max(insets.bottom, 8) }}
         >
-          <HStack className="items-end rounded-3xl p-2">
-            <AskGlassBackdrop />
+          {!allTurns.length && !!account && (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+              className="mb-2"
+              contentContainerStyle={{ gap: 8, paddingHorizontal: 2 }}
+            >
+              {STARTERS.map(([title, subtitle], i) => (
+                <Pressable
+                  key={title}
+                  onPress={() => void send(title)}
+                  accessibilityRole="button"
+                  className="rounded-[18px] px-4 py-[10px]"
+                  style={({ pressed }) => ({ maxWidth: 240, opacity: pressed ? 0.7 : 1 })}
+                >
+                  <AskGlassBackdrop radius={18} />
+                  <Text numberOfLines={1} style={[ink, { fontSize: 14, fontWeight: '600' }]}>
+                    {t(`askChat.starter${i}Title`, { defaultValue: title })}
+                  </Text>
+                  <Text numberOfLines={1} style={[quiet, { fontSize: 13, marginTop: 1 }]}>
+                    {t(`askChat.starter${i}Detail`, { defaultValue: subtitle })}
+                  </Text>
+                </Pressable>
+              ))}
+            </ScrollView>
+          )}
+          <Box className="rounded-[26px] px-2 pb-2 pt-1">
+            <AskGlassBackdrop radius={26} />
             <TextInput
+              ref={input}
               multiline
               maxLength={questionLimit}
               value={question}
@@ -721,43 +750,75 @@ function AccountChat({ account }: { account: string }) {
               accessibilityLabel={t('assistant.cyberjudah.placeholder')}
               editable={!!account}
               style={{
-                flex: 1,
                 color: p.text1,
                 fontSize: 17,
-                paddingHorizontal: 8,
-                paddingTop: 9,
-                paddingBottom: 9,
-                minHeight: 40,
+                paddingHorizontal: 10,
+                paddingTop: 10,
+                paddingBottom: 8,
+                minHeight: 44,
                 maxHeight: 160,
               }}
             />
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={t(busy ? 'assistant.stop' : 'assistant.send')}
-              disabled={!busy && (!account || question.trim().length < 2)}
-              onPress={() => (busy ? active.current?.abort() : void send())}
-              className="h-10 w-10 items-center justify-center rounded-full"
-              style={{
-                backgroundColor: busy
-                  ? p.text1
-                  : account && question.trim().length >= 2
-                    ? p.accent
-                    : p.surface2,
-              }}
-            >
-              {busy ? (
-                <Box
-                  style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: p.canvas }}
-                />
-              ) : (
-                <FeatherIcon
-                  name="arrow-up"
-                  size={20}
-                  style={{ color: account && question.trim().length >= 2 ? p.onAccent : p.text4 }}
-                />
-              )}
-            </Pressable>
-          </HStack>
+            <HStack className="items-center gap-1">
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('askChat.options', { defaultValue: 'Models and credits' })}
+                onPress={() => setPanel('models')}
+                disabled={busy || !account}
+                className="h-9 w-9 items-center justify-center rounded-full"
+                style={({ pressed }) => ({
+                  borderWidth: 0.5,
+                  borderColor: p.edge,
+                  opacity: busy || !account ? 0.4 : pressed ? 0.6 : 1,
+                })}
+              >
+                <FeatherIcon name="plus" size={19} style={{ color: p.text1 }} />
+              </Pressable>
+              <Pressable
+                onPress={() => setPanel('models')}
+                disabled={busy || !account}
+                accessibilityRole="button"
+                accessibilityLabel={`${t('askChat.chooseModel', { defaultValue: 'Choose a model' })}: ${modelLine}`}
+                className="h-9 flex-row items-center gap-1 rounded-full px-3"
+                style={({ pressed }) => ({ opacity: busy || !account ? 0.4 : pressed ? 0.6 : 1 })}
+              >
+                <Text style={[quiet, { fontSize: 14, fontWeight: '500' }]}>{modelLine}</Text>
+                <FeatherIcon name="chevron-down" size={13} style={{ color: p.text3 }} />
+              </Pressable>
+              <Box className="flex-1" />
+              {/* The mic opens the keyboard on the question, where iOS dictation is one tap away. */}
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('askChat.dictate', { defaultValue: 'Speak your question' })}
+                onPress={() => input.current?.focus()}
+                disabled={busy || !account}
+                className="h-9 w-9 items-center justify-center rounded-full"
+                style={({ pressed }) => ({ opacity: busy || !account ? 0.4 : pressed ? 0.6 : 1 })}
+              >
+                <FeatherIcon name="mic" size={18} style={{ color: p.text1 }} />
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t(busy ? 'assistant.stop' : 'assistant.send')}
+                disabled={!busy && !canSend}
+                onPress={() => (busy ? active.current?.abort() : void send())}
+                className="h-9 w-9 items-center justify-center rounded-full"
+                style={{ backgroundColor: busy || canSend ? p.text1 : p.edge }}
+              >
+                {busy ? (
+                  <Box
+                    style={{ width: 11, height: 11, borderRadius: 2, backgroundColor: p.canvas }}
+                  />
+                ) : (
+                  <FeatherIcon
+                    name="arrow-up"
+                    size={19}
+                    style={{ color: canSend ? p.canvas : p.text4 }}
+                  />
+                )}
+              </Pressable>
+            </HStack>
+          </Box>
           <HStack className="mt-[6px] justify-center px-2">
             <Text className="text-center" style={[quiet, { fontSize: 11.5 }]}>
               {t('askChat.checkSources', {
@@ -863,18 +924,10 @@ function AccountChat({ account }: { account: string }) {
                   })}
                 </Text>
                 {models.length ? (
-                  // As on cyberjudah.io/app: the free models first, then each provider's.
+                  // The included models first, then Pro; CyberJudah's names only, never a model id.
                   [
-                    ['Free, Always', models.filter(m => m.id.startsWith('@cf/'))] as const,
-                    ...[
-                      ...new Set(models.filter(m => !m.id.startsWith('@cf/')).map(m => m.provider)),
-                    ].map(
-                      g =>
-                        [
-                          g,
-                          models.filter(m => !m.id.startsWith('@cf/') && m.provider === g),
-                        ] as const
-                    ),
+                    ['Included', models.filter(m => m.id.startsWith('@cf/'))] as const,
+                    ['Pro', models.filter(m => !m.id.startsWith('@cf/'))] as const,
                   ]
                     .filter(([, list]) => list.length)
                     .map(([group, list]) => (
@@ -901,18 +954,13 @@ function AccountChat({ account }: { account: string }) {
                             }}
                           >
                             <Box className="flex-1">
-                              <Text style={{ color: p.text1, fontWeight: '600' }}>{item.name}</Text>
-                              {!!item.what && (
-                                <Text style={{ color: p.text3, fontSize: 13, marginTop: 2 }}>
-                                  {item.what}
-                                </Text>
-                              )}
-                            </Box>
-                            {item.id.startsWith('@cf/') && (
-                              <Text style={{ color: p.accent, fontSize: 13, fontWeight: '600' }}>
-                                Free
+                              <Text style={{ color: p.text1, fontWeight: '600' }}>
+                                {modelLabel(item)}
                               </Text>
-                            )}
+                              <Text style={{ color: p.text3, fontSize: 13, marginTop: 2 }}>
+                                {MODEL_NOTES[modelLabel(item)]}
+                              </Text>
+                            </Box>
                             {item.id === model && (
                               <FeatherIcon name="check" size={18} style={{ color: p.accent }} />
                             )}
