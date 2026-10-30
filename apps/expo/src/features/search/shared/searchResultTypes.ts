@@ -31,6 +31,8 @@ export type SearchEntityResult = {
   /** A recording to play by its video, for one the class library does not list. */
   classVideo?: string
   classStart?: number
+  /** A picture to show beside the result, such as a class's thumbnail. */
+  thumbnailUrl?: string
 }
 
 export type SearchEntityResultWithEndpoint = SearchEntityResult & {

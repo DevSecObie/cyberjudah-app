@@ -561,6 +561,9 @@ const SQLiteSearchScreen = ({
             description: hit.excerpt,
             classVideo: hit.video,
             classStart: hit.start,
+            thumbnailUrl:
+              readCachedClassLibrary()?.find(row => row.providerId === hit.video)?.thumbnailUrl ??
+              `https://i.ytimg.com/vi/${hit.video}/hqdefault.jpg`,
           })
         )
 
@@ -608,6 +611,7 @@ const SQLiteSearchScreen = ({
             description: item.snippet || [item.date, item.teacher].filter(Boolean).join(' · '),
             classWorkId: item.workId,
             classStart: item.start,
+            thumbnailUrl: item.thumbnailUrl,
           })
         ),
       ]
