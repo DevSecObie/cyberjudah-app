@@ -371,7 +371,7 @@ export default function ClassNotesList({
       windowSize={7}
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{ paddingTop: 16, paddingBottom: 48 }}
-      style={{ backgroundColor: theme.colors.reverse }}
+      style={{ flex: 1, backgroundColor: theme.colors.reverse }}
     />
   )
 }

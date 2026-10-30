@@ -31,10 +31,16 @@ const PassageMediaPlayerScreen = () => {
   const stylingTheme = useStylingTheme()
 
   const { t } = useTranslation()
-  const { workId, language: requestedLanguage } = useLocalSearchParams<{
+  const {
+    workId,
+    language: requestedLanguage,
+    start,
+  } = useLocalSearchParams<{
     workId?: string
     language?: string
+    start?: string
   }>()
+  const startSeconds = /^\d{1,6}$/.test(start ?? '') ? Number(start) : 0
   const preferredLanguage = useLanguage()
   const language =
     requestedLanguage === 'fr' || requestedLanguage === 'en' ? requestedLanguage : preferredLanguage
@@ -43,7 +49,17 @@ const PassageMediaPlayerScreen = () => {
   const classPlayerRef = useRef<WebView>(null)
   const router = useRouter()
   const item = workId ? (getPassageMediaById(workId, language) ?? getCachedClassById(workId)) : null
-  const notesPath = item && 'notesPath' in item ? String(item.notesPath) : ''
+  // A class's notes come from the class library, even when the catalog also lists the video.
+  const cachedClass = workId ? getCachedClassById(workId) : null
+  const notesPath =
+    item && 'notesPath' in item ? String(item.notesPath) : (cachedClass?.notesPath ?? '')
+  console.log(
+    '[ClassPlayer]',
+    workId,
+    !!getPassageMediaById(workId ?? '', language),
+    !!getCachedClassById(workId ?? ''),
+    notesPath
+  )
   const notes = useQuery({
     queryKey: ['cyberjudah-class-note-blocks', notesPath],
     queryFn: () => loadClassNoteBlocks(notesPath, item?.providerId ?? ''),
@@ -88,7 +104,7 @@ const PassageMediaPlayerScreen = () => {
                     // CyberJudah's hosted video page: YouTube refuses embeds from an inline page.
                     <WebView
                       ref={classPlayerRef}
-                      source={{ uri: getPassageMediaEmbedUrl(item.providerId) }}
+                      source={{ uri: getPassageMediaEmbedUrl(item.providerId, startSeconds) }}
                       style={{ width: playerWidth, height: playerHeight, borderRadius: 14 }}
                       allowsInlineMediaPlayback
                       allowsFullscreenVideo
