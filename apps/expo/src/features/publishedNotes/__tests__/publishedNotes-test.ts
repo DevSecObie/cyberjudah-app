@@ -51,6 +51,26 @@ describe('published notes', () => {
     expect(sections[0].data.map(n => n.url)).toEqual(['/study/genesis/1', '/study/genesis/2'])
   })
 
+  it('orders the books as the 1611 has them: the Apocrypha between the Testaments', () => {
+    const notes = toStudyNotes(
+      ['Matthew', '1 Esdras', 'Malachi', 'Acts', 'Genesis', 'Sirach'].map((book, i) => ({
+        kind: 'study',
+        title: `${book} 1: x`,
+        url: `/study/b${i}/1`,
+        book,
+        chapters: [1, 1],
+      }))
+    )
+    expect(studySections(notes).map(s => s.title)).toEqual([
+      'Genesis',
+      'Malachi',
+      '1 Esdras',
+      'Sirach',
+      'Matthew',
+      'Acts',
+    ])
+  })
+
   it('searches titles and ranges', () => {
     expect(
       studySections(toStudyNotes(index), 'eden')

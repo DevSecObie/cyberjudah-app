@@ -15,3 +15,4 @@
   the Law. They read live from data.cyberjudah.io, keep the last list for offline, use the class
   notes' layout (verse blocks, precepts under each verse) and have Save as PDF. A link from one
   note to a study note or encyclopedia entry opens it in the app.
+- "4 Chapters a Day" lists the books in the 1611 order (Old Testament, Apocrypha, New Testament), chapters in order.
