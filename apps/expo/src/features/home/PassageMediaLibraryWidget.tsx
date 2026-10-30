@@ -55,7 +55,7 @@ const PassageMediaLibraryWidget = () => {
             source={
               latest
                 ? { uri: latest.thumbnailUrl }
-                : require('~assets/images/home/courses-videos.jpg')
+                : require('~assets/images/home/courses-videos.webp')
             }
             placeholder={latest ? { blurhash: latest.blurHash } : undefined}
             cachePolicy="memory-disk"
