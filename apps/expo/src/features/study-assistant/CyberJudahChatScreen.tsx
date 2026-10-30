@@ -30,6 +30,8 @@ import AskInteractiveAnswer from './AskInteractiveAnswer'
 import AskCreditsCard from './AskCreditsCard'
 import AskProgress from './AskProgress'
 import AskGlassBackdrop from './AskGlassBackdrop'
+import Sheet from '~common/ModalSheet'
+import { SheetHeader, SheetView, type SheetRef } from '~common/sheet'
 import { useAskPalette } from './askPalette'
 import {
   askCyberJudah,
@@ -277,7 +279,8 @@ function AccountChat({ account }: { account: string }) {
   const [error, setError] = useState('')
   const [historyError, setHistoryError] = useState(false)
   const [unsaved, setUnsaved] = useState<{ chat: Chat; turn: ChatTurn } | null>(null)
-  const [panel, setPanel] = useState<'history' | 'models' | null>(null)
+  const [panel, setPanel] = useState<'history' | null>(null)
+  const modelSheet = useRef<SheetRef>(null)
   const [models, setModels] = useState<CyberJudahModel[]>([])
   const [model, setModel] = useState('')
   const [defaultModel, setDefaultModel] = useState('')
@@ -567,8 +570,8 @@ function AccountChat({ account }: { account: string }) {
                 <Box
                   className="items-center justify-center rounded-full"
                   style={{
-                    width: 132,
-                    height: 132,
+                    width: 112,
+                    height: 112,
                     backgroundColor: p.accentAt(0.08),
                     borderWidth: 1,
                     borderColor: p.accentAt(0.2),
@@ -580,7 +583,7 @@ function AccountChat({ account }: { account: string }) {
                 >
                   <Image
                     source={require('~assets/images/icon.png')}
-                    style={{ width: 84, height: 84, borderRadius: 20 }}
+                    style={{ width: 72, height: 72, borderRadius: 18 }}
                     accessible={false}
                   />
                 </Box>
@@ -876,6 +879,7 @@ function AccountChat({ account }: { account: string }) {
                 accessibilityLiveRegion="polite"
               >
                 <AskGlassBackdrop radius={18} />
+
                 <ThinkingDot color={p.accent} />
                 <Text
                   numberOfLines={1}
@@ -949,7 +953,7 @@ function AccountChat({ account }: { account: string }) {
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={t('askChat.options', { defaultValue: 'Models and credits' })}
-                onPress={() => setPanel('models')}
+                onPress={() => modelSheet.current?.present()}
                 disabled={!account}
                 className="h-9 w-9 items-center justify-center rounded-full"
                 style={({ pressed }) => ({
@@ -990,7 +994,7 @@ function AccountChat({ account }: { account: string }) {
                 </Pressable>
               )}
               <Pressable
-                onPress={() => setPanel('models')}
+                onPress={() => modelSheet.current?.present()}
                 disabled={!account}
                 accessibilityRole="button"
                 accessibilityLabel={`${t('askChat.chooseModel', { defaultValue: 'Choose a model' })}: ${modelLine}`}
@@ -1112,7 +1116,7 @@ function AccountChat({ account }: { account: string }) {
         </HStack>
       </Box>
       <Modal
-        visible={panel !== null}
+        visible={panel === 'history'}
         animationType="slide"
         onRequestClose={() => setPanel(null)}
         presentationStyle="pageSheet"
@@ -1138,9 +1142,7 @@ function AccountChat({ account }: { account: string }) {
               className="flex-1 text-center"
               style={[ink, { fontSize: 18, fontWeight: '700', marginRight: 44 }]}
             >
-              {panel === 'history'
-                ? t('askChat.yourChats', { defaultValue: 'Your chats' })
-                : t('askChat.selectModel', { defaultValue: 'Select model' })}
+              {t('askChat.yourChats', { defaultValue: 'Your chats' })}
             </Text>
           </HStack>
           <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: insets.bottom + 20 }}>
@@ -1207,89 +1209,100 @@ function AccountChat({ account }: { account: string }) {
                   </HStack>
                 ))}
               </>
-            ) : (
-              <>
-                {models.length ? (
-                  // One rounded group per tier: each row the model's name and what it is for, a tick on
-                  // the chosen one, as in the Claude app's model sheet.
-                  [
-                    ['', models.filter(m => m.id.startsWith('@cf/'))] as const,
-                    ['Pro', models.filter(m => !m.id.startsWith('@cf/'))] as const,
-                  ]
-                    .filter(([, list]) => list.length)
-                    .map(([group, list]) => (
-                      <Box key={group || 'included'} className="mb-5">
-                        {!!group && (
-                          <Text
-                            style={[
-                              quiet,
-                              { fontSize: 13, fontWeight: '600', marginBottom: 8, marginLeft: 4 },
-                            ]}
-                          >
-                            {group}
-                          </Text>
-                        )}
-                        <Box
-                          className="overflow-hidden rounded-3xl"
-                          style={{ backgroundColor: p.surface1 }}
-                        >
-                          {list.map((item, row) => (
-                            <Pressable
-                              key={item.id}
-                              accessibilityRole="radio"
-                              accessibilityState={{ checked: item.id === model }}
-                              onPress={() => {
-                                void Haptics.selectionAsync().catch(() => {})
-                                setModel(item.id)
-                                setPanel(null)
-                              }}
-                              className="flex-row items-center px-5"
-                              style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
-                            >
-                              <Box
-                                className="flex-1 flex-row items-center py-[18px]"
-                                style={{
-                                  borderTopWidth: row ? 1 : 0,
-                                  borderTopColor: p.edge,
-                                }}
-                              >
-                                <Box className="flex-1">
-                                  <Text style={[ink, { fontSize: 18, fontWeight: '500' }]}>
-                                    {modelName(item)}
-                                  </Text>
-                                  <Text style={[quiet, { fontSize: 15, marginTop: 4 }]}>
-                                    {MODEL_NOTES[modelLabel(item)]}
-                                  </Text>
-                                </Box>
-                                {item.id === model && (
-                                  <FeatherIcon name="check" size={22} style={{ color: p.accent }} />
-                                )}
-                              </Box>
-                            </Pressable>
-                          ))}
-                        </Box>
-                      </Box>
-                    ))
-                ) : (
-                  <Text style={{ color: p.text3 }}>
-                    {t('askChat.defaultOnly', {
-                      defaultValue:
-                        'The default free model is available. More model choices will appear when the service is updated.',
-                    })}
-                  </Text>
-                )}
-                <Text className="mb-4 px-1 text-sm" style={{ color: p.text3 }}>
-                  {t('askChat.modelNotice', {
-                    defaultValue:
-                      'These models use the free Ask allowance. Availability depends on the shared daily limit.',
-                  })}
-                </Text>
-                <AskCreditsCard account={account} purchasesEnabled={purchasesEnabled} />
-              </>
-            )}
+            ) : null}
           </ScrollView>
         </Container>
       </Modal>
+      {/* The model picker is Bible Strong's own drawer, like the app's other choosers. */}
+      <Sheet
+        ref={modelSheet}
+        snapPoints={['auto']}
+        header={
+          <SheetHeader
+            centerTitle
+            title={t('askChat.selectModel', { defaultValue: 'Select model' })}
+          />
+        }
+      >
+        <SheetView className="px-5 pb-4 pt-5">
+          {models.length ? (
+            // One rounded group per tier: each row the model's name and what it is for, a tick on
+            // the chosen one, as in the Claude app's model sheet.
+            [
+              ['', models.filter(m => m.id.startsWith('@cf/'))] as const,
+              ['Pro', models.filter(m => !m.id.startsWith('@cf/'))] as const,
+            ]
+              .filter(([, list]) => list.length)
+              .map(([group, list]) => (
+                <Box key={group || 'included'} className="mb-5">
+                  {!!group && (
+                    <Text
+                      style={[
+                        quiet,
+                        { fontSize: 13, fontWeight: '600', marginBottom: 8, marginLeft: 4 },
+                      ]}
+                    >
+                      {group}
+                    </Text>
+                  )}
+                  <Box
+                    className="overflow-hidden rounded-3xl"
+                    style={{ backgroundColor: p.surface1 }}
+                  >
+                    {list.map((item, row) => (
+                      <Pressable
+                        key={item.id}
+                        accessibilityRole="radio"
+                        accessibilityState={{ checked: item.id === model }}
+                        onPress={() => {
+                          void Haptics.selectionAsync().catch(() => {})
+                          setModel(item.id)
+                          modelSheet.current?.dismiss()
+                        }}
+                        className="flex-row items-center px-5"
+                        style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+                      >
+                        <Box
+                          className="flex-1 flex-row items-center py-[18px]"
+                          style={{
+                            borderTopWidth: row ? 1 : 0,
+                            borderTopColor: p.edge,
+                          }}
+                        >
+                          <Box className="flex-1">
+                            <Text style={[ink, { fontSize: 18, fontWeight: '500' }]}>
+                              {modelName(item)}
+                            </Text>
+                            <Text style={[quiet, { fontSize: 15, marginTop: 4 }]}>
+                              {MODEL_NOTES[modelLabel(item)]}
+                            </Text>
+                          </Box>
+                          {item.id === model && (
+                            <FeatherIcon name="check" size={22} style={{ color: p.accent }} />
+                          )}
+                        </Box>
+                      </Pressable>
+                    ))}
+                  </Box>
+                </Box>
+              ))
+          ) : (
+            <Text style={{ color: p.text3 }}>
+              {t('askChat.defaultOnly', {
+                defaultValue:
+                  'The default free model is available. More model choices will appear when the service is updated.',
+              })}
+            </Text>
+          )}
+          <Text className="mb-4 px-1 text-sm" style={{ color: p.text3 }}>
+            {t('askChat.modelNotice', {
+              defaultValue:
+                'These models use the free Ask allowance. Availability depends on the shared daily limit.',
+            })}
+          </Text>
+          <AskCreditsCard account={account} purchasesEnabled={purchasesEnabled} />
+        </SheetView>
+      </Sheet>
     </Container>
   )
 }
