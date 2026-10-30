@@ -78,9 +78,12 @@ const pageHtml = (
 export default function ClassNotesView({
   html,
   onLinkPress,
+  fill,
 }: {
   html: string
   onLinkPress: (href: string) => void
+  /** Fill the space given and scroll inside, rather than grow as tall as the notes. */
+  fill?: boolean
 }) {
   const theme = useTheme()
   const [height, setHeight] = useState(600)
@@ -107,9 +110,13 @@ export default function ClassNotesView({
         } catch {}
       }}
       onShouldStartLoadWithRequest={request => request.url === 'about:blank'}
-      scrollEnabled={false}
-      style={{ width: '100%', height, backgroundColor: 'transparent' }}
-      containerStyle={{ flex: 0 }}
+      scrollEnabled={!!fill}
+      style={{
+        width: '100%',
+        backgroundColor: 'transparent',
+        ...(fill ? { flex: 1 } : { height }),
+      }}
+      containerStyle={fill ? { flex: 1 } : { flex: 0 }}
     />
   )
 }
