@@ -11,6 +11,7 @@ import { calculateLabel } from './constants'
 import { TimelineEventDetail, TimelineEvent as TimelineEventProps } from './types'
 import { Image } from 'expo-image'
 import Media from './EventDetailsMedia'
+import TimelineArticle from './TimelineArticle'
 import Loading from '~common/Loading'
 import { useResourceAccess } from '~features/resources/resourceAccess'
 import { resourceQueryKeys } from '~helpers/resourceQueryKeys'
@@ -33,9 +34,7 @@ const Description = ({ description, article }: Partial<TimelineEventDetail>) => 
       <Paragraph className="font-bold" scale={-1}>
         {description}
       </Paragraph>
-      <Paragraph className="mt-[20px]" scale={-1}>
-        {article}
-      </Paragraph>
+      {!!article && <TimelineArticle article={article} />}
     </Box>
   )
 }

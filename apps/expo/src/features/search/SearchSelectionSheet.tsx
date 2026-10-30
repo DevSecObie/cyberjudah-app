@@ -158,6 +158,7 @@ const searchItemTypeToBrowseMode: Record<SearchItemType, BrowseMode | null> = {
   commentary: null,
   plan: null,
   timeline: null,
+  classes: null,
   passages: null,
   notes: 'note',
   links: 'link',

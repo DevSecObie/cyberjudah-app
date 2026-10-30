@@ -103,6 +103,19 @@ import {
   getSearchAnalyticsInputKind,
 } from './searchAnalyticsModel'
 import { createSearchExperienceController } from './searchExperience'
+import { useRouter } from 'expo-router'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
+import { findClasses, findClassesOnDevice } from '~features/passageMediaLibrary/classSearch'
+import { formatMoment, searchSaidInClass } from '~features/passageMediaLibrary/saidInClass'
+import {
+  isClassIndexSearchable,
+  searchClassIndex,
+  useClassIndexState,
+} from '~features/passageMediaLibrary/classLibraryIndex'
+import {
+  loadClassLibrary,
+  readCachedClassLibrary,
+} from '~features/passageMediaLibrary/cyberJudahClasses'
 type Props = {
   searchValue: string
   setSearchValue: (value: string) => void
@@ -114,6 +127,9 @@ type Props = {
 }
 
 const MIN_SEARCH_LENGTH = SEARCH_MIN_QUERY_LENGTH
+// The class search needs a word of some length: two letters match nearly every class.
+const MIN_CLASS_SEARCH_LENGTH = 3
+const SAID_IN_CLASS_SIGN_IN_ID = 'cyberjudah-said-in-class-sign-in'
 const SEARCH_ALPHABET_FOOTER_HEIGHT = 70
 
 type DictionaryRow = DictionarySearchRow
@@ -140,6 +156,7 @@ const SQLiteSearchScreen = ({
   const { t, i18n } = useTranslation()
   const theme = useTheme()
   const keyboardFooterBottom = useKeyboardFooterBottom(SEARCH_ALPHABET_FOOTER_HEIGHT)
+  const router = useRouter()
   const openCatalogTab = useOpenInNewTab()
   const openStudyObject = useOpenStudyObject()
   const resources = useResourceAccess()
@@ -482,6 +499,84 @@ const SQLiteSearchScreen = ({
     ...(shouldSearchNave ? [naveQuery] : []),
   ])
 
+  // CyberJudah's classes: every class whose notes say the words, from the site's search of the notes.
+  const shouldSearchClasses =
+    usesCyberJudahEditorial() &&
+    itemFilters.classes !== false &&
+    trimmedSearchValue.length >= MIN_CLASS_SEARCH_LENGTH
+  const classIndex = useClassIndexState()
+  const classQuery = useQuery({
+    queryKey: ['cyberjudah-search-classes', trimmedSearchValue, isClassIndexSearchable(classIndex)],
+    queryFn: () => {
+      const library = async () => readCachedClassLibrary() ?? loadClassLibrary()
+      // On this phone when the class library is kept here; from the site until then.
+      return isClassIndexSearchable(classIndex)
+        ? findClassesOnDevice(trimmedSearchValue, library, searchClassIndex).catch(() =>
+            findClasses(trimmedSearchValue, library)
+          )
+        : findClasses(trimmedSearchValue, library)
+    },
+    enabled: shouldSearchClasses,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+  })
+  // Said in Class: the recordings' own words (their transcripts), searched on CyberJudah's server.
+  const saidInClassQuery = useQuery({
+    queryKey: ['cyberjudah-said-in-class', trimmedSearchValue],
+    queryFn: () => searchSaidInClass(trimmedSearchValue),
+    enabled: shouldSearchClasses,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+  })
+  const saidInClassResults: SearchEntityResult[] = !shouldSearchClasses
+    ? []
+    : saidInClassQuery.data && !saidInClassQuery.data.signedIn
+      ? [
+          {
+            id: SAID_IN_CLASS_SIGN_IN_ID,
+            type: 'classes',
+            iconType: 'classes',
+            title: 'Sign in to search what was said in class',
+            description:
+              'Every recording’s own words, including the classes that have no notes yet, each playing from the second it was said.',
+          },
+        ]
+      : (saidInClassQuery.data?.hits ?? []).map(
+          (hit, index): SearchEntityResult => ({
+            id: `said:${hit.video}:${hit.start}:${index}`,
+            type: 'classes',
+            iconType: 'classes',
+            title: hit.title,
+            chip: formatMoment(hit.start),
+            subtitle: hit.date,
+            description: hit.excerpt,
+            classVideo: hit.video,
+            classStart: hit.start,
+            thumbnailUrl:
+              readCachedClassLibrary()?.find(row => row.providerId === hit.video)?.thumbnailUrl ??
+              `https://i.ytimg.com/vi/${hit.video}/hqdefault.jpg`,
+          })
+        )
+
+  const classResults: SearchEntityResult[] = shouldSearchClasses
+    ? [
+        ...(classQuery.data ?? []).map(
+          (item): SearchEntityResult => ({
+            id: `class:${item.notesPath}`,
+            type: 'classes',
+            iconType: 'classes',
+            title: item.title,
+            chip: item.series,
+            subtitle: [item.date, item.teacher].filter(Boolean).join(' · '),
+            description: item.snippet || [item.date, item.teacher].filter(Boolean).join(' · '),
+            classWorkId: item.workId,
+            classStart: item.start,
+            thumbnailUrl: item.thumbnailUrl,
+          })
+        ),
+      ]
+    : []
+
   const catalogScopes = (['commentary', 'plan', 'timeline'] as const).filter(
     type => itemFilters[type]
   )
@@ -516,6 +611,8 @@ const SQLiteSearchScreen = ({
     strongResults,
     dictionaryResults,
     naveResults,
+    classResults,
+    saidInClassResults,
     passageResults: mergedPassages,
     totalPassageCount: totalCount,
     semanticSearchError,
@@ -530,6 +627,8 @@ const SQLiteSearchScreen = ({
       strong: isStrongSearching,
       dictionary: isDictionarySearching,
       nave: isNaveSearching,
+      classes: shouldSearchClasses && classQuery.isFetching,
+      saidInClass: shouldSearchClasses && saidInClassQuery.isFetching,
     },
     t,
   })
@@ -764,6 +863,28 @@ const SQLiteSearchScreen = ({
   const openSearchItem = (item: SearchEntityResult) => {
     dismissSearchInput()
     if (!isShowingPreviousResults) recordResultOpened(item)
+    if (item.id === SAID_IN_CLASS_SIGN_IN_ID) {
+      router.push('/login')
+      return
+    }
+    if (item.type === 'classes' && item.classVideo && !item.classWorkId) {
+      // A recording the class library may not list (no notes yet): the player opens it by its video.
+      const listed = readCachedClassLibrary()?.find(row => row.providerId === item.classVideo)
+      router.push({
+        pathname: '/(explore)/passage-media-player',
+        params: listed
+          ? { workId: listed.workId, start: String(item.classStart ?? 0) }
+          : { video: item.classVideo, title: item.title, start: String(item.classStart ?? 0) },
+      })
+      return
+    }
+    if (item.type === 'classes' && item.classWorkId) {
+      router.push({
+        pathname: '/(explore)/passage-media-player',
+        params: { workId: item.classWorkId, start: String(item.classStart ?? 0) },
+      })
+      return
+    }
     if (item.catalogResult) {
       void catalogSelection.select({ ...item.catalogResult.tab, id: generateUUID() })
       return

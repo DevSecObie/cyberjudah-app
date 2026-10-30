@@ -65,3 +65,41 @@ export const classesForHits = (
     return [{ ...item, snippet: hit.snippet }]
   })
 }
+
+export type ClassSearchResult = CyberJudahClass & { snippet: string; start?: number }
+
+/**
+ * The classes for the Search tab: every class, Captains and Hidden History episode whose notes
+ * say the words, best first, with the passage that says them.
+ */
+export const findClasses = async (
+  query: string,
+  loadLibrary: () => Promise<CyberJudahClass[]>,
+  fetcher: typeof fetch = fetch
+): Promise<ClassSearchResult[]> => {
+  const [hits, classes] = await Promise.all([
+    searchInsideClasses(query, ALL_KINDS, fetcher),
+    loadLibrary(),
+  ])
+  return classesForHits(hits, classes)
+}
+
+/**
+ * The same search from the library kept on this phone: milliseconds, offline too, and each class
+ * opens at the moment its words were said. Classes the library lists but the class library does
+ * not yet (a class published since it was cached) are left out until it refreshes.
+ */
+export const findClassesOnDevice = async (
+  query: string,
+  loadLibrary: () => Promise<CyberJudahClass[]>,
+  search: (query: string) => Promise<{ url: string; snippet: string; start?: number }[]>
+): Promise<ClassSearchResult[]> => {
+  const [hits, classes] = await Promise.all([search(query), loadLibrary()])
+  const byPath = new Map(classes.map(item => [item.notesPath, item]))
+  return hits.flatMap(hit => {
+    const item = byPath.get(hit.url)
+    return item
+      ? [{ ...item, snippet: hit.snippet.replace(/\s+/g, ' ').trim(), start: hit.start }]
+      : []
+  })
+}

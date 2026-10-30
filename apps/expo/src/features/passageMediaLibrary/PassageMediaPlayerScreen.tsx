@@ -8,9 +8,8 @@ import YoutubePlayer from '~helpers/react-native-youtube-iframe'
 import WebView from 'react-native-webview'
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes'
 import Header from '~common/Header'
-import Box, { VStack } from '~common/ui/Box'
+import Box, { TouchableBox, VStack } from '~common/ui/Box'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
-import ScrollView from '~common/ui/ScrollView'
 import Text from '~common/ui/Text'
 import {
   formatPassageMediaDuration,
@@ -21,10 +20,10 @@ import { IS_FORM_SHEET } from '~helpers/constants'
 import useLanguage from '~helpers/useLanguage'
 import { useQuery } from '@tanstack/react-query'
 import { getCommentaryBibleViewRoute } from '~features/commentaries/commentaryReferenceNavigation'
-import ClassNotesView from './ClassNotesView'
+import ClassNotesList from './ClassNotesList'
 import ClassNotesPdfButton from '~features/notesExport/ClassNotesPdfButton'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
-import { CLASS_SEEK_PREFIX, getCachedClassById, loadClassNotes } from './cyberJudahClasses'
+import { CLASS_SEEK_PREFIX, getCachedClassById, loadClassNoteBlocks } from './cyberJudahClasses'
 const YOUTUBE_PLAYER_BASE_URL =
   'https://lonelycpp.github.io/react-native-youtube-iframe/iframe_v2.html'
 
@@ -32,10 +31,21 @@ const PassageMediaPlayerScreen = () => {
   const stylingTheme = useStylingTheme()
 
   const { t } = useTranslation()
-  const { workId, language: requestedLanguage } = useLocalSearchParams<{
+  const {
+    workId,
+    language: requestedLanguage,
+    start,
+    video,
+    title: videoTitle,
+  } = useLocalSearchParams<{
     workId?: string
     language?: string
+    start?: string
+    /** A recording the class library does not list (Said in Class), by its video and title. */
+    video?: string
+    title?: string
   }>()
+  const startSeconds = /^\d{1,6}$/.test(start ?? '') ? Number(start) : 0
   const preferredLanguage = useLanguage()
   const language =
     requestedLanguage === 'fr' || requestedLanguage === 'en' ? requestedLanguage : preferredLanguage
@@ -43,11 +53,32 @@ const PassageMediaPlayerScreen = () => {
   const [playerError, setPlayerError] = useState<string>()
   const classPlayerRef = useRef<WebView>(null)
   const router = useRouter()
-  const item = workId ? (getPassageMediaById(workId, language) ?? getCachedClassById(workId)) : null
-  const notesPath = item && 'notesPath' in item ? String(item.notesPath) : ''
+  const item = workId
+    ? (getPassageMediaById(workId, language) ?? getCachedClassById(workId))
+    : video && /^[\w-]{11}$/.test(video)
+      ? ({
+          workId: `cyberjudah-recording-${video}`,
+          editionId: `cyberjudah-recording-${video}`,
+          providerId: video,
+          title: videoTitle ?? '',
+          durationSeconds: 0,
+          attributionLabel: 'CyberJudah',
+        } as unknown as NonNullable<ReturnType<typeof getPassageMediaById>>)
+      : null
+  // A class's notes come from the class library, even when the catalog also lists the video.
+  const cachedClass = workId ? getCachedClassById(workId) : null
+  const notesPath =
+    item && 'notesPath' in item ? String(item.notesPath) : (cachedClass?.notesPath ?? '')
+  console.log(
+    '[ClassPlayer]',
+    workId,
+    !!getPassageMediaById(workId ?? '', language),
+    !!getCachedClassById(workId ?? ''),
+    notesPath
+  )
   const notes = useQuery({
-    queryKey: ['cyberjudah-class-notes', notesPath],
-    queryFn: () => loadClassNotes(notesPath, item?.providerId ?? ''),
+    queryKey: ['cyberjudah-class-note-blocks', notesPath],
+    queryFn: () => loadClassNoteBlocks(notesPath, item?.providerId ?? ''),
     enabled: !!notesPath,
     staleTime: 60 * 60 * 1000,
     networkMode: 'always',
@@ -89,7 +120,7 @@ const PassageMediaPlayerScreen = () => {
                     // CyberJudah's hosted video page: YouTube refuses embeds from an inline page.
                     <WebView
                       ref={classPlayerRef}
-                      source={{ uri: getPassageMediaEmbedUrl(item.providerId) }}
+                      source={{ uri: getPassageMediaEmbedUrl(item.providerId, startSeconds) }}
                       style={{ width: playerWidth, height: playerHeight, borderRadius: 14 }}
                       allowsInlineMediaPlayback
                       allowsFullscreenVideo
@@ -151,41 +182,44 @@ const PassageMediaPlayerScreen = () => {
                 </VStack>
               </VStack>
             </Box>
-            <ScrollView
-              backgroundColor="reverse"
-              contentContainerStyle={{
-                alignItems: 'center',
-                paddingHorizontal: 16,
-                paddingTop: 16,
-              }}
-            >
-              {!!notes.data && (
-                <Box style={{ width: playerWidth }}>
-                  <ClassNotesView
-                    html={notes.data}
-                    onLinkPress={href => {
-                      if (href.startsWith(CLASS_SEEK_PREFIX)) {
-                        const seconds = Number(href.slice(CLASS_SEEK_PREFIX.length))
-                        // Restart the class's own player at that moment.
-                        classPlayerRef.current?.injectJavaScript(`(() => {
-                          const frame = document.querySelector('iframe')
-                          if (!frame) return
-                          const url = new URL(frame.src)
-                          url.searchParams.set('start', '${seconds}')
-                          url.searchParams.set('autoplay', '1')
-                          frame.src = url.toString()
-                        })(); true`)
-                      } else if (href.startsWith('bible://')) {
-                        const route = getCommentaryBibleViewRoute(href.slice('bible://'.length))
-                        if (route) router.push(route)
-                      } else if (/^https:\/\//.test(href)) {
-                        void Linking.openURL(href)
-                      }
-                    }}
-                  />
-                </Box>
-              )}
-            </ScrollView>
+            {/* The notes in the app's own views, laid out a block at a time as they scroll. A failed
+                load says so and can be tried again, rather than leaving the space empty. */}
+            {notes.data ? (
+              <ClassNotesList
+                blocks={notes.data}
+                width={playerWidth}
+                onLinkPress={href => {
+                  if (href.startsWith(CLASS_SEEK_PREFIX)) {
+                    const seconds = Number(href.slice(CLASS_SEEK_PREFIX.length))
+                    // Restart the class's own player at that moment.
+                    classPlayerRef.current?.injectJavaScript(`(() => {
+                      const frame = document.querySelector('iframe')
+                      if (!frame) return
+                      const url = new URL(frame.src)
+                      url.searchParams.set('start', '${seconds}')
+                      url.searchParams.set('autoplay', '1')
+                      frame.src = url.toString()
+                    })(); true`)
+                  } else if (href.startsWith('bible://')) {
+                    const route = getCommentaryBibleViewRoute(href.slice('bible://'.length))
+                    if (route) router.push(route)
+                  } else if (/^https:\/\//.test(href)) {
+                    void Linking.openURL(href)
+                  }
+                }}
+              />
+            ) : notesPath ? (
+              <VStack className="py-[40px] px-[20px] items-center gap-[12px]">
+                <Text className="text-grey text-center">
+                  {notes.isError ? 'The notes did not load.' : 'Loading the notes…'}
+                </Text>
+                {notes.isError && (
+                  <TouchableBox accessibilityRole="button" onPress={() => notes.refetch()}>
+                    <Text className="text-primary text-[15px]">Try again</Text>
+                  </TouchableBox>
+                )}
+              </VStack>
+            ) : null}
           </>
         ) : (
           <Box className="overflow-hidden border-continuous py-[60px] px-[20px] items-center justify-center">

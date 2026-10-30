@@ -16,8 +16,9 @@ export type SearchItemType =
   | 'commentary'
   | 'plan'
   | 'timeline'
+  | 'classes'
 
-export type CatalogSearchItemType = 'commentary' | 'plan' | 'timeline'
+export type CatalogSearchItemType = 'commentary' | 'plan' | 'timeline' | 'classes'
 export type SearchItemFilters = Record<Exclude<SearchItemType, CatalogSearchItemType>, boolean> &
   Partial<Record<CatalogSearchItemType, boolean>>
 
@@ -42,6 +43,7 @@ const defaultSearchFilters: SearchFilters = {
     commentary: true,
     plan: true,
     timeline: true,
+    classes: true,
     passages: true,
     notes: true,
     links: true,
@@ -84,6 +86,7 @@ export function normalizeSearchItemFilters(
     commentary: filters.commentary ?? allLegacy,
     plan: filters.plan ?? allLegacy,
     timeline: filters.timeline ?? allLegacy,
+    classes: filters.classes ?? allLegacy,
   }
   if (legacyScope) {
     const selected = legacyScope === 'passage' ? 'passages' : legacyScope

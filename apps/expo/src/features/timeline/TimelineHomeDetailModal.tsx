@@ -24,7 +24,7 @@ const cyberJudahAbout = [
   },
   {
     title: 'The Final Captivity',
-    text: `The last age is ours: the captivity, displacement, persecution, resistance and achievements of the peoples the assembly identifies as the Israelites today.\n\nEach event keeps three things apart: the documented history, from the sources listed under it; quotes and sources from the classes; and the Scriptures read with it. Where sources disagree, both are shown.\n\nSources reviewed through ${timelinePublication.reviewedThrough}. The published content is in English.`,
+    text: `The last age is ours: the captivity, displacement, persecution, resistance and achievements of the peoples the assembly identifies as the Israelites today.\n\nEach event keeps three things apart: the documented history, from the sources listed under it; quotes and sources from the classes; and the Scriptures read with it.\n\nSources reviewed through ${timelinePublication.reviewedThrough}. The published content is in English.`,
   },
 ]
 
