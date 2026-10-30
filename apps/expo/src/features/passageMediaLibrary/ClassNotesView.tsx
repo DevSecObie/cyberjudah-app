@@ -78,15 +78,19 @@ const pageHtml = (
 export default function ClassNotesView({
   html,
   onLinkPress,
-  fill,
+  maxHeight,
 }: {
   html: string
   onLinkPress: (href: string) => void
-  /** Fill the space given and scroll inside, rather than grow as tall as the notes. */
-  fill?: boolean
+  /**
+   * The tallest the page may be. Longer notes scroll inside it: a page as tall as a long class
+   * (tens of thousands of points) can come up blank on iOS.
+   */
+  maxHeight?: number
 }) {
   const theme = useTheme()
   const [height, setHeight] = useState(600)
+  const scrolls = !!maxHeight && height > maxHeight
   return (
     <WebView
       originWhitelist={['about:blank']}
@@ -110,13 +114,14 @@ export default function ClassNotesView({
         } catch {}
       }}
       onShouldStartLoadWithRequest={request => request.url === 'about:blank'}
-      scrollEnabled={!!fill}
+      scrollEnabled={scrolls}
+      nestedScrollEnabled={scrolls}
       style={{
         width: '100%',
+        height: scrolls ? maxHeight : height,
         backgroundColor: 'transparent',
-        ...(fill ? { flex: 1 } : { height }),
       }}
-      containerStyle={fill ? { flex: 1 } : { flex: 0 }}
+      containerStyle={{ flex: 0 }}
     />
   )
 }
