@@ -1,5 +1,6 @@
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router'
 import { Platform } from 'react-native'
+import { useTranslation } from 'react-i18next'
 
 import { BibleRouteScreen, type BibleRouteInput } from '~features/bible/BibleScreen'
 import { buildPublicBiblePath, parsePublicBibleRoute } from '~features/bible/publicBibleRoutes'
@@ -11,6 +12,7 @@ const firstString = (value: string | string[] | undefined): string | undefined =
 
 const PublicBibleRoute = () => {
   const router = useRouter()
+  const { t } = useTranslation()
   const params = useLocalSearchParams<{
     segments?: string | string[]
     gloss?: string | string[]
@@ -19,9 +21,16 @@ const PublicBibleRoute = () => {
   const route = parsePublicBibleRoute(params.segments, glossLanguage)
 
   if (!route) {
+    // cyberjudah.io's earlier site linked chapters without a version (/bible/john/3): open them in
+    // the KJV, the only Bible it published.
+    const segments = Array.isArray(params.segments)
+      ? params.segments
+      : (params.segments?.split('/').filter(Boolean) ?? [])
+    const withoutVersion = parsePublicBibleRoute(['kjv', ...segments], glossLanguage)
+    if (withoutVersion) return <Redirect href={buildPublicBiblePath(withoutVersion)} />
     return (
       <ResourceUnavailableView
-        title="Référence biblique introuvable"
+        title={t('Référence biblique introuvable')}
         failure={{ cause: 'not-found', recoveries: [] }}
       />
     )

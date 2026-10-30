@@ -1,4 +1,8 @@
 {
+  "Accueil": "Home",
+  "Lire la Bible": "Read the Bible",
+  "Référence biblique introuvable": "Scripture reference not found",
+  "Impossible de charger le verset du jour...": "Couldn't load today's verse...",
   "home.meditations.title": "Meditations",
   "home.meditations.description": "Explore daily meditation collections",
   "readingPlans.defineStartDate": "Set start date",
@@ -1263,7 +1267,7 @@
   "app.updateAvailable": "An update is available, downloading...",
   "app.noUpdateAvailable": "No update available",
   "app.updateError": "Failed to check for updates",
-  "Plus": "Plus",
+  "Plus": "More",
   "settings.account": "Account",
   "settings.resources": "Resources",
   "Bible Thématique Nave": "Nave Thematic Bible",
