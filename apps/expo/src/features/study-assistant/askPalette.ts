@@ -1,6 +1,6 @@
 import { useTheme } from '~themes/ThemeProvider'
 
-/** Ask's colour roles, read from the theme Ask runs in (askTheme.ts) so every Ask part agrees. */
+/** Ask's colour roles, all read from the reader's app theme so Ask matches the other screens. */
 export type AskPalette = {
   canvas: string
   surface1: string
@@ -11,8 +11,21 @@ export type AskPalette = {
   accent: string
   onAccent: string
   accentSoft: string
+  /** The accent at a given strength, for hairlines, rings and glows. */
+  accentAt: (opacity: number) => string
   edge: string
   edgeStrong: string
+}
+
+/** A theme colour (hex, rgb() or rgba()) at the given opacity. */
+export function withOpacity(color: string, opacity: number) {
+  const hex = /^#([0-9a-f]{6})$/i.exec(color.trim())?.[1]
+  if (hex) {
+    const n = Number.parseInt(hex, 16)
+    return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${opacity})`
+  }
+  const rgb = /^rgba?\(([^)]+)\)$/i.exec(color.trim())?.[1]?.split(',').slice(0, 3)
+  return rgb?.length === 3 ? `rgba(${rgb.map(x => x.trim()).join(',')},${opacity})` : color
 }
 
 export function useAskPalette(): AskPalette {
@@ -20,14 +33,15 @@ export function useAskPalette(): AskPalette {
   return {
     canvas: colors.reverse,
     surface1: colors.lightGrey,
-    surface2: '#1A2236',
+    surface2: colors.lightGrey,
     text1: colors.default,
     text3: colors.grey,
-    text4: colors.darkGrey,
+    text4: colors.grey,
     accent: colors.primary,
-    onAccent: '#0B0F19',
+    onAccent: '#ffffff',
     accentSoft: colors.lightPrimary,
+    accentAt: opacity => withOpacity(colors.primary, opacity),
     edge: colors.border,
-    edgeStrong: 'rgba(255,255,255,0.12)',
+    edgeStrong: colors.border,
   }
 }

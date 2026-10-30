@@ -31,8 +31,6 @@ import AskInteractiveAnswer from './AskInteractiveAnswer'
 import AskCreditsCard from './AskCreditsCard'
 import AskProgress from './AskProgress'
 import AskGlassBackdrop from './AskGlassBackdrop'
-import { ThemeProvider } from '~themes/ThemeProvider'
-import { ASK_THEME } from './askTheme'
 import { useAskPalette } from './askPalette'
 import {
   askCyberJudah,
@@ -164,7 +162,7 @@ function GlassCircle({
       style={({ pressed }) => ({ opacity: disabled ? 0.55 : pressed ? 0.7 : 1 })}
     >
       <AskGlassBackdrop radius={22} />
-      <FeatherIcon name={name} size={19} style={{ color: '#ECEEF3' }} />
+      <FeatherIcon name={name} size={19} />
     </Pressable>
   )
 }
@@ -244,12 +242,7 @@ function ActionPill({
 export default function CyberJudahChatScreen() {
   const { id } = useSelector(selectUserLoginInfo)
   // Remount on account changes: no previous user's transcript, consent, callbacks or drafts survive.
-  // Ask runs in its own midnight-and-gold theme (askTheme.ts) whatever the reader's app theme is.
-  return (
-    <ThemeProvider theme={ASK_THEME} scope="black">
-      <AccountChat key={id || 'signed-out'} account={id || ''} />
-    </ThemeProvider>
-  )
+  return <AccountChat key={id || 'signed-out'} account={id || ''} />
 }
 
 function AccountChat({ account }: { account: string }) {
@@ -513,7 +506,7 @@ function AccountChat({ account }: { account: string }) {
   const canSend = !!account && question.trim().length >= 2
 
   return (
-    <Container className="bg-reverse" style={{ backgroundColor: p.canvas }}>
+    <Container className="bg-reverse">
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -551,9 +544,9 @@ function AccountChat({ account }: { account: string }) {
                   style={{
                     width: 132,
                     height: 132,
-                    backgroundColor: 'rgba(245,158,11,0.08)',
+                    backgroundColor: p.accentAt(0.08),
                     borderWidth: 1,
-                    borderColor: 'rgba(245,158,11,0.18)',
+                    borderColor: p.accentAt(0.2),
                     shadowColor: p.accent,
                     shadowOpacity: 0.55,
                     shadowRadius: 48,
@@ -604,7 +597,7 @@ function AccountChat({ account }: { account: string }) {
                         minHeight: 104,
                         backgroundColor: pressed ? p.surface2 : p.surface1,
                         borderWidth: 1,
-                        borderColor: pressed ? 'rgba(245,158,11,0.35)' : p.edge,
+                        borderColor: pressed ? p.accentAt(0.4) : p.edge,
                         transform: [{ scale: pressed ? 0.98 : 1 }],
                       })}
                     >
@@ -875,11 +868,7 @@ function AccountChat({ account }: { account: string }) {
             style={{
               backgroundColor: p.surface1,
               borderWidth: 1,
-              borderColor: busy
-                ? 'rgba(245,158,11,0.55)'
-                : focused
-                  ? 'rgba(245,158,11,0.35)'
-                  : p.edgeStrong,
+              borderColor: busy ? p.accentAt(0.6) : focused ? p.accentAt(0.4) : p.edgeStrong,
               shadowColor: p.accent,
               shadowOpacity: busy ? 0.35 : focused ? 0.18 : 0,
               shadowRadius: 18,
@@ -943,7 +932,7 @@ function AccountChat({ account }: { account: string }) {
                   style={({ pressed }) => ({
                     backgroundColor: deepOn ? p.accentSoft : 'transparent',
                     borderWidth: 1,
-                    borderColor: deepOn ? 'rgba(245,158,11,0.45)' : p.edgeStrong,
+                    borderColor: deepOn ? p.accentAt(0.5) : p.edgeStrong,
                     opacity: pressed ? 0.6 : 1,
                   })}
                 >
@@ -989,7 +978,7 @@ function AccountChat({ account }: { account: string }) {
                 onPress={() => (busy ? active.current?.abort() : void send())}
                 className="h-9 w-9 items-center justify-center rounded-full"
                 style={{
-                  backgroundColor: busy || canSend ? p.accent : 'rgba(245,158,11,0.22)',
+                  backgroundColor: busy || canSend ? p.accent : p.accentAt(0.25),
                 }}
               >
                 {busy ? (
@@ -1000,7 +989,7 @@ function AccountChat({ account }: { account: string }) {
                   <FeatherIcon
                     name="arrow-up"
                     size={19}
-                    style={{ color: canSend ? p.onAccent : 'rgba(245,158,11,0.8)' }}
+                    style={{ color: canSend ? p.onAccent : p.accent }}
                   />
                 )}
               </Pressable>
