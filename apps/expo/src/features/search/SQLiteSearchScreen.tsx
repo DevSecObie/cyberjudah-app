@@ -106,6 +106,7 @@ import { createSearchExperienceController } from './searchExperience'
 import { useRouter } from 'expo-router'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import { findClasses, findClassesOnDevice } from '~features/passageMediaLibrary/classSearch'
+import { formatMoment, searchSaidInClass } from '~features/passageMediaLibrary/saidInClass'
 import {
   CLASS_INDEX_DOWNLOAD_MB,
   downloadClassIndex,
@@ -131,6 +132,7 @@ const MIN_SEARCH_LENGTH = SEARCH_MIN_QUERY_LENGTH
 // The class search needs a word of some length: two letters match nearly every class.
 const MIN_CLASS_SEARCH_LENGTH = 3
 const CLASS_INDEX_OFFER_ID = 'cyberjudah-class-index-offer'
+const SAID_IN_CLASS_SIGN_IN_ID = 'cyberjudah-said-in-class-sign-in'
 const SEARCH_ALPHABET_FOOTER_HEIGHT = 70
 
 type DictionaryRow = DictionarySearchRow
@@ -527,6 +529,41 @@ const SQLiteSearchScreen = ({
     staleTime: 5 * 60 * 1000,
     retry: 1,
   })
+  // Said in Class: the recordings' own words (their transcripts), searched on CyberJudah's server.
+  const saidInClassQuery = useQuery({
+    queryKey: ['cyberjudah-said-in-class', trimmedSearchValue],
+    queryFn: () => searchSaidInClass(trimmedSearchValue),
+    enabled: shouldSearchClasses,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+  })
+  const saidInClassResults: SearchEntityResult[] = !shouldSearchClasses
+    ? []
+    : saidInClassQuery.data && !saidInClassQuery.data.signedIn
+      ? [
+          {
+            id: SAID_IN_CLASS_SIGN_IN_ID,
+            type: 'classes',
+            iconType: 'classes',
+            title: 'Sign in to search what was said in class',
+            description:
+              'Every recording’s own words, including the classes that have no notes yet, each playing from the second it was said.',
+          },
+        ]
+      : (saidInClassQuery.data?.hits ?? []).map(
+          (hit, index): SearchEntityResult => ({
+            id: `said:${hit.video}:${hit.start}:${index}`,
+            type: 'classes',
+            iconType: 'classes',
+            title: hit.title,
+            chip: formatMoment(hit.start),
+            subtitle: hit.date,
+            description: hit.excerpt,
+            classVideo: hit.video,
+            classStart: hit.start,
+          })
+        )
+
   // The offer to keep the classes on this phone, as the first row of the Classes section.
   const classIndexOffer: SearchEntityResult | undefined =
     classIndex.status === 'downloading'
@@ -611,6 +648,7 @@ const SQLiteSearchScreen = ({
     dictionaryResults,
     naveResults,
     classResults,
+    saidInClassResults,
     passageResults: mergedPassages,
     totalPassageCount: totalCount,
     semanticSearchError,
@@ -626,6 +664,7 @@ const SQLiteSearchScreen = ({
       dictionary: isDictionarySearching,
       nave: isNaveSearching,
       classes: shouldSearchClasses && classQuery.isFetching,
+      saidInClass: shouldSearchClasses && saidInClassQuery.isFetching,
     },
     t,
   })
@@ -863,6 +902,21 @@ const SQLiteSearchScreen = ({
     if (item.id === CLASS_INDEX_OFFER_ID) {
       if (classIndex.status !== 'downloading')
         void downloadClassIndex().then(() => classIndexOutdated.refetch())
+      return
+    }
+    if (item.id === SAID_IN_CLASS_SIGN_IN_ID) {
+      router.push('/login')
+      return
+    }
+    if (item.type === 'classes' && item.classVideo && !item.classWorkId) {
+      // A recording the class library may not list (no notes yet): the player opens it by its video.
+      const listed = readCachedClassLibrary()?.find(row => row.providerId === item.classVideo)
+      router.push({
+        pathname: '/(explore)/passage-media-player',
+        params: listed
+          ? { workId: listed.workId, start: String(item.classStart ?? 0) }
+          : { video: item.classVideo, title: item.title, start: String(item.classStart ?? 0) },
+      })
       return
     }
     if (item.type === 'classes' && item.classWorkId) {

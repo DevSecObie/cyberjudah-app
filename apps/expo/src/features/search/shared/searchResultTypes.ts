@@ -28,6 +28,8 @@ export type SearchEntityResult = {
   matches?: readonly FuseResultMatch[]
   /** A CyberJudah class to open in the player, and the moment to start at. */
   classWorkId?: string
+  /** A recording to play by its video, for one the class library does not list. */
+  classVideo?: string
   classStart?: number
 }
 

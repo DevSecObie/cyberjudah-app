@@ -28,6 +28,7 @@ export type SearchSectionId =
   | 'nave'
   | 'passages'
   | 'classes'
+  | 'saidInClass'
 
 export type SQLiteSearchResultSection = SearchResultSection<SearchSectionId> & {
   itemFilterType: SearchItemType
@@ -65,6 +66,7 @@ type SearchLoadingState = {
   dictionary: boolean
   nave: boolean
   classes?: boolean
+  saidInClass?: boolean
 }
 
 type SearchResultsModelInput = {
@@ -82,6 +84,8 @@ type SearchResultsModelInput = {
   naveResults: NaveSearchItemRow[]
   /** CyberJudah's classes whose notes say the words. */
   classResults?: SearchEntityResult[]
+  /** What was said in the recordings themselves: their transcripts, at the second. */
+  saidInClassResults?: SearchEntityResult[]
   passageResults: SearchResult[] | null
   semanticSearchError?: string | null
   totalPassageCount: number
@@ -158,6 +162,7 @@ export const getSearchResultsModel = ({
   dictionaryResults,
   naveResults,
   classResults = [],
+  saidInClassResults = [],
   passageResults,
   totalPassageCount,
   semanticSearchError,
@@ -217,6 +222,16 @@ export const getSearchResultsModel = ({
             id: 'classes',
             title: t('Classes'),
             items: classResults,
+            itemFilterType: 'classes',
+          }),
+        ]
+      : []),
+    ...(itemFilters.classes && (saidInClassResults.length || loading.saidInClass)
+      ? [
+          getSection({
+            id: 'saidInClass',
+            title: t('Said in Class'),
+            items: saidInClassResults,
             itemFilterType: 'classes',
           }),
         ]
