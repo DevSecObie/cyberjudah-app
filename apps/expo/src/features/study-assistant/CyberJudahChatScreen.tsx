@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import {
+  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Modal,
@@ -7,9 +8,13 @@ import {
   Pressable,
   ScrollView,
   TextInput,
+  type StyleProp,
+  type TextStyle,
 } from 'react-native'
 import Clipboard from '@react-native-clipboard/clipboard'
 import { Image } from 'expo-image'
+import * as Haptics from 'expo-haptics'
+import { LinearGradient } from 'expo-linear-gradient'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
@@ -47,6 +52,34 @@ import {
   observeChats,
   saveChatTurn,
 } from './cyberJudahConversationRepository'
+
+/** The same colour at zero opacity, so the scroll-edge fade does not pass through grey. */
+function clear(color: string) {
+  return /^#[0-9a-f]{6}$/i.test(color) ? `${color}00` : 'transparent'
+}
+
+/** A long question folds after a few lines, as in the Claude app. */
+function QuestionText({ text, style }: { text: string; style: StyleProp<TextStyle> }) {
+  const { t } = useTranslation()
+  const [open, setOpen] = useState(false)
+  const long = text.length > 280
+  return (
+    <>
+      <Text selectable numberOfLines={long && !open ? 6 : undefined} style={style}>
+        {text}
+      </Text>
+      {long && (
+        <Pressable onPress={() => setOpen(!open)} hitSlop={8} accessibilityRole="button">
+          <Text className="mt-1 text-grey" style={{ fontSize: 14 }}>
+            {open
+              ? t('askChat.showLess', { defaultValue: 'Show less' })
+              : t('askChat.showMore', { defaultValue: 'Show more' })}
+          </Text>
+        </Pressable>
+      )}
+    </>
+  )
+}
 
 /** What a reader sees for a model: CyberJudah's own names, never a provider's model id. */
 export function modelLabel(model: CyberJudahModel | undefined) {
@@ -192,6 +225,7 @@ function AccountChat({ account }: { account: string }) {
   const scroll = useRef<ScrollView>(null)
   const input = useRef<TextInput>(null)
   const nearBottom = useRef(true)
+  const [awayFromEnd, setAwayFromEnd] = useState(false)
   const selected = models.find(item => item.id === model)
 
   useEffect(() => {
@@ -283,6 +317,8 @@ function AccountChat({ account }: { account: string }) {
     setConsent(null)
     setStatus(t('assistant.cyberjudah.searching'))
     nearBottom.current = true
+    setAwayFromEnd(false)
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
     const deadline = setTimeout(() => controller.abort(), 130000)
     let keep = true
     try {
@@ -322,6 +358,7 @@ function AccountChat({ account }: { account: string }) {
       )
       if (active.current !== controller || !mounted.current) return
       Object.assign(turn, result, { state: 'complete' })
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {})
     } catch (cause) {
       if (active.current !== controller || !mounted.current) return
       if (cause instanceof CyberJudahAskError && cause.code === 'CONSENT') {
@@ -413,33 +450,6 @@ function AccountChat({ account }: { account: string }) {
 
   return (
     <Container className="bg-reverse">
-      {/* No bar: round Liquid Glass buttons float over the page, as in the Claude and ChatGPT apps. */}
-      <HStack
-        className="items-center justify-between px-4"
-        style={{ paddingTop: insets.top + 6, paddingBottom: 6 }}
-      >
-        <HStack className="gap-2">
-          {router.canGoBack() && (
-            <GlassCircle
-              name="chevron-left"
-              label={t('Retour', { defaultValue: 'Back' })}
-              onPress={() => router.back()}
-            />
-          )}
-          <GlassCircle
-            name="menu"
-            label={t('askChat.history', { defaultValue: 'Your chats' })}
-            onPress={() => setPanel('history')}
-            disabled={busy || !account}
-          />
-        </HStack>
-        <GlassCircle
-          name="edit"
-          label={t('assistant.new', { defaultValue: 'New chat' })}
-          onPress={startNew}
-          disabled={busy || !allTurns.length}
-        />
-      </HStack>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -453,13 +463,14 @@ function AccountChat({ account }: { account: string }) {
             const v = e.nativeEvent
             nearBottom.current =
               v.contentSize.height - v.layoutMeasurement.height - v.contentOffset.y < 100
+            if (awayFromEnd === nearBottom.current) setAwayFromEnd(!nearBottom.current)
           }}
           onContentSizeChange={() => {
             if (nearBottom.current) scroll.current?.scrollToEnd({ animated: false })
           }}
           contentContainerStyle={{
             paddingHorizontal: 18,
-            paddingTop: 20,
+            paddingTop: insets.top + 72,
             paddingBottom: 24,
             maxWidth: 760,
             width: '100%',
@@ -468,43 +479,79 @@ function AccountChat({ account }: { account: string }) {
           }}
         >
           {!allTurns.length && (
-            // The welcome: the lion and one line, centred, as in the Claude app.
-            <Box className="flex-1 items-center justify-center px-6">
-              <Image
-                source={require('~assets/images/icon.png')}
-                style={{ width: 56, height: 56, borderRadius: 14 }}
-                accessible={false}
-              />
+            // The welcome, as in Perplexity: the lion in a soft glow, a serif line, one sentence.
+            <Box className="flex-1 items-center justify-center px-6 pb-6">
+              <Box
+                className="items-center justify-center rounded-full"
+                style={{
+                  width: 200,
+                  height: 200,
+                  backgroundColor: p.accentSoft,
+                  shadowColor: p.accent,
+                  shadowOpacity: 0.45,
+                  shadowRadius: 60,
+                  shadowOffset: { width: 0, height: 0 },
+                  opacity: 0.9,
+                }}
+              >
+                <Image
+                  source={require('~assets/images/icon.png')}
+                  style={{ width: 112, height: 112, borderRadius: 26 }}
+                  accessible={false}
+                />
+              </Box>
               <Text
-                className="mt-5 text-center"
+                className="mt-10 text-center"
                 style={[
                   ink,
-                  { fontSize: 26, fontWeight: '600', letterSpacing: -0.4, lineHeight: 32 },
+                  {
+                    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+                    fontSize: 30,
+                    lineHeight: 36,
+                    letterSpacing: -0.3,
+                  },
                 ]}
               >
                 {t('askChat.welcome', { defaultValue: 'What would you like to learn?' })}
               </Text>
               <Text
-                className="mt-2 text-center"
+                className="mt-3 text-center"
                 style={[quiet, { fontSize: 15, lineHeight: 21, maxWidth: 320 }]}
               >
                 {t('askChat.introShort', {
-                  defaultValue: 'Answers from the classes, the notes and the Scripture.',
+                  defaultValue:
+                    'Answers from the classes, the notes and the Scripture, with sources you can check.',
                 })}
               </Text>
+              {!account && (
+                <Pressable
+                  onPress={() => router.push('/profile')}
+                  accessibilityRole="button"
+                  className="mt-10 min-h-[52px] w-full items-center justify-center rounded-full"
+                  style={({ pressed }) => ({
+                    maxWidth: 340,
+                    backgroundColor: p.text1,
+                    opacity: pressed ? 0.8 : 1,
+                  })}
+                >
+                  <Text style={{ color: p.canvas, fontSize: 17, fontWeight: '500' }}>
+                    {t('assistant.signIn')}
+                  </Text>
+                </Pressable>
+              )}
             </Box>
           )}
           {allTurns.map((turn, i) => (
             <Box key={turn.id} style={{ marginBottom: 28 }}>
-              {/* Your question: a subtle rounded pill on the right. */}
+              {/* Your question: a subtle filled pill on the right. Content stays off the glass layer. */}
               <Box
                 className="mb-6 self-end rounded-[22px] px-4 py-[10px]"
-                style={{ maxWidth: '82%' }}
+                style={{ maxWidth: '82%', backgroundColor: p.surface2 }}
               >
-                <AskGlassBackdrop radius={22} />
-                <Text selectable style={[ink, { fontSize: 16, lineHeight: 24 }]}>
-                  {turn.question}
-                </Text>
+                <QuestionText
+                  text={turn.question}
+                  style={[ink, { fontSize: 16, lineHeight: 24 }]}
+                />
               </Box>
               {/* CyberJudah's answer: full width, no bubble. */}
               <AskProgress
@@ -579,6 +626,7 @@ function AccountChat({ account }: { account: string }) {
                         color={p.text3}
                         onPress={() => {
                           Clipboard.setString(turn.answer)
+                          void Haptics.selectionAsync().catch(() => {})
                           setCopied(turn.id)
                         }}
                       />
@@ -658,28 +706,6 @@ function AccountChat({ account }: { account: string }) {
               </Pressable>
             </Box>
           )}
-          {!account && (
-            <Box
-              className="mt-2 gap-3 rounded-2xl px-4 py-[14px]"
-              style={[card, { borderLeftWidth: 3, borderLeftColor: p.accent }]}
-            >
-              <Text style={[quiet, { fontSize: 15 }]}>
-                {t('askChat.signInNote', {
-                  defaultValue:
-                    'Sign in to your CyberJudah account to use Ask and keep your chats.',
-                })}
-              </Text>
-              <Pressable
-                onPress={() => router.push('/profile')}
-                className="self-start rounded-full px-5 py-3"
-                style={{ backgroundColor: p.accent }}
-              >
-                <Text style={{ color: p.onAccent, fontWeight: '600' }}>
-                  {t('assistant.signIn')}
-                </Text>
-              </Pressable>
-            </Box>
-          )}
         </ScrollView>
         {(historyError || unsaved) && (
           <Pressable
@@ -697,6 +723,36 @@ function AccountChat({ account }: { account: string }) {
                   })}
             </Text>
           </Pressable>
+        )}
+        {(busy || awayFromEnd) && (
+          <HStack pointerEvents="box-none" className="items-center justify-center gap-2 pb-1">
+            {busy && (
+              <HStack
+                className="min-h-9 items-center gap-2 rounded-full px-4"
+                accessibilityLiveRegion="polite"
+              >
+                <AskGlassBackdrop radius={18} />
+                <ActivityIndicator size="small" color={p.text3} />
+                <Text
+                  numberOfLines={1}
+                  style={[ink, { fontSize: 14, fontWeight: '500', maxWidth: 240 }]}
+                >
+                  {status || t('askChat.writing', { defaultValue: 'Writing the answer' })}
+                </Text>
+              </HStack>
+            )}
+            {awayFromEnd && (
+              <GlassCircle
+                name="arrow-down"
+                label={t('askChat.toLatest', { defaultValue: 'Go to the latest' })}
+                onPress={() => {
+                  nearBottom.current = true
+                  setAwayFromEnd(false)
+                  scroll.current?.scrollToEnd({ animated: true })
+                }}
+              />
+            )}
+          </HStack>
         )}
         {/* The composer: one Liquid Glass card with the question on top and its controls below, as in
             the Claude and ChatGPT apps. Ways in sit above it while the chat is empty. */}
@@ -731,8 +787,8 @@ function AccountChat({ account }: { account: string }) {
               ))}
             </ScrollView>
           )}
-          <Box className="rounded-[26px] px-2 pb-2 pt-1">
-            <AskGlassBackdrop radius={26} />
+          <Box className="rounded-[28px] px-2 pb-2 pt-1">
+            <AskGlassBackdrop radius={28} />
             <TextInput
               ref={input}
               multiline
@@ -767,8 +823,7 @@ function AccountChat({ account }: { account: string }) {
                 disabled={busy || !account}
                 className="h-9 w-9 items-center justify-center rounded-full"
                 style={({ pressed }) => ({
-                  borderWidth: 0.5,
-                  borderColor: p.edge,
+                  backgroundColor: p.surface2,
                   opacity: busy || !account ? 0.4 : pressed ? 0.6 : 1,
                 })}
               >
@@ -779,10 +834,13 @@ function AccountChat({ account }: { account: string }) {
                 disabled={busy || !account}
                 accessibilityRole="button"
                 accessibilityLabel={`${t('askChat.chooseModel', { defaultValue: 'Choose a model' })}: ${modelLine}`}
-                className="h-9 flex-row items-center gap-1 rounded-full px-3"
-                style={({ pressed }) => ({ opacity: busy || !account ? 0.4 : pressed ? 0.6 : 1 })}
+                className="h-9 flex-row items-center gap-1 rounded-full px-[14px]"
+                style={({ pressed }) => ({
+                  backgroundColor: p.surface2,
+                  opacity: busy || !account ? 0.4 : pressed ? 0.6 : 1,
+                })}
               >
-                <Text style={[quiet, { fontSize: 14, fontWeight: '500' }]}>{modelLine}</Text>
+                <Text style={[ink, { fontSize: 14, fontWeight: '500' }]}>{modelLine}</Text>
                 <FeatherIcon name="chevron-down" size={13} style={{ color: p.text3 }} />
               </Pressable>
               <Box className="flex-1" />
@@ -793,7 +851,10 @@ function AccountChat({ account }: { account: string }) {
                 onPress={() => input.current?.focus()}
                 disabled={busy || !account}
                 className="h-9 w-9 items-center justify-center rounded-full"
-                style={({ pressed }) => ({ opacity: busy || !account ? 0.4 : pressed ? 0.6 : 1 })}
+                style={({ pressed }) => ({
+                  backgroundColor: p.surface2,
+                  opacity: busy || !account ? 0.4 : pressed ? 0.6 : 1,
+                })}
               >
                 <FeatherIcon name="mic" size={18} style={{ color: p.text1 }} />
               </Pressable>
@@ -803,7 +864,7 @@ function AccountChat({ account }: { account: string }) {
                 disabled={!busy && !canSend}
                 onPress={() => (busy ? active.current?.abort() : void send())}
                 className="h-9 w-9 items-center justify-center rounded-full"
-                style={{ backgroundColor: busy || canSend ? p.text1 : p.edge }}
+                style={{ backgroundColor: busy ? p.text1 : canSend ? p.accent : p.surface2 }}
               >
                 {busy ? (
                   <Box
@@ -813,7 +874,7 @@ function AccountChat({ account }: { account: string }) {
                   <FeatherIcon
                     name="arrow-up"
                     size={19}
-                    style={{ color: canSend ? p.canvas : p.text4 }}
+                    style={{ color: canSend ? p.onAccent : p.text4 }}
                   />
                 )}
               </Pressable>
@@ -834,6 +895,66 @@ function AccountChat({ account }: { account: string }) {
           </HStack>
         </Box>
       </KeyboardAvoidingView>
+      {/* The bar floats: the thread scrolls under round Liquid Glass controls and a soft edge fade,
+          as in the Claude, ChatGPT and Perplexity apps (Apple HIG: glass is the control layer). */}
+      <Box
+        pointerEvents="box-none"
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}
+      >
+        <LinearGradient
+          pointerEvents="none"
+          colors={[p.canvas, p.canvas, clear(p.canvas)]}
+          locations={[0, 0.55, 1]}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, height: insets.top + 76 }}
+        />
+        <HStack
+          pointerEvents="box-none"
+          className="items-center gap-2 px-4"
+          style={{ paddingTop: insets.top + 6, paddingBottom: 6 }}
+        >
+          {router.canGoBack() && (
+            <GlassCircle
+              name="chevron-left"
+              label={t('Retour', { defaultValue: 'Back' })}
+              onPress={() => router.back()}
+            />
+          )}
+          <GlassCircle
+            name="menu"
+            label={t('askChat.history', { defaultValue: 'Your chats' })}
+            onPress={() => setPanel('history')}
+            disabled={busy || !account}
+          />
+          <Box className="flex-1 items-center">
+            {!!allTurns.length && (
+              <Pressable
+                onPress={() => setPanel('history')}
+                disabled={busy || !account}
+                accessibilityRole="button"
+                className="min-h-11 max-w-full justify-center rounded-full px-5 py-[5px]"
+              >
+                <AskGlassBackdrop radius={22} />
+                <Text
+                  numberOfLines={1}
+                  className="text-center"
+                  style={[ink, { fontSize: 15, fontWeight: '600' }]}
+                >
+                  {chat.title || allTurns[0].question}
+                </Text>
+                <Text numberOfLines={1} className="text-center" style={[quiet, { fontSize: 12 }]}>
+                  Ask CyberJudah · {modelLine}
+                </Text>
+              </Pressable>
+            )}
+          </Box>
+          <GlassCircle
+            name="edit"
+            label={t('assistant.new', { defaultValue: 'New chat' })}
+            onPress={startNew}
+            disabled={busy || !allTurns.length}
+          />
+        </HStack>
+      </Box>
       <Modal
         visible={panel !== null}
         animationType="slide"

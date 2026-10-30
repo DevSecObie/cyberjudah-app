@@ -9,7 +9,6 @@ import { sourceThumbnails } from './cyberJudahSourceArtwork'
 import { CYBERJUDAH_PORTRAITS } from '~features/lexique/cyberJudahPortraits'
 import { useOpenStudySource } from './useOpenStudySource'
 import { useAskPalette } from './askPalette'
-import AskGlassBackdrop from './AskGlassBackdrop'
 
 function portrait(source: CyberJudahSource) {
   const id = /^\/(?:person)\/([a-z0-9-]+)$/.exec(source.url)?.[1]
@@ -72,10 +71,12 @@ export default function AskSourceCards({
               className="overflow-hidden rounded-2xl"
               style={({ pressed }) => ({
                 width: 220,
+                backgroundColor: p.surface1,
+                borderWidth: 0.5,
+                borderColor: p.edge,
                 opacity: pressed ? 0.75 : 1,
               })}
             >
-              <AskGlassBackdrop radius={16} />
               {hasArtwork && <SourceArtwork source={source} />}
               <Box className="gap-2 p-3">
                 <HStack className="items-center gap-[6px]">
