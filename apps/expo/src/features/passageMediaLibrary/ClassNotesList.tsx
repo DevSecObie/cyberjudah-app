@@ -237,6 +237,37 @@ const Block = ({
           ))}
         </View>
       )
+    case 'news':
+      return (
+        <View
+          style={{
+            borderWidth: 1,
+            borderColor: colors.border,
+            borderRadius: 12,
+            paddingHorizontal: 14,
+            paddingTop: 10,
+            paddingBottom: 2,
+            marginTop: 8,
+            marginBottom: 16,
+          }}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+            <Feather name="tv" size={13} color={colors.muted} />
+            <NativeText
+              style={{
+                color: colors.muted,
+                fontSize: 12,
+                fontWeight: '700',
+                letterSpacing: 1,
+                textTransform: 'uppercase',
+              }}
+            >
+              In the News
+            </NativeText>
+          </View>
+          <Blocks blocks={block.blocks} colors={colors} onLink={onLink} nested />
+        </View>
+      )
     case 'verse':
       return (
         <Pressable
