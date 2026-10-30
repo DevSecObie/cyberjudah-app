@@ -31,6 +31,7 @@ import {
   connectAssistantDictation,
 } from './client'
 import { assistantAccessible, assistantAvailable } from './assistantConfig'
+import { isCyberJudahAssistant } from './cyberJudahAsk'
 import {
   assertConversationCapacity,
   loadFollowReadingPreference,
@@ -120,7 +121,8 @@ function Icon({
 }
 export default function AssistantLauncher() {
   const { id } = useSelector(selectUserLoginInfo)
-  if (!assistantAccessible(id)) return null
+  // The web modal speaks Bible Strong's assistant protocol; a CyberJudah build uses its own Ask screen.
+  if (isCyberJudahAssistant || !assistantAccessible(id)) return null
   return <AccountAssistant key={id || 'guest'} account={id || 'guest'} signedIn={Boolean(id)} />
 }
 function AccountAssistant({ account, signedIn }: { account: string; signedIn: boolean }) {
