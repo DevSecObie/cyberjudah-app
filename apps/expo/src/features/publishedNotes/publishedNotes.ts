@@ -198,11 +198,3 @@ export const loadEncyclopedia = async (fetcher: typeof fetch = fetch) => {
   storage.set(ENCYCLOPEDIA_CACHE_KEY, JSON.stringify(entries))
   return entries
 }
-
-/** A note address the app opens itself: a study note or an encyclopedia entry. */
-export const publishedNotePathOf = (href: string) => {
-  const m = /^https:\/\/cyberjudah\.io(\/(?:study|encyclopedia)\/[a-z0-9/_-]+)(?:[?#].*)?$/i.exec(
-    href
-  )
-  return m ? m[1].replace(/\/$/, '') : null
-}

@@ -1,12 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Linking, useWindowDimensions } from 'react-native'
+import { useLocalSearchParams } from 'expo-router'
+import { useWindowDimensions } from 'react-native'
 import Header from '~common/Header'
 import Loading from '~common/Loading'
 import Box, { SafeAreaBox, VStack } from '~common/ui/Box'
 import ScrollView from '~common/ui/ScrollView'
 import Text from '~common/ui/Text'
-import { getCommentaryBibleViewRoute } from '~features/commentaries/commentaryReferenceNavigation'
 import ClassNotesPdfButton from '~features/notesExport/ClassNotesPdfButton'
 import { longDate } from '~features/notesExport/notePdf'
 import ClassNotesView from '~features/passageMediaLibrary/ClassNotesView'
@@ -16,14 +15,14 @@ import {
 } from '~features/passageMediaLibrary/cyberJudahClasses'
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme } from '~themes/ThemeProvider'
-import { publishedNotePathOf } from './publishedNotes'
+import { useOpenSiteLink } from './siteLinks'
 
 const KIND: Record<string, string> = { study: '4 Chapters a Day', encyclopedia: 'Encyclopedia' }
 
 /** A study note or an encyclopedia entry, laid out like the class notes, with Save as PDF. */
 const PublishedNoteScreen = () => {
   const theme = useTheme()
-  const router = useRouter()
+  const { open } = useOpenSiteLink()
   const { path = '' } = useLocalSearchParams<{ path?: string }>()
   const { width } = useWindowDimensions()
   const note = useQuery({
@@ -67,20 +66,7 @@ const PublishedNoteScreen = () => {
             </Text>
           </VStack>
           <Box style={{ width: contentWidth }}>
-            <ClassNotesView
-              html={note.data.html}
-              onLinkPress={href => {
-                const notePath = publishedNotePathOf(href)
-                if (notePath) {
-                  router.push({ pathname: '/(explore)/published-note', params: { path: notePath } })
-                } else if (href.startsWith('bible://')) {
-                  const route = getCommentaryBibleViewRoute(href.slice('bible://'.length))
-                  if (route) router.push(route)
-                } else if (/^https:\/\//.test(href)) {
-                  void Linking.openURL(href)
-                }
-              }}
-            />
+            <ClassNotesView html={note.data.html} onLinkPress={open} />
           </Box>
         </ScrollView>
       ) : (
