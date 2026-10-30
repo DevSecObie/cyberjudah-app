@@ -237,7 +237,7 @@ const Block = ({
           ))}
         </View>
       )
-    case 'news':
+    case 'aside':
       return (
         <View
           style={{
@@ -252,7 +252,17 @@ const Block = ({
           }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-            <Feather name="tv" size={13} color={colors.muted} />
+            <Feather
+              name={
+                block.label === 'In the News'
+                  ? 'tv'
+                  : block.label === 'Shown in class'
+                    ? 'image'
+                    : 'bell'
+              }
+              size={13}
+              color={colors.muted}
+            />
             <NativeText
               style={{
                 color: colors.muted,
@@ -262,7 +272,7 @@ const Block = ({
                 textTransform: 'uppercase',
               }}
             >
-              In the News
+              {block.label}
             </NativeText>
           </View>
           <Blocks blocks={block.blocks} colors={colors} onLink={onLink} nested />

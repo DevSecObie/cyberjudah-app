@@ -350,8 +350,8 @@ export type NoteBlock =
   | { type: 'reading'; blocks: NoteBlock[] }
   | { type: 'quote'; blocks: NoteBlock[] }
   | { type: 'list'; items: NoteBlock[][] }
-  /** Something the class brought out from the news, placed where in the class it came up. */
-  | { type: 'news'; blocks: NoteBlock[] }
+  /** Something the class brought out (the news, a picture), placed where in the class it came up. */
+  | { type: 'aside'; label: string; blocks: NoteBlock[] }
   | {
       type: 'verse'
       title?: string
@@ -488,68 +488,93 @@ const firstSeek = (blocks: NoteBlock[]): number | undefined => {
   }
   return undefined
 }
-const sectionEnd = (blocks: NoteBlock[], start: number) => {
-  const heading = blocks[start]
-  const level = heading.type === 'heading' ? heading.level : 2
-  let end = start + 1
-  while (end < blocks.length) {
-    const block = blocks[end]
-    if (block.type === 'heading' && block.level <= level) break
-    end++
-  }
-  return end
+// The notes' sections that follow the class: the scriptures it opened, and the readings.
+const STREAM = /^(scriptures opened|readings and scriptures)$/i
+// Sections that gather, each with its moment, things the class brought out along the way.
+const ASIDES: Record<string, string> = {
+  'in the news': 'In the News',
+  'shown in class': 'Shown in class',
+  'announcements & references': 'Announcement',
 }
 
+type Section = { heading?: NoteBlock; title: string; blocks: NoteBlock[] }
+type Unit = { seconds?: number; blocks: NoteBlock[] }
+
 /**
- * The notes list what a class brought out from the news in a section of its own, each item with
- * its moment in the class. Each one that has a moment goes into "Scriptures Opened" where the class
- * came to it, before the first scripture opened after it; the rest stay where they were.
+ * The notes in the order of the class. The notes group what a class did by kind: the scriptures it
+ * opened, the news it brought out, what it showed. Each has its moment in the class, so the app
+ * lays them out by that moment, start to finish: the introduction first, then each scripture with
+ * its breakdown and each news item, picture or announcement where the class came to it, then the
+ * class questions and the closing. Anything with no moment stays with what came before it.
  */
-const placeNewsInOrder = (blocks: NoteBlock[]): NoteBlock[] => {
-  const isHeading = (block: NoteBlock, pattern: RegExp) =>
-    block.type === 'heading' && pattern.test(plainText(block.html))
-  const newsAt = blocks.findIndex(block => isHeading(block, /^in the news$/i))
-  if (newsAt < 0 || !blocks.some(block => isHeading(block, /^scriptures opened$/i))) return blocks
-  const newsEnd = sectionEnd(blocks, newsAt)
-  const timed: { seconds: number; blocks: NoteBlock[] }[] = []
-  const kept: NoteBlock[] = []
-  for (const block of blocks.slice(newsAt + 1, newsEnd)) {
-    if (block.type !== 'list') {
-      kept.push(block)
-      continue
+const flowInClassOrder = (blocks: NoteBlock[]): NoteBlock[] => {
+  const sections: Section[] = [{ title: '', blocks: [] }]
+  for (const block of blocks) {
+    if (block.type === 'heading' && block.level <= 2)
+      sections.push({ heading: block, title: plainText(block.html).toLowerCase(), blocks: [] })
+    else sections[sections.length - 1].blocks.push(block)
+  }
+  const streams = sections.filter(section => STREAM.test(section.title))
+  if (!streams.length) return blocks
+
+  const units: Unit[] = []
+  for (const section of streams) {
+    let unit: Unit | undefined
+    for (const block of section.blocks) {
+      if (block.type === 'verse' || !unit) {
+        unit = { seconds: block.type === 'verse' ? firstSeek([block]) : undefined, blocks: [] }
+        units.push(unit)
+      }
+      unit.blocks.push(block)
     }
-    const untimed = block.items.filter(item => {
-      const seconds = firstSeek(item)
-      if (seconds === undefined) return true
-      timed.push({ seconds, blocks: item })
-      return false
+  }
+  const kept = new Map<Section, NoteBlock[]>()
+  for (const section of sections) {
+    const label = ASIDES[section.title]
+    if (!label) continue
+    const rest: NoteBlock[] = []
+    for (const block of section.blocks) {
+      if (block.type !== 'list') {
+        rest.push(block)
+        continue
+      }
+      const untimed = block.items.filter(item => {
+        const seconds = firstSeek(item)
+        if (seconds === undefined) return true
+        units.push({ seconds, blocks: [{ type: 'aside', label, blocks: item }] })
+        return false
+      })
+      if (untimed.length) rest.push({ ...block, items: untimed })
+    }
+    kept.set(section, rest)
+  }
+  // A unit with no moment keeps the place of the one before it.
+  let last = -1
+  const ordered = units
+    .map((unit, index) => {
+      if (unit.seconds !== undefined) last = unit.seconds
+      return { unit, at: unit.seconds ?? last, index }
     })
-    if (untimed.length) kept.push({ ...block, items: untimed })
+    .sort((left, right) => left.at - right.at || left.index - right.index)
+    .flatMap(({ unit }) => unit.blocks)
+
+  const out: NoteBlock[] = []
+  let placed = false
+  for (const section of sections) {
+    const isStream = streams.includes(section)
+    if (isStream && placed) continue
+    const body = isStream ? ordered : (kept.get(section) ?? section.blocks)
+    if (isStream) placed = true
+    else if (kept.has(section) && !body.length) continue
+    if (section.heading) out.push(section.heading)
+    out.push(...body)
   }
-  if (!timed.length) return blocks
-  timed.sort((left, right) => left.seconds - right.seconds)
-  const rest = [
-    ...blocks.slice(0, newsAt),
-    ...(kept.length ? [blocks[newsAt], ...kept] : []),
-    ...blocks.slice(newsEnd),
-  ]
-  const scripturesAt = rest.findIndex(block => isHeading(block, /^scriptures opened$/i))
-  const scripturesEnd = sectionEnd(rest, scripturesAt)
-  const out = rest.slice(0, scripturesAt + 1)
-  let next = 0
-  for (const block of rest.slice(scripturesAt + 1, scripturesEnd)) {
-    const seconds = block.type === 'verse' ? firstSeek([block]) : undefined
-    while (seconds !== undefined && next < timed.length && timed[next].seconds < seconds)
-      out.push({ type: 'news', blocks: timed[next++].blocks })
-    out.push(block)
-  }
-  while (next < timed.length) out.push({ type: 'news', blocks: timed[next++].blocks })
-  return [...out, ...rest.slice(scripturesEnd)]
+  return out
 }
 
 /** The notes as blocks for the app's own components. */
 export const classNotesToBlocks = (markdown: string, videoId: string): NoteBlock[] =>
-  placeNewsInOrder(blocksOf(notesLines(markdown), videoId))
+  flowInClassOrder(blocksOf(notesLines(markdown), videoId))
 
 /** The notes as HTML: headings, scripture quotes, precepts nested under each verse. */
 export const classNotesToHtml = (markdown: string, videoId: string): string =>
