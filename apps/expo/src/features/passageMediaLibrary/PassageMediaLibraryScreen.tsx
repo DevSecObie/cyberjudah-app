@@ -17,9 +17,11 @@ import {
   type ResolvedPassageMediaLibraryItem,
 } from '~features/bible/passageMedia'
 import useLanguage from '~helpers/useLanguage'
+import useDebounce from '~helpers/useDebounce'
 import { useQuery } from '@tanstack/react-query'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import PassageMediaLibraryCard from './PassageMediaLibraryCard'
+import { classesForHits, searchInsideClasses, searchKindsFor } from './classSearch'
 import {
   CLASS_COLLECTIONS,
   filterClassLibrary,
@@ -138,6 +140,28 @@ const PassageMediaLibraryScreen = () => {
     () => getClassSections(classes, filters, featured),
     [classes, filters, featured]
   )
+  // Past the titles: the classes whose notes say the words, from the site's search of every note.
+  const searchText = useDebounce(filters.query.trim(), 350)
+  const insideSearch = useQuery({
+    queryKey: ['cyberjudah-class-search', searchText, filters.series ?? ''],
+    queryFn: () => searchInsideClasses(searchText, searchKindsFor(filters.series)),
+    enabled: cyberJudah && searchText.length >= 3,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+  })
+  const insideSection = useMemo((): LibrarySection | undefined => {
+    if (!insideSearch.data?.length || searchText !== filters.query.trim()) return undefined
+    const listed = new Set(
+      seriesSections.flatMap(section =>
+        section.data.map(item => (item as CyberJudahClass).notesPath)
+      )
+    )
+    const rows = filterClassLibrary(classesForHits(insideSearch.data, classes, listed), {
+      ...filters,
+      query: '',
+    })
+    return rows.length ? { title: 'Said in the classes', data: rows } : undefined
+  }, [insideSearch.data, searchText, filters, seriesSections, classes])
   const inSeries = useMemo(
     () => (filters.series ? classes.filter(item => item.series === filters.series) : classes),
     [classes, filters.series]
@@ -230,16 +254,18 @@ const PassageMediaLibraryScreen = () => {
   const episodes = getHowToReadTheBibleEpisodes(library)
   const contentWidth = Math.min(windowWidth, 760)
   const thumbnailWidth = Math.min(176, Math.max(128, (contentWidth - 40) * 0.38))
-  const sections: LibrarySection[] = seriesSections.length
-    ? seriesSections
-    : episodes.length
-      ? [
-          {
-            title: t('passageMediaLibrary.categories.how-to-read'),
-            data: episodes,
-          },
-        ]
-      : []
+  const sections: LibrarySection[] = insideSection
+    ? [...seriesSections, insideSection]
+    : seriesSections.length
+      ? seriesSections
+      : episodes.length
+        ? [
+            {
+              title: t('passageMediaLibrary.categories.how-to-read'),
+              data: episodes,
+            },
+          ]
+        : []
 
   const playVideo = (item: ResolvedPassageMediaLibraryItem) => {
     router.push({
@@ -345,17 +371,36 @@ const PassageMediaLibraryScreen = () => {
             )}
           </Box>
         )}
-        renderItem={({ item, index }) => (
-          <PassageMediaLibraryCard
-            item={item}
-            episodeNumber={index + 1}
-            thumbnailWidth={thumbnailWidth}
-            onPress={() => playVideo(item)}
-          />
-        )}
+        renderItem={({ item, index }) => {
+          const snippet = (item as { snippet?: string }).snippet
+          return (
+            <VStack>
+              <PassageMediaLibraryCard
+                item={item}
+                episodeNumber={index + 1}
+                thumbnailWidth={thumbnailWidth}
+                onPress={() => playVideo(item)}
+              />
+              {!!snippet && (
+                <Text
+                  className="text-grey text-[14px] leading-[20px] mb-[18px] -mt-[6px]"
+                  numberOfLines={3}
+                >
+                  {snippet}
+                </Text>
+              )}
+            </VStack>
+          )
+        }}
         ListEmptyComponent={
           <Box className="overflow-hidden border-continuous py-[60px] items-center justify-center">
-            <Text className="text-grey text-center">{t('passageMediaLibrary.empty')}</Text>
+            <Text className="text-grey text-center">
+              {insideSearch.isFetching
+                ? 'Searching every class…'
+                : insideSearch.isError
+                  ? 'The class search is not answering. Please try again.'
+                  : t('passageMediaLibrary.empty')}
+            </Text>
           </Box>
         }
       />
