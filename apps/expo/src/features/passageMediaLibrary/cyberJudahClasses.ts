@@ -350,6 +350,18 @@ export type NoteBlock =
   | { type: 'reading'; blocks: NoteBlock[] }
   | { type: 'quote'; blocks: NoteBlock[] }
   | { type: 'list'; items: NoteBlock[][] }
+  /** A frame of what the class showed on screen, at its moment: a tile of the video's frame sheet. */
+  | {
+      type: 'shown'
+      seconds: number
+      href: string
+      label: string
+      sheet: string
+      x: number
+      y: number
+    }
+  /** A picture the notes carry, such as the class's artwork. */
+  | { type: 'image'; uri: string }
   /** Something the class brought out (the news, a picture), placed where in the class it came up. */
   | { type: 'aside'; label: string; blocks: NoteBlock[] }
   | {
@@ -388,6 +400,35 @@ const blocksOf = (lines: string[], videoId: string): NoteBlock[] => {
       i++
       out.push({ type: 'reading', blocks: blocksOf(body, videoId) })
     } else if (/^<\/?div\b/.test(line)) {
+      i++
+    } else if (/^<figure class="shown"/.test(line)) {
+      // What the class showed on screen: a tile of the video's frame sheet, linked to its moment.
+      const seconds = Number(/data-t="(\d+)"/.exec(line)?.[1])
+      const href = toHref(/<a href="([^"]+)"/.exec(line)?.[1] ?? '', videoId)
+      const sheet = /background-image:url\(([^)]+)\)/.exec(line)?.[1] ?? ''
+      const position = /background-position:(\d+)% (\d+)%/.exec(line)
+      if (Number.isFinite(seconds) && href && /^https:\/\//.test(sheet))
+        out.push({
+          type: 'shown',
+          seconds,
+          href,
+          label: /<span class="shown__at">([^<]+)<\/span>/.exec(line)?.[1] ?? '',
+          sheet,
+          x: Number(position?.[1] ?? 0),
+          y: Number(position?.[2] ?? 0),
+        })
+      i++
+    } else if (/^<figure\b/.test(line)) {
+      // Another figure, such as the class's artwork: its picture, if it has one.
+      const body: string[] = []
+      while (i < lines.length) {
+        body.push(lines[i])
+        if (/<\/figure>/.test(lines[i++])) break
+      }
+      const src = /<img [^>]*src="([^"]+)"/.exec(body.join(' '))?.[1]
+      if (src) out.push({ type: 'image', uri: src.startsWith('/') ? `${SITE}${src}` : src })
+    } else if (/^<p class="taught">/.test(line)) {
+      // The series and date the player already shows above the notes.
       i++
     } else if (line.startsWith('>')) {
       const body: string[] = []
@@ -442,7 +483,7 @@ const blocksOf = (lines: string[], videoId: string): NoteBlock[] => {
       while (
         i < lines.length &&
         !isBlank(lines[i]) &&
-        !/^(#{1,4}\s|>|-{3,}\s*$|<\/?div\b)/.test(lines[i]) &&
+        !/^(#{1,4}\s|>|-{3,}\s*$|<\/?div\b|<figure\b|<p class="taught">)/.test(lines[i]) &&
         !isListItem(lines[i])
       ) {
         body.push(lines[i++].trim())
@@ -534,6 +575,10 @@ const flowInClassOrder = (blocks: NoteBlock[]): NoteBlock[] => {
     if (!label) continue
     const rest: NoteBlock[] = []
     for (const block of section.blocks) {
+      if (block.type === 'shown') {
+        units.push({ seconds: block.seconds, blocks: [block] })
+        continue
+      }
       if (block.type !== 'list') {
         rest.push(block)
         continue

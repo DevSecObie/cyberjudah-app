@@ -1,6 +1,6 @@
 import { Feather } from '@expo/vector-icons'
-import React, { type ReactElement, type ReactNode } from 'react'
-import { FlatList, Pressable, Text as NativeText, type TextStyle, View } from 'react-native'
+import React, { type ReactElement, type ReactNode, useState } from 'react'
+import { FlatList, Image, Pressable, Text as NativeText, type TextStyle, View } from 'react-native'
 import { useTheme } from '~themes/ThemeProvider'
 import type { NoteBlock } from './cyberJudahClasses'
 
@@ -126,6 +126,61 @@ const Inline = ({
 /** The links in a passage line, without its time pill: the reference's own name. */
 const stripSeek = (html: string) => html.replace(/<a class="ts"[^>]*>[^<]*<\/a>/g, '').trim()
 
+/** One tile of a video's 3 by 3 frame sheet, as the website draws it with background-position. */
+const ShownFrame = ({
+  block,
+  colors,
+  onLink,
+}: {
+  block: Extract<NoteBlock, { type: 'shown' }>
+  colors: Colors
+  onLink: OnLink
+}) => {
+  const [width, setWidth] = useState(0)
+  const height = (width * 9) / 16
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`Shown in class at ${block.label}. Play from here`}
+      onPress={() => onLink(block.href)}
+      onLayout={event => setWidth(event.nativeEvent.layout.width)}
+      style={({ pressed }) => ({ marginTop: 6, marginBottom: 16, opacity: pressed ? 0.7 : 1 })}
+    >
+      <View
+        style={{
+          height: height || undefined,
+          aspectRatio: height ? undefined : 16 / 9,
+          borderRadius: 12,
+          overflow: 'hidden',
+          backgroundColor: colors.surface,
+        }}
+      >
+        {!!width && (
+          <Image
+            source={{ uri: block.sheet }}
+            accessibilityIgnoresInvertColors
+            style={{
+              position: 'absolute',
+              width: width * 3,
+              height: height * 3,
+              left: -(block.x / 100) * width * 2,
+              top: -(block.y / 100) * height * 2,
+            }}
+          />
+        )}
+      </View>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 }}>
+        <Feather name="image" size={13} color={colors.muted} />
+        <NativeText style={{ color: colors.muted, fontSize: 13 }}>Shown in class</NativeText>
+        <NativeText style={{ color: colors.link, fontSize: 13, fontWeight: '600' }}>
+          {'\u25B6\u2009'}
+          {block.label}
+        </NativeText>
+      </View>
+    </Pressable>
+  )
+}
+
 const Block = ({
   block,
   colors,
@@ -236,6 +291,17 @@ const Block = ({
             </View>
           ))}
         </View>
+      )
+    case 'shown':
+      return <ShownFrame block={block} colors={colors} onLink={onLink} />
+    case 'image':
+      return (
+        <Image
+          source={{ uri: block.uri }}
+          accessibilityIgnoresInvertColors
+          resizeMode="contain"
+          style={{ width: '100%', aspectRatio: 16 / 9, borderRadius: 12, marginBottom: 16 }}
+        />
       )
     case 'aside':
       return (
