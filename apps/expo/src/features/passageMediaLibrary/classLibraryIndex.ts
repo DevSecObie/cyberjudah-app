@@ -1,6 +1,6 @@
 import NetInfo from '@react-native-community/netinfo'
 import * as FileSystem from 'expo-file-system/legacy'
-import { openSQLiteDatabase, type SQLiteDatabase } from '~helpers/sqliteConnection'
+import { openSQLiteDatabase, type SQLiteDatabase } from '~helpers/sqlite'
 import { useEffect, useSyncExternalStore } from 'react'
 import { AppState } from 'react-native'
 import { storage } from '~helpers/storage'
