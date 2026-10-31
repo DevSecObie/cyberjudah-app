@@ -24,7 +24,8 @@ import { useTheme } from '~themes/ThemeProvider'
 import { entityReadingKey, finishReading } from './finishedReading'
 import { getChaptersForPlan, useComputedPlan } from './plan.hooks'
 import { getEntitySliceKey } from './planProgress'
-import { buildPlanQuiz, type QuizVerse } from './planQuiz'
+import { loadPublishedNote } from '~features/passageMediaLibrary/cyberJudahClasses'
+import { buildDayQuiz, type QuizVerse } from './planQuiz'
 
 // Each answer tile has its own colour and shape, as in a game, so the four read apart at a glance.
 const TILES = [
@@ -36,6 +37,14 @@ const TILES = [
 // The game is named for Philip's question to the reader of Esaias.
 const GAME_TITLE = 'Understandest thou what thou readest?'
 const GAME_SOURCE = 'Acts 8:30'
+// What each kind of question asks, on its chip.
+const KINDS = {
+  word: { icon: 'edit-3', label: 'Fill the gap' },
+  chapter: { icon: 'book-open', label: 'Name the chapter' },
+  taught: { icon: 'message-circle', label: 'Which scripture was this taught on?' },
+  precept: { icon: 'link', label: 'Which precept was read with it?' },
+  point: { icon: 'edit-3', label: 'Fill the gap in the breakdown' },
+} as const
 const CHEERS = ['Right!', 'Nice!', 'You got it!', 'Well read!', 'Spot on!']
 const CONFETTI = ['#4F6BF5', '#F29D12', '#8B5CF6', '#0FA597', '#E5484D', '#FFD43B']
 
@@ -139,7 +148,22 @@ const PlanQuizScreen = () => {
       staleTime: Infinity,
     })),
   })
-  const loaded = chapters.every(query => query.data)
+  // The day's notes: most questions come from their breakdowns.
+  const notePaths =
+    reading?.slices.flatMap(item =>
+      item.type === 'Text' && item.notePath ? [item.notePath] : []
+    ) ?? []
+  const notes = useQueries({
+    queries: notePaths.map(path => ({
+      queryKey: ['plan-quiz-note', path],
+      queryFn: () => loadPublishedNote(path),
+      staleTime: 60 * 60 * 1000,
+      retry: 1,
+    })),
+  })
+  // A note that cannot be loaded leaves its questions to the chapters.
+  const loaded =
+    chapters.every(query => query.data) && notes.every(query => query.data || query.isError)
   const questions = useMemo(() => {
     if (!loaded) return []
     const verses: QuizVerse[] = chapters.flatMap(query =>
@@ -152,7 +176,8 @@ const PlanQuizScreen = () => {
         }))
       })
     )
-    return buildPlanQuiz(verses, `${planId}/${readingSliceId}`)
+    const bodies = notes.flatMap(query => (query.data ? [query.data.body] : []))
+    return buildDayQuiz(bodies, verses, `${planId}/${readingSliceId}`)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaded, planId, readingSliceId])
 
@@ -467,13 +492,9 @@ const PlanQuizScreen = () => {
                         className="flex-row items-center gap-[5px] rounded-full px-[10px] py-[5px]"
                         style={{ backgroundColor: theme.colors.primary }}
                       >
-                        <FeatherIcon
-                          name={question.kind === 'word' ? 'edit-3' : 'book-open'}
-                          size={13}
-                          color="white"
-                        />
+                        <FeatherIcon name={KINDS[question.kind].icon} size={13} color="white" />
                         <Text className="text-[12px] font-bold" style={{ color: '#fff' }}>
-                          {question.kind === 'word' ? 'Fill the gap' : 'Name the chapter'}
+                          {KINDS[question.kind].label}
                         </Text>
                       </Box>
                       {comingBack && (
@@ -490,7 +511,9 @@ const PlanQuizScreen = () => {
                       {question.prompt}
                     </Text>
                     {/* The verse's place would name the chapter, so it never shows on that question. */}
-                    {chosen !== undefined && question.kind === 'word' && (
+                    {(question.kind === 'precept' ||
+                      (chosen !== undefined &&
+                        (question.kind === 'word' || question.kind === 'point'))) && (
                       <Text className="text-grey text-[14px]">{question.reference}</Text>
                     )}
                   </Box>
