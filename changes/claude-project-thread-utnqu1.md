@@ -17,3 +17,4 @@
 - Class player (Obie): the class floats in a window like the iPhone's picture in picture: drag it anywhere, tuck it past a side behind an arrow tab, make it bigger, close it, or go back to the page it started from. Apple glass on its buttons (Liquid Glass on iOS 26, frosted on the web). Sending a class to it from its page no longer leaves the page.
 - The plan day reader shows a day's whole study note, not just its opening lines.
 - Class videos keep their place: moving between the class page and the floating player, or closing and reopening a class, picks up at the same moment.
+- 4 Chapters a Day: each day is the class video, the chapters, then one Breakdown entry with every chapter's breakdown on one page, as Bible Strong lays out its days.
