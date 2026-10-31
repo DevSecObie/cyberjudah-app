@@ -191,8 +191,10 @@ const fillSources = [
   fillVideos('four-chapters-a-day-videos-channel.tsv'),
 ]
 
-// Where each class's reading begins, past the prayer and opening: "video<TAB>seconds", found from
-// the class's own transcript (data/four-chapters-a-day-starts.tsv). A class not listed starts at 0.
+// Where each chapter's reading begins in a class, past the prayer and opening:
+// "video<TAB>book id:chapter<TAB>seconds" (data/four-chapters-a-day-starts.tsv), found from the
+// class's own captions by scripts/find-four-chapters-reading-starts.py. A day opens its class at
+// the first of the day's chapters the class reads; a chapter not listed starts the class at 0.
 const startsFile = resolve(import.meta.dirname, 'data/four-chapters-a-day-starts.tsv')
 const readingStarts = new Map(
   existsSync(startsFile)
@@ -200,10 +202,12 @@ const readingStarts = new Map(
         .split('\n')
         .filter(line => line && !line.startsWith('#') && !line.startsWith('video\t'))
         .map(line => line.split('\t'))
-        .filter(([, seconds]) => Number(seconds) > 0)
-        .map(([video, seconds]) => [video, Number(seconds)])
+        .filter(([, , seconds]) => Number(seconds) > 0)
+        .map(([video, chapter, seconds]) => [`${video} ${chapter}`, Number(seconds)])
     : []
 )
+const sessionsFile = process.env.FOUR_CHAPTERS_SESSIONS
+const sessionList = []
 
 const days = []
 for (let i = 0; i < chapters.length; i += PER_DAY) days.push(chapters.slice(i, i + PER_DAY))
@@ -227,14 +231,19 @@ const sliceFor = (day, dayNumber) => {
   const first = ({ covered }) =>
     Math.min(...day.map(({ book, chapter }, index) => (covered.has(`${book.id}:${chapter}`) ? index : Infinity)))
   sessions = [...sessions].sort((a, b) => first(a) - first(b))
-  for (const { video, name } of sessions)
+  for (const { video, name, covered } of sessions) {
+    const opening = day.find(({ book, chapter }) => covered.has(`${book.id}:${chapter}`))
+    const key = `${opening.book.id}:${opening.chapter}`
+    sessionList.push({ video, chapter: key, slug: opening.book.slug, number: opening.chapter })
+    const start = readingStarts.get(`${video} ${key}`)
     slices.push({
       id: String(slices.length),
       type: 'Video',
       title: `The class: ${name}`,
       url: `https://www.youtube.com/watch?v=${video}`,
-      ...(readingStarts.has(video) ? { start: readingStarts.get(video) } : {}),
+      ...(start ? { start } : {}),
     })
+  }
   for (const { book, chapter } of day) {
     // The notes keep the Greek additions with Esther (docs/study/esther/11-16).
     const note = noteFor(book.slug === 'esther-greek' ? 'esther' : book.slug, chapter)
@@ -308,6 +317,7 @@ if (process.env.DUMP_SESSIONS) {
   }))
   writeFileSync(process.env.DUMP_SESSIONS, JSON.stringify(sessions.filter(s => s.missing.length), null, 1))
 }
+if (sessionsFile) writeFileSync(sessionsFile, JSON.stringify(sessionList))
 const withVideos = plan.sections
   .flatMap(section => section.readingSlices)
   .filter(reading => reading.slices.some(slice => slice.type === 'Video')).length
