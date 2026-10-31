@@ -21,6 +21,7 @@ import useDebounce from '~helpers/useDebounce'
 import { useQuery } from '@tanstack/react-query'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import PassageMediaLibraryCard from './PassageMediaLibraryCard'
+import LiveClassBanner from './LiveClassBanner'
 import { classesForHits, searchInsideClasses, searchKindsFor } from './classSearch'
 import {
   CLASS_COLLECTIONS,
@@ -321,6 +322,7 @@ const PassageMediaLibraryScreen = () => {
                   : 'passageMediaLibrary.subtitle'
               )}
             </Text>
+            {cyberJudah && <LiveClassBanner className="mt-[18px]" />}
             {!!featured && (
               <TouchableBox
                 className="mt-[18px] gap-[10px]"

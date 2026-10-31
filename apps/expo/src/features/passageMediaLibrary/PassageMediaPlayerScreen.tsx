@@ -307,6 +307,13 @@ const PassageMediaPlayerScreen = () => {
                   </TouchableBox>
                 )}
               </VStack>
+            ) : cachedClass?.pending ? (
+              // Up on YouTube before its notes are written, as the Telegram app lists it.
+              <VStack className="py-[40px] px-[20px] items-center">
+                <Text className="text-grey text-center">
+                  The notes for this class are coming soon.
+                </Text>
+              </VStack>
             ) : null}
           </>
         ) : (

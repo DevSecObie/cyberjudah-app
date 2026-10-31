@@ -7,6 +7,12 @@ import type { PublishedNote } from '~features/notesExport/notePdf'
 // a newly published class appears without an app update. The last list read is kept on the
 // phone for offline and instant opens.
 const DATA_ORIGIN = 'https://data.cyberjudah.io'
+// The classroom channel's newest uploads and its live stream, read on CyberJudah's server as the
+// Telegram app reads them.
+const API_ORIGIN = (
+  process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL ||
+  'https://cyberjudah-telegram-staging.oisrae1.workers.dev'
+).replace(/\/+$/, '')
 const CACHE_KEY = 'cyberjudah.classLibrary.v2'
 // A neutral dark placeholder while a thumbnail loads.
 const PLACEHOLDER_BLURHASH = 'L03+Gm%M00t7_3ofWBWB00of~qWB'
@@ -36,7 +42,12 @@ export type CyberJudahClass = ResolvedPassageMediaLibraryItem & {
   keywords: string
   /** The class's page on cyberjudah.io, whose notes the player shows under the video. */
   notesPath: string
+  /** Up on YouTube, its notes not written yet: the video plays and the notes follow. */
+  pending?: boolean
 }
+
+/** One of the classroom channel's newest uploads. */
+export type RecentClassVideo = { video: string; title: string; published: string }
 
 type FeedRow = {
   title?: string
@@ -65,7 +76,10 @@ const collectionOf = (feed: Feed, collection: string): ClassCollection => {
 }
 
 /** Every published class with a video, filed by collection in the Telegram app's order, newest first. */
-export const toClassLibrary = (feeds: Partial<Record<Feed, unknown>>): CyberJudahClass[] => {
+export const toClassLibrary = (
+  feeds: Partial<Record<Feed, unknown>>,
+  recent: RecentClassVideo[] = []
+): CyberJudahClass[] => {
   const seen = new Set<string>()
   const classes: CyberJudahClass[] = []
   for (const feed of ['classes', 'captains', 'history'] as const) {
@@ -113,8 +127,87 @@ export const toClassLibrary = (feeds: Partial<Record<Feed, unknown>>): CyberJuda
       })
     }
   }
+  // As in the Telegram app: a class is listed the hour it is up on YouTube, before its notes.
+  for (const upload of recent) {
+    if (!upload || !isVideoId(upload.video) || !upload.title || seen.has(upload.video)) continue
+    seen.add(upload.video)
+    const workId = `cyberjudah-class-${upload.video}`
+    const date = typeof upload.published === 'string' ? upload.published.slice(0, 10) : ''
+    classes.push({
+      workId,
+      editionId: `${workId}:en`,
+      attributionLabel: 'CyberJudah',
+      reference: '',
+      strongCodes: [],
+      provider: 'youtube',
+      providerId: upload.video,
+      sourceUrl: `https://www.youtube.com/watch?v=${upload.video}`,
+      thumbnailUrl: `https://i.ytimg.com/vi/${upload.video}/hqdefault.jpg`,
+      blurHash: PLACEHOLDER_BLURHASH,
+      title: upload.title,
+      durationSeconds: 0,
+      categories: ['classroom'],
+      series: 'Sabbath classes',
+      collection: '',
+      subtitle: [date, 'Notes coming soon'].filter(Boolean).join(' · '),
+      date,
+      year: date.slice(0, 4),
+      teacher: '',
+      keywords: '',
+      notesPath: '',
+      pending: true,
+    })
+  }
   const rank = (series: ClassCollection) => CLASS_COLLECTIONS.indexOf(series)
   return classes.sort((a, b) => rank(a.series) - rank(b.series) || b.date.localeCompare(a.date))
+}
+
+/** The classroom channel's newest uploads; none when the server can't say (the list still loads). */
+export const loadRecentClassVideos = async (
+  fetcher: typeof fetch = fetch
+): Promise<RecentClassVideo[]> => {
+  try {
+    const response = await fetcher(`${API_ORIGIN}/api/app/channel/recent`, {
+      headers: { accept: 'application/json' },
+    })
+    if (!response.ok) return []
+    const body = (await response.json()) as { videos?: unknown }
+    return Array.isArray(body?.videos) ? (body.videos as RecentClassVideo[]) : []
+  } catch {
+    return []
+  }
+}
+
+/** The class on the air now, or the next one, as the Telegram app's banner reads it. */
+export type LiveClass = {
+  live: boolean
+  upcoming: boolean
+  video: string | null
+  title: string | null
+  starts: string | null
+}
+
+export const loadLiveClass = async (fetcher: typeof fetch = fetch): Promise<LiveClass | null> => {
+  try {
+    const response = await fetcher(`${API_ORIGIN}/api/app/channel/live`, {
+      headers: { accept: 'application/json' },
+    })
+    if (!response.ok) return null
+    const body = (await response.json()) as LiveClass
+    return body && isVideoId(body.video) ? body : null
+  } catch {
+    return null
+  }
+}
+
+/** What the banner shows: "Live now", "Starting 7:00 PM" within six hours, or nothing. */
+export const liveClassBanner = (live: LiveClass | null | undefined, now = Date.now()) => {
+  if (!live?.video) return undefined
+  if (live.live)
+    return { video: live.video, title: live.title || 'Sabbath class', starts: undefined }
+  const wait = live.upcoming && live.starts ? new Date(live.starts).getTime() - now : NaN
+  if (!(wait > -15 * 60_000 && wait < 6 * 3600_000)) return undefined
+  return { video: live.video, title: live.title || 'Sabbath class', starts: live.starts! }
 }
 
 export const readCachedClassLibrary = (): CyberJudahClass[] | null => {
@@ -138,12 +231,13 @@ export const loadClassLibrary = async (
     if (!response.ok) throw new Error(`CYBERJUDAH_CLASSES_UNAVAILABLE:${response.status}`)
     return response.json()
   }
-  const [classes, captains, history] = await Promise.all([
+  const [classes, captains, history, recent] = await Promise.all([
     read('/search/classes.json'),
     read('/search/captains.json').catch(() => []),
     read('/api/history/index.json').catch(() => []),
+    loadRecentClassVideos(fetcher),
   ])
-  const library = toClassLibrary({ classes, captains, history })
+  const library = toClassLibrary({ classes, captains, history }, recent)
   if (!library.length) throw new Error('CYBERJUDAH_CLASSES_EMPTY')
   storage.set(CACHE_KEY, JSON.stringify(library))
   return library
