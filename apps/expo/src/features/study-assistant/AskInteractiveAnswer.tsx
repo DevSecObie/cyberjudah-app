@@ -38,7 +38,6 @@ function Explanation({ text, citations }: { text: string; citations: number[] })
   return (
     <Box className="mb-4 gap-2">
       <AssistantMarkdown
-        reading
         text={linkedAnswer(text, sources, sourceLink)}
         streaming={context.streaming}
         onLinkPress={url => {
@@ -249,7 +248,6 @@ export default function AskInteractiveAnswer({
     <>
       {!!turn.answer && (
         <AssistantMarkdown
-          reading
           text={linkedAnswer(turn.answer, turn.sources, sourceLink)}
           streaming={streaming}
           onLinkPress={url => {
