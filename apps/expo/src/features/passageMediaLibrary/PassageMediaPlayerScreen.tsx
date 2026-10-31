@@ -267,18 +267,6 @@ const PassageMediaPlayerScreen = () => {
                       {t('passageMediaLibrary.playbackError')}
                     </Text>
                   )}
-                  {usesCyberJudahEditorial() && (
-                    <TouchableBox
-                      accessibilityRole="button"
-                      onPress={sendToWindow}
-                      className="flex-row items-center gap-[8px] self-start rounded-full bg-light-grey px-[14px] py-[9px]"
-                    >
-                      <FeatherIcon name="minimize-2" size={15} color="primary" />
-                      <Text className="text-primary font-bold text-[14px]">
-                        Keep playing while you browse
-                      </Text>
-                    </TouchableBox>
-                  )}
                 </VStack>
               </VStack>
             </Box>

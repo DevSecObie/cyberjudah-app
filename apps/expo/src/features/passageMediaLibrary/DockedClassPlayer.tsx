@@ -1,12 +1,13 @@
 import { useRouter } from 'expo-router'
 import { useAtom } from 'jotai'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Animated, PanResponder, useWindowDimensions } from 'react-native'
+import { Animated, PanResponder, Platform, useWindowDimensions } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Box, { TouchableBox } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import { getPassageMediaEmbedUrl } from '~features/bible/passageMedia'
 import ClassVideoFrame from './ClassVideoFrame'
+import FloatingLayer from './FloatingLayer'
 import { rememberClassPosition } from './classVideoPosition'
 import PipGlass from './PipGlass'
 import { dockedClassAtom } from './dockedClassPlayerStore'
@@ -150,77 +151,81 @@ const DockedClassPlayer = () => {
   }
 
   return (
-    <Animated.View
-      style={{
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        width: cardWidth,
-        height: cardHeight,
-        borderRadius: 14,
-        backgroundColor: '#000',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.35,
-        shadowRadius: 20,
-        elevation: 10,
-        transform: pan.getTranslateTransform(),
-      }}
-    >
-      <Box style={{ flex: 1, borderRadius: 14, overflow: 'hidden' }}>
-        <ClassVideoFrame
-          key={docked.videoId}
-          uri={getPassageMediaEmbedUrl(docked.videoId, docked.start)}
-          onTime={seconds => rememberClassPosition(docked.videoId, seconds)}
-        />
-        {/* While the window moves, the video page must not catch the pointer. */}
-        {dragging && <Box className="absolute inset-0" />}
-        {!tucked && (
-          <Box
-            {...responder.panHandlers}
-            accessibilityHint="Drag to move the video"
-            className="absolute left-0 right-0 top-0 flex-row items-center justify-between px-[6px]"
-            // No text selection from the strip: on the web a selection change ends the drag.
-            style={{ height: BAR_HEIGHT, cursor: 'grab', userSelect: 'none' } as object}
-          >
-            <RoundButton icon="x" label="Close the video" onPress={close} />
-            <Box className="flex-row gap-[6px]">
-              <RoundButton
-                icon={expanded ? 'minimize-2' : 'maximize-2'}
-                label={expanded ? 'Make the video smaller' : 'Make the video bigger'}
-                onPress={() => setExpanded(value => !value)}
-              />
-              {docked.returnTo && (
+    <FloatingLayer>
+      <Animated.View
+        style={{
+          // On the website, fixed to the window and over every sheet and dialog the site opens.
+          position: Platform.OS === 'web' ? ('fixed' as 'absolute') : 'absolute',
+          zIndex: 100000,
+          left: 0,
+          top: 0,
+          width: cardWidth,
+          height: cardHeight,
+          borderRadius: 14,
+          backgroundColor: '#000',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.35,
+          shadowRadius: 20,
+          elevation: 10,
+          transform: pan.getTranslateTransform(),
+        }}
+      >
+        <Box style={{ flex: 1, borderRadius: 14, overflow: 'hidden' }}>
+          <ClassVideoFrame
+            key={docked.videoId}
+            uri={getPassageMediaEmbedUrl(docked.videoId, docked.start)}
+            onTime={seconds => rememberClassPosition(docked.videoId, seconds)}
+          />
+          {/* While the window moves, the video page must not catch the pointer. */}
+          {dragging && <Box className="absolute inset-0" />}
+          {!tucked && (
+            <Box
+              {...responder.panHandlers}
+              accessibilityHint="Drag to move the video"
+              className="absolute left-0 right-0 top-0 flex-row items-center justify-between px-[6px]"
+              // No text selection from the strip: on the web a selection change ends the drag.
+              style={{ height: BAR_HEIGHT, cursor: 'grab', userSelect: 'none' } as object}
+            >
+              <RoundButton icon="x" label="Close the video" onPress={close} />
+              <Box className="flex-row gap-[6px]">
                 <RoundButton
-                  icon="corner-up-left"
-                  label="Go back to the page the class started from"
-                  onPress={goBack}
+                  icon={expanded ? 'minimize-2' : 'maximize-2'}
+                  label={expanded ? 'Make the video smaller' : 'Make the video bigger'}
+                  onPress={() => setExpanded(value => !value)}
                 />
-              )}
+                {docked.returnTo && (
+                  <RoundButton
+                    icon="corner-up-left"
+                    label="Go back to the page the class started from"
+                    onPress={goBack}
+                  />
+                )}
+              </Box>
             </Box>
-          </Box>
-        )}
-        {tucked && (
-          <TouchableBox
-            accessibilityRole="button"
-            accessibilityLabel="Bring the video back"
-            onPress={untuck}
-            className="absolute top-0 bottom-0 items-center justify-center"
-            style={{
-              width: TAB_WIDTH,
-              [tucked === 'right' ? 'left' : 'right']: 0,
-            }}
-          >
-            <PipGlass radius={0} />
-            <FeatherIcon
-              name={tucked === 'right' ? 'chevron-left' : 'chevron-right'}
-              size={22}
-              color="white"
-            />
-          </TouchableBox>
-        )}
-      </Box>
-    </Animated.View>
+          )}
+          {tucked && (
+            <TouchableBox
+              accessibilityRole="button"
+              accessibilityLabel="Bring the video back"
+              onPress={untuck}
+              className="absolute top-0 bottom-0 items-center justify-center"
+              style={{
+                width: TAB_WIDTH,
+                [tucked === 'right' ? 'left' : 'right']: 0,
+              }}
+            >
+              <PipGlass radius={0} />
+              <FeatherIcon
+                name={tucked === 'right' ? 'chevron-left' : 'chevron-right'}
+                size={22}
+                color="white"
+              />
+            </TouchableBox>
+          )}
+        </Box>
+      </Animated.View>
+    </FloatingLayer>
   )
 }
 

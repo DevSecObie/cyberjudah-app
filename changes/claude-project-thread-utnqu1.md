@@ -19,3 +19,4 @@
 - Class videos keep their place: moving between the class page and the floating player, or closing and reopening a class, picks up at the same moment.
 - 4 Chapters a Day: each day is the class video, the chapters, then one Breakdown entry with every chapter's breakdown on one page, as Bible Strong lays out its days.
 - The class player keeps YouTube's own controls and adds a picture in picture button that sends the class to the floating window; on the website the class page plays in a frame.
+- The floating class player stays in front of every sheet, menu and window the app opens; the class page's "Keep playing while you browse" button is gone (the picture in picture button does it).
