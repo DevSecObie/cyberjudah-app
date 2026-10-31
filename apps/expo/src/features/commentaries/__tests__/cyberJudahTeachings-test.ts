@@ -14,7 +14,7 @@ const withCyberJudah = (test: () => void) => {
 }
 
 describe('CyberJudah teachings in the reader', () => {
-  it('starts every reader with the teachings shown as chips', () =>
+  it('keeps the teachings out of the reader until they carry their teachers\' names', () =>
     withCyberJudah(() => {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { getDefaultCommentarySelection } = require('../commentarySelection')
@@ -22,12 +22,8 @@ describe('CyberJudah teachings in the reader', () => {
       const { getInlineCommentaryResources } = require('../inlineCommentarySelection')
       const selection = getDefaultCommentarySelection('en')
       expect(selection).toEqual(['cyberjudah:en'])
-      expect(getInlineCommentaryResources([], selection)).toEqual([
-        { resourceId: 'cyberjudah', language: 'en' },
-      ])
-      expect(getInlineCommentaryResources(undefined, selection)).toEqual([
-        { resourceId: 'cyberjudah', language: 'en' },
-      ])
+      expect(getInlineCommentaryResources([], selection)).toEqual([])
+      expect(getInlineCommentaryResources(['cyberjudah:en'], selection, true)).toEqual([])
     }))
 
   it('brings the teachings back to a selection saved without them', () =>

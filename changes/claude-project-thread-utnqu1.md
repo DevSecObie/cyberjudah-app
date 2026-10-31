@@ -12,3 +12,4 @@
 - Web: published notes no longer crash (tslib resolves to its ES module build on web).
 - Note pages: the "Read the chapter →" line is gone (Obie).
 - Docked class player (Obie): a plan day's class video, or "Keep playing while you browse" on a class page, plays in a small player docked at the bottom of every screen, so the class keeps going while you read; it grows to full width and closes with ✕.
+- Reader: the CyberJudah notes under the verses are off, and the reader menu leaves the option out, until each note carries its teacher's name (Obie).

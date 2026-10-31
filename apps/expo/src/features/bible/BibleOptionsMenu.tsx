@@ -8,6 +8,7 @@ import InlineCommentarySettings, {
 } from '~features/commentaries/InlineCommentarySettings'
 import CommentarySelectorSheet from '~features/commentaries/CommentarySelectorSheet'
 import { useInlineCommentaryMenuAction } from '~features/commentaries/useInlineCommentaryMenuAction'
+import { isInlineCommentaryPaused } from '~features/commentaries/inlineCommentarySelection'
 type Props = ComponentProps<typeof MenuView> & {
   bookNumber: number
   chapter: number
@@ -27,7 +28,7 @@ export default function BibleOptionsMenu({
   const action = useInlineCommentaryMenuAction()
   const manage = () => manageSheet.current?.present()
   const menuActions = [...actions]
-  menuActions.splice(1, 0, action)
+  if (!isInlineCommentaryPaused()) menuActions.splice(1, 0, action)
   return (
     <>
       <MenuView
