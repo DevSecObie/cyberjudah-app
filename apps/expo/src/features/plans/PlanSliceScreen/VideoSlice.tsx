@@ -1,10 +1,13 @@
 import { useTranslation } from 'react-i18next'
-import { ActivityIndicator } from 'react-native'
+import { ActivityIndicator, Platform } from 'react-native'
+import WebView from 'react-native-webview'
 import Link from '~common/Link'
 import Text from '~common/ui/Text'
 import React, { useState } from 'react'
 import YoutubePlayer from '~helpers/react-native-youtube-iframe'
 import Box from '~common/ui/Box'
+import { getPassageMediaEmbedUrl } from '~features/bible/passageMedia'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 
 import { Plan, VideoSlice as VideoSliceProps } from 'src/common/types'
 import ReferenceParagraph from './ReferenceParagraph'
@@ -51,7 +54,19 @@ const VideoSlice = ({ title, description, url, webUrl, poster, planLanguage }: P
               </Box>
             )}
             {iframeWidth > 0 &&
-              (videoId ? (
+              (videoId && usesCyberJudahEditorial() && Platform.OS !== 'web' ? (
+                // As in the class player: YouTube refuses embeds from an inline page on the
+                // phone, so the class plays inside CyberJudah's hosted video page.
+                <WebView
+                  source={{ uri: getPassageMediaEmbedUrl(videoId) }}
+                  style={{ width: iframeWidth, height: iframeHeight }}
+                  allowsInlineMediaPlayback
+                  allowsFullscreenVideo
+                  onLoadEnd={() => setReady(true)}
+                  onError={() => setFailed(true)}
+                  onHttpError={() => setFailed(true)}
+                />
+              ) : videoId ? (
                 <YoutubePlayer
                   height={iframeHeight}
                   width={iframeWidth}
