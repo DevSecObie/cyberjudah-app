@@ -1,6 +1,6 @@
 import ReadingDatePicker from '~features/daily-reading/ReadingDatePicker'
 import { Image } from 'expo-image'
-import { useLocalSearchParams, useNavigation } from 'expo-router'
+import { useGlobalSearchParams, useLocalSearchParams, useNavigation, usePathname } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { Platform, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
@@ -55,6 +55,8 @@ const ScheduledPlanContent = ({ plan, initialReadingSliceId }: Props) => {
   const pushRouteOnce = usePushRouteOnce()
   const dispatch = useDispatch()
   const setDockedClass = useSetAtom(dockedClassAtom)
+  const pathname = usePathname()
+  const routeParams = useGlobalSearchParams()
   const participation = useSelector((state: RootState) =>
     state.plan.ongoingPlans.find(item => item.id === plan.id)
   )
@@ -120,7 +122,11 @@ const ScheduledPlanContent = ({ plan, initialReadingSliceId }: Props) => {
     const classVideo =
       usesCyberJudahEditorial() && slice.type === 'Video' ? youtubeIdOf(slice.url) : undefined
     if (classVideo && slice.type === 'Video') {
-      setDockedClass({ videoId: classVideo, title: slice.title })
+      setDockedClass({
+        videoId: classVideo,
+        title: slice.title,
+        returnTo: { pathname, params: routeParams as Record<string, string | string[]> },
+      })
       dispatch(markEntitySliceAsRead(location))
       return
     }

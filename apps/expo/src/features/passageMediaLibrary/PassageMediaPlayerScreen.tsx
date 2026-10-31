@@ -1,12 +1,12 @@
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useGlobalSearchParams, useLocalSearchParams, usePathname, useRouter } from 'expo-router'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Linking, useWindowDimensions } from 'react-native'
 import YoutubePlayer from '~helpers/react-native-youtube-iframe'
 import WebView from 'react-native-webview'
-import { useSetAtom } from 'jotai'
+import { useAtom } from 'jotai'
 import { dockedClassAtom } from './dockedClassPlayerStore'
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes'
 import Header from '~common/Header'
@@ -55,7 +55,9 @@ const PassageMediaPlayerScreen = () => {
   const { width: windowWidth } = useWindowDimensions()
   const [playerError, setPlayerError] = useState<string>()
   const classPlayerRef = useRef<WebView>(null)
-  const setDockedClass = useSetAtom(dockedClassAtom)
+  const [dockedClass, setDockedClass] = useAtom(dockedClassAtom)
+  const pathname = usePathname()
+  const routeParams = useGlobalSearchParams()
   const router = useRouter()
   const item = workId
     ? (getPassageMediaById(workId, language) ?? getCachedClassById(workId))
@@ -119,7 +121,19 @@ const PassageMediaPlayerScreen = () => {
                     overflow: 'visible',
                   }}
                 >
-                  {usesCyberJudahEditorial() ? (
+                  {usesCyberJudahEditorial() && dockedClass?.videoId === item.providerId ? (
+                    // The class plays in the floating window; tapping here brings it back.
+                    <TouchableBox
+                      accessibilityRole="button"
+                      onPress={() => setDockedClass(null)}
+                      className="flex-1 items-center justify-center gap-[8px] rounded-[14px] bg-[#000]"
+                    >
+                      <FeatherIcon name="maximize-2" size={20} color="white" />
+                      <Text className="text-[14px]" style={{ color: '#fff' }}>
+                        Playing in the small player. Tap to play it here.
+                      </Text>
+                    </TouchableBox>
+                  ) : usesCyberJudahEditorial() ? (
                     // Like the reader's player (and Bible Strong's), the class plays inside
                     // CyberJudah's hosted video page: YouTube refuses embeds from an inline page.
                     <WebView
@@ -191,8 +205,8 @@ const PassageMediaPlayerScreen = () => {
                           videoId: item.providerId,
                           title: item.title,
                           start: startSeconds,
+                          returnTo: { pathname, params: routeParams as Record<string, string | string[]> },
                         })
-                        if (router.canGoBack()) router.back()
                       }}
                       className="flex-row items-center gap-[8px] self-start rounded-full bg-light-grey px-[14px] py-[9px]"
                     >
