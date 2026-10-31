@@ -13,3 +13,4 @@
 - Note pages: the "Read the chapter →" line is gone (Obie).
 - Docked class player (Obie): a plan day's class video, or "Keep playing while you browse" on a class page, plays in a small player docked at the bottom of every screen, so the class keeps going while you read; it grows to full width and closes with ✕.
 - Reader: the CyberJudah notes under the verses are off, and the reader menu leaves the option out, until each note carries its teacher's name (Obie).
+- 4 Chapters a Day: days the playlist has no video for take the class's other uploads, then the IUIC 4 Chapters a Day channel (scripts/data/four-chapters-a-day-videos-extra.tsv and -channel.tsv): 298 of 341 days now have the class video, Obadiah to Malachi, the Apocrypha to Ecclesiasticus, the Gospels in part and 1 Timothy to Revelation.

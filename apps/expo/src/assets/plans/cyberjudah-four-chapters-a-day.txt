@@ -204,34 +204,46 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Genesis 15–18",
+              "url": "https://www.youtube.com/watch?v=2A3IDNHiO7g"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Genesis 19–22",
+              "url": "https://www.youtube.com/watch?v=AkX-VLfOtVc"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Genesis 17: The Covenant Sealed in the Flesh",
               "description": "This reading covers Genesis 17 through 20. Abraham is a righteous example all across the board: faith, obedience, hospitality, leadership, and immediate action on the commandments of the Most High.",
               "notePath": "/study/genesis/17"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Genesis 18: The Promise of Isaac and the Cry of Sodom",
               "description": "",
               "notePath": "/study/genesis/18"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "Genesis 19: The Destruction of Sodom",
               "description": "",
               "notePath": "/study/genesis/19"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Text",
               "title": "Genesis 20: Sarah and Abimelech",
               "description": "",
               "notePath": "/study/genesis/20"
             },
             {
-              "id": "4",
+              "id": "6",
               "type": "Chapter",
               "chapters": "1|17-20"
             }
@@ -6168,27 +6180,39 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Psalms 8–11",
+              "url": "https://www.youtube.com/watch?v=Cyxto2muCaE"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Psalms 12–15",
+              "url": "https://www.youtube.com/watch?v=hpg4F5kZz74"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Psalm 12: The Words of the Lord Are Pure Words",
               "description": "",
               "notePath": "/study/psalms/12"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Psalm 13: How Long Wilt Thou Forget Me, O Lord",
               "description": "",
               "notePath": "/study/psalms/13"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "Psalm 14: The Fool Hath Said in His Heart, There Is No God",
               "description": "",
               "notePath": "/study/psalms/14"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Chapter",
               "chapters": "19|11-14"
             }
@@ -7556,27 +7580,39 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Psalms 132–135",
+              "url": "https://www.youtube.com/watch?v=S3Vo31w1QB4"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Psalms 136–139",
+              "url": "https://www.youtube.com/watch?v=NSEGsm3bdR0"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Psalm 136: For His Mercy Endureth For Ever",
               "description": "",
               "notePath": "/study/psalms/136"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Psalm 137: By the Rivers of Babylon",
               "description": "",
               "notePath": "/study/psalms/137"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "Psalm 138: I Will Praise Thee With My Whole Heart",
               "description": "",
               "notePath": "/study/psalms/138"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Chapter",
               "chapters": "19|135-138"
             }
@@ -7813,27 +7849,39 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Proverbs 6–9",
+              "url": "https://www.youtube.com/watch?v=Up2PJoyKCd8"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Proverbs 10–13",
+              "url": "https://www.youtube.com/watch?v=Q-D8n3lzILE"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Proverbs 10: The Proverbs of Solomon",
               "description": "",
               "notePath": "/study/proverbs/10"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Proverbs 11: A False Balance Is Abomination",
               "description": "",
               "notePath": "/study/proverbs/11"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "Proverbs 12: Whoso Loveth Instruction Loveth Knowledge",
               "description": "",
               "notePath": "/study/proverbs/12"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Chapter",
               "chapters": "20|9-12"
             }
@@ -8798,27 +8846,39 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Isaiah 43–46",
+              "url": "https://www.youtube.com/watch?v=bRsUIgVoQfo"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Isaiah 47–50",
+              "url": "https://www.youtube.com/watch?v=QBA-kPTXhhM"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Isaiah 47: The Fall of Babylon",
               "description": "",
               "notePath": "/study/isaiah/47"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Isaiah 48: Refined in the Furnace of Affliction",
               "description": "",
               "notePath": "/study/isaiah/48"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "Isaiah 49: A Light to the Gentiles",
               "description": "",
               "notePath": "/study/isaiah/49"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Chapter",
               "chapters": "23|46-49"
             }
@@ -8965,27 +9025,39 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Isaiah 59–62",
+              "url": "https://www.youtube.com/watch?v=Ki4YZyksQJU"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Isaiah 63–66",
+              "url": "https://www.youtube.com/watch?v=RNRQ7ehHNgM"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Isaiah 63: I Have Trodden the Winepress Alone",
               "description": "",
               "notePath": "/study/isaiah/63"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Isaiah 64: Thou Art the Potter, We Are the Clay",
               "description": "",
               "notePath": "/study/isaiah/64"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "Isaiah 65: New Heavens and a New Earth",
               "description": "",
               "notePath": "/study/isaiah/65"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Chapter",
               "chapters": "23|62-65"
             }
@@ -10014,27 +10086,39 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Ezekiel 28–31",
+              "url": "https://www.youtube.com/watch?v=Ia5QUey6ffs"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Ezekiel 32–35",
+              "url": "https://www.youtube.com/watch?v=IND7LooU-iE"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Ezekiel 32: A Lamentation for Pharaoh",
               "description": "",
               "notePath": "/study/ezekiel/32"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Ezekiel 33: The Watchman and the Turning of the Wicked",
               "description": "",
               "notePath": "/study/ezekiel/33"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "Ezekiel 34: The Shepherds of Israel and the True Shepherd",
               "description": "",
               "notePath": "/study/ezekiel/34"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Chapter",
               "chapters": "26|31-34"
             }
@@ -10136,27 +10220,39 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Ezekiel 40–43",
+              "url": "https://www.youtube.com/watch?v=K-jKs8SX6eY"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Ezekiel 44–47",
+              "url": "https://www.youtube.com/watch?v=y7ytcYkdI7o"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Ezekiel 44: The East Gate and the Levites",
               "description": "",
               "notePath": "/study/ezekiel/44"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Ezekiel 45: The Holy Portion of the Land",
               "description": "",
               "notePath": "/study/ezekiel/45"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "Ezekiel 46: Offerings and the Prince",
               "description": "",
               "notePath": "/study/ezekiel/46"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Chapter",
               "chapters": "26|43-46"
             }
@@ -10358,27 +10454,39 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Daniel 12, Hosea 1–3",
+              "url": "https://www.youtube.com/watch?v=lsTET69viVw"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Hosea 4–7",
+              "url": "https://www.youtube.com/watch?v=nkjhGuf6u2Q"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Hosea 4: The Lord's Controversy With the Land",
               "description": "",
               "notePath": "/study/hosea/4"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Hosea 5: The Pride of Israel Testifieth to His Face",
               "description": "",
               "notePath": "/study/hosea/5"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "Hosea 6: In the Morning Will I Seek Him",
               "description": "",
               "notePath": "/study/hosea/6"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Chapter",
               "chapters": "28|3-6"
             }
@@ -10390,34 +10498,46 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Hosea 4–7",
+              "url": "https://www.youtube.com/watch?v=nkjhGuf6u2Q"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Hosea 8–11",
+              "url": "https://www.youtube.com/watch?v=_z0mfAzWPwg"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Hosea 7: Ephraim Is a Cake Not Turned",
               "description": "",
               "notePath": "/study/hosea/7"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Hosea 8: They Have Sown the Wind",
               "description": "",
               "notePath": "/study/hosea/8"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "Hosea 9: The Days of Visitation Are Come",
               "description": "",
               "notePath": "/study/hosea/9"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Text",
               "title": "Hosea 10: Israel Is an Empty Vine",
               "description": "",
               "notePath": "/study/hosea/10"
             },
             {
-              "id": "4",
+              "id": "6",
               "type": "Chapter",
               "chapters": "28|7-10"
             }
@@ -10614,39 +10734,51 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Amos 7–9, Obadiah 1",
+              "url": "https://www.youtube.com/watch?v=6T9GSJm78Wk"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Jonah 1–4",
+              "url": "https://www.youtube.com/watch?v=FNu59Xl-uIs"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Obadiah 1: The Judgment on Edom and the Deliverance on Mount Zion",
               "description": "This session reads Amos 7 through Obadiah; these notes cover Obadiah, which closes the reading. It is a reading session, so the four chapters are read straight through and the notes follow the text itself. The whole vision is one charge against Edom: the pride of Esau in the clefts of the rock, what Esau did in the day his brother Jacob was carried away captive, and the reward that returns on his own head, ending with deliverance upon mount Zion and the kingdom being the Lord's.",
               "notePath": "/study/obadiah/1"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Jonah 1: Fleeing From the Presence of the Lord",
               "description": "This session reads the whole book of Jonah, which is four chapters exactly. It is a reading session, so the notes follow the text straight through: the word sending Jonah to Nineveh and his flight to Tarshish, the prayer out of the fish's belly, the preaching that turned the city, and the gourd that answered Jonah's anger.",
               "notePath": "/study/jonah/1"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "Jonah 2: The Prayer Out of the Fish's Belly",
               "description": "",
               "notePath": "/study/jonah/2"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Text",
               "title": "Jonah 3: The Preaching That Turned Nineveh",
               "description": "",
               "notePath": "/study/jonah/3"
             },
             {
-              "id": "4",
+              "id": "6",
               "type": "Chapter",
               "chapters": "31|1"
             },
             {
-              "id": "5",
+              "id": "7",
               "type": "Chapter",
               "chapters": "32|1-3"
             }
@@ -10658,39 +10790,51 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Jonah 1–4",
+              "url": "https://www.youtube.com/watch?v=FNu59Xl-uIs"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Micah 1–4",
+              "url": "https://www.youtube.com/watch?v=C0Egm9vLFdk"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Jonah 4: The Gourd and the Question at the End",
               "description": "",
               "notePath": "/study/jonah/4"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Micah 1: The Lord Cometh Forth Out of His Place",
               "description": "This session reads Micah 1 through 4. It is a reading session, so the chapters are read straight through and the notes follow the text. Micah prophesies in the days of Jotham, Ahaz and Hezekiah concerning Samaria and Jerusalem: the transgression of Jacob and the sin of the house of Israel, the men who devise iniquity on their beds, the heads and prophets who judge for reward and teach for hire, and then the last days, when the law goes forth of Zion and the kingdom comes to the daughter of Jerusalem.",
               "notePath": "/study/micah/1"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "Micah 2: Woe to Them That Devise Iniquity",
               "description": "",
               "notePath": "/study/micah/2"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Text",
               "title": "Micah 3: They Build Up Zion With Blood",
               "description": "",
               "notePath": "/study/micah/3"
             },
             {
-              "id": "4",
+              "id": "6",
               "type": "Chapter",
               "chapters": "32|4"
             },
             {
-              "id": "5",
+              "id": "7",
               "type": "Chapter",
               "chapters": "33|1-3"
             }
@@ -10702,34 +10846,46 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Micah 1–4",
+              "url": "https://www.youtube.com/watch?v=C0Egm9vLFdk"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Micah 5–7, Nahum 1",
+              "url": "https://www.youtube.com/watch?v=KH4BO91mjeQ"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Micah 4: The Law Shall Go Forth of Zion",
               "description": "",
               "notePath": "/study/micah/4"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Micah 5: Out of Bethlehem Ephratah",
               "description": "This session reads Micah 5 through Nahum 1; these notes cover Micah 5 through 7. It is a reading session, so the chapters are read straight through and the notes follow the text. The reading runs from the ruler that comes out of Bethlehem Ephratah and the remnant of Jacob among the nations, through the Lord's controversy with his people and what he requires of a man, to the promise that he will subdue our iniquities and perform the truth to Jacob.",
               "notePath": "/study/micah/5"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "Micah 6: What Doth the Lord Require of Thee",
               "description": "",
               "notePath": "/study/micah/6"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Text",
               "title": "Micah 7: He Will Subdue Our Iniquities",
               "description": "",
               "notePath": "/study/micah/7"
             },
             {
-              "id": "4",
+              "id": "6",
               "type": "Chapter",
               "chapters": "33|4-7"
             }
@@ -10741,39 +10897,51 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Micah 5–7, Nahum 1",
+              "url": "https://www.youtube.com/watch?v=KH4BO91mjeQ"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Nahum 2–3, Habakkuk 1–2",
+              "url": "https://www.youtube.com/watch?v=_TR2iMjA8HA"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Nahum 1: The Burden of Nineveh",
               "description": "This session reads Micah 5 through Nahum 1; these notes cover Nahum 1, which closes the reading. It is a reading session, so the chapter is read straight through and the notes follow the text. The burden of Nineveh opens with who the Most High is toward his adversaries and toward them that trust in him, and ends with the yoke broken off Judah and the feet upon the mountains that publish peace.",
               "notePath": "/study/nahum/1"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Nahum 2: He That Dasheth in Pieces Is Come Up",
               "description": "This session reads Nahum 2 through Habakkuk 2; these notes cover Nahum 2 and 3, which open the reading. It is a reading session, so the chapters are read straight through and the notes follow the text. Both chapters are the judgment on Nineveh, the bloody city, told as a siege that comes on her the way she came on others.",
               "notePath": "/study/nahum/2"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "Nahum 3: Woe to the Bloody City",
               "description": "",
               "notePath": "/study/nahum/3"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Text",
               "title": "Habakkuk 1: O Lord, How Long Shall I Cry",
               "description": "This session reads Nahum 2 through Habakkuk 2; these notes cover Habakkuk 1 and 2, which close the reading. It is a reading session, so the chapters are read straight through and the notes follow the text. Habakkuk asks how long the violence goes unanswered, is told the Chaldeans are being raised up, and then asks how a nation more wicked can be used against one more righteous. The answer comes back as a vision written plain upon tables, followed by five woes on the man who builds by blood and covetousness.",
               "notePath": "/study/habakkuk/1"
             },
             {
-              "id": "4",
+              "id": "6",
               "type": "Chapter",
               "chapters": "34|1-3"
             },
             {
-              "id": "5",
+              "id": "7",
               "type": "Chapter",
               "chapters": "35|1"
             }
@@ -10785,39 +10953,51 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Nahum 2–3, Habakkuk 1–2",
+              "url": "https://www.youtube.com/watch?v=_TR2iMjA8HA"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Habakkuk 3, Zephaniah 1–3",
+              "url": "https://www.youtube.com/watch?v=oPl2YArkmaA"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Habakkuk 2: Write the Vision, and Make It Plain",
               "description": "",
               "notePath": "/study/habakkuk/2"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Habakkuk 3: A Prayer of Habakkuk the Prophet",
               "description": "This session reads Habakkuk 3 through Zephaniah 3; these notes cover Habakkuk 3, which opens the reading. It is a reading session, so the chapter is read straight through and the notes follow the text. The prayer asks for the work to be revived and for mercy to be remembered in wrath, recounts how the Most High went forth for the salvation of his people, and ends with the prophet resolving to rejoice even when nothing in the field yields.",
               "notePath": "/study/habakkuk/3"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "Zephaniah 1: The Great Day of the Lord Is Near",
               "description": "This session reads Habakkuk 3 through Zephaniah 3; these notes cover Zephaniah, which closes the reading. It is a reading session, so the chapters are read straight through and the notes follow the text. Zephaniah comes in the days of Josiah king of Judah: the day of the Lord against Judah and Jerusalem, the charge against the nations round about, and then the turning of a pure language to the people, with the daughter of Zion told to sing because the King of Israel is in the midst of her.",
               "notePath": "/study/zephaniah/1"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Text",
               "title": "Zephaniah 2: Seek Ye the Lord, All Ye Meek of the Earth",
               "description": "",
               "notePath": "/study/zephaniah/2"
             },
             {
-              "id": "4",
+              "id": "6",
               "type": "Chapter",
               "chapters": "35|2-3"
             },
             {
-              "id": "5",
+              "id": "7",
               "type": "Chapter",
               "chapters": "36|1-2"
             }
@@ -10829,44 +11009,50 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Haggai 2, Zechariah 1–3",
+              "url": "https://www.youtube.com/watch?v=8gLWYfMdFz0"
+            },
+            {
+              "id": "1",
               "type": "Text",
               "title": "Zephaniah 3: Sing, O Daughter of Zion",
               "description": "",
               "notePath": "/study/zephaniah/3"
             },
             {
-              "id": "1",
+              "id": "2",
               "type": "Text",
               "title": "Haggai 1: Consider Your Ways",
               "description": "This session reads Haggai 1 through Zechariah 2; these notes cover Haggai 1, which opens the reading. It is a reading session, so the chapters are read straight through and the notes follow the text. The word comes in the second year of Darius to a people saying the time is not come to build the Lord's house, and it turns their attention to what has been happening to their own labour while that house lies waste.",
               "notePath": "/study/haggai/1"
             },
             {
-              "id": "2",
+              "id": "3",
               "type": "Text",
               "title": "Haggai 2: The Glory of the Latter House",
               "description": "This session reads Haggai 2 through Zechariah 3; these notes cover Haggai 2, which opens the reading. The setting is after the exile, the remnant of Judah back in the land around 521 BC under Darius king of Persia, with the temple still not rebuilt. The chapter moves from the state of the house and the people, to the priests questioned on the law of clean and unclean, to the shaking of the heavens and the signet set on Zerubbabel.",
               "notePath": "/study/haggai/2"
             },
             {
-              "id": "3",
+              "id": "4",
               "type": "Text",
               "title": "Zechariah 1: Turn Ye Unto Me, and I Will Turn Unto You",
               "description": "This session reads Haggai 2 through Zechariah 3; these notes cover Zechariah 1 through 3, which close the reading. Zechariah prophesies in the same period as Haggai, in the second year of Darius, to the remnant come back from Babylon. The three chapters run from the call to turn back, through the man among the myrtle trees and the measuring line over Jerusalem, to Joshua the high priest standing before the angel with his filthy garments taken away.",
               "notePath": "/study/zechariah/1"
             },
             {
-              "id": "4",
+              "id": "5",
               "type": "Chapter",
               "chapters": "36|3"
             },
             {
-              "id": "5",
+              "id": "6",
               "type": "Chapter",
               "chapters": "37|1-2"
             },
             {
-              "id": "6",
+              "id": "7",
               "type": "Chapter",
               "chapters": "38|1"
             }
@@ -10878,34 +11064,46 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Haggai 2, Zechariah 1–3",
+              "url": "https://www.youtube.com/watch?v=8gLWYfMdFz0"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Zechariah 4–7",
+              "url": "https://www.youtube.com/watch?v=hafly3NWEwY"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Zechariah 2: The Measuring Line and the Apple of His Eye",
               "description": "",
               "notePath": "/study/zechariah/2"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Zechariah 3: The Filthy Garments Taken Away",
               "description": "",
               "notePath": "/study/zechariah/3"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "Zechariah 4: The Candlestick, the Two Olive Trees, and the Word to Zerubbabel",
               "description": "This is a reading session, so the teaching is brief and the four chapters are largely read straight through. The visions run one after another: the golden candlestick with the two olive trees, the flying roll and the ephah with the woman in it, the four chariots and the crowning of Joshua, and then the question about fasting in the fifth month answered in Zechariah 7. The officer's counsel on these chapters is to write your questions down as you read and bring them to your local leadership, because the visions are hard to understand.",
               "notePath": "/study/zechariah/4"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Text",
               "title": "Zechariah 5: The Flying Roll and the Ephah",
               "description": "",
               "notePath": "/study/zechariah/5"
             },
             {
-              "id": "4",
+              "id": "6",
               "type": "Chapter",
               "chapters": "38|2-5"
             }
@@ -10917,34 +11115,46 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Zechariah 4–7",
+              "url": "https://www.youtube.com/watch?v=hafly3NWEwY"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Zechariah 8–11",
+              "url": "https://www.youtube.com/watch?v=3Ft1DnNvqlw"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Zechariah 6: The Four Chariots and the Crowning of Joshua",
               "description": "",
               "notePath": "/study/zechariah/6"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Zechariah 7: Did Ye at All Fast Unto Me?",
               "description": "",
               "notePath": "/study/zechariah/7"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "Zechariah 8: I Will Return Unto Zion and Dwell in the Midst of Jerusalem",
               "description": "This session covers Zechariah 8 through 11. The teaching runs on one line the whole way: the promises here are made to Israel and to no other nation, and the bible defines its own terms, so Zion, my people, and the remnant are each proved out of the scriptures themselves. From there it goes to the judgment on the nations that had a hand in the captivity, the King coming lowly and riding upon an ass, and the shepherds who were supposed to feed the flock and did not.",
               "notePath": "/study/zechariah/8"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Text",
               "title": "Zechariah 9: Thy King Cometh Unto Thee, Just and Having Salvation",
               "description": "",
               "notePath": "/study/zechariah/9"
             },
             {
-              "id": "4",
+              "id": "6",
               "type": "Chapter",
               "chapters": "38|6-9"
             }
@@ -10956,34 +11166,40 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Zechariah 8–11",
+              "url": "https://www.youtube.com/watch?v=3Ft1DnNvqlw"
+            },
+            {
+              "id": "1",
               "type": "Text",
               "title": "Zechariah 10: Mine Anger Was Kindled Against the Shepherds",
               "description": "",
               "notePath": "/study/zechariah/10"
             },
             {
-              "id": "1",
+              "id": "2",
               "type": "Text",
               "title": "Zechariah 11: The Flock of the Slaughter and the Two Staves",
               "description": "",
               "notePath": "/study/zechariah/11"
             },
             {
-              "id": "2",
+              "id": "3",
               "type": "Text",
               "title": "Zechariah 12: Jerusalem a Cup of Trembling",
               "description": "This session reads Zechariah 11 through 14; these notes cover Zechariah 12 through 14, the chapters that close the book. It is a reading session, so the chapters are read straight through and the notes follow the text. The burden of the word of the Lord for Israel runs from Jerusalem made a cup of trembling and a burdensome stone, through the fountain opened for sin and uncleanness and the shepherd smitten with the sheep scattered, to the day the Lord goes forth to fight, his feet standing on the mount of Olives, and every pot in Jerusalem holiness unto the Lord of hosts.",
               "notePath": "/study/zechariah/12"
             },
             {
-              "id": "3",
+              "id": "4",
               "type": "Text",
               "title": "Zechariah 13: A Fountain Opened for Sin and for Uncleanness",
               "description": "",
               "notePath": "/study/zechariah/13"
             },
             {
-              "id": "4",
+              "id": "5",
               "type": "Chapter",
               "chapters": "38|10-13"
             }
@@ -10995,18 +11211,24 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Zechariah 11–14",
+              "url": "https://www.youtube.com/watch?v=U5RQ6n4dLbw"
+            },
+            {
+              "id": "1",
               "type": "Text",
               "title": "Zechariah 14: The Day of the Lord Cometh",
               "description": "",
               "notePath": "/study/zechariah/14"
             },
             {
-              "id": "1",
+              "id": "2",
               "type": "Chapter",
               "chapters": "38|14"
             },
             {
-              "id": "2",
+              "id": "3",
               "type": "Chapter",
               "chapters": "39|1-3"
             }
@@ -11018,32 +11240,38 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: 1 Esdras 1–4",
+              "url": "https://www.youtube.com/watch?v=4uOCNVWGRZ4"
+            },
+            {
+              "id": "1",
               "type": "Text",
               "title": "1 Esdras 1: The Passover of Josiah and the Fall of Jerusalem",
               "description": "This session reads 1 Esdras 1 through 4. It is a reading session, so the chapters are read straight through and the notes follow the text. The book opens with the passover Josiah kept in Jerusalem, the like of which had not been kept since the days of Samuel, and runs down through the kings after him to the burning of the house and the seventy years. Then comes the proclamation of Cyrus, the letters that stopped the building, and the contest of the three young men of the guard before Darius, which Zerubbabel wins by naming the truth.",
               "notePath": "/study/1-esdras/1"
             },
             {
-              "id": "1",
+              "id": "2",
               "type": "Text",
               "title": "1 Esdras 2: The Proclamation of Cyrus and the Letters Against the Building",
               "description": "",
               "notePath": "/study/1-esdras/2"
             },
             {
-              "id": "2",
+              "id": "3",
               "type": "Text",
               "title": "1 Esdras 3: Wine, the King, and the Contest of the Three Young Men",
               "description": "",
               "notePath": "/study/1-esdras/3"
             },
             {
-              "id": "3",
+              "id": "4",
               "type": "Chapter",
               "chapters": "39|4"
             },
             {
-              "id": "4",
+              "id": "5",
               "type": "Chapter",
               "chapters": "67|1-3"
             }
@@ -11062,34 +11290,46 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: 1 Esdras 1–4",
+              "url": "https://www.youtube.com/watch?v=4uOCNVWGRZ4"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: 1 Esdras 5–8",
+              "url": "https://www.youtube.com/watch?v=Mw3rACs22Gk"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "1 Esdras 4: Great Is the Truth, and Mighty Above All Things",
               "description": "",
               "notePath": "/study/1-esdras/4"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "1 Esdras 5: The Return From the Captivity and the Foundation Laid",
               "description": "This session reads 1 Esdras 5 through 8. It is a reading session, so the chapters are read straight through and the notes follow the text. The reading covers the register of those who came up out of the captivity with Zorobabel, the altar set up and the foundation of the house laid, the hindering of the work and the letter to Darius that answered it, the finishing and dedication of the house, and then Esdras coming up from Babylon with the commission of Artaxerxes and his prayer over the strange marriages.",
               "notePath": "/study/1-esdras/5"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "1 Esdras 6: The Letter to Darius and the Record Found at Ecbatane",
               "description": "",
               "notePath": "/study/1-esdras/6"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Text",
               "title": "1 Esdras 7: The House Finished and the Passover Kept",
               "description": "",
               "notePath": "/study/1-esdras/7"
             },
             {
-              "id": "4",
+              "id": "6",
               "type": "Chapter",
               "chapters": "67|4-7"
             }
@@ -11101,39 +11341,51 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: 1 Esdras 5–8",
+              "url": "https://www.youtube.com/watch?v=Mw3rACs22Gk"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: 1 Esdras 9, 2 Esdras 1–3",
+              "url": "https://www.youtube.com/watch?v=Yappu2S73A4"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "1 Esdras 8: Esdras the Scribe, Ready in the Law of Moses",
               "description": "",
               "notePath": "/study/1-esdras/8"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "1 Esdras 9: The Strange Wives Put Away and the Law Read to the People",
               "description": "This session reads 1 Esdras 9 through 2 Esdras 3; these notes cover 1 Esdras 9, which opens the reading. It is a reading session, so the chapters are read straight through and the notes follow the text. The chapter closes the book of 1 Esdras: the assembly called at Jerusalem over the strange marriages, the list of those who had taken strange wives and put them away, and then Esdras standing on the pulpit of wood and reading the law from morning until midday, with the Levites making the people understand it.",
               "notePath": "/study/1-esdras/9"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "2 Esdras 1: Shew My People Their Sinful Deeds",
               "description": "This session reads 1 Esdras 9 through 2 Esdras 3; these notes cover 2 Esdras 1 through 3, which close the reading. It is a reading session, so the chapters are read straight through and the notes follow the text. The book opens with Esdras sent to shew the people their sinful deeds and to recount everything the Most High did for them from Egypt forward, moves to the mother that bare them and the great people seen upon mount Sion with crowns, and ends with Esdras troubled upon his bed in Babylon, asking why the nation that holds Zion should be counted better than Zion.",
               "notePath": "/study/2-esdras/1"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Text",
               "title": "2 Esdras 2: The Mother Forsaken and the People Crowned Upon Mount Sion",
               "description": "",
               "notePath": "/study/2-esdras/2"
             },
             {
-              "id": "4",
+              "id": "6",
               "type": "Chapter",
               "chapters": "67|8-9"
             },
             {
-              "id": "5",
+              "id": "7",
               "type": "Chapter",
               "chapters": "68|1-2"
             }
@@ -11145,34 +11397,46 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: 1 Esdras 9, 2 Esdras 1–3",
+              "url": "https://www.youtube.com/watch?v=Yappu2S73A4"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: 2 Esdras 4–7",
+              "url": "https://www.youtube.com/watch?v=phgwveZlkh0"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "2 Esdras 3: Are They of Babylon Better Than They of Sion?",
               "description": "",
               "notePath": "/study/2-esdras/3"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "2 Esdras 4: Weigh Me the Weight of the Fire",
               "description": "This session reads 2 Esdras 4 through 7. It is a reading session, so the chapters are read straight through and the notes follow the text. The angel Uriel answers Esdras with three things no man can do, and from there the reading runs through the tokens of the end, the questions about why one people was given over to many, the seven days of creation recounted before the Most High, and the narrow entrance that must be passed before the broad city can be inherited.",
               "notePath": "/study/2-esdras/4"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "2 Esdras 5: The Tokens of the End",
               "description": "",
               "notePath": "/study/2-esdras/5"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Text",
               "title": "2 Esdras 6: All These Things Were Made Through Me Alone",
               "description": "",
               "notePath": "/study/2-esdras/6"
             },
             {
-              "id": "4",
+              "id": "6",
               "type": "Chapter",
               "chapters": "68|3-6"
             }
@@ -11184,34 +11448,46 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: 2 Esdras 4–7",
+              "url": "https://www.youtube.com/watch?v=phgwveZlkh0"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: 2 Esdras 8–11",
+              "url": "https://www.youtube.com/watch?v=P4xS35icSdU"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "2 Esdras 7: The Narrow Entrance and the Broad City",
               "description": "",
               "notePath": "/study/2-esdras/7"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "2 Esdras 8: Many Created, but Few Shall Be Saved",
               "description": "This session reads 2 Esdras 8 through 11. It is a reading session, so the chapters are read straight through and the notes follow the text. The reading runs from the answer that this world was made for many but the world to come for few, through Esdras pleading for his people and being told to measure the time by the signs, to the mourning woman in the field who turns out to be Zion herself, and closes with the vision of the eagle from the sea and the lion that speaks against her.",
               "notePath": "/study/2-esdras/8"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "2 Esdras 9: Measure Thou the Time Diligently",
               "description": "",
               "notePath": "/study/2-esdras/9"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Text",
               "title": "2 Esdras 10: The Mourning Woman Is Zion",
               "description": "",
               "notePath": "/study/2-esdras/10"
             },
             {
-              "id": "4",
+              "id": "6",
               "type": "Chapter",
               "chapters": "68|7-10"
             }
@@ -11223,34 +11499,46 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: 2 Esdras 8–11",
+              "url": "https://www.youtube.com/watch?v=P4xS35icSdU"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: 2 Esdras 12–15",
+              "url": "https://www.youtube.com/watch?v=2xrZuDavC4U"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "2 Esdras 11: The Eagle From the Sea",
               "description": "",
               "notePath": "/study/2-esdras/11"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "2 Esdras 12: The Interpretation of the Eagle",
               "description": "This session reads 2 Esdras 12 through 15. It is a reading session, so the chapters are read straight through and the notes follow the text. The eagle of the last vision is interpreted as the kingdom Daniel saw, the man rising from the sea is interpreted as the son kept by the Most High, the ten tribes are named as the peaceable multitude gathered to him, and the reading closes with Esdras drinking the cup like fire, dictating the books, and the burden spoken against Babylon and Asia.",
               "notePath": "/study/2-esdras/12"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "2 Esdras 13: The Man That Came Up Out of the Sea",
               "description": "",
               "notePath": "/study/2-esdras/13"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Text",
               "title": "2 Esdras 14: The Cup Like Fire and the Books Written",
               "description": "",
               "notePath": "/study/2-esdras/14"
             },
             {
-              "id": "4",
+              "id": "6",
               "type": "Chapter",
               "chapters": "68|11-14"
             }
@@ -11262,18 +11550,30 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: 2 Esdras 12–15",
+              "url": "https://www.youtube.com/watch?v=2xrZuDavC4U"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: 2 Esdras 16, Tobit 1–3",
+              "url": "https://www.youtube.com/watch?v=RsknJnvIFE0"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "2 Esdras 15: The Word of Prophecy Against the Nations",
               "description": "",
               "notePath": "/study/2-esdras/15"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Chapter",
               "chapters": "68|15-16"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Chapter",
               "chapters": "69|1-2"
             }
@@ -11285,6 +11585,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: 2 Esdras 16, Tobit 1–3",
+              "url": "https://www.youtube.com/watch?v=RsknJnvIFE0"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Tobit 4–7",
+              "url": "https://www.youtube.com/watch?v=-NqUMJHI3Pc"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "69|3-6"
             }
@@ -11296,6 +11608,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Tobit 4–7",
+              "url": "https://www.youtube.com/watch?v=-NqUMJHI3Pc"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Tobit 8–11",
+              "url": "https://www.youtube.com/watch?v=BtB-ZaoBC7Q"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "69|7-10"
             }
@@ -11307,6 +11631,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Tobit 8–11",
+              "url": "https://www.youtube.com/watch?v=BtB-ZaoBC7Q"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Tobit 12–14, Judith 1",
+              "url": "https://www.youtube.com/watch?v=B9pawl8utgw"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "69|11-14"
             }
@@ -11318,6 +11654,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Tobit 12–14, Judith 1",
+              "url": "https://www.youtube.com/watch?v=B9pawl8utgw"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Judith 2–5",
+              "url": "https://www.youtube.com/watch?v=aigx2ygCbfQ"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "70|1-4"
             }
@@ -11329,6 +11677,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Judith 2–5",
+              "url": "https://www.youtube.com/watch?v=aigx2ygCbfQ"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Judith 6–9",
+              "url": "https://www.youtube.com/watch?v=03AE99evqq0"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "70|5-8"
             }
@@ -11340,6 +11700,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Judith 6–9",
+              "url": "https://www.youtube.com/watch?v=03AE99evqq0"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Judith 10–13",
+              "url": "https://www.youtube.com/watch?v=aV5Eq5FucD8"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "70|9-12"
             }
@@ -11351,6 +11723,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Judith 10–13",
+              "url": "https://www.youtube.com/watch?v=aV5Eq5FucD8"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Judith 14–16, Rest of Esther 10",
+              "url": "https://www.youtube.com/watch?v=Cou9U6SCahk"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "70|13-16"
             }
@@ -11407,6 +11791,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Rest of Esther 15–16, Wisdom of Solomon 1–2",
+              "url": "https://www.youtube.com/watch?v=Flm-iKChJ_4"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Wisdom of Solomon 3–6",
+              "url": "https://www.youtube.com/watch?v=u-tfPb7boaM"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "72|2-5"
             }
@@ -11418,6 +11814,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Wisdom of Solomon 3–6",
+              "url": "https://www.youtube.com/watch?v=u-tfPb7boaM"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Wisdom of Solomon 7–10",
+              "url": "https://www.youtube.com/watch?v=eb4eISBmqZA"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "72|6-9"
             }
@@ -11429,6 +11837,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Wisdom of Solomon 7–10",
+              "url": "https://www.youtube.com/watch?v=eb4eISBmqZA"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Wisdom of Solomon 11–14",
+              "url": "https://www.youtube.com/watch?v=hkWKziuclnM"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "72|10-13"
             }
@@ -11440,6 +11860,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Wisdom of Solomon 11–14",
+              "url": "https://www.youtube.com/watch?v=hkWKziuclnM"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Wisdom of Solomon 15–18",
+              "url": "https://www.youtube.com/watch?v=L865cMT4WI0"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "72|14-17"
             }
@@ -11451,11 +11883,23 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Wisdom of Solomon 15–18",
+              "url": "https://www.youtube.com/watch?v=L865cMT4WI0"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Wisdom of Solomon 19, Ecclesiasticus 1–3",
+              "url": "https://www.youtube.com/watch?v=Mz3qtRTJcws"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "72|18-19"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Chapter",
               "chapters": "73|1-2"
             }
@@ -11467,6 +11911,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Wisdom of Solomon 19, Ecclesiasticus 1–3",
+              "url": "https://www.youtube.com/watch?v=Mz3qtRTJcws"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 4–7",
+              "url": "https://www.youtube.com/watch?v=0Pmf7brWzCw"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "73|3-6"
             }
@@ -11478,6 +11934,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 4–7",
+              "url": "https://www.youtube.com/watch?v=0Pmf7brWzCw"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 8–11",
+              "url": "https://www.youtube.com/watch?v=MpghDnimuIE"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "73|7-10"
             }
@@ -11489,6 +11957,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 8–11",
+              "url": "https://www.youtube.com/watch?v=MpghDnimuIE"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 12–15",
+              "url": "https://www.youtube.com/watch?v=lOGjdYPHSFs"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "73|11-14"
             }
@@ -11500,6 +11980,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 12–15",
+              "url": "https://www.youtube.com/watch?v=lOGjdYPHSFs"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 16–19",
+              "url": "https://www.youtube.com/watch?v=EpdmVAxV_u8"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "73|15-18"
             }
@@ -11511,6 +12003,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 16–19",
+              "url": "https://www.youtube.com/watch?v=EpdmVAxV_u8"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 20–23",
+              "url": "https://www.youtube.com/watch?v=QpDUejvHxxw"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "73|19-22"
             }
@@ -11522,6 +12026,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 20–23",
+              "url": "https://www.youtube.com/watch?v=QpDUejvHxxw"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 24–27",
+              "url": "https://www.youtube.com/watch?v=F88samsajl8"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "73|23-26"
             }
@@ -11533,6 +12049,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 24–27",
+              "url": "https://www.youtube.com/watch?v=F88samsajl8"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 28–31",
+              "url": "https://www.youtube.com/watch?v=arkHdRJfZ-g"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "73|27-30"
             }
@@ -11544,6 +12072,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 28–31",
+              "url": "https://www.youtube.com/watch?v=arkHdRJfZ-g"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 32–35",
+              "url": "https://www.youtube.com/watch?v=yU4bcANJwx8"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "73|31-34"
             }
@@ -11555,6 +12095,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 32–35",
+              "url": "https://www.youtube.com/watch?v=yU4bcANJwx8"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 36–39",
+              "url": "https://www.youtube.com/watch?v=B9vvt0gVhsM"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "73|35-38"
             }
@@ -11566,6 +12118,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 36–39",
+              "url": "https://www.youtube.com/watch?v=B9vvt0gVhsM"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 40–43",
+              "url": "https://www.youtube.com/watch?v=cDuJ3PeOSYk"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "73|39-42"
             }
@@ -11577,6 +12141,18 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 40–43",
+              "url": "https://www.youtube.com/watch?v=cDuJ3PeOSYk"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 44–47",
+              "url": "https://www.youtube.com/watch?v=suBHf9JbVog"
+            },
+            {
+              "id": "2",
               "type": "Chapter",
               "chapters": "73|43-46"
             }
@@ -11588,6 +12164,12 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Ecclesiasticus 44–47",
+              "url": "https://www.youtube.com/watch?v=suBHf9JbVog"
+            },
+            {
+              "id": "1",
               "type": "Chapter",
               "chapters": "73|47-50"
             }
@@ -11744,18 +12326,24 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Matthew 2–5",
+              "url": "https://www.youtube.com/watch?v=4hcG4hB0o-o"
+            },
+            {
+              "id": "1",
               "type": "Text",
               "title": "Matthew 2: The Wise Men, Herod's Fear, and the Flight into Egypt",
               "description": "This session covers Matthew 2 through 5. The class was taken on short notice and moves quickly, but the history in these chapters is heavy: the birth of Christ under an Edomite king, the murder of the children in Bethlehem, the ministry of John the Baptist, the temptation in the wilderness, and the opening of the sermon on the mount where Christ magnifies the law rather than destroying it. The thread running through all four chapters is fulfilment. Everything that happens to Christ here was written of him beforehand in the law, the prophets, and the psalms.",
               "notePath": "/study/matthew/2"
             },
             {
-              "id": "1",
+              "id": "2",
               "type": "Chapter",
               "chapters": "81|14-15"
             },
             {
-              "id": "2",
+              "id": "3",
               "type": "Chapter",
               "chapters": "40|1-2"
             }
@@ -11774,27 +12362,33 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Matthew 2–5",
+              "url": "https://www.youtube.com/watch?v=4hcG4hB0o-o"
+            },
+            {
+              "id": "1",
               "type": "Text",
               "title": "Matthew 3: John the Baptist and the Baptism of the Holy Ghost and Fire",
               "description": "",
               "notePath": "/study/matthew/3"
             },
             {
-              "id": "1",
+              "id": "2",
               "type": "Text",
               "title": "Matthew 4: The Temptation in the Wilderness and the Calling of the Fishers",
               "description": "",
               "notePath": "/study/matthew/4"
             },
             {
-              "id": "2",
+              "id": "3",
               "type": "Text",
               "title": "Matthew 5: The Sermon on the Mount and the Magnifying of the Law",
               "description": "",
               "notePath": "/study/matthew/5"
             },
             {
-              "id": "3",
+              "id": "4",
               "type": "Chapter",
               "chapters": "40|3-6"
             }
@@ -11806,13 +12400,19 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Matthew 10–13",
+              "url": "https://www.youtube.com/watch?v=QJ6gPpJItcY"
+            },
+            {
+              "id": "1",
               "type": "Text",
               "title": "Matthew 10: The Twelve Sent to the Lost Sheep",
               "description": "This session covers Matthew 10 through 13. The twelve are named and sent out, and they are sent to one people only. Christ then answers John the Baptist out of prison, contends with the Pharisees over the sabbath and over the source of his power, and teaches the multitude in parables, explaining to the disciples what the parables mean. The thread is who the message belongs to and who is able to receive it.",
               "notePath": "/study/matthew/10"
             },
             {
-              "id": "1",
+              "id": "2",
               "type": "Chapter",
               "chapters": "40|7-10"
             }
@@ -11824,27 +12424,33 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Matthew 10–13",
+              "url": "https://www.youtube.com/watch?v=QJ6gPpJItcY"
+            },
+            {
+              "id": "1",
               "type": "Text",
               "title": "Matthew 11: Art Thou He That Should Come",
               "description": "",
               "notePath": "/study/matthew/11"
             },
             {
-              "id": "1",
+              "id": "2",
               "type": "Text",
               "title": "Matthew 12: Lord of the Sabbath and the Blasphemy Against the Holy Ghost",
               "description": "",
               "notePath": "/study/matthew/12"
             },
             {
-              "id": "2",
+              "id": "3",
               "type": "Text",
               "title": "Matthew 13: The Parables of the Kingdom",
               "description": "",
               "notePath": "/study/matthew/13"
             },
             {
-              "id": "3",
+              "id": "4",
               "type": "Chapter",
               "chapters": "40|11-14"
             }
@@ -11856,13 +12462,19 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Matthew 18–21",
+              "url": "https://www.youtube.com/watch?v=BseqNSLZ10Y"
+            },
+            {
+              "id": "1",
               "type": "Text",
               "title": "Matthew 18: Offences, the Rule for a Trespassing Brother, and Forgiveness",
               "description": "This session covers Matthew 18 through 21. It is a reading session rather than a full breakdown, so the parables are read through and commented on where they touch the life of the congregation: how to carry an offence, how far forgiveness goes, marriage and divorce, what a rich man cannot buy, the labourers who all receive the same wage, and the husbandmen who killed the son. The session closes with the kingdom taken from those who taught the law and did not do it.",
               "notePath": "/study/matthew/18"
             },
             {
-              "id": "1",
+              "id": "2",
               "type": "Chapter",
               "chapters": "40|15-18"
             }
@@ -11874,34 +12486,46 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Matthew 18–21",
+              "url": "https://www.youtube.com/watch?v=BseqNSLZ10Y"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Matthew 22–25",
+              "url": "https://www.youtube.com/watch?v=xT9pPDaWvNc"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Matthew 19: Marriage, the Young Man's Possessions, and the Twelve Thrones",
               "description": "",
               "notePath": "/study/matthew/19"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Matthew 20: The Labourers in the Vineyard and the Cup He Drank",
               "description": "",
               "notePath": "/study/matthew/20"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "Matthew 21: The King Cometh Meek, and the Kingdom Taken Away",
               "description": "",
               "notePath": "/study/matthew/21"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Text",
               "title": "Matthew 22: The Marriage of the King's Son and the Great Commandment",
               "description": "This session covers Matthew 22 through 25. It is a long reading with precepts brought in along the way. Christ answers the Pharisees, the Herodians and the Sadducees in turn and silences them, then turns and pronounces the woes upon the scribes and Pharisees. Chapter 24 gives the signs of the end and chapter 25 closes with three parables of judgment: the ten virgins, the talents, and the sheep divided from the goats.",
               "notePath": "/study/matthew/22"
             },
             {
-              "id": "4",
+              "id": "6",
               "type": "Chapter",
               "chapters": "40|19-22"
             }
@@ -11913,27 +12537,33 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Matthew 22–25",
+              "url": "https://www.youtube.com/watch?v=xT9pPDaWvNc"
+            },
+            {
+              "id": "1",
               "type": "Text",
               "title": "Matthew 23: The Woes upon the Scribes and Pharisees",
               "description": "",
               "notePath": "/study/matthew/23"
             },
             {
-              "id": "1",
+              "id": "2",
               "type": "Text",
               "title": "Matthew 24: The Signs of the End and the Watchful Servant",
               "description": "",
               "notePath": "/study/matthew/24"
             },
             {
-              "id": "2",
+              "id": "3",
               "type": "Text",
               "title": "Matthew 25: The Ten Virgins, the Talents, and the Sheep and the Goats",
               "description": "",
               "notePath": "/study/matthew/25"
             },
             {
-              "id": "3",
+              "id": "4",
               "type": "Chapter",
               "chapters": "40|23-26"
             }
@@ -11961,13 +12591,19 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Mark 6–9",
+              "url": "https://www.youtube.com/watch?v=zyDLOJIu15k"
+            },
+            {
+              "id": "1",
               "type": "Text",
               "title": "Mark 6: A Prophet Without Honour, the Death of John, and the Five Thousand",
               "description": "This session covers Mark 6 through 9. Christ is rejected in his own country, sends the twelve out two by two, and the chapter turns to the beheading of John the Baptist. Then come the feeding of the five thousand and the four thousand, the walking on the sea, the contention over the tradition of the elders, the confession of Peter, the transfiguration, and the casting out of the dumb spirit. The thread through all four chapters is belief and unbelief, and how plainly Christ dealt with men who would not see.",
               "notePath": "/study/mark/6"
             },
             {
-              "id": "1",
+              "id": "2",
               "type": "Chapter",
               "chapters": "41|3-6"
             }
@@ -11979,34 +12615,46 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Mark 6–9",
+              "url": "https://www.youtube.com/watch?v=zyDLOJIu15k"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Mark 10–13",
+              "url": "https://www.youtube.com/watch?v=Bs9Yer2qxa8"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Mark 7: The Tradition of the Elders and What Defiles a Man",
               "description": "",
               "notePath": "/study/mark/7"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Mark 8: The Four Thousand, the Confession of Peter, and the Cross",
               "description": "",
               "notePath": "/study/mark/8"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "Mark 9: The Transfiguration, the Dumb Spirit, and Who Shall Be Greatest",
               "description": "",
               "notePath": "/study/mark/9"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Text",
               "title": "Mark 10: Marriage, Riches, and the Servant of All",
               "description": "This session covers Mark 10 through 13. Christ answers the Pharisees on divorce, turns away a rich man who kept the commandments but would not part with his goods, tells the twelve a third time what is coming, and rides into Jerusalem and cleanses the temple. Chapter 12 is one contention after another as the scribes, Pharisees, Herodians and Sadducees come to trap him, and chapter 13 gives the signs of the end and the charge to watch.",
               "notePath": "/study/mark/10"
             },
             {
-              "id": "4",
+              "id": "6",
               "type": "Chapter",
               "chapters": "41|7-10"
             }
@@ -12018,27 +12666,33 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Mark 10–13",
+              "url": "https://www.youtube.com/watch?v=Bs9Yer2qxa8"
+            },
+            {
+              "id": "1",
               "type": "Text",
               "title": "Mark 11: The Entry into Jerusalem and the Cleansing of the Temple",
               "description": "",
               "notePath": "/study/mark/11"
             },
             {
-              "id": "1",
+              "id": "2",
               "type": "Text",
               "title": "Mark 12: The Husbandmen, the Tribute, and the First Commandment",
               "description": "",
               "notePath": "/study/mark/12"
             },
             {
-              "id": "2",
+              "id": "3",
               "type": "Text",
               "title": "Mark 13: The Signs of the End and the Charge to Watch",
               "description": "",
               "notePath": "/study/mark/13"
             },
             {
-              "id": "3",
+              "id": "4",
               "type": "Chapter",
               "chapters": "41|11-14"
             }
@@ -12050,18 +12704,24 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Luke 2–5",
+              "url": "https://www.youtube.com/watch?v=7X6EGZ1b-4U"
+            },
+            {
+              "id": "1",
               "type": "Text",
               "title": "Luke 2: The Birth at Bethlehem and the Child in the Temple",
               "description": "This session covers Luke 2 through 5. It is a reading session, with precepts brought in where they settle a point rather than a full breakdown. The chapters carry the birth of Christ under the taxing of Caesar, his circumcision and presentation according to the law, the preaching of John, the genealogy back to Adam, the temptation in the wilderness, the reading in the synagogue at Nazareth, and the calling of the first disciples. The reason for reading straight through is given in the epistle: give attendance to reading, to exhortation, to doctrine.",
               "notePath": "/study/luke/2"
             },
             {
-              "id": "1",
+              "id": "2",
               "type": "Chapter",
               "chapters": "41|15-16"
             },
             {
-              "id": "2",
+              "id": "3",
               "type": "Chapter",
               "chapters": "42|1-2"
             }
@@ -12073,34 +12733,46 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Luke 2–5",
+              "url": "https://www.youtube.com/watch?v=7X6EGZ1b-4U"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: Luke 6–9",
+              "url": "https://www.youtube.com/watch?v=PcbMQgZMllQ"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Luke 3: The Preaching of John and the Generations Back to Adam",
               "description": "",
               "notePath": "/study/luke/3"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Luke 4: The Temptation and the Reading at Nazareth",
               "description": "",
               "notePath": "/study/luke/4"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "Luke 5: The Draught of Fishes and the Calling of Sinners",
               "description": "",
               "notePath": "/study/luke/5"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Text",
               "title": "Luke 6: Lord of the Sabbath and the Sermon on the Plain",
               "description": "This session covers Luke 6 through 9. The two sabbath contentions open the reading, then the choosing of the twelve and the sermon on the plain with its blessings and its woes. Chapter 7 turns on faith found outside Israel and a woman forgiven much; chapter 8 carries the parable of the sower and a run of miracles; chapter 9 sends the twelve out, feeds the five thousand, gives the confession of Peter and the transfiguration, and ends with what it costs to follow. Questions taken after the reading are folded in under the verses they belong to.",
               "notePath": "/study/luke/6"
             },
             {
-              "id": "4",
+              "id": "6",
               "type": "Chapter",
               "chapters": "42|3-6"
             }
@@ -12112,34 +12784,40 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Luke 6–9",
+              "url": "https://www.youtube.com/watch?v=PcbMQgZMllQ"
+            },
+            {
+              "id": "1",
               "type": "Text",
               "title": "Luke 7: Great Faith, the Widow's Son, and the Woman Who Loved Much",
               "description": "",
               "notePath": "/study/luke/7"
             },
             {
-              "id": "1",
+              "id": "2",
               "type": "Text",
               "title": "Luke 8: The Sower, the Storm, and the Works of Power",
               "description": "",
               "notePath": "/study/luke/8"
             },
             {
-              "id": "2",
+              "id": "3",
               "type": "Text",
               "title": "Luke 9: The Twelve Sent, the Confession, and the Cost of Following",
               "description": "",
               "notePath": "/study/luke/9"
             },
             {
-              "id": "3",
+              "id": "4",
               "type": "Text",
               "title": "Luke 10: The Seventy Sent and the Good Samaritan",
               "description": "This session covers Luke 10 through 13. The video it comes from is titled for John 6 through 9, but the reading given is Luke, and it is Luke that these notes follow. The seventy are sent out two and two, a lawyer is answered with the parable of the good Samaritan, the disciples are taught how to pray, the woes are pronounced upon the Pharisees and the lawyers, and the last chapter closes over Jerusalem. The thread is repentance and the discerning of the time.",
               "notePath": "/study/luke/10"
             },
             {
-              "id": "4",
+              "id": "5",
               "type": "Chapter",
               "chapters": "42|7-10"
             }
@@ -12194,13 +12872,19 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Luke 22–24, John 1",
+              "url": "https://www.youtube.com/watch?v=0R3FQuEf6ms"
+            },
+            {
+              "id": "1",
               "type": "Text",
               "title": "Luke 22: The Passover, the Betrayal, and the Denial",
               "description": "This session covers Luke 22 through 24 and John 1. These notes cover the three chapters in Luke: the last passover, the betrayal in the garden, the trial and the crucifixion, and the resurrection with the walk to Emmaus. The reading keeps returning to two things, who the covenant belongs to and what the prophets had already written concerning him.",
               "notePath": "/study/luke/22"
             },
             {
-              "id": "1",
+              "id": "2",
               "type": "Chapter",
               "chapters": "42|19-22"
             }
@@ -12212,39 +12896,51 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Luke 22–24, John 1",
+              "url": "https://www.youtube.com/watch?v=0R3FQuEf6ms"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: John 2–5",
+              "url": "https://www.youtube.com/watch?v=_FE03UwLfy0"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Luke 23: The Trial, the Crucifixion, and the Burial",
               "description": "",
               "notePath": "/study/luke/23"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "Luke 24: The Resurrection and the Opening of the Scriptures",
               "description": "",
               "notePath": "/study/luke/24"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "John 1: The Word, the Witness of John, and the King of Israel",
               "description": "This session covers Luke 22 through 24 together with John 1; these notes cover John 1, which closes the reading. The chapter opens with who the Word is, moves to John the Baptist sent to bear witness, and ends with Nathanael naming him: thou art the Son of God, thou art the King of Israel.",
               "notePath": "/study/john/1"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Text",
               "title": "John 2: The First Miracle and the Cleansing of the Temple",
               "description": "This session covers John 2 through 5. The chapters in John run long, so the precepts are pulled where they settle a point. The reading carries the first miracles, the first clashes with the Pharisees, Nicodemus coming by night, the woman at the well in Samaria, and the healing at the pool on the sabbath. Two threads run through it: who the world is that he was sent to, and the unbelief that kept his own from seeing what was standing in front of them.",
               "notePath": "/study/john/2"
             },
             {
-              "id": "4",
+              "id": "6",
               "type": "Chapter",
               "chapters": "42|23-24"
             },
             {
-              "id": "5",
+              "id": "7",
               "type": "Chapter",
               "chapters": "43|1-2"
             }
@@ -12256,27 +12952,39 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: John 2–5",
+              "url": "https://www.youtube.com/watch?v=_FE03UwLfy0"
+            },
+            {
+              "id": "1",
+              "type": "Video",
+              "title": "The class: John 6–9",
+              "url": "https://www.youtube.com/watch?v=rbe14dyrkmI"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "John 3: Nicodemus, the Serpent Lifted Up, and Who the World Is",
               "description": "",
               "notePath": "/study/john/3"
             },
             {
-              "id": "1",
+              "id": "3",
               "type": "Text",
               "title": "John 4: The Woman at the Well and the Nobleman's Son",
               "description": "",
               "notePath": "/study/john/4"
             },
             {
-              "id": "2",
+              "id": "4",
               "type": "Text",
               "title": "John 5: The Pool of Bethesda and the Witness to the Son",
               "description": "",
               "notePath": "/study/john/5"
             },
             {
-              "id": "3",
+              "id": "5",
               "type": "Chapter",
               "chapters": "43|3-6"
             }
@@ -12288,6 +12996,12 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: John 6–9",
+              "url": "https://www.youtube.com/watch?v=rbe14dyrkmI"
+            },
+            {
+              "id": "1",
               "type": "Chapter",
               "chapters": "43|7-10"
             }
@@ -12728,6 +13442,12 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: 1 Timothy 1–4",
+              "url": "https://www.youtube.com/watch?v=um_MzoEYask"
+            },
+            {
+              "id": "1",
               "type": "Chapter",
               "chapters": "54|1-4"
             }
@@ -12739,11 +13459,17 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: 1 Timothy 5–6, 2 Timothy 1–2",
+              "url": "https://www.youtube.com/watch?v=Xp5JYGtZ43g"
+            },
+            {
+              "id": "1",
               "type": "Chapter",
               "chapters": "54|5-6"
             },
             {
-              "id": "1",
+              "id": "2",
               "type": "Chapter",
               "chapters": "55|1-2"
             }
@@ -12755,11 +13481,17 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: 2 Timothy 3–4, Titus 1–2",
+              "url": "https://www.youtube.com/watch?v=9s3_xP-3uls"
+            },
+            {
+              "id": "1",
               "type": "Chapter",
               "chapters": "55|3-4"
             },
             {
-              "id": "1",
+              "id": "2",
               "type": "Chapter",
               "chapters": "56|1-2"
             }
@@ -12792,6 +13524,12 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Hebrews 3–6",
+              "url": "https://www.youtube.com/watch?v=U4frQL9_fho"
+            },
+            {
+              "id": "1",
               "type": "Chapter",
               "chapters": "58|3-6"
             }
@@ -12814,11 +13552,17 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Hebrews 11–13, James 1",
+              "url": "https://www.youtube.com/watch?v=p7rkiOtjbF8"
+            },
+            {
+              "id": "1",
               "type": "Chapter",
               "chapters": "58|11-13"
             },
             {
-              "id": "1",
+              "id": "2",
               "type": "Chapter",
               "chapters": "59|1"
             }
@@ -12830,6 +13574,12 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: James 2–5",
+              "url": "https://www.youtube.com/watch?v=1LOVEdcSBP8"
+            },
+            {
+              "id": "1",
               "type": "Chapter",
               "chapters": "59|2-5"
             }
@@ -12841,6 +13591,12 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: 1 Peter 1–4",
+              "url": "https://www.youtube.com/watch?v=_SpYRkWo_do"
+            },
+            {
+              "id": "1",
               "type": "Chapter",
               "chapters": "60|1-4"
             }
@@ -12852,11 +13608,17 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: 1 Peter 5, 2 Peter 1–3",
+              "url": "https://www.youtube.com/watch?v=hFpeNsXhvGs"
+            },
+            {
+              "id": "1",
               "type": "Chapter",
               "chapters": "60|5"
             },
             {
-              "id": "1",
+              "id": "2",
               "type": "Chapter",
               "chapters": "61|1-3"
             }
@@ -12868,6 +13630,12 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: 1 John 1–4",
+              "url": "https://www.youtube.com/watch?v=qJ08PQr9u9E"
+            },
+            {
+              "id": "1",
               "type": "Chapter",
               "chapters": "62|1-4"
             }
@@ -12879,21 +13647,27 @@
           "slices": [
             {
               "id": "0",
-              "type": "Chapter",
-              "chapters": "62|5"
+              "type": "Video",
+              "title": "The class: 1 John 5, 2 John 1, 3 John 1, Jude 1",
+              "url": "https://www.youtube.com/watch?v=-HSeS2dWD2U"
             },
             {
               "id": "1",
               "type": "Chapter",
-              "chapters": "63|1"
+              "chapters": "62|5"
             },
             {
               "id": "2",
               "type": "Chapter",
-              "chapters": "64|1"
+              "chapters": "63|1"
             },
             {
               "id": "3",
+              "type": "Chapter",
+              "chapters": "64|1"
+            },
+            {
+              "id": "4",
               "type": "Chapter",
               "chapters": "65|1"
             }
@@ -12905,6 +13679,12 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Revelation 1–4",
+              "url": "https://www.youtube.com/watch?v=T6s-FS6to8U"
+            },
+            {
+              "id": "1",
               "type": "Chapter",
               "chapters": "66|1-4"
             }
@@ -12916,6 +13696,12 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Revelation 5–8",
+              "url": "https://www.youtube.com/watch?v=HMqyTVblXuM"
+            },
+            {
+              "id": "1",
               "type": "Chapter",
               "chapters": "66|5-8"
             }
@@ -12927,6 +13713,12 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Revelation 9–12",
+              "url": "https://www.youtube.com/watch?v=a39-rewHszM"
+            },
+            {
+              "id": "1",
               "type": "Chapter",
               "chapters": "66|9-12"
             }
@@ -12938,6 +13730,12 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Revelation 13–16",
+              "url": "https://www.youtube.com/watch?v=7FREi8cErjs"
+            },
+            {
+              "id": "1",
               "type": "Chapter",
               "chapters": "66|13-16"
             }
@@ -12949,6 +13747,12 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Revelation 17–20",
+              "url": "https://www.youtube.com/watch?v=Eonrss_45yw"
+            },
+            {
+              "id": "1",
               "type": "Chapter",
               "chapters": "66|17-20"
             }
@@ -12960,6 +13764,12 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Revelation 21–22",
+              "url": "https://www.youtube.com/watch?v=kfqCyY-mlTM"
+            },
+            {
+              "id": "1",
               "type": "Chapter",
               "chapters": "66|21-22"
             }

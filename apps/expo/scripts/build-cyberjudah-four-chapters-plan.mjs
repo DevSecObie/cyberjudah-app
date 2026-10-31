@@ -72,6 +72,10 @@ const aliases = {
   lamentation: 'lamentations',
   songsofsolomon: 'songofsolomon',
   '1chroicles': '1chronicles',
+  '2edsras': '2esdras',
+  wisdom: 'wisdomofsolomon',
+  restofest: 'restofesther',
+  haggi: 'haggai',
 }
 const bookFor = word => {
   const key = word.toLowerCase().replace(/(\d)(st|nd|rd)/, '$1').replace(/\s+/g, '')
@@ -89,9 +93,10 @@ const videoChapters = (title, fallbackBook) => {
   }
   const tokens =
     title
+      .replace(/\bW\.O\.S\b/g, 'Wisdom of Solomon')
       .replace(/\([^)]*\)|\[[^\]]*\]|"[^"]*"/g, ' ')
       .replace(/\b4\s*chapters?(\s*a)?(\s*day)?/gi, ' ')
-      .match(/[1-3](?:st|nd|rd)?\s?[A-Za-z]+(?:\s+of\s+[A-Za-z]+)?|[A-Za-z]+(?:\s+of\s+[A-Za-z]+)?|\d+|[-&;,]/g) ?? []
+      .match(/[1-3](?:st|nd|rd)?\s?[A-Za-z]+(?:\s+of\s+[A-Za-z]+)?|[A-Za-z]+(?:\s+of\s+[A-Za-z]+)?|\d+|[-&;,]/gi) ?? []
   let book = fallbackBook
   let start
   let crossFrom
@@ -149,6 +154,43 @@ const videos = []
   }
 }
 
+// Days the playlist has no video for take the class's other uploads (data/four-chapters-a-day-
+// videos-extra.tsv), then the IUIC 4 Chapters a Day channel (…-channel.tsv). Their titles vary
+// ("JEREMIAH 49-52", "Amos 7-Obadiah"), so these entries are named from their chapters.
+const position = new Map(chapters.map(({ book, chapter }, index) => [`${book.id}:${chapter}`, index]))
+const nameOf = covered => {
+  const runs = []
+  for (const key of [...covered].filter(key => position.has(key)).sort((a, b) => position.get(a) - position.get(b))) {
+    const { book, chapter } = chapters[position.get(key)]
+    const run = runs[runs.length - 1]
+    if (run && run.book.id === book.id) run.to = chapter
+    else runs.push({ book, from: chapter, to: chapter })
+  }
+  const chaptersOf = run => (run.from === run.to ? `${run.from}` : `${run.from}–${run.to}`)
+  if (runs.length === 1) return `${runs[0].book.name} ${chaptersOf(runs[0])}`
+  return runs.map(run => `${run.book.name} ${chaptersOf(run)}`).join(', ')
+}
+const fillVideos = file => {
+  const list = []
+  const seen = new Set()
+  for (const line of readFileSync(resolve(import.meta.dirname, 'data', file), 'utf8').split('\n')) {
+    const [video, title, chaptersText] = line.split('\t')
+    if (!title || line.startsWith('#') || video === 'video') continue
+    const { covered } = videoChapters(chaptersText || title)
+    if (!covered.length) throw new Error(`Cannot read the chapters of "${title}"`)
+    const name = nameOf(covered)
+    // The channel uploaded a few sessions twice.
+    if (seen.has(name)) continue
+    seen.add(name)
+    list.push({ video, name, covered: new Set(covered) })
+  }
+  return list
+}
+const fillSources = [
+  fillVideos('four-chapters-a-day-videos-extra.tsv'),
+  fillVideos('four-chapters-a-day-videos-channel.tsv'),
+]
+
 const days = []
 for (let i = 0; i < chapters.length; i += PER_DAY) days.push(chapters.slice(i, i + PER_DAY))
 
@@ -164,9 +206,13 @@ const label = day => {
 
 const sliceFor = (day, dayNumber) => {
   const slices = []
-  const sessions = videos.filter(({ covered }) =>
-    day.some(({ book, chapter }) => covered.has(`${book.id}:${chapter}`))
-  )
+  const covers = ({ covered }) => day.some(({ book, chapter }) => covered.has(`${book.id}:${chapter}`))
+  let sessions = videos.filter(covers)
+  for (const source of fillSources) if (!sessions.length) sessions = source.filter(covers)
+  // In reading order: the session that starts earliest first.
+  const first = ({ covered }) =>
+    Math.min(...day.map(({ book, chapter }, index) => (covered.has(`${book.id}:${chapter}`) ? index : Infinity)))
+  sessions = [...sessions].sort((a, b) => first(a) - first(b))
   for (const { video, name } of sessions)
     slices.push({
       id: String(slices.length),
