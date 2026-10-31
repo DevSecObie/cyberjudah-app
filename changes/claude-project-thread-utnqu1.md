@@ -18,3 +18,4 @@
 - The plan day reader shows a day's whole study note, not just its opening lines.
 - Class videos keep their place: moving between the class page and the floating player, or closing and reopening a class, picks up at the same moment.
 - 4 Chapters a Day: each day is the class video, the chapters, then one Breakdown entry with every chapter's breakdown on one page, as Bible Strong lays out its days.
+- The class player keeps YouTube's own controls and adds a picture in picture button that sends the class to the floating window; on the website the class page plays in a frame.

@@ -3,7 +3,7 @@ import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { useGlobalSearchParams, useLocalSearchParams, usePathname, useRouter } from 'expo-router'
 import { useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Linking, useWindowDimensions } from 'react-native'
+import { Linking, Platform, useWindowDimensions } from 'react-native'
 import YoutubePlayer from '~helpers/react-native-youtube-iframe'
 import WebView from 'react-native-webview'
 import { useAtom } from 'jotai'
@@ -19,7 +19,9 @@ import Header from '~common/Header'
 import Box, { TouchableBox, VStack } from '~common/ui/Box'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
 import Text from '~common/ui/Text'
-import { FeatherIcon } from '~common/ui/Icon'
+import { FeatherIcon, MaterialIcon } from '~common/ui/Icon'
+import PipGlass from './PipGlass'
+import ClassVideoFrame from './ClassVideoFrame'
 import {
   formatPassageMediaDuration,
   getPassageMediaById,
@@ -114,6 +116,17 @@ const PassageMediaPlayerScreen = () => {
     return resumeClassAt(videoId, startSeconds)
   }, [videoId, startSeconds, playingInWindow])
 
+  // Into the floating window, carrying on from the moment it is at now.
+  const sendToWindow = () => {
+    if (!item) return
+    setDockedClass({
+      videoId: item.providerId,
+      title: item.title,
+      start: resumeClassAt(item.providerId, startSeconds),
+      returnTo: { pathname, params: routeParams as Record<string, string | string[]> },
+    })
+  }
+
   return (
     <FormSheetScreen isFormSheet={IS_FORM_SHEET}>
       <Box className="overflow-hidden border-continuous flex-[1] bg-reverse">
@@ -157,20 +170,51 @@ const PassageMediaPlayerScreen = () => {
                   ) : usesCyberJudahEditorial() ? (
                     // Like the reader's player (and Bible Strong's), the class plays inside
                     // CyberJudah's hosted video page: YouTube refuses embeds from an inline page.
-                    <WebView
-                      ref={classPlayerRef}
-                      source={{ uri: getPassageMediaEmbedUrl(item.providerId, playerStart) }}
-                      injectedJavaScript={CLASS_TIME_SCRIPT}
-                      onMessage={event => {
-                        const seconds = classTimeFromMessage(event.nativeEvent.data)
-                        if (seconds !== undefined) rememberClassPosition(item.providerId, seconds)
-                      }}
-                      style={{ width: playerWidth, height: playerHeight, borderRadius: 14 }}
-                      allowsInlineMediaPlayback
-                      allowsFullscreenVideo
-                      mediaPlaybackRequiresUserAction={false}
-                      onError={() => setPlayerError('unavailable')}
-                    />
+                    <>
+                      {Platform.OS === 'web' ? (
+                        // The phone's web view has no web version; the site frames the same page.
+                        <Box
+                          style={{
+                            width: playerWidth,
+                            height: playerHeight,
+                            borderRadius: 14,
+                            overflow: 'hidden',
+                          }}
+                        >
+                          <ClassVideoFrame
+                            uri={getPassageMediaEmbedUrl(item.providerId, playerStart)}
+                            onTime={seconds => rememberClassPosition(item.providerId, seconds)}
+                          />
+                        </Box>
+                      ) : (
+                        <WebView
+                          ref={classPlayerRef}
+                          source={{ uri: getPassageMediaEmbedUrl(item.providerId, playerStart) }}
+                          injectedJavaScript={CLASS_TIME_SCRIPT}
+                          onMessage={event => {
+                            const seconds = classTimeFromMessage(event.nativeEvent.data)
+                            if (seconds !== undefined)
+                              rememberClassPosition(item.providerId, seconds)
+                          }}
+                          style={{ width: playerWidth, height: playerHeight, borderRadius: 14 }}
+                          allowsInlineMediaPlayback
+                          allowsFullscreenVideo
+                          mediaPlaybackRequiresUserAction={false}
+                          onError={() => setPlayerError('unavailable')}
+                        />
+                      )}
+                      {/* YouTube's own controls stay as they are; this adds picture in picture,
+                        where the YouTube app has its button to shrink the video. */}
+                      <TouchableBox
+                        accessibilityRole="button"
+                        accessibilityLabel="Picture in picture"
+                        onPress={sendToWindow}
+                        className="absolute top-[10px] left-[10px] w-[36px] h-[36px] rounded-full items-center justify-center"
+                      >
+                        <PipGlass radius={18} />
+                        <MaterialIcon name="picture-in-picture-alt" size={18} color="white" />
+                      </TouchableBox>
+                    </>
                   ) : (
                     <YoutubePlayer
                       height={playerHeight}
@@ -226,18 +270,7 @@ const PassageMediaPlayerScreen = () => {
                   {usesCyberJudahEditorial() && (
                     <TouchableBox
                       accessibilityRole="button"
-                      onPress={() => {
-                        setDockedClass({
-                          videoId: item.providerId,
-                          title: item.title,
-                          // The moment it is at now, so the window carries on from here.
-                          start: resumeClassAt(item.providerId, startSeconds),
-                          returnTo: {
-                            pathname,
-                            params: routeParams as Record<string, string | string[]>,
-                          },
-                        })
-                      }}
+                      onPress={sendToWindow}
                       className="flex-row items-center gap-[8px] self-start rounded-full bg-light-grey px-[14px] py-[9px]"
                     >
                       <FeatherIcon name="minimize-2" size={15} color="primary" />
