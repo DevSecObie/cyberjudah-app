@@ -152,7 +152,8 @@ const PlanQuizScreen = () => {
                   <Text className="text-[19px] leading-[29px]" style={{ fontFamily: titleFont }}>
                     {question.prompt}
                   </Text>
-                  {chosen !== undefined && (
+                  {/* The verse's place would name the chapter, so it never shows on that question. */}
+                  {chosen !== undefined && question.kind === 'word' && (
                     <Text className="text-grey text-[14px]">{question.reference}</Text>
                   )}
                 </Box>
