@@ -34,7 +34,8 @@ const plain = text =>
     .replace(/(^|\s)[*_]([^*_]+)[*_]/g, '$1$2')
     .trim()
 
-// The note's title and its opening paragraph, the summary of the session.
+// The note's title, its opening paragraph (the summary of the session) and its page: the entry
+// opens the whole note.
 const noteFor = (slug, chapter) => {
   const file = resolve(studyDir, slug, `${chapter}.md`)
   if (!existsSync(file)) return undefined
@@ -51,8 +52,9 @@ const noteFor = (slug, chapter) => {
     break
   }
   // Chapters without a class session only carry the King James text, which the reader already shows.
-  if (!title || !opening || /no recorded class session/i.test(opening)) return undefined
-  return { title: plain(title), description: plain(opening) }
+  if (!title || (opening && /no recorded class session/i.test(opening))) return undefined
+  const notePath = /^slug:\s*"?(\/study\/[^"\s]+)"?\s*$/m.exec(source)?.[1] ?? `/study/${slug}/${chapter}`
+  return { title: plain(title), description: opening ? plain(opening) : '', notePath }
 }
 
 const chapters = readingOrder.flatMap(book =>
@@ -174,7 +176,7 @@ const sliceFor = (day, dayNumber) => {
     })
   for (const { book, chapter } of day) {
     const note = noteFor(book.slug, chapter)
-    if (note && !slices.some(slice => slice.description === note.description))
+    if (note && !slices.some(slice => slice.notePath === note.notePath))
       slices.push({ id: String(slices.length), type: 'Text', ...note })
   }
   // One passage per book: "1|1-4", or two when the day crosses into the next book.

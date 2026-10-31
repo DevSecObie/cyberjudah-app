@@ -8,3 +8,5 @@
 - Your journeys: 4 Chapters a Day, CyberJudah's own journey, built from the 4 Chapters a Day notes and the class's session videos (scripts/build-cyberjudah-four-chapters-plan.mjs). The whole KJV with Apocrypha, four chapters a day; the lion reading is its picture. It waits under Your journeys before it is started.
 - Home (web): the Learn row is Courses, Timeline and Case studies; BibleProject stays hidden for CyberJudah.
 - CyberJudah starts in English even on a French device; French stays in Settings.
+- 4 Chapters a Day: every chapter's note is in its day, and opening it shows the whole published note (verses, precepts and breakdowns), not only its opening.
+- Web: published notes no longer crash (tslib resolves to its ES module build on web).

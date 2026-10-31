@@ -112,6 +112,8 @@ export interface TextSlice {
   title?: string
   description: string
   subType?: string
+  /** A CyberJudah published note ("/study/genesis/1"): the entry opens the whole note. */
+  notePath?: string
 }
 
 export interface ImageSlice {
