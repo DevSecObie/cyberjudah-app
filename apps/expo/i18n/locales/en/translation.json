@@ -1,4 +1,8 @@
 {
+  "Accueil": "Home",
+  "Lire la Bible": "Read the Bible",
+  "Référence biblique introuvable": "Scripture reference not found",
+  "Impossible de charger le verset du jour...": "Couldn't load today's verse...",
   "home.meditations.title": "Meditations",
   "home.meditations.description": "Explore daily meditation collections",
   "readingPlans.defineStartDate": "Set start date",
@@ -613,6 +617,7 @@
   "commentaries.availability.chapterPreview": "Available in this chapter",
   "commentaries.availability.noContentPreview": "No commentary in this chapter.",
   "commentaries.availability.errorPreview": "There was a problem loading this commentary.",
+  "commentaries.availability.offlineCopyRequiredPreview": "Connect to the internet or download this commentary to read it.",
   "commentaries.resource.chooseChapter": "Choose a book and chapter",
   "commentaries.resource.sectionCount": "{{count}} section",
   "commentaries.resource.sectionCount_plural": "{{count}} sections",
@@ -803,6 +808,7 @@
   "migration.account.failedTitle": "Your synced data could not be updated",
   "migration.account.title": "Updating your synced data",
   "migration.account.failedDescription": "Your local data remains available. Try again when your connection is stable, or continue and retry on a later launch.",
+  "migration.account.failedOtherDescription": "An unexpected error interrupted the update. Your local data remains available. Try again, or continue and retry on a later launch.",
   "migration.account.description": "Your account data is being moved to the current secure storage format. Sync will resume when the update is complete.",
   "migration.progress": "Progress",
   "migration.start": "Update now",
@@ -1263,7 +1269,7 @@
   "app.updateAvailable": "An update is available, downloading...",
   "app.noUpdateAvailable": "No update available",
   "app.updateError": "Failed to check for updates",
-  "Plus": "Plus",
+  "Plus": "More",
   "settings.account": "Account",
   "settings.resources": "Resources",
   "Bible Thématique Nave": "Nave Thematic Bible",
@@ -2722,5 +2728,9 @@
   "askStudy.open.notes": "My notes",
   "askStudy.open.studies": "My studies",
   "askStudy.open.bookmarks": "Bookmarks",
-  "askStudy.open.highlights": "Highlights"
+  "askStudy.open.highlights": "Highlights",
+  "Affichage": "Display",
+  "Ressources": "Resources",
+  "Aucun verset sélectionné": "No verse selected",
+  "Retour": "Back"
 }

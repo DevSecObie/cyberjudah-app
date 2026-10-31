@@ -17,6 +17,8 @@ export type SaidInClassHit = {
   start: number
   note: string
   excerpt: string
+  /** The excerpt with each matched word wrapped in {{ }}, as the search marked it. */
+  marked: string
 }
 
 export type SaidInClassResult = { signedIn: boolean; hits: SaidInClassHit[]; more: boolean }
@@ -52,6 +54,11 @@ export const searchSaidInClass = async (
         ...hit,
         start: Math.max(0, Math.floor(Number(hit.start) || 0)),
         excerpt: (hit.excerpt ?? '').replace(MARKS, '').replace(/\s+/g, ' ').trim(),
+        marked: (hit.excerpt ?? '')
+          .replace(/\uE000/g, '{{')
+          .replace(/\uE001/g, '}}')
+          .replace(/\s+/g, ' ')
+          .trim(),
       })),
   }
 }

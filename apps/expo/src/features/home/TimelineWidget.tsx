@@ -19,6 +19,13 @@ const LinkBox = (props: React.ComponentProps<typeof Box> & React.ComponentProps<
   />
 )
 
+/** Light panel at the top of the card; the lion is taller, so his head rises above the card. */
+const TINT_HEIGHT = 92
+const ART_HEIGHT = 132
+/** The scroll in front of the lion spills a little onto the title area. */
+const ART_DROP = 10
+export const TIMELINE_ART_OVERFLOW = ART_HEIGHT - TINT_HEIGHT
+
 const TimelineWidget = () => {
   const stylingTheme = useStylingTheme()
 
@@ -37,13 +44,11 @@ const TimelineWidget = () => {
       }}
     >
       <LinkBox className="bg-reverse rounded-[20px] flex-[1]" route="TimelineHome">
-        <Box className="overflow-hidden border-continuous h-[92px] bg-light-grey">
-          <Image
-            source={require('~assets/images/home/bible-timeline.jpg')}
-            contentFit="cover"
-            style={{ width: '100%', height: '100%' }}
-          />
-        </Box>
+        {/* The panel keeps its light colour in every theme, like the picture it frames. */}
+        <Box
+          className="border-continuous rounded-t-[20px]"
+          style={{ height: TINT_HEIGHT, backgroundColor: '#E6EDFF' }}
+        />
         <Box className="overflow-hidden border-continuous flex-[1] p-[12px] pr-[48px]">
           <Text
             className="text-[15px] leading-[18px]"
@@ -60,6 +65,21 @@ const TimelineWidget = () => {
           </Box>
         </Box>
       </LinkBox>
+      {/* Drawn over the card, outside its clipped corners, so the lion can rise above it. */}
+      <Image
+        source={require('~assets/images/home/bible-timeline.webp')}
+        contentFit="contain"
+        contentPosition="bottom"
+        accessible={false}
+        pointerEvents="none"
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: TINT_HEIGHT - ART_HEIGHT,
+          height: ART_HEIGHT + ART_DROP,
+        }}
+      />
     </Box>
   )
 }

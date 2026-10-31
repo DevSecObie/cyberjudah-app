@@ -1,3 +1,4 @@
+import i18n from '~i18n'
 import * as Icon from '~common/ui/classNameIcons'
 import { useQuery } from '@tanstack/react-query'
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
@@ -156,7 +157,7 @@ const ConcordanceScreen = () => {
             >
               <ListItem className="h-[50px] items-center flex-row">
                 <Text className="text-[16px]">
-                  {getBook(item.Livre)?.Nom || `Livre ${item.Livre}`}
+                  {getBook(item.Livre) ? i18n.t(getBook(item.Livre)!.Nom) : i18n.t('Livre {{bookNumber}}', { bookNumber: item.Livre })}
                 </Text>
                 <OccurencesNumber>
                   <Text>{item.versesCountByBook}</Text>

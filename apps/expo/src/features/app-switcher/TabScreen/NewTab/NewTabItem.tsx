@@ -46,6 +46,9 @@ const NewTabItem = ({
   const { onPress } = useOpenTabByType({ type, newAtom, onPlanPress })
   const isLibraryResource =
     type === 'strong' || type === 'nave' || type === 'dictionary' || type === 'commentary'
+  const heroArt = compact
+    ? { width: 150, height: 102, rise: 36, right: 14 }
+    : { width: 280, height: 190, rise: 56, right: 32 }
   const iconSize = hero ? (Platform.OS === 'web' ? 64 : 40) : isLibraryResource ? 34 : 28
 
   return (
@@ -56,10 +59,14 @@ const NewTabItem = ({
       activeOpacity={0.7}
       className={
         hero
-          ? 'relative overflow-hidden border-continuous flex-row items-center bg-reverse shadow-[0_2px_7px_rgba(89,131,240,0.1)] rounded-[18px] px-[24px] py-[24px]'
+          ? 'relative overflow-visible border-continuous flex-row items-center bg-reverse shadow-[0_2px_7px_rgba(89,131,240,0.1)] rounded-[18px] px-[24px] py-[24px]'
           : 'border-continuous flex-row items-center bg-reverse shadow-[0_2px_7px_rgba(89,131,240,0.1)] rounded-[18px] px-[18px] py-[18px] min-h-[92px] gap-[14px]'
       }
-      style={hero ? { minHeight: compact ? 180 : 218 } : undefined}
+      style={
+        hero
+          ? { minHeight: compact ? 180 : 218, marginTop: Math.max(0, heroArt.rise - 42) }
+          : undefined
+      }
       onPress={onPress}
     >
       <Box
@@ -88,20 +95,35 @@ const NewTabItem = ({
         </Box>
       </Box>
       {hero && (
-        <Image
-          source={require('~assets/images/new-tab/bible-reader.webp')}
-          accessible={false}
-          pointerEvents="none"
-          contentFit="contain"
-          contentPosition="bottom"
-          style={{
-            position: 'absolute',
-            right: compact ? 24 : 42,
-            bottom: 0,
-            width: compact ? 125 : 295,
-            height: compact ? 108 : 205,
-          }}
-        />
+        <>
+          {/* Light panel in the card's corner; the lion sits on it and rises above the card. */}
+          <Box
+            pointerEvents="none"
+            className="border-continuous rounded-tr-[18px] rounded-bl-[18px]"
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              width: heroArt.width + heroArt.right * 2,
+              height: heroArt.height - heroArt.rise,
+              backgroundColor: '#E6EDFF',
+            }}
+          />
+          <Image
+            source={require('~assets/images/new-tab/bible-reader.webp')}
+            accessible={false}
+            pointerEvents="none"
+            contentFit="contain"
+            contentPosition="bottom"
+            style={{
+              position: 'absolute',
+              right: heroArt.right,
+              top: -heroArt.rise,
+              width: heroArt.width,
+              height: heroArt.height,
+            }}
+          />
+        </>
       )}
       <FeatherIcon name="chevron-right" size={hero ? 22 : 18} color="tertiary" />
     </TouchableBox>

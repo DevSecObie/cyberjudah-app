@@ -2,6 +2,7 @@ import InlineCommentarySettings, {
   InlineCommentaryManageAction,
 } from '~features/commentaries/InlineCommentarySettings'
 import { useInlineCommentaryMenuAction } from '~features/commentaries/useInlineCommentaryMenuAction'
+import { isInlineCommentaryPaused } from '~features/commentaries/inlineCommentarySelection'
 import CommentarySelectorSheet, {
   type CommentaryProjection,
 } from '~features/commentaries/CommentarySelectorSheet'
@@ -36,7 +37,7 @@ export default function BibleOptionsMenu({
   const { t } = useTranslation()
   const inlineAction = useInlineCommentaryMenuAction()
   const actions = [...suppliedActions]
-  actions.splice(1, 0, inlineAction)
+  if (!isInlineCommentaryPaused()) actions.splice(1, 0, inlineAction)
   const [commentaryDetails, setCommentaryDetails] = useState<CommentaryProjection>()
   const bookmarkPanel = useBibleBookmarkScreens(bookNumber, chapter, version)
   const icons = {

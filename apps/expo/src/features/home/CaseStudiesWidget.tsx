@@ -1,9 +1,15 @@
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
+import { Image } from 'expo-image'
 import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
 import Box, { TouchableBox } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
+
+/** Same composition as the Timeline card: the lion rises out of a light panel. */
+const TINT_HEIGHT = 92
+const ART_HEIGHT = 132
+const ART_DROP = 10
 
 /** CyberJudah's case studies, on the Learn shelf beside the Timeline (as the Telegram app has them). */
 const CaseStudiesWidget = () => {
@@ -29,9 +35,10 @@ const CaseStudiesWidget = () => {
         activeOpacity={0.84}
         onPress={() => pushRoute({ pathname: '/(library)/case-studies' })}
       >
-        <Box className="overflow-hidden border-continuous h-[92px] bg-light-primary items-center justify-center">
-          <FeatherIcon name="book-open" color="primary" size={34} />
-        </Box>
+        <Box
+          className="border-continuous rounded-t-[20px]"
+          style={{ height: TINT_HEIGHT, backgroundColor: '#E6EDFF' }}
+        />
         <Box className="overflow-hidden border-continuous flex-[1] p-[12px] pr-[48px]">
           <Text
             className="text-[15px] leading-[18px]"
@@ -48,6 +55,20 @@ const CaseStudiesWidget = () => {
           </Box>
         </Box>
       </TouchableBox>
+      <Image
+        source={require('~assets/images/home/illustrations/dictionary-universe-v3.webp')}
+        contentFit="contain"
+        contentPosition="bottom"
+        accessible={false}
+        pointerEvents="none"
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: TINT_HEIGHT - ART_HEIGHT,
+          height: ART_HEIGHT + ART_DROP,
+        }}
+      />
     </Box>
   )
 }

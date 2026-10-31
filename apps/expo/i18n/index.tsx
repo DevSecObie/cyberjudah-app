@@ -28,7 +28,9 @@ const getDeviceLanguage = (): ActiveLanguage => {
   return isActiveLanguage(language) ? language : DEFAULT_LANGUAGE
 }
 
-const languageTag = getDeviceLanguage()
+// CyberJudah is English: a French device starts in English too (French stays in Settings).
+const languageTag =
+  process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah' ? DEFAULT_LANGUAGE : getDeviceLanguage()
 
 const languageDetector = {
   type: 'languageDetector' as const,

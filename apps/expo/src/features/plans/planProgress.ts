@@ -90,7 +90,7 @@ export const buildComputedPlanItem = (plan: Plan, ongoingPlan?: OngoingPlan): Co
 
 /** What a reader opens. Titles and unknown types only structure the day. */
 export const isReadableEntitySlice = (slice: EntitySlice): boolean =>
-  ['Text', 'Image', 'Video', 'Chapter', 'Verse'].includes(slice.type ?? '')
+  ['Text', 'Image', 'Video', 'Chapter', 'Verse', 'Quiz'].includes(slice.type ?? '')
 
 /** Older plans carry elements without an id; their place in the day identifies them. */
 export const getEntitySliceKey = (

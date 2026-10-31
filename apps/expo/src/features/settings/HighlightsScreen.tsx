@@ -393,14 +393,14 @@ const HighlightsScreen = ({ isFormSheet = false }: HighlightsScreenProps) => {
                   )
                   .map(book => ({
                     key: String(book.Numero),
-                    label: book.Nom,
+                    label: t(book.Nom),
                     selected: filters.book === book.Numero,
                     onSelect: () => setPersistedFilters(state => ({ ...state, book: book.Numero })),
                   })),
               ],
               icon: 'bookmark',
               label: t('Livre'),
-              value: books.find(book => book.Numero === filters.book)?.Nom || t('Tous'),
+              value: t(books.find(book => book.Numero === filters.book)?.Nom || 'Tous'),
               active: Boolean(filters.book),
               onPress: () => bookModalRef.current?.present(),
             },
@@ -467,7 +467,7 @@ const HighlightsScreen = ({ isFormSheet = false }: HighlightsScreenProps) => {
                   filters.testament === 'all' ||
                   isBookInTestament(book.Numero, filters.testament)
               )
-              .map(book => ({ value: String(book.Numero), label: book.Nom })),
+              .map(book => ({ value: String(book.Numero), label: t(book.Nom) })),
           ]}
           onSelect={book => {
             const number = Number(book) || undefined

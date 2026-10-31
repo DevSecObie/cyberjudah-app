@@ -14,7 +14,7 @@ import { hasPlanParticipation } from '~features/plans/planProgress'
 import FollowedPlanCard from '~features/plans/FollowedPlanCard'
 import useLanguage from '~helpers/useLanguage'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
-import { addPlan } from '~redux/modules/plan'
+import { addPlan, replacePlan } from '~redux/modules/plan'
 import type { RootState } from '~redux/modules/reducer'
 
 const readResponseText = async (response: Response): Promise<string> => {
@@ -24,14 +24,22 @@ const readResponseText = async (response: Response): Promise<string> => {
   return response.text()
 }
 
-const loadBibleProjectPlan = async (lang: string): Promise<Plan | undefined> => {
-  const [asset] = await Asset.loadAsync(
-    lang === 'fr'
+// CyberJudah's own journey, built from the 4 Chapters a Day notes
+// (scripts/build-cyberjudah-four-chapters-plan.mjs).
+const FOUR_CHAPTERS_PLAN_ID = 'cyberjudah-four-chapters-a-day'
+
+const bundledPlanModule = (lang: string) =>
+  usesCyberJudahEditorial()
+    ? // eslint-disable-next-line @typescript-eslint/no-require-imports
+      require('~assets/plans/cyberjudah-four-chapters-a-day.txt')
+    : lang === 'fr'
       ? // eslint-disable-next-line @typescript-eslint/no-require-imports
         require('~assets/plans/bible-project-plan.txt')
       : // eslint-disable-next-line @typescript-eslint/no-require-imports
         require('~assets/plans/bible-project-plan-en.txt')
-  )
+
+const loadBundledPlan = async (lang: string): Promise<Plan | undefined> => {
+  const [asset] = await Asset.loadAsync(bundledPlanModule(lang))
 
   let serialized: string | undefined
   if (Platform.OS === 'web') {
@@ -47,23 +55,29 @@ const loadBibleProjectPlan = async (lang: string): Promise<Plan | undefined> => 
 
 const useGetFirstPlans = () => {
   const lang = useLanguage()
-  const planId = lang === 'fr' ? 'bible-project-plan' : 'bible-project-plan-en'
+  const planId = usesCyberJudahEditorial()
+    ? FOUR_CHAPTERS_PLAN_ID
+    : lang === 'fr'
+      ? 'bible-project-plan'
+      : 'bible-project-plan-en'
   const hasPlan = useSelector((state: RootState) =>
     state.plan.myPlans.some(plan => plan.id === planId)
   )
+  // Our bundled plan is refreshed on every open, so a phone that added it earlier gets new rows.
+  const refreshBundled = usesCyberJudahEditorial()
   const dispatch = useDispatch()
   useEffect(() => {
-    if (hasPlan || usesCyberJudahEditorial()) return
+    if (hasPlan && !refreshBundled) return
     let active = true
-    void loadBibleProjectPlan(lang)
+    void loadBundledPlan(lang)
       .then(plan => {
-        if (active && plan) dispatch(addPlan(plan))
+        if (active && plan) dispatch(refreshBundled ? replacePlan(plan) : addPlan(plan))
       })
       .catch(error => console.warn('[Home] Could not load bundled reading plan', error))
     return () => {
       active = false
     }
-  }, [hasPlan, lang, dispatch])
+  }, [hasPlan, refreshBundled, lang, dispatch])
 }
 
 const PlanHome = ({ compact = false }: { compact?: boolean }) => {
@@ -72,10 +86,11 @@ const PlanHome = ({ compact = false }: { compact?: boolean }) => {
   const participations = useSelector((state: RootState) => state.plan.ongoingPlans)
   const followed = plans.flatMap(plan => {
     const participation = participations.find(item => item.id === plan.id)
-    return getEditorialKind(plan) === 'reading-plan' &&
-      participation &&
-      hasPlanParticipation(participation)
-      ? [{ plan, participation }]
+    if (getEditorialKind(plan) !== 'reading-plan') return []
+    if (participation && hasPlanParticipation(participation)) return [{ plan, participation }]
+    // 4 Chapters a Day is CyberJudah's daily reading, so it waits under Your journeys before it starts.
+    return plan.id === FOUR_CHAPTERS_PLAN_ID
+      ? [{ plan, participation: { id: plan.id, status: 'Idle' as const, readingSlices: {} } }]
       : []
   })
   useUpdatePlans()

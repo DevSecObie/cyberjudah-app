@@ -19,6 +19,8 @@ export const ADD_PARALLEL_VERSION = 'ADD_PARALLEL_VERSION'
 export const SWIPE_LEFT = 'SWIPE_LEFT'
 export const SWIPE_RIGHT = 'SWIPE_RIGHT'
 export const SWIPE_UP = 'SWIPE_UP'
+/** The reader scrolled to the last verse of the chapter on screen. */
+export const CHAPTER_END_REACHED = 'CHAPTER_END_REACHED'
 export const SWIPE_DOWN = 'SWIPE_DOWN'
 export const OPEN_HIGHLIGHT_TAGS = 'OPEN_HIGHLIGHT_TAGS'
 export const OPEN_BOOKMARK_MODAL = 'OPEN_BOOKMARK_MODAL'

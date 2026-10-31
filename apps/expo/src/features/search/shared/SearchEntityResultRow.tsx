@@ -158,8 +158,15 @@ export const HighlightedText = ({
   )
 }
 
-const PassageDescription = ({ highlighted }: { highlighted?: string }) => {
-  const parts = getPassageSearchExcerpt(highlighted || '', 240).split(/(\{\{.*?\}\})/g)
+const PassageDescription = ({
+  highlighted,
+  excerpt = true,
+}: {
+  highlighted?: string
+  excerpt?: boolean
+}) => {
+  const text = excerpt ? getPassageSearchExcerpt(highlighted || '', 240) : highlighted || ''
+  const parts = text.split(/(\{\{.*?\}\})/g)
 
   return (
     <Paragraph small numberOfLines={3}>
@@ -234,6 +241,9 @@ export const SearchEntityResultRow = ({
             description
           ) : item.passage ? (
             <PassageDescription highlighted={item.description} />
+          ) : item.classExcerpt ? (
+            // What was said in class, its searched words highlighted as the site shows them.
+            <PassageDescription highlighted={item.classExcerpt} excerpt={false} />
           ) : item.description ? (
             <HighlightedText
               value={item.description}

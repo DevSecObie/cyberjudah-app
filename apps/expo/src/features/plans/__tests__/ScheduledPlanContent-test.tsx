@@ -12,6 +12,8 @@ const mockUnread = jest.fn((payload: unknown) => ({ type: 'element-unread', payl
 let mockLeave = () => {}
 jest.mock('expo-router', () => ({
   useLocalSearchParams: () => ({}),
+  useGlobalSearchParams: () => ({}),
+  usePathname: () => '/plan',
   useNavigation: () => ({
     addListener: (_event: string, listener: () => void) => {
       mockLeave = listener

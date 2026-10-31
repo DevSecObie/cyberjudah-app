@@ -504,17 +504,19 @@ const SQLiteSearchScreen = ({
     usesCyberJudahEditorial() &&
     itemFilters.classes !== false &&
     trimmedSearchValue.length >= MIN_CLASS_SEARCH_LENGTH
+  // iPhone keyboards type curly quotes; a quoted phrase must still be searched as a phrase.
+  const classSearchValue = trimmedSearchValue.replace(/[“”„‟″]/g, '"')
   const classIndex = useClassIndexState()
   const classQuery = useQuery({
-    queryKey: ['cyberjudah-search-classes', trimmedSearchValue, isClassIndexSearchable(classIndex)],
+    queryKey: ['cyberjudah-search-classes', classSearchValue, isClassIndexSearchable(classIndex)],
     queryFn: () => {
       const library = async () => readCachedClassLibrary() ?? loadClassLibrary()
       // On this phone when the class library is kept here; from the site until then.
       return isClassIndexSearchable(classIndex)
-        ? findClassesOnDevice(trimmedSearchValue, library, searchClassIndex).catch(() =>
-            findClasses(trimmedSearchValue, library)
+        ? findClassesOnDevice(classSearchValue, library, searchClassIndex).catch(() =>
+            findClasses(classSearchValue, library)
           )
-        : findClasses(trimmedSearchValue, library)
+        : findClasses(classSearchValue, library)
     },
     enabled: shouldSearchClasses,
     staleTime: 5 * 60 * 1000,
@@ -522,8 +524,8 @@ const SQLiteSearchScreen = ({
   })
   // Said in Class: the recordings' own words (their transcripts), searched on CyberJudah's server.
   const saidInClassQuery = useQuery({
-    queryKey: ['cyberjudah-said-in-class', trimmedSearchValue],
-    queryFn: () => searchSaidInClass(trimmedSearchValue),
+    queryKey: ['cyberjudah-said-in-class', classSearchValue],
+    queryFn: () => searchSaidInClass(classSearchValue),
     enabled: shouldSearchClasses,
     staleTime: 5 * 60 * 1000,
     retry: 1,
@@ -550,6 +552,7 @@ const SQLiteSearchScreen = ({
             chip: formatMoment(hit.start),
             subtitle: hit.date,
             description: hit.excerpt,
+            classExcerpt: hit.marked,
             classVideo: hit.video,
             classStart: hit.start,
             thumbnailUrl:
@@ -558,6 +561,14 @@ const SQLiteSearchScreen = ({
           })
         )
 
+  // Where a class's own recording says the words, its result plays from that exact second and
+  // quotes what was said, as the site's search does; the notes only give the nearest heading.
+  const saidByWork = new Map<string, { start: number; excerpt: string; marked: string }>()
+  for (const hit of saidInClassQuery.data?.hits ?? []) {
+    const workId = readCachedClassLibrary()?.find(row => row.providerId === hit.video)?.workId
+    if (workId && !saidByWork.has(workId))
+      saidByWork.set(workId, { start: hit.start, excerpt: hit.excerpt, marked: hit.marked })
+  }
   const classResults: SearchEntityResult[] = shouldSearchClasses
     ? [
         ...(classQuery.data ?? []).map(
@@ -568,9 +579,13 @@ const SQLiteSearchScreen = ({
             title: item.title,
             chip: item.series,
             subtitle: [item.date, item.teacher].filter(Boolean).join(' · '),
-            description: item.snippet || [item.date, item.teacher].filter(Boolean).join(' · '),
+            description:
+              saidByWork.get(item.workId)?.excerpt ||
+              item.snippet ||
+              [item.date, item.teacher].filter(Boolean).join(' · '),
+            classExcerpt: saidByWork.get(item.workId)?.marked,
             classWorkId: item.workId,
-            classStart: item.start,
+            classStart: saidByWork.get(item.workId)?.start ?? item.start,
             thumbnailUrl: item.thumbnailUrl,
           })
         ),

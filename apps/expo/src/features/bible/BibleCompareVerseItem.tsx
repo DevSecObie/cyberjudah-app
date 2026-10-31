@@ -75,7 +75,7 @@ const PlainCompareVerseItem = ({
     networkMode: 'always',
     staleTime: Infinity,
   })
-  const content = error ? 'Impossible de charger ce verset' : (data?.content ?? '')
+  const content = error ? 'Could not load this verse' : (data?.content ?? '')
 
   const focusVerses = selectedVerseKeys.map(v => v.split('-')[v.split('-').length - 1]).map(Number)
 

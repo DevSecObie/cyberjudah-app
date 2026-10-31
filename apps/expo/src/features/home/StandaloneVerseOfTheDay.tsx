@@ -168,7 +168,7 @@ const StandaloneVerseOfTheDay = ({
     return (
       <Box className={cardClassName} style={cardStyle}>
         {dayHeader}
-        <Empty message="Impossible de charger le verset du jour..." />
+        <Empty message={t('Impossible de charger le verset du jour...')} />
         {desktop && <Box className="mt-auto pt-[12px] items-start">{footer}</Box>}
       </Box>
     )

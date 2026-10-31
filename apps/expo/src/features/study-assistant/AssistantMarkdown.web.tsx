@@ -20,6 +20,7 @@ export default function AssistantMarkdown({
 }: {
   text: string
   streaming: boolean
+  reading?: boolean
   onLinkPress?: (url: string) => boolean
   sources?: StudySource[]
   widgets?: StudyWidget[]

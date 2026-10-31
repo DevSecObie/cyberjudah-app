@@ -14,39 +14,51 @@ const withCyberJudah = (test: () => void) => {
 }
 
 describe('CyberJudah teachings in the reader', () => {
-  it('starts every reader with the teachings shown as chips', () =>
+  const BISHOPS = ['bishop-nathanyel:en', 'bishop-yawasap:en', 'bishop-kani:en']
+
+  it("starts every reader with the three Bishops' commentaries, each under his own name", () =>
     withCyberJudah(() => {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { getDefaultCommentarySelection } = require('../commentarySelection')
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { getInlineCommentaryResources } = require('../inlineCommentarySelection')
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { COMMENTARY_CATALOG } = require('~helpers/commentaryCatalog')
       const selection = getDefaultCommentarySelection('en')
-      expect(selection).toEqual(['cyberjudah:en'])
-      expect(getInlineCommentaryResources([], selection)).toEqual([
-        { resourceId: 'cyberjudah', language: 'en' },
+      expect(selection).toEqual(BISHOPS)
+      expect(COMMENTARY_CATALOG.map((e: { shortName: string }) => e.shortName)).toEqual([
+        'Bishop Nathanyel',
+        'Bishop Yawasap',
+        'Bishop Kani',
       ])
-      expect(getInlineCommentaryResources(undefined, selection)).toEqual([
-        { resourceId: 'cyberjudah', language: 'en' },
+      expect(JSON.stringify(COMMENTARY_CATALOG)).not.toMatch(/CyberJudah/)
+      expect(getInlineCommentaryResources([], selection)).toEqual([
+        { resourceId: 'bishop-nathanyel', language: 'en' },
+        { resourceId: 'bishop-yawasap', language: 'en' },
+        { resourceId: 'bishop-kani', language: 'en' },
       ])
     }))
 
-  it('brings the teachings back to a selection saved without them', () =>
+  it('replaces a selection saved for an earlier build with the Bishops', () =>
     withCyberJudah(() => {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { normalizeCommentarySelection } = require('../commentarySelection')
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { normalizeInlineCommentaries } = require('../inlineCommentarySelection')
-      // Build 303 ran without the CyberJudah catalog and kept only Bible Strong's commentaries.
-      const selection = normalizeCommentarySelection(['barnes:en', 'acbc:en', 'mhcc:en'])
-      expect(selection).toEqual(['cyberjudah:en'])
-      expect(normalizeInlineCommentaries([], selection)).toEqual(['cyberjudah:en'])
+      // Build 303 kept Bible Strong's commentaries; later builds kept the single "cyberjudah" one.
+      for (const saved of [['barnes:en', 'acbc:en', 'mhcc:en'], ['cyberjudah:en']]) {
+        const selection = normalizeCommentarySelection(saved)
+        expect(selection).toEqual(BISHOPS)
+        expect(normalizeInlineCommentaries(['cyberjudah:en'], selection)).toEqual(BISHOPS)
+      }
+      expect(normalizeInlineCommentaries(['bishop-kani:en'], BISHOPS)).toEqual(['bishop-kani:en'])
     }))
 
   it('keeps the chips off when the reader switched inline reading off', () =>
     withCyberJudah(() => {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { getInlineCommentaryResources } = require('../inlineCommentarySelection')
-      expect(getInlineCommentaryResources([], ['cyberjudah:en'], false)).toEqual([])
+      expect(getInlineCommentaryResources([], BISHOPS, false)).toEqual([])
     }))
 
   it('keeps the recorded KJV audio', () =>

@@ -597,7 +597,7 @@ const WordAnnotationsScreen = () => {
             key: 'book',
             icon: 'bookmark',
             label: t('Livre'),
-            value: books.find(book => book.Numero === queryState.book)?.Nom || t('Tous'),
+            value: t(books.find(book => book.Numero === queryState.book)?.Nom || 'Tous'),
             active: Boolean(queryState.book),
             onPress: () => bookModalRef.current?.present(),
             searchable: true,
@@ -610,7 +610,7 @@ const WordAnnotationsScreen = () => {
                       queryState.testament === 'all' ||
                       isBookInTestament(book.Numero, queryState.testament)
                   )
-                  .map(book => ({ value: book.Numero, label: book.Nom })),
+                  .map(book => ({ value: book.Numero, label: t(book.Nom) })),
               ],
               queryState.book || 0,
               book =>
@@ -724,7 +724,7 @@ const WordAnnotationsScreen = () => {
                 queryState.testament === 'all' ||
                 isBookInTestament(book.Numero, queryState.testament)
             )
-            .map(book => ({ value: String(book.Numero), label: book.Nom })),
+            .map(book => ({ value: String(book.Numero), label: t(book.Nom) })),
         ]}
         onSelect={book => {
           const number = Number(book) || null
