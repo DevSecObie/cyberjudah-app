@@ -1,6 +1,7 @@
 import { getStrongEntityAvatarKey } from './strongEntityPresentation'
 import { CYBERJUDAH_PORTRAITS } from './cyberJudahPortraits'
 import { ISRAELITE_GROUPS } from './israeliteGroups'
+import { JUDAH_PEOPLE } from './judahPeople'
 import { PEOPLE_NATIONS, type PeopleNation } from './peopleNations'
 
 export const ENTITY_AVATAR_IMAGES = {
@@ -153,10 +154,19 @@ const groupAvatar = (uniqueName: string) =>
   (ISRAELITE_GROUPS.has(uniqueName)
     ? ISRAEL_GROUPS[seedIndex(uniqueName, ISRAEL_GROUPS.length)]
     : undefined)
-// Men and women the same way: their nation's figure, else Israel's own.
-const personAvatar = (uniqueName: string, key: 'male' | 'female') =>
-  nationFigure(uniqueName)?.[key] ??
-  ISRAEL_PEOPLE[key][seedIndex(uniqueName, ISRAEL_PEOPLE[key].length)]
+// The figures of Israel that are Black: every one but the third, who is Native American. The tribe
+// of Judah only ever gets these.
+const JUDAH_FIGURES = {
+  male: ISRAEL_PEOPLE.male.filter((_, index) => index !== 2),
+  female: ISRAEL_PEOPLE.female.filter((_, index) => index !== 2),
+}
+// Men and women the same way: their nation's figure, else Israel's own (Judah's always Black).
+const personAvatar = (uniqueName: string, key: 'male' | 'female') => {
+  const nation = nationFigure(uniqueName)?.[key]
+  if (nation) return nation
+  const figures = JUDAH_PEOPLE.has(uniqueName) ? JUDAH_FIGURES[key] : ISRAEL_PEOPLE[key]
+  return figures[seedIndex(uniqueName, figures.length)]
+}
 
 /** A person's own portrait where CyberJudah has one, else the avatar for their kind. */
 export const getStrongEntityAvatarSource = (category: string, type: string, uniqueName?: string) =>
