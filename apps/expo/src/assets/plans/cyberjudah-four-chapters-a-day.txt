@@ -12839,34 +12839,40 @@
             },
             {
               "id": "1",
+              "type": "Video",
+              "title": "The class: Luke 10–13",
+              "url": "https://www.youtube.com/watch?v=rbe14dyrkmI"
+            },
+            {
+              "id": "2",
               "type": "Text",
               "title": "Luke 7: Great Faith, the Widow's Son, and the Woman Who Loved Much",
               "description": "",
               "notePath": "/study/luke/7"
             },
             {
-              "id": "2",
+              "id": "3",
               "type": "Text",
               "title": "Luke 8: The Sower, the Storm, and the Works of Power",
               "description": "",
               "notePath": "/study/luke/8"
             },
             {
-              "id": "3",
+              "id": "4",
               "type": "Text",
               "title": "Luke 9: The Twelve Sent, the Confession, and the Cost of Following",
               "description": "",
               "notePath": "/study/luke/9"
             },
             {
-              "id": "4",
+              "id": "5",
               "type": "Text",
               "title": "Luke 10: The Seventy Sent and the Good Samaritan",
               "description": "This session covers Luke 10 through 13. The video it comes from is titled for John 6 through 9, but the reading given is Luke, and it is Luke that these notes follow. The seventy are sent out two and two, a lawyer is answered with the parable of the good Samaritan, the disciples are taught how to pray, the woes are pronounced upon the Pharisees and the lawyers, and the last chapter closes over Jerusalem. The thread is repentance and the discerning of the time.",
               "notePath": "/study/luke/10"
             },
             {
-              "id": "5",
+              "id": "6",
               "type": "Chapter",
               "chapters": "42|7-10"
             }
@@ -12878,27 +12884,33 @@
           "slices": [
             {
               "id": "0",
+              "type": "Video",
+              "title": "The class: Luke 10–13",
+              "url": "https://www.youtube.com/watch?v=rbe14dyrkmI"
+            },
+            {
+              "id": "1",
               "type": "Text",
               "title": "Luke 11: How to Pray, the Strong Man, and the Woes",
               "description": "",
               "notePath": "/study/luke/11"
             },
             {
-              "id": "1",
+              "id": "2",
               "type": "Text",
               "title": "Luke 12: Hypocrisy, Covetousness, and the Watching Servant",
               "description": "",
               "notePath": "/study/luke/12"
             },
             {
-              "id": "2",
+              "id": "3",
               "type": "Text",
               "title": "Luke 13: Except Ye Repent, and the Strait Gate",
               "description": "",
               "notePath": "/study/luke/13"
             },
             {
-              "id": "3",
+              "id": "4",
               "type": "Chapter",
               "chapters": "42|11-14"
             }
@@ -13007,33 +13019,27 @@
             },
             {
               "id": "1",
-              "type": "Video",
-              "title": "The class: John 6–9",
-              "url": "https://www.youtube.com/watch?v=rbe14dyrkmI"
-            },
-            {
-              "id": "2",
               "type": "Text",
               "title": "John 3: Nicodemus, the Serpent Lifted Up, and Who the World Is",
               "description": "",
               "notePath": "/study/john/3"
             },
             {
-              "id": "3",
+              "id": "2",
               "type": "Text",
               "title": "John 4: The Woman at the Well and the Nobleman's Son",
               "description": "",
               "notePath": "/study/john/4"
             },
             {
-              "id": "4",
+              "id": "3",
               "type": "Text",
               "title": "John 5: The Pool of Bethesda and the Witness to the Son",
               "description": "",
               "notePath": "/study/john/5"
             },
             {
-              "id": "5",
+              "id": "4",
               "type": "Chapter",
               "chapters": "43|3-6"
             }
@@ -13045,12 +13051,6 @@
           "slices": [
             {
               "id": "0",
-              "type": "Video",
-              "title": "The class: John 6–9",
-              "url": "https://www.youtube.com/watch?v=rbe14dyrkmI"
-            },
-            {
-              "id": "1",
               "type": "Chapter",
               "chapters": "43|7-10"
             }
