@@ -12,8 +12,8 @@ import {
   loadClassLibrary,
   readCachedClassLibrary,
 } from '~features/passageMediaLibrary/cyberJudahClasses'
-/** How far the lion rises above the card, inside the space above it. */
-const COURSES_ART_RISE = 18
+/** How far the thumbnail (or the lion) rises above the card, into the space left above it. */
+const COURSES_ART_RISE = 30
 
 const PassageMediaLibraryWidget = () => {
   const stylingTheme = useStylingTheme()
@@ -37,7 +37,10 @@ const PassageMediaLibraryWidget = () => {
     : undefined
 
   return (
-    <Box className="overflow-hidden border-continuous bg-light-grey pt-[20px]">
+    <Box
+      className="overflow-hidden border-continuous bg-light-grey"
+      style={{ paddingTop: 20 + COURSES_ART_RISE }}
+    >
       <TouchableBox
         className="overflow-hidden border-continuous rounded-[20px] bg-reverse h-[136px] flex-row items-center"
         accessibilityRole="button"
@@ -53,37 +56,54 @@ const PassageMediaLibraryWidget = () => {
           overflow: 'visible',
         }}
       >
+        {/* A light panel; the latest class's thumbnail (or the lion) rises above the card. */}
         <Box
-          className={
-            latest
-              ? 'border-continuous overflow-visible w-[48%] h-[100%] bg-light-grey rounded-tl-[20px] rounded-bl-[20px]'
-              : 'border-continuous overflow-visible w-[48%] h-[100%] rounded-tl-[20px] rounded-bl-[20px]'
-          }
-          // Without a class yet, the lion sits on a light panel and rises above the card.
-          style={latest ? undefined : { backgroundColor: '#E6EDFF' }}
+          className="border-continuous overflow-visible w-[48%] h-[100%] rounded-tl-[20px] rounded-bl-[20px]"
+          style={{ backgroundColor: '#E6EDFF' }}
         >
-          <Image
-            source={
-              latest
-                ? { uri: latest.thumbnailUrl }
-                : require('~assets/images/home/courses-videos.webp')
-            }
-            placeholder={latest ? { blurhash: latest.blurHash } : undefined}
-            cachePolicy="memory-disk"
-            contentFit={latest ? 'cover' : 'contain'}
-            contentPosition={latest ? 'center' : 'bottom'}
-            accessible={latest ? undefined : false}
-            style={
-              latest
-                ? {
-                    width: '100%',
-                    height: '100%',
-                    borderBottomLeftRadius: 20,
-                    borderTopLeftRadius: 20,
-                  }
-                : { position: 'absolute', left: 0, right: 0, bottom: 0, top: -COURSES_ART_RISE }
-            }
-          />
+          {latest ? (
+            <Box
+              className="border-continuous rounded-[12px] overflow-hidden bg-light-grey"
+              style={{
+                position: 'absolute',
+                left: 10,
+                right: 10,
+                top: -COURSES_ART_RISE,
+                aspectRatio: 16 / 9,
+              }}
+            >
+              <Image
+                source={{ uri: latest.thumbnailUrl }}
+                placeholder={{ blurhash: latest.blurHash }}
+                cachePolicy="memory-disk"
+                contentFit="cover"
+                contentPosition="center"
+                style={{ width: '100%', height: '100%' }}
+              />
+              <Box
+                className="absolute rounded-full items-center justify-center"
+                style={{
+                  left: '50%',
+                  top: '50%',
+                  width: 34,
+                  height: 34,
+                  marginLeft: -17,
+                  marginTop: -17,
+                  backgroundColor: 'rgba(0,0,0,0.55)',
+                }}
+              >
+                <FeatherIcon name="play" size={16} color="white" />
+              </Box>
+            </Box>
+          ) : (
+            <Image
+              source={require('~assets/images/home/courses-videos.webp')}
+              contentFit="contain"
+              contentPosition="bottom"
+              accessible={false}
+              style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: -COURSES_ART_RISE }}
+            />
+          )}
         </Box>
         <Box className="overflow-hidden border-continuous flex-[1] h-[100%] px-[16px] pb-[24px] pt-[22px]">
           <Text
