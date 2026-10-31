@@ -6,8 +6,6 @@ import { twMerge } from '~common/ui/classNames'
 import React from 'react'
 
 import Box from '~common/ui/Box'
-import Text from '~common/ui/Text'
-import { useTheme } from '~themes/ThemeProvider'
 import { Plan, TextSlice as TextSliceProps } from '~common/types'
 import { FeatherIcon } from '~common/ui/Icon'
 import Loading from '~common/Loading'
@@ -21,36 +19,21 @@ type Props = TextSliceProps & {
 }
 
 /** A day's study note in full, in place of the opening lines the plan carries. */
-const PublishedNoteSlice = ({ notePath, titled }: { notePath: string; titled?: boolean }) => {
+const PublishedNoteSlice = ({ notePath }: { notePath: string }) => {
   const note = usePublishedNote(notePath)
   const { open } = useOpenSiteLink()
-  const titleFont = resolveFontFamily(useTheme().fontFamily.title)
   if (note.isPending) return <Loading />
   if (!note.data) return null
   return (
-    <Box className={twMerge('px-[20px]', titled && 'mb-[40px]')}>
-      {titled && (
-        // Each chapter's breakdown opens under its own title, as on its own page.
-        <Text className="text-[24px] leading-[30px] mb-[12px]" style={{ fontFamily: titleFont }}>
-          {note.data.title}
-        </Text>
-      )}
+    <Box className="px-[20px]">
       <ClassNotesBlocks blocks={note.data.blocks} onLinkPress={open} />
     </Box>
   )
 }
 
-const TextSlice = ({ description, subType, planLanguage, notePath, notePaths }: Props) => {
+const TextSlice = ({ description, subType, planLanguage, notePath }: Props) => {
   const isDevotional = subType === 'devotional'
   const fontFamily = resolveFontFamily(useSelector(selectFontFamily))
-  if (notePaths?.length)
-    return (
-      <>
-        {notePaths.map(path => (
-          <PublishedNoteSlice key={path} notePath={path} titled />
-        ))}
-      </>
-    )
   if (notePath) return <PublishedNoteSlice notePath={notePath} />
   const content = isDevotional
     ? description.replace(/^\n|\n$/g, '')

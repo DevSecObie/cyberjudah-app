@@ -114,8 +114,6 @@ export interface TextSlice {
   subType?: string
   /** A CyberJudah published note ("/study/genesis/1"): the entry opens the whole note. */
   notePath?: string
-  /** Several published notes shown one after another on one page (a day's class breakdowns). */
-  notePaths?: string[]
 }
 
 export interface ImageSlice {

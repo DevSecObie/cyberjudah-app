@@ -7,17 +7,12 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
-const contentRepo = resolve(
-  process.argv[2] ?? resolve(import.meta.dirname, '../../../../cyberjudah')
-)
+const contentRepo = resolve(process.argv[2] ?? resolve(import.meta.dirname, '../../../../cyberjudah'))
 const studyDir = resolve(contentRepo, 'docs/study')
 const books = JSON.parse(
   readFileSync(resolve(import.meta.dirname, '../src/assets/cyberjudah/books.json'), 'utf8')
 )
-const output = resolve(
-  import.meta.dirname,
-  '../src/assets/plans/cyberjudah-four-chapters-a-day.txt'
-)
+const output = resolve(import.meta.dirname, '../src/assets/plans/cyberjudah-four-chapters-a-day.txt')
 const PER_DAY = 4
 
 if (!existsSync(studyDir)) throw new Error(`No 4 Chapters a Day notes at ${studyDir}`)
@@ -58,8 +53,7 @@ const noteFor = (slug, chapter) => {
   }
   // Chapters without a class session only carry the King James text, which the reader already shows.
   if (!title || (opening && /no recorded class session/i.test(opening))) return undefined
-  const notePath =
-    /^slug:\s*"?(\/study\/[^"\s]+)"?\s*$/m.exec(source)?.[1] ?? `/study/${slug}/${chapter}`
+  const notePath = /^slug:\s*"?(\/study\/[^"\s]+)"?\s*$/m.exec(source)?.[1] ?? `/study/${slug}/${chapter}`
   return { title: plain(title), description: opening ? plain(opening) : '', notePath }
 }
 
@@ -69,7 +63,9 @@ const chapters = readingOrder.flatMap(book =>
 
 // The class's session videos (scripts/data/four-chapters-a-day-videos.tsv), read from titles such
 // as "Iuic: 4 Chapters A Day: Ruth 4 & 1st Samuel 1-3": each video covers a set of chapters.
-const bookByName = new Map(books.map(book => [book.name.toLowerCase().replace(/\s+/g, ''), book]))
+const bookByName = new Map(
+  books.map(book => [book.name.toLowerCase().replace(/\s+/g, ''), book])
+)
 const aliases = {
   psalm: 'psalms',
   hoea: 'hosea',
@@ -82,10 +78,7 @@ const aliases = {
   haggi: 'haggai',
 }
 const bookFor = word => {
-  const key = word
-    .toLowerCase()
-    .replace(/(\d)(st|nd|rd)/, '$1')
-    .replace(/\s+/g, '')
+  const key = word.toLowerCase().replace(/(\d)(st|nd|rd)/, '$1').replace(/\s+/g, '')
   return bookByName.get(aliases[key] ?? key)
 }
 const lastChapter = book => book.chapters[book.chapters.length - 1]
@@ -96,20 +89,14 @@ const videoChapters = (title, fallbackBook) => {
   const add = (book, from, to) => {
     for (let chapter = from; chapter <= to; chapter++)
       // The class read the Greek additions as Esther 11-16.
-      covered.push(
-        book.slug === 'esther' && chapter > 10
-          ? `${estherGreek.id}:${chapter}`
-          : `${book.id}:${chapter}`
-      )
+      covered.push(book.slug === 'esther' && chapter > 10 ? `${estherGreek.id}:${chapter}` : `${book.id}:${chapter}`)
   }
   const tokens =
     title
       .replace(/\bW\.O\.S\b/g, 'Wisdom of Solomon')
       .replace(/\([^)]*\)|\[[^\]]*\]|"[^"]*"/g, ' ')
       .replace(/\b4\s*chapters?(\s*a)?(\s*day)?/gi, ' ')
-      .match(
-        /[1-3](?:st|nd|rd)?\s?[A-Za-z]+(?:\s+of\s+[A-Za-z]+)?|[A-Za-z]+(?:\s+of\s+[A-Za-z]+)?|\d+|[-&;,]/gi
-      ) ?? []
+      .match(/[1-3](?:st|nd|rd)?\s?[A-Za-z]+(?:\s+of\s+[A-Za-z]+)?|[A-Za-z]+(?:\s+of\s+[A-Za-z]+)?|\d+|[-&;,]/gi) ?? []
   let book = fallbackBook
   let start
   let crossFrom
@@ -148,10 +135,7 @@ const videoChapters = (title, fallbackBook) => {
 const videos = []
 {
   let previousBook
-  for (const line of readFileSync(
-    resolve(import.meta.dirname, 'data/four-chapters-a-day-videos.tsv'),
-    'utf8'
-  ).split('\n')) {
+  for (const line of readFileSync(resolve(import.meta.dirname, 'data/four-chapters-a-day-videos.tsv'), 'utf8').split('\n')) {
     const [video, title] = line.split('\t')
     if (!title || line.startsWith('#') || video === 'video') continue
     const { covered, book } = videoChapters(title, previousBook)
@@ -173,14 +157,10 @@ const videos = []
 // Days the playlist has no video for take the class's other uploads (data/four-chapters-a-day-
 // videos-extra.tsv), then the IUIC 4 Chapters a Day channel (…-channel.tsv). Their titles vary
 // ("JEREMIAH 49-52", "Amos 7-Obadiah"), so these entries are named from their chapters.
-const position = new Map(
-  chapters.map(({ book, chapter }, index) => [`${book.id}:${chapter}`, index])
-)
+const position = new Map(chapters.map(({ book, chapter }, index) => [`${book.id}:${chapter}`, index]))
 const nameOf = covered => {
   const runs = []
-  for (const key of [...covered]
-    .filter(key => position.has(key))
-    .sort((a, b) => position.get(a) - position.get(b))) {
+  for (const key of [...covered].filter(key => position.has(key)).sort((a, b) => position.get(a) - position.get(b))) {
     const { book, chapter } = chapters[position.get(key)]
     const run = runs[runs.length - 1]
     if (run && run.book.id === book.id) run.to = chapter
@@ -226,17 +206,12 @@ const label = day => {
 
 const sliceFor = (day, dayNumber) => {
   const slices = []
-  const covers = ({ covered }) =>
-    day.some(({ book, chapter }) => covered.has(`${book.id}:${chapter}`))
+  const covers = ({ covered }) => day.some(({ book, chapter }) => covered.has(`${book.id}:${chapter}`))
   let sessions = videos.filter(covers)
   for (const source of fillSources) if (!sessions.length) sessions = source.filter(covers)
   // In reading order: the session that starts earliest first.
   const first = ({ covered }) =>
-    Math.min(
-      ...day.map(({ book, chapter }, index) =>
-        covered.has(`${book.id}:${chapter}`) ? index : Infinity
-      )
-    )
+    Math.min(...day.map(({ book, chapter }, index) => (covered.has(`${book.id}:${chapter}`) ? index : Infinity)))
   sessions = [...sessions].sort((a, b) => first(a) - first(b))
   for (const { video, name } of sessions)
     slices.push({
@@ -245,6 +220,12 @@ const sliceFor = (day, dayNumber) => {
       title: `The class: ${name}`,
       url: `https://www.youtube.com/watch?v=${video}`,
     })
+  for (const { book, chapter } of day) {
+    // The notes keep the Greek additions with Esther (docs/study/esther/11-16).
+    const note = noteFor(book.slug === 'esther-greek' ? 'esther' : book.slug, chapter)
+    if (note && !slices.some(slice => slice.notePath === note.notePath))
+      slices.push({ id: String(slices.length), type: 'Text', ...note })
+  }
   // One passage per book: "1|1-4", or two when the day crosses into the next book.
   const runs = []
   for (const { book, chapter } of day) {
@@ -257,22 +238,6 @@ const sliceFor = (day, dayNumber) => {
       id: String(slices.length),
       type: 'Chapter',
       chapters: `${run.book.id}|${run.from === run.to ? run.from : `${run.from}-${run.to}`}`,
-    })
-  // As in Bible Strong's days: the video, the reading, then what to dwell on at the bottom. Here
-  // that is one Breakdown entry holding each chapter's class breakdown, in order, on one page.
-  const notes = []
-  for (const { book, chapter } of day) {
-    // The notes keep the Greek additions with Esther (docs/study/esther/11-16).
-    const note = noteFor(book.slug === 'esther-greek' ? 'esther' : book.slug, chapter)
-    if (note && !notes.some(item => item.notePath === note.notePath)) notes.push(note)
-  }
-  if (notes.length)
-    slices.push({
-      id: String(slices.length),
-      type: 'Text',
-      title: `Breakdown: ${label(day)}`,
-      description: notes[0].description,
-      notePaths: notes.map(note => note.notePath),
     })
   return { id: String(dayNumber), title: label(day), slices }
 }
@@ -311,19 +276,10 @@ if (process.env.DUMP_SESSIONS) {
     missing: [...covered]
       .filter(key => position.has(key))
       .map(key => chapters[position.get(key)])
-      .filter(
-        ({ book, chapter }) => !existsSync(resolve(studyDir, noteSlug(book), `${chapter}.md`))
-      )
+      .filter(({ book, chapter }) => !existsSync(resolve(studyDir, noteSlug(book), `${chapter}.md`)))
       .map(({ book, chapter }) => `${book.slug} ${chapter}`),
   }))
-  writeFileSync(
-    process.env.DUMP_SESSIONS,
-    JSON.stringify(
-      sessions.filter(s => s.missing.length),
-      null,
-      1
-    )
-  )
+  writeFileSync(process.env.DUMP_SESSIONS, JSON.stringify(sessions.filter(s => s.missing.length), null, 1))
 }
 const withVideos = plan.sections
   .flatMap(section => section.readingSlices)
