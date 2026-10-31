@@ -221,7 +221,8 @@ const sliceFor = (day, dayNumber) => {
       url: `https://www.youtube.com/watch?v=${video}`,
     })
   for (const { book, chapter } of day) {
-    const note = noteFor(book.slug, chapter)
+    // The notes keep the Greek additions with Esther (docs/study/esther/11-16).
+    const note = noteFor(book.slug === 'esther-greek' ? 'esther' : book.slug, chapter)
     if (note && !slices.some(slice => slice.notePath === note.notePath))
       slices.push({ id: String(slices.length), type: 'Text', ...note })
   }
@@ -267,6 +268,19 @@ const plan = {
 }
 
 writeFileSync(output, JSON.stringify(plan, null, 2) + '\n')
+if (process.env.DUMP_SESSIONS) {
+  const noteSlug = book => (book.slug === 'esther-greek' ? 'esther' : book.slug)
+  const sessions = [...videos, ...fillSources.flat()].map(({ video, name, covered }) => ({
+    video,
+    name,
+    missing: [...covered]
+      .filter(key => position.has(key))
+      .map(key => chapters[position.get(key)])
+      .filter(({ book, chapter }) => !existsSync(resolve(studyDir, noteSlug(book), `${chapter}.md`)))
+      .map(({ book, chapter }) => `${book.slug} ${chapter}`),
+  }))
+  writeFileSync(process.env.DUMP_SESSIONS, JSON.stringify(sessions.filter(s => s.missing.length), null, 1))
+}
 const withVideos = plan.sections
   .flatMap(section => section.readingSlices)
   .filter(reading => reading.slices.some(slice => slice.type === 'Video')).length

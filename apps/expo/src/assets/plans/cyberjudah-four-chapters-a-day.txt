@@ -11758,6 +11758,34 @@
             },
             {
               "id": "2",
+              "type": "Text",
+              "title": "Esther 10: Mardocheus Exalted and the Dream Interpreted",
+              "description": "This session is short and it crosses a boundary. It opens with the last canonical verses of Esther, chapter 10 verses 1 to 3, where Mardocheus (Mordecai) is set as second unto king Ahasuerus, great among the Jews and accepted of the multitude of his brethren. From there the teaching moves into the KJV Apocrypha, the Rest of the Book of Esther, which fills in what the canonical account left unspoken. Chapter 10 continues into the interpretation of the dream Mardocheus had seen: the little fountain that became a river is Esther, the two dragons are Mardocheus himself and Aman, and the nations gathered were those assembled to destroy the name of the Jews. Chapter 11 gives the dream itself, and chapter 12 records how Mardocheus uncovered the plot of the two eunuchs against the king and how Aman came to hate him for it. The thread the Most High draws out is that these additions do not contradict the canonical book, they line up with it verse for verse, and they show the hand of the Most High saving his people from the enemy who has tried in every generation to wipe them out.",
+              "notePath": "/study/esther/10"
+            },
+            {
+              "id": "3",
+              "type": "Text",
+              "title": "Esther 11: The Dream of Mardocheus",
+              "description": "Chapter 11 records the dream itself that Mardocheus had already interpreted in chapter 10. It sets the scene with the sending of the epistle of Purim and then goes back to the second year of the reign of Ahasuerus the great, when Mardocheus, a Jew and a captive carried from Jerusalem, saw a vision of two great dragons, of nations prepared for battle against a righteous people, and of a little fountain that became a great flood. He desired all night to know what the dream meant. This chapter proves the Apocrypha lines up with the canonical book, for the same Mardocheus and the same Babylonian captivity are named in Esther chapter 2.",
+              "notePath": "/study/esther/11"
+            },
+            {
+              "id": "4",
+              "type": "Text",
+              "title": "Esther 12: Mardocheus Uncovers the Plot and Aman's Hatred",
+              "description": "Chapter 12 records the plot of the two eunuchs against the king and how Mardocheus uncovered it, saving the king's life, and how Aman the Agagite came to seek his hurt because of it. This account matches the canonical record in Esther chapter 2, where the same two chamberlains sought to lay hands on the king and Mardocheus told it through Esther. The chapter also opens the question of who Aman was, which the teaching traces from the Apocrypha through the canonical book back to Amalek and Esau, showing the enemy's lineage that has warred against Israel throughout history.",
+              "notePath": "/study/esther/12"
+            },
+            {
+              "id": "5",
+              "type": "Text",
+              "title": "Esther 13: The Decree of Destruction and the Prayer of Mardocheus",
+              "description": "This session finishes the book of Esther by going through the Apocrypha, the four additions known as \"The Rest of the Book of Esther,\" chapters 13 through 16. It picks up where the canonical account left off: Haman has been promoted, Esther has been made queen, and Haman has laid a plot against the Jews because Mardocheus would not bow to him. Chapter 13 gives the copy of the first letter, the decree Haman drafted in the king's name to destroy all the Jews in one day, and then the prayer of Mardocheus. Chapter 14 is Esther's prayer. Chapter 15 shows Esther going before the king. Chapter 16 gives the second letter, the reversal, which calls Israel the children of the most high God. As we read, remember this is not just the story of Esther and Mardocheus and Haman; it is the story of our people, a day of sorrow turned into joy, and it is history to lean on when we go through our own affliction in captivity.",
+              "notePath": "/study/esther/13"
+            },
+            {
+              "id": "6",
               "type": "Chapter",
               "chapters": "71|10-13"
             }
@@ -11775,11 +11803,32 @@
             },
             {
               "id": "1",
+              "type": "Text",
+              "title": "Esther 14: The Prayer of Esther",
+              "description": "",
+              "notePath": "/study/esther/14"
+            },
+            {
+              "id": "2",
+              "type": "Text",
+              "title": "Esther 15: Esther Before the King",
+              "description": "",
+              "notePath": "/study/esther/15"
+            },
+            {
+              "id": "3",
+              "type": "Text",
+              "title": "Esther 16: The Second Letter and the Reversal",
+              "description": "",
+              "notePath": "/study/esther/16"
+            },
+            {
+              "id": "4",
               "type": "Chapter",
               "chapters": "71|14-16"
             },
             {
-              "id": "2",
+              "id": "5",
               "type": "Chapter",
               "chapters": "72|1"
             }
