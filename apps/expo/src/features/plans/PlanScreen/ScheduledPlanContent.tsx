@@ -33,7 +33,7 @@ import {
 import { getPlanEntityRoute } from '../planEntityRoute'
 import { useSetAtom } from 'jotai'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
-import { dockedClassAtom, youtubeIdOf } from '~features/passageMediaLibrary/dockedClassPlayer'
+import { dockedClassAtom, youtubeIdOf } from '~features/passageMediaLibrary/dockedClassPlayerStore'
 import { getEntitySliceTitle } from '../entitySliceTitle'
 
 interface Props {

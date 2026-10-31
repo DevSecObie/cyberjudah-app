@@ -7,7 +7,7 @@ import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
 import { getPassageMediaEmbedUrl } from '~features/bible/passageMedia'
 import ClassVideoFrame from './ClassVideoFrame'
-import { dockedClassAtom } from './dockedClassPlayer'
+import { dockedClassAtom } from './dockedClassPlayerStore'
 
 /**
  * The class video docked at the bottom of the app: it keeps playing while the reader opens the
