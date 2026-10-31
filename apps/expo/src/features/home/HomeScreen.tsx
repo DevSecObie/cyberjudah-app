@@ -20,7 +20,7 @@ import PlanHome from './PlanHome'
 import MeditationsHome from './MeditationsHome'
 import StrongOfTheDay from './StrongOfTheDay'
 import TheBibleProject from './TheBibleProjectPlan'
-import TimelineWidget from './TimelineWidget'
+import TimelineWidget, { TIMELINE_ART_OVERFLOW } from './TimelineWidget'
 import UserWidget, { LoginPrompt } from './UserWidget'
 import WordOfTheDay from './WordOfTheDay'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -65,7 +65,11 @@ export const Home = ({ closeHome, inWorkspace = false }: HomeProps) => {
             {t('Apprendre')}
           </Text>
           <PassageMediaLibraryWidget />
-          <HStack className="overflow-hidden border-continuous mt-[12px] h-[174px] gap-[12px] items-stretch">
+          {/* No clipping here: the Timeline lion rises above its card into the space left by the margin. */}
+          <HStack
+            className="border-continuous h-[174px] gap-[12px] items-stretch overflow-visible"
+            style={{ marginTop: 12 + TIMELINE_ART_OVERFLOW }}
+          >
             {!cyberJudah && <TheBibleProject />}
             <TimelineWidget />
             {cyberJudah && <CaseStudiesWidget />}
