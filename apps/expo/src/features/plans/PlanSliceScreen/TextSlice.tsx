@@ -12,18 +12,38 @@ import Loading from '~common/Loading'
 import { ClassNotesBlocks } from '~features/passageMediaLibrary/ClassNotesList'
 import { usePublishedNote } from '~features/publishedNotes/PublishedNoteScreen'
 import { useOpenSiteLink } from '~features/publishedNotes/siteLinks'
+import books from '~assets/cyberjudah/books.json'
 import ReferenceParagraph from './ReferenceParagraph'
+import ChapterSlice from './ChapterSlice'
 
 type Props = TextSliceProps & {
   planLanguage?: Plan['lang']
 }
 
+/** "/study/esther/11" → "71|11": the chapter a study note is written on, in the plan's form. */
+export const noteChapter = (notePath: string) => {
+  const match = /^\/study\/([a-z0-9-]+)\/([1-9]\d*)$/.exec(notePath)
+  if (!match) return undefined
+  const chapter = Number(match[2])
+  // The notes keep the Greek additions with Esther (/study/esther/11-16).
+  const book = books.find(
+    entry =>
+      (entry.slug === match[1] || entry.slug === `${match[1]}-greek`) &&
+      entry.chapters.includes(chapter)
+  )
+  return book ? `${book.id}|${chapter}` : undefined
+}
+
 /** A day's study note in full, in place of the opening lines the plan carries. */
-const PublishedNoteSlice = ({ notePath }: { notePath: string }) => {
+const PublishedNoteSlice = ({ id, notePath }: { id: string; notePath: string }) => {
   const note = usePublishedNote(notePath)
   const { open } = useOpenSiteLink()
   if (note.isPending) return <Loading />
-  if (!note.data) return null
+  if (!note.data) {
+    // A note not published yet (or not reachable): the chapter is still read, never left out.
+    const chapters = noteChapter(notePath)
+    return chapters ? <ChapterSlice id={id} type="Chapter" chapters={chapters} /> : null
+  }
   return (
     <Box className="px-[20px]">
       <ClassNotesBlocks blocks={note.data.blocks} onLinkPress={open} />
@@ -31,10 +51,10 @@ const PublishedNoteSlice = ({ notePath }: { notePath: string }) => {
   )
 }
 
-const TextSlice = ({ description, subType, planLanguage, notePath }: Props) => {
+const TextSlice = ({ id, description, subType, planLanguage, notePath }: Props) => {
   const isDevotional = subType === 'devotional'
   const fontFamily = resolveFontFamily(useSelector(selectFontFamily))
-  if (notePath) return <PublishedNoteSlice notePath={notePath} />
+  if (notePath) return <PublishedNoteSlice id={id} notePath={notePath} />
   const content = isDevotional
     ? description.replace(/^\n|\n$/g, '')
     : description.replace(/^\n/, '')
