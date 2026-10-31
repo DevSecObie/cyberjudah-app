@@ -239,6 +239,13 @@ const sliceFor = (day, dayNumber) => {
       type: 'Chapter',
       chapters: `${run.book.id}|${run.from === run.to ? run.from : `${run.from}-${run.to}`}`,
     })
+  // Last, ten questions on the day's chapters, drawn from their own text in the app.
+  slices.push({
+    id: String(slices.length),
+    type: 'Quiz',
+    title: `Quiz: ${label(day)}`,
+    chapters: slices.filter(slice => slice.type === 'Chapter').map(slice => slice.chapters),
+  })
   return { id: String(dayNumber), title: label(day), slices }
 }
 

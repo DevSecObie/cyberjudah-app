@@ -12,6 +12,7 @@ export const getEntitySliceTitle = (slice: EntitySlice, t: TFunction): string =>
       return verseToReference(slice.verses, { isPlan: true })
     case 'Video':
     case 'Title':
+    case 'Quiz':
       return slice.title
     case 'Image':
       return slice.alt || t('readingPlans.image')

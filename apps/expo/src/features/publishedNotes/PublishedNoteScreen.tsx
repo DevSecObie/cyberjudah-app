@@ -14,6 +14,7 @@ import {
 } from '~features/passageMediaLibrary/cyberJudahClasses'
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme } from '~themes/ThemeProvider'
+import { finishReading, noteReadingKey } from '~features/plans/finishedReading'
 import { useOpenSiteLink } from './siteLinks'
 
 const KIND: Record<string, string> = { study: '4 Chapters a Day', encyclopedia: 'Encyclopedia' }
@@ -58,6 +59,8 @@ const PublishedNoteScreen = () => {
           blocks={note.data.blocks}
           width={contentWidth}
           onLinkPress={open}
+          // Reaching the last block is reading the note; the plan ticks it on the way back.
+          onFinished={() => finishReading(noteReadingKey(path))}
           header={
             <VStack className="gap-[6px] mb-[12px] self-center" style={{ width: contentWidth }}>
               <Text

@@ -32,6 +32,7 @@ import {
   SWIPE_RIGHT,
   SWIPE_DOWN,
   SWIPE_UP,
+  CHAPTER_END_REACHED,
   NAVIGATE_TO_BIBLE_VERSE_DETAIL,
   NAVIGATE_TO_BIBLICAL_ENTITY,
   TOGGLE_SELECTED_VERSE,
@@ -1100,6 +1101,31 @@ const LoadedBibleContent = ({
 
     return addDOMScrollListener(scrollTarget, handleScroll)
   }, [dispatch, isFormSheet, keepControlsVisible, expandedHeaderHeight])
+
+  // Tell the app when the chapter has been read to its end (a plan ticks its passage then). A
+  // chapter short enough to fit on the screen has been seen whole once it is laid out.
+  const lastVerseKey = verses.length ? `${verses[0].Livre}-${verses[0].Chapitre}` : ''
+  useEffect(() => {
+    if (!lastVerseKey) return
+    const scrollTarget = getDOMScrollTarget(containerRef.current)
+    let told = false
+    const check = () => {
+      if (told) return
+      const remaining =
+        getDOMScrollHeight(scrollTarget) -
+        getDOMViewportHeight(scrollTarget) -
+        getDOMScrollTop(scrollTarget)
+      if (remaining > 48) return
+      told = true
+      dispatch({ type: CHAPTER_END_REACHED, payload: lastVerseKey }).catch(console.error)
+    }
+    const settled = setTimeout(check, 1500)
+    const removeScrollListener = addDOMScrollListener(scrollTarget, check)
+    return () => {
+      clearTimeout(settled)
+      removeScrollListener()
+    }
+  }, [dispatch, lastVerseKey])
 
   const hasVerses = verses.length > 0
   const headerHeight =

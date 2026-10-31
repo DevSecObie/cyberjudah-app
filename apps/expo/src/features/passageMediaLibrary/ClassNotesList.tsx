@@ -1,6 +1,14 @@
 import { Feather } from '@expo/vector-icons'
-import React, { type ReactElement, type ReactNode, useState } from 'react'
-import { FlatList, Image, Pressable, Text as NativeText, type TextStyle, View } from 'react-native'
+import React, { type ReactElement, type ReactNode, useRef, useState } from 'react'
+import {
+  FlatList,
+  type ViewToken,
+  Image,
+  Pressable,
+  Text as NativeText,
+  type TextStyle,
+  View,
+} from 'react-native'
 import { useTheme } from '~themes/ThemeProvider'
 import type { NoteBlock } from './cyberJudahClasses'
 
@@ -466,20 +474,33 @@ export function ClassNotesBlocks({
   return <Blocks blocks={blocks} colors={useNoteColors()} onLink={onLinkPress} />
 }
 
+const VIEWABILITY = { itemVisiblePercentThreshold: 60 }
+
 /** The notes as a list that lays out only what is on screen, under whatever comes first. */
 export default function ClassNotesList({
   blocks,
   onLinkPress,
   header,
   width,
+  onFinished,
 }: {
   blocks: NoteBlock[]
   onLinkPress: OnLink
   header?: ReactElement
   width: number
+  /** Called once the last block of the notes has come into view. */
+  onFinished?: () => void
 }) {
   const theme = useTheme()
   const colors = useNoteColors()
+  // The list keeps the first handler it is given; the latest callback is read through a ref.
+  const finished = useRef(onFinished)
+  finished.current = onFinished
+  const lastIndex = useRef(blocks.length - 1)
+  lastIndex.current = blocks.length - 1
+  const onViewable = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    if (viewableItems.some(item => item.index === lastIndex.current)) finished.current?.()
+  }).current
   return (
     <FlatList
       data={blocks}
@@ -490,6 +511,8 @@ export default function ClassNotesList({
           <Block block={item} colors={colors} onLink={onLinkPress} />
         </View>
       )}
+      onViewableItemsChanged={onViewable}
+      viewabilityConfig={VIEWABILITY}
       initialNumToRender={12}
       windowSize={7}
       contentInsetAdjustmentBehavior="automatic"

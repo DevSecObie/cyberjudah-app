@@ -100,6 +100,7 @@ export type EntitySlice =
   | ChapterSlice
   | VideoSlice
   | ImageSlice
+  | QuizSlice
 
 export interface TitleSlice {
   id: string
@@ -114,6 +115,15 @@ export interface TextSlice {
   subType?: string
   /** A CyberJudah published note ("/study/genesis/1"): the entry opens the whole note. */
   notePath?: string
+}
+
+/** Ten questions on the day's chapters, drawn from their text. */
+export interface QuizSlice {
+  id: string
+  type: 'Quiz'
+  title: string
+  /** The day's passages, as in a Chapter slice ("1|1-4"). */
+  chapters: string[]
 }
 
 export interface ImageSlice {
