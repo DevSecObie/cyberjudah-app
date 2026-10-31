@@ -11,3 +11,4 @@
 - 4 Chapters a Day: every chapter's note is in its day, and opening it shows the whole published note (verses, precepts and breakdowns), not only its opening.
 - Web: published notes no longer crash (tslib resolves to its ES module build on web).
 - Note pages: the "Read the chapter →" line is gone (Obie).
+- Docked class player (Obie): a plan day's class video, or "Keep playing while you browse" on a class page, plays in a small player docked at the bottom of every screen, so the class keeps going while you read; it grows to full width and closes with ✕.

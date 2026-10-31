@@ -6,11 +6,14 @@ import { useTranslation } from 'react-i18next'
 import { Linking, useWindowDimensions } from 'react-native'
 import YoutubePlayer from '~helpers/react-native-youtube-iframe'
 import WebView from 'react-native-webview'
+import { useSetAtom } from 'jotai'
+import { dockedClassAtom } from './dockedClassPlayer'
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes'
 import Header from '~common/Header'
 import Box, { TouchableBox, VStack } from '~common/ui/Box'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
 import Text from '~common/ui/Text'
+import { FeatherIcon } from '~common/ui/Icon'
 import {
   formatPassageMediaDuration,
   getPassageMediaById,
@@ -52,6 +55,7 @@ const PassageMediaPlayerScreen = () => {
   const { width: windowWidth } = useWindowDimensions()
   const [playerError, setPlayerError] = useState<string>()
   const classPlayerRef = useRef<WebView>(null)
+  const setDockedClass = useSetAtom(dockedClassAtom)
   const router = useRouter()
   const item = workId
     ? (getPassageMediaById(workId, language) ?? getCachedClassById(workId))
@@ -178,6 +182,25 @@ const PassageMediaPlayerScreen = () => {
                     >
                       {t('passageMediaLibrary.playbackError')}
                     </Text>
+                  )}
+                  {usesCyberJudahEditorial() && (
+                    <TouchableBox
+                      accessibilityRole="button"
+                      onPress={() => {
+                        setDockedClass({
+                          videoId: item.providerId,
+                          title: item.title,
+                          start: startSeconds,
+                        })
+                        if (router.canGoBack()) router.back()
+                      }}
+                      className="flex-row items-center gap-[8px] self-start rounded-full bg-light-grey px-[14px] py-[9px]"
+                    >
+                      <FeatherIcon name="minimize-2" size={15} color="primary" />
+                      <Text className="text-primary font-bold text-[14px]">
+                        Keep playing while you browse
+                      </Text>
+                    </TouchableBox>
                   )}
                 </VStack>
               </VStack>

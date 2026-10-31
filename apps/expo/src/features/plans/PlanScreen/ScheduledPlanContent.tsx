@@ -31,6 +31,9 @@ import {
   isReadableEntitySlice,
 } from '../planProgress'
 import { getPlanEntityRoute } from '../planEntityRoute'
+import { useSetAtom } from 'jotai'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
+import { dockedClassAtom, youtubeIdOf } from '~features/passageMediaLibrary/dockedClassPlayer'
 import { getEntitySliceTitle } from '../entitySliceTitle'
 
 interface Props {
@@ -51,6 +54,7 @@ const ScheduledPlanContent = ({ plan, initialReadingSliceId }: Props) => {
   const { t, i18n } = useTranslation()
   const pushRouteOnce = usePushRouteOnce()
   const dispatch = useDispatch()
+  const setDockedClass = useSetAtom(dockedClassAtom)
   const participation = useSelector((state: RootState) =>
     state.plan.ongoingPlans.find(item => item.id === plan.id)
   )
@@ -111,6 +115,14 @@ const ScheduledPlanContent = ({ plan, initialReadingSliceId }: Props) => {
       planId: plan.id,
       readingSliceId: day.id,
       entitySliceId: getEntitySliceKey(day.id, slice, index),
+    }
+    // A class video docks and keeps playing while the reader opens the day's chapters.
+    const classVideo =
+      usesCyberJudahEditorial() && slice.type === 'Video' ? youtubeIdOf(slice.url) : undefined
+    if (classVideo && slice.type === 'Video') {
+      setDockedClass({ videoId: classVideo, title: slice.title })
+      dispatch(markEntitySliceAsRead(location))
+      return
     }
     const route = getPlanEntityRoute({ ...location, slice })
     if (!route) return
