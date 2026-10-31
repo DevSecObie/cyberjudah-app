@@ -1,3 +1,4 @@
+import i18n from '~i18n'
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
@@ -88,8 +89,8 @@ interface CrossVersionAnnotationsModalProps {
 
 const getBookName = (bookNumber: number): string => {
   const book = getBook(bookNumber)
-  if (book) return book.Nom
-  return `Livre ${bookNumber}`
+  if (book) return i18n.t(book.Nom)
+  return i18n.t('Livre {{bookNumber}}', { bookNumber })
 }
 
 const formatVerseReference = (verseKey: string): string => {

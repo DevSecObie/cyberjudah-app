@@ -2728,5 +2728,9 @@
   "askStudy.open.notes": "My notes",
   "askStudy.open.studies": "My studies",
   "askStudy.open.bookmarks": "Bookmarks",
-  "askStudy.open.highlights": "Highlights"
+  "askStudy.open.highlights": "Highlights",
+  "Affichage": "Display",
+  "Ressources": "Resources",
+  "Aucun verset sélectionné": "No verse selected",
+  "Retour": "Back"
 }

@@ -1365,7 +1365,7 @@ const LoadedBibleContent = ({
                 : 1
             }
           >
-            {isHebreu && <RightDirection settings={settings}>Sens de la lecture ←</RightDirection>}
+            {isHebreu && <RightDirection settings={settings}>Reading direction ←</RightDirection>}
             {!isContextFocused && (
               <PassageMediaThumbnails
                 items={passageMedia.introduction}
@@ -1471,7 +1471,7 @@ const LoadedBibleContent = ({
             settings={settings}
             $position={returnToSelectedVersePosition}
             onClick={() => scrollSelectedVerseToMiddle()}
-            aria-label="Retourner au verset sélectionné"
+            aria-label="Back to the selected verse"
           >
             <Feather
               name={returnToSelectedVersePosition === 'top' ? 'chevron-up' : 'chevron-down'}

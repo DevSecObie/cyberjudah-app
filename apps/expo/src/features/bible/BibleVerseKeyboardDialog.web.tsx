@@ -62,7 +62,7 @@ export default function BibleVerseKeyboardDialog({
         >
           <Dialog.Title>{t('goToVerse')}</Dialog.Title>
           <Dialog.Description>
-            {book.Nom} {chapter} · {t('hotkeys.verseRange', { max: count })}
+            {t(book.Nom)} {chapter} · {t('hotkeys.verseRange', { max: count })}
           </Dialog.Description>
           <form
             onSubmit={event => {

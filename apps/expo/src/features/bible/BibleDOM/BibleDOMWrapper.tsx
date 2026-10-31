@@ -814,7 +814,7 @@ export const BibleDOMWrapper = ({
         )
 
         if (!targetBook) {
-          toast.error("Erreur lors de l'ouverture du verset")
+          toast.error('Could not open this verse')
           appLogger.captureError(
             'webview',
             'bible_navigation.unknown_book_code',

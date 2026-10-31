@@ -20,7 +20,7 @@ export const PublicCommentaryRouteScreen = ({ entry }: { entry: boolean }) => {
   if (!route || (entry && !route.sectionId)) {
     return (
       <ResourceUnavailableView
-        title="Commentaire introuvable"
+        title="Commentary not found"
         failure={{ cause: 'not-found', recoveries: [] }}
       />
     )

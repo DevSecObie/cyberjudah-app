@@ -90,7 +90,7 @@ export default function InlineCommentaryReader({
     query.data && entry && request
       ? getCommentaryShare({
           entry,
-          passage: `${getBook(request.book)?.Nom ?? request.book} ${request.chapter}:${
+          passage: `${t(getBook(request.book)?.Nom ?? String(request.book))} ${request.chapter}:${
             query.data.section.rangeStartVerse
           }${
             query.data.section.rangeEndVerse !== query.data.section.rangeStartVerse
