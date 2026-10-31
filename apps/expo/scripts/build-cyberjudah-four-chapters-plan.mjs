@@ -233,18 +233,23 @@ const sliceFor = (day, dayNumber) => {
     if (run && run.book.id === book.id) run.to = chapter
     else runs.push({ book, from: chapter, to: chapter })
   }
-  for (const run of runs)
-    slices.push({
-      id: String(slices.length),
-      type: 'Chapter',
-      chapters: `${run.book.id}|${run.from === run.to ? run.from : `${run.from}-${run.to}`}`,
-    })
+  // The notes carry the chapters' verses, so a day with notes has no separate chapters row; a
+  // day without them keeps one, or it would have nothing to read.
+  if (!slices.some(slice => slice.type === 'Text'))
+    for (const run of runs)
+      slices.push({
+        id: String(slices.length),
+        type: 'Chapter',
+        chapters: `${run.book.id}|${run.from === run.to ? run.from : `${run.from}-${run.to}`}`,
+      })
   // Last, ten questions on the day's chapters, drawn from their own text in the app.
   slices.push({
     id: String(slices.length),
     type: 'Quiz',
     title: `Quiz: ${label(day)}`,
-    chapters: slices.filter(slice => slice.type === 'Chapter').map(slice => slice.chapters),
+    chapters: runs.map(
+      run => `${run.book.id}|${run.from === run.to ? run.from : `${run.from}-${run.to}`}`
+    ),
   })
   return { id: String(dayNumber), title: label(day), slices }
 }

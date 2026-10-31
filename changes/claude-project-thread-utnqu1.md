@@ -20,3 +20,4 @@
 - The class player keeps YouTube's own controls and adds a picture in picture button that sends the class to the floating window; on the website the class page plays in a frame.
 - The floating class player stays in front of every sheet, menu and window the app opens; the class page's "Keep playing while you browse" button is gone (the picture in picture button does it).
 - 4 Chapters a Day: a note is ticked once it is read to its last block and the chapters once the last one is read to its end, not on opening; each day ends with a ten-question quiz made from the day's own chapters (a verse with a word left out, or which chapter a verse is from), on the app's glass.
+- 4 Chapters a Day: days with notes no longer have a separate chapters row; the quiz is the last row. Days without notes keep the chapters row.
