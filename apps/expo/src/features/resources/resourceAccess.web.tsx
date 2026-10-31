@@ -120,7 +120,7 @@ const strongLexiconModules = new Set(
 const commentaryCollections = new Set(
   resourceApiBaseUrl
     ? process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
-      ? ['cyberjudah']
+      ? ['bishop-nathanyel', 'bishop-yawasap', 'bishop-kani']
       : ['MHY']
     : []
 )
