@@ -173,8 +173,8 @@ const ScheduledPlanContent = ({ plan, initialReadingSliceId }: Props) => {
       setDockedClass({
         videoId: classVideo,
         title: slice.title,
-        // Where the class was left, if it played before.
-        start: resumeClassAt(classVideo),
+        // Where the class was left, if it played before; else where the reading begins.
+        start: resumeClassAt(classVideo, slice.start ?? 0),
         returnTo: { pathname, params: routeParams as Record<string, string | string[]> },
       })
       dispatch(markEntitySliceAsRead(location))

@@ -153,6 +153,8 @@ export interface VideoSlice {
   title: string
   description?: string
   url: string
+  /** Second the class starts at: where the reading begins, past the opening. */
+  start?: number
   /** Alternate browser-compatible source for publisher-hosted videos. */
   webUrl?: string
   poster?: string

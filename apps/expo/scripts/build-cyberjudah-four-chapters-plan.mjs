@@ -191,6 +191,20 @@ const fillSources = [
   fillVideos('four-chapters-a-day-videos-channel.tsv'),
 ]
 
+// Where each class's reading begins, past the prayer and opening: "video<TAB>seconds", found from
+// the class's own transcript (data/four-chapters-a-day-starts.tsv). A class not listed starts at 0.
+const startsFile = resolve(import.meta.dirname, 'data/four-chapters-a-day-starts.tsv')
+const readingStarts = new Map(
+  existsSync(startsFile)
+    ? readFileSync(startsFile, 'utf8')
+        .split('\n')
+        .filter(line => line && !line.startsWith('#') && !line.startsWith('video\t'))
+        .map(line => line.split('\t'))
+        .filter(([, seconds]) => Number(seconds) > 0)
+        .map(([video, seconds]) => [video, Number(seconds)])
+    : []
+)
+
 const days = []
 for (let i = 0; i < chapters.length; i += PER_DAY) days.push(chapters.slice(i, i + PER_DAY))
 
@@ -219,6 +233,7 @@ const sliceFor = (day, dayNumber) => {
       type: 'Video',
       title: `The class: ${name}`,
       url: `https://www.youtube.com/watch?v=${video}`,
+      ...(readingStarts.has(video) ? { start: readingStarts.get(video) } : {}),
     })
   for (const { book, chapter } of day) {
     // The notes keep the Greek additions with Esther (docs/study/esther/11-16).
