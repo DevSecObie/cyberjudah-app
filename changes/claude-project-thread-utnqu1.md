@@ -5,3 +5,6 @@
 - Old cyberjudah.io Bible links without a version (/bible/john/3) open that chapter in the KJV instead of "not found".
 - The computer-width Home matches the phone: the lion rises out of the Courses & videos, Bible timeline and new Case studies cards on a light panel; two cards a row so each has room.
 - Brought over from the phone build: the lion in the Timeline, Bible, Courses and Case studies cards, and in onboarding in place of Bible Strong's characters.
+- Your journeys: 4 Chapters a Day, CyberJudah's own journey, built from the 4 Chapters a Day notes and the class's session videos (scripts/build-cyberjudah-four-chapters-plan.mjs). The whole KJV with Apocrypha, four chapters a day; the lion reading is its picture. It waits under Your journeys before it is started.
+- Home (web): the Learn row is Courses, Timeline and Case studies; BibleProject stays hidden for CyberJudah.
+- CyberJudah starts in English even on a French device; French stays in Settings.

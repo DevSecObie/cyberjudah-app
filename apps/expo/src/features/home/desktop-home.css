@@ -121,6 +121,10 @@
   gap: 14px;
 }
 
+.bs-home-learning-three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .bs-home-learning-card,
 .bs-home-learning-body,
 .bs-home-tools > div {
@@ -233,6 +237,10 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     row-gap: 66px;
   }
+  /* Three cards stay on one row rather than leaving one alone on the second. */
+  .bs-home-learning.bs-home-learning-three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @container home-main (max-width: 599px) {
@@ -245,7 +253,8 @@
 }
 
 @container home-main (max-width: 559px) {
-  .bs-home-learning {
+  .bs-home-learning,
+  .bs-home-learning.bs-home-learning-three {
     grid-template-columns: minmax(0, 1fr);
   }
   .bs-home-learning-body {

@@ -244,7 +244,7 @@ export default function DesktopHome() {
               </Box>
               <Box>
                 <SectionTitle>{t('Apprendre')}</SectionTitle>
-                <div className="bs-home-learning">
+                <div className={cyberJudah ? 'bs-home-learning bs-home-learning-three' : 'bs-home-learning'}>
                   <LearningCard
                     title={t('passageMediaLibrary.title')}
                     // The latest class's thumbnail fills the card; until it loads, the lion rises out of it.
@@ -256,15 +256,8 @@ export default function DesktopHome() {
                     rising={!latestClass}
                     onPress={() => pushRoute({ pathname: '/(library)/passage-media' })}
                   />
-                  {/* CyberJudah's own study plan takes the BibleProject card's place (hidden, kept). */}
-                  {cyberJudah ? (
-                    <LearningCard
-                      title="4 Chapters a Day"
-                      source={require('~assets/images/new-tab/notes-writer.webp')}
-                      rising
-                      onPress={() => pushRoute({ pathname: '/(library)/study-notes' })}
-                    />
-                  ) : (
+                  {/* Hidden for CyberJudah, kept: 4 Chapters a Day lives under Your journeys. */}
+                  {!cyberJudah && (
                     <LearningCard
                       title={t('home.learning.bibleProjectPlan')}
                       source={require('~assets/images/home/bible-project-plan.jpg')}
