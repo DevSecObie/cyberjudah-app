@@ -246,41 +246,33 @@ const sliceFor = (day, dayNumber) => {
       ...(start ? { start } : {}),
     })
   }
-  for (const { book, chapter } of day) {
-    // The notes keep the Greek additions with Esther (docs/study/esther/11-16).
-    const note = noteFor(book.slug === 'esther-greek' ? 'esther' : book.slug, chapter)
-    if (note && !slices.some(slice => slice.notePath === note.notePath))
-      slices.push({ id: String(slices.length), type: 'Text', ...note })
-  }
-  // One passage per book: "1|1-4", or two when the day crosses into the next book.
+  // In reading order: each chapter's note, or, for a chapter without one, its chapters row (a
+  // run of such chapters in one book is one row), so no chapter is left out or out of place.
   const runs = []
-  const withNote = new Set(
-    slices.filter(slice => slice.type === 'Text').map(slice => slice.notePath)
-  )
-  const hasNote = ({ book, chapter }) => {
-    const note = noteFor(book.slug === 'esther-greek' ? 'esther' : book.slug, chapter)
-    return note && withNote.has(note.notePath)
-  }
   for (const { book, chapter } of day) {
     const run = runs[runs.length - 1]
     if (run && run.book.id === book.id) run.to = chapter
     else runs.push({ book, from: chapter, to: chapter })
   }
-  // The notes carry the chapters' verses, so a chapter with a note has no separate chapters row;
-  // the chapters without one keep it, or they would have nothing to read.
-  const unread = []
-  for (const entry of day) {
-    if (hasNote(entry)) continue
-    const run = unread[unread.length - 1]
-    if (run && run.book.id === entry.book.id && run.to === entry.chapter - 1) run.to = entry.chapter
-    else unread.push({ book: entry.book, from: entry.chapter, to: entry.chapter })
+  let unread
+  for (const { book, chapter } of day) {
+    // The notes keep the Greek additions with Esther (docs/study/esther/11-16).
+    const note = noteFor(book.slug === 'esther-greek' ? 'esther' : book.slug, chapter)
+    if (note) {
+      unread = undefined
+      if (!slices.some(slice => slice.notePath === note.notePath))
+        slices.push({ id: String(slices.length), type: 'Text', ...note })
+      continue
+    }
+    if (unread && unread.book.id === book.id && unread.to === chapter - 1) {
+      unread.to = chapter
+      unread.slice.chapters = `${book.id}|${unread.from}-${chapter}`
+      continue
+    }
+    unread = { book, from: chapter, to: chapter }
+    unread.slice = { id: String(slices.length), type: 'Chapter', chapters: `${book.id}|${chapter}` }
+    slices.push(unread.slice)
   }
-  for (const run of unread)
-      slices.push({
-        id: String(slices.length),
-        type: 'Chapter',
-        chapters: `${run.book.id}|${run.from === run.to ? run.from : `${run.from}-${run.to}`}`,
-      })
   // Last, the day's game: ten questions on its chapters, drawn from their own text in the app,
   // named for Philip's question (Acts 8:30).
   slices.push({
