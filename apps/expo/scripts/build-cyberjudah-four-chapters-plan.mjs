@@ -170,7 +170,7 @@ const nameOf = covered => {
   if (runs.length === 1) return `${runs[0].book.name} ${chaptersOf(runs[0])}`
   return runs.map(run => `${run.book.name} ${chaptersOf(run)}`).join(', ')
 }
-const fillVideos = file => {
+const fillVideos = (file, readAlong = false) => {
   const list = []
   const seen = new Set()
   for (const line of readFileSync(resolve(import.meta.dirname, 'data', file), 'utf8').split('\n')) {
@@ -182,13 +182,15 @@ const fillVideos = file => {
     // The channel uploaded a few sessions twice.
     if (seen.has(name)) continue
     seen.add(name)
-    list.push({ video, name, covered: new Set(covered) })
+    list.push({ video, name, covered: new Set(covered), readAlong })
   }
   return list
 }
 const fillSources = [
   fillVideos('four-chapters-a-day-videos-extra.tsv'),
-  fillVideos('four-chapters-a-day-videos-channel.tsv'),
+  // The channel's sessions read the chapters straight through, with no breakdown (Obie: "Read
+  // along" options), so they are named that way.
+  fillVideos('four-chapters-a-day-videos-channel.tsv', true),
 ]
 
 // Where each chapter's reading begins in a class, past the prayer and opening:
@@ -231,7 +233,7 @@ const sliceFor = (day, dayNumber) => {
   const first = ({ covered }) =>
     Math.min(...day.map(({ book, chapter }, index) => (covered.has(`${book.id}:${chapter}`) ? index : Infinity)))
   sessions = [...sessions].sort((a, b) => first(a) - first(b))
-  for (const { video, name, covered } of sessions) {
+  for (const { video, name, covered, readAlong } of sessions) {
     const opening = day.find(({ book, chapter }) => covered.has(`${book.id}:${chapter}`))
     const key = `${opening.book.id}:${opening.chapter}`
     sessionList.push({ video, chapter: key, slug: opening.book.slug, number: opening.chapter })
@@ -239,7 +241,7 @@ const sliceFor = (day, dayNumber) => {
     slices.push({
       id: String(slices.length),
       type: 'Video',
-      title: `The class: ${name}`,
+      title: `${readAlong ? 'Read along' : 'The class'}: ${name}`,
       url: `https://www.youtube.com/watch?v=${video}`,
       ...(start ? { start } : {}),
     })
@@ -252,15 +254,28 @@ const sliceFor = (day, dayNumber) => {
   }
   // One passage per book: "1|1-4", or two when the day crosses into the next book.
   const runs = []
+  const withNote = new Set(
+    slices.filter(slice => slice.type === 'Text').map(slice => slice.notePath)
+  )
+  const hasNote = ({ book, chapter }) => {
+    const note = noteFor(book.slug === 'esther-greek' ? 'esther' : book.slug, chapter)
+    return note && withNote.has(note.notePath)
+  }
   for (const { book, chapter } of day) {
     const run = runs[runs.length - 1]
     if (run && run.book.id === book.id) run.to = chapter
     else runs.push({ book, from: chapter, to: chapter })
   }
-  // The notes carry the chapters' verses, so a day with notes has no separate chapters row; a
-  // day without them keeps one, or it would have nothing to read.
-  if (!slices.some(slice => slice.type === 'Text'))
-    for (const run of runs)
+  // The notes carry the chapters' verses, so a chapter with a note has no separate chapters row;
+  // the chapters without one keep it, or they would have nothing to read.
+  const unread = []
+  for (const entry of day) {
+    if (hasNote(entry)) continue
+    const run = unread[unread.length - 1]
+    if (run && run.book.id === entry.book.id && run.to === entry.chapter - 1) run.to = entry.chapter
+    else unread.push({ book: entry.book, from: entry.chapter, to: entry.chapter })
+  }
+  for (const run of unread)
       slices.push({
         id: String(slices.length),
         type: 'Chapter',
