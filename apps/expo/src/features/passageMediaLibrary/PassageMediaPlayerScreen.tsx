@@ -1,13 +1,19 @@
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { useGlobalSearchParams, useLocalSearchParams, usePathname, useRouter } from 'expo-router'
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Linking, useWindowDimensions } from 'react-native'
 import YoutubePlayer from '~helpers/react-native-youtube-iframe'
 import WebView from 'react-native-webview'
 import { useAtom } from 'jotai'
 import { dockedClassAtom } from './dockedClassPlayerStore'
+import {
+  CLASS_TIME_SCRIPT,
+  classTimeFromMessage,
+  rememberClassPosition,
+  resumeClassAt,
+} from './classVideoPosition'
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes'
 import Header from '~common/Header'
 import Box, { TouchableBox, VStack } from '~common/ui/Box'
@@ -92,6 +98,21 @@ const PassageMediaPlayerScreen = () => {
   })
   const playerWidth = Math.min(windowWidth - 32, 720)
   const playerHeight = (playerWidth * 9) / 16
+  const videoId = item?.providerId ?? ''
+  const playingInWindow = usesCyberJudahEditorial() && dockedClass?.videoId === videoId
+  // Where the player here starts, fixed each time it appears: a verse's moment when the page was
+  // opened for one, otherwise wherever the class was left (here or in the floating window).
+  const openedAt = useRef<string | undefined>(undefined)
+  const playerStart = useMemo(() => {
+    if (!videoId) return 0
+    const firstTime = openedAt.current !== videoId
+    openedAt.current = videoId
+    if (firstTime && startSeconds > 0 && !playingInWindow) {
+      rememberClassPosition(videoId, startSeconds)
+      return startSeconds
+    }
+    return resumeClassAt(videoId, startSeconds)
+  }, [videoId, startSeconds, playingInWindow])
 
   return (
     <FormSheetScreen isFormSheet={IS_FORM_SHEET}>
@@ -121,7 +142,7 @@ const PassageMediaPlayerScreen = () => {
                     overflow: 'visible',
                   }}
                 >
-                  {usesCyberJudahEditorial() && dockedClass?.videoId === item.providerId ? (
+                  {playingInWindow ? (
                     // The class plays in the floating window; tapping here brings it back.
                     <TouchableBox
                       accessibilityRole="button"
@@ -138,7 +159,12 @@ const PassageMediaPlayerScreen = () => {
                     // CyberJudah's hosted video page: YouTube refuses embeds from an inline page.
                     <WebView
                       ref={classPlayerRef}
-                      source={{ uri: getPassageMediaEmbedUrl(item.providerId, startSeconds) }}
+                      source={{ uri: getPassageMediaEmbedUrl(item.providerId, playerStart) }}
+                      injectedJavaScript={CLASS_TIME_SCRIPT}
+                      onMessage={event => {
+                        const seconds = classTimeFromMessage(event.nativeEvent.data)
+                        if (seconds !== undefined) rememberClassPosition(item.providerId, seconds)
+                      }}
                       style={{ width: playerWidth, height: playerHeight, borderRadius: 14 }}
                       allowsInlineMediaPlayback
                       allowsFullscreenVideo
@@ -204,8 +230,12 @@ const PassageMediaPlayerScreen = () => {
                         setDockedClass({
                           videoId: item.providerId,
                           title: item.title,
-                          start: startSeconds,
-                          returnTo: { pathname, params: routeParams as Record<string, string | string[]> },
+                          // The moment it is at now, so the window carries on from here.
+                          start: resumeClassAt(item.providerId, startSeconds),
+                          returnTo: {
+                            pathname,
+                            params: routeParams as Record<string, string | string[]>,
+                          },
                         })
                       }}
                       className="flex-row items-center gap-[8px] self-start rounded-full bg-light-grey px-[14px] py-[9px]"

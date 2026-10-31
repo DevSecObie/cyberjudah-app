@@ -1,6 +1,11 @@
 import ReadingDatePicker from '~features/daily-reading/ReadingDatePicker'
 import { Image } from 'expo-image'
-import { useGlobalSearchParams, useLocalSearchParams, useNavigation, usePathname } from 'expo-router'
+import {
+  useGlobalSearchParams,
+  useLocalSearchParams,
+  useNavigation,
+  usePathname,
+} from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { Platform, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
@@ -34,6 +39,7 @@ import { getPlanEntityRoute } from '../planEntityRoute'
 import { useSetAtom } from 'jotai'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import { dockedClassAtom, youtubeIdOf } from '~features/passageMediaLibrary/dockedClassPlayerStore'
+import { resumeClassAt } from '~features/passageMediaLibrary/classVideoPosition'
 import { getEntitySliceTitle } from '../entitySliceTitle'
 
 interface Props {
@@ -125,6 +131,8 @@ const ScheduledPlanContent = ({ plan, initialReadingSliceId }: Props) => {
       setDockedClass({
         videoId: classVideo,
         title: slice.title,
+        // Where the class was left, if it played before.
+        start: resumeClassAt(classVideo),
         returnTo: { pathname, params: routeParams as Record<string, string | string[]> },
       })
       dispatch(markEntitySliceAsRead(location))

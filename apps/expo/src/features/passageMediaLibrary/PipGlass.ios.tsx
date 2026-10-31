@@ -29,12 +29,20 @@ export default function PipGlass({ radius }: PipGlassProps) {
     return (
       <Box
         pointerEvents="none"
-        style={[StyleSheet.absoluteFill, { borderRadius: radius, backgroundColor: 'rgba(30,30,30,0.7)' }]}
+        style={[
+          StyleSheet.absoluteFill,
+          { borderRadius: radius, backgroundColor: 'rgba(30,30,30,0.7)' },
+        ]}
       />
     )
   }
   return (
-    <Host colorScheme="dark" pointerEvents="none" ignoreSafeArea="all" style={StyleSheet.absoluteFill}>
+    <Host
+      colorScheme="dark"
+      pointerEvents="none"
+      ignoreSafeArea="all"
+      style={StyleSheet.absoluteFill}
+    >
       <RoundedRectangle
         cornerRadius={radius}
         modifiers={[

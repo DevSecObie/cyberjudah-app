@@ -7,6 +7,7 @@ import Box, { TouchableBox } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import { getPassageMediaEmbedUrl } from '~features/bible/passageMedia'
 import ClassVideoFrame from './ClassVideoFrame'
+import { rememberClassPosition } from './classVideoPosition'
 import PipGlass from './PipGlass'
 import { dockedClassAtom } from './dockedClassPlayerStore'
 
@@ -45,7 +46,8 @@ const RoundButton = ({
  * strip anywhere on the screen; let go and it settles against the nearest side. Push it past a
  * side and it tucks away there, leaving a tab with an arrow that brings it back while the class
  * keeps playing. ✕ closes it; the arrow in the other corner goes back to the page the class
- * started from. The frame stays mounted throughout, so playback never restarts.
+ * started from. The frame stays mounted throughout, so playback never restarts, and the playing
+ * time is kept so the class page picks up at the same moment.
  */
 const DockedClassPlayer = () => {
   const [docked, setDocked] = useAtom(dockedClassAtom)
@@ -169,6 +171,7 @@ const DockedClassPlayer = () => {
         <ClassVideoFrame
           key={docked.videoId}
           uri={getPassageMediaEmbedUrl(docked.videoId, docked.start)}
+          onTime={seconds => rememberClassPosition(docked.videoId, seconds)}
         />
         {/* While the window moves, the video page must not catch the pointer. */}
         {dragging && <Box className="absolute inset-0" />}

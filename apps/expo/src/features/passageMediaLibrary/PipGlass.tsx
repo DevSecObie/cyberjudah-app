@@ -20,7 +20,10 @@ export default function PipGlass({ radius }: PipGlassProps) {
           borderColor: 'rgba(255,255,255,0.35)',
         },
         Platform.OS === 'web'
-          ? ({ backdropFilter: 'blur(18px) saturate(180%)', WebkitBackdropFilter: 'blur(18px) saturate(180%)' } as object)
+          ? ({
+              backdropFilter: 'blur(18px) saturate(180%)',
+              WebkitBackdropFilter: 'blur(18px) saturate(180%)',
+            } as object)
           : null,
       ]}
     />
