@@ -18,6 +18,7 @@ import ColorChangeModal from '~common/ColorChangeModal'
 import ColorPickerModal from '~common/ColorPickerModal'
 import InitHooks from '~common/InitHooks'
 import ThemedToaster from '~common/ThemedToaster'
+import DockedClassPlayer from '~features/passageMediaLibrary/DockedClassPlayer'
 import UnifiedTagsModal from '~common/UnifiedTagsModal'
 import { AppRatingModal } from '~features/app-rating'
 import { AppSwitcherProvider } from '~features/app-switcher/AppSwitcherProvider'
@@ -196,6 +197,7 @@ const FullAppRuntime = ({ theme }: FullAppRuntimeProps) => {
                         />
                       </Stack>
                     </WorkspaceLayout>
+                    <DockedClassPlayer />
                     <ThemedToaster />
                     <DeferredModals />
                   </StrongAudioProvider>

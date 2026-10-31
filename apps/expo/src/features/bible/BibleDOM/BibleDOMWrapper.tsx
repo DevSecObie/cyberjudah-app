@@ -1,3 +1,4 @@
+import { chaptersReadingKey, finishReading } from '~features/plans/finishedReading'
 import { getPassageContextHeaderHeight } from '../passagePreviewPresentation'
 import type { LabeledCommentaryChip } from './InlineCommentaryChips'
 import { OPEN_INLINE_COMMENTARY, OPEN_VERSE_PRECEPTS, OPEN_VERSE_TAG } from './dispatch'
@@ -125,6 +126,7 @@ import {
   SWIPE_LEFT,
   SWIPE_RIGHT,
   SWIPE_UP,
+  CHAPTER_END_REACHED,
   TOGGLE_SELECTED_VERSE,
 } from './dispatch'
 import {
@@ -570,7 +572,8 @@ export const BibleDOMWrapper = ({
       supernatural: t('bible.chapterEntities.supernatural'),
       other: t('bible.chapterEntities.others'),
     },
-    openEntity: t('bible.chapterEntities.open'),
+    // Keeps {{name}} for the web view, which puts each entity's name in it.
+    openEntity: t('bible.chapterEntities.open', { interpolation: { skipOnVariables: true } }),
     empty: t('bible.chapterEntities.empty'),
     downloadTitle: t('strongLexicon.biblicalEntities'),
     downloadDescription: t('strongLexicon.biblicalEntitiesDescription'),
@@ -811,7 +814,7 @@ export const BibleDOMWrapper = ({
         )
 
         if (!targetBook) {
-          toast.error("Erreur lors de l'ouverture du verset")
+          toast.error('Could not open this verse')
           appLogger.captureError(
             'webview',
             'bible_navigation.unknown_book_code',
@@ -870,6 +873,23 @@ export const BibleDOMWrapper = ({
       case SWIPE_UP: {
         if (isFormSheet) break
         setIsFullScreenBible(false)
+        break
+      }
+      case CHAPTER_END_REACHED: {
+        // The end of a plan passage's last chapter: the passage has been read.
+        const { planPassage, selectedBook, selectedChapter } = getDefaultStore().get(bibleAtom).data
+        if (
+          planPassage &&
+          selectedBook.Numero === planPassage.book &&
+          selectedChapter === planPassage.endChapter
+        ) {
+          const { book, startChapter, endChapter } = planPassage
+          finishReading(
+            chaptersReadingKey(
+              `${book}|${startChapter === endChapter ? startChapter : `${startChapter}-${endChapter}`}`
+            )
+          )
+        }
         break
       }
       case OPEN_HIGHLIGHT_TAGS: {

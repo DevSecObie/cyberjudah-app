@@ -27,6 +27,21 @@ jest.mock('~common/ui/Box', () => ({
 }))
 jest.mock('~common/ui/Text', () => ({ __esModule: true, default: mockHost('Text') }))
 jest.mock('~common/ui/Icon', () => ({ FeatherIcon: mockHost('Icon') }))
+jest.mock('../AskGlassBackdrop', () => ({ __esModule: true, default: () => null }))
+jest.mock('../askPalette', () => ({
+  useAskPalette: () => ({
+    canvas: '#fff',
+    surface1: '#eee',
+    surface2: '#eee',
+    text1: '#000',
+    text3: '#555',
+    text4: '#555',
+    accent: '#36f',
+    onAccent: '#fff',
+    accentSoft: '#def',
+    edge: '#ddd',
+  }),
+}))
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }))
 jest.mock('expo/fetch', () => ({ fetch: jest.fn() }))
 jest.mock('~helpers/firebaseAuthRuntime', () => ({ getCurrentAuthUser: jest.fn() }))

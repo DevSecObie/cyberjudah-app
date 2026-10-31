@@ -12,6 +12,7 @@ import {
   classNotesToBlocks,
   filterClassLibrary,
   getCachedClassById,
+  liveClassBanner,
   loadClassLibrary,
   readCachedClassLibrary,
   toClassLibrary,
@@ -98,6 +99,74 @@ describe('CyberJudah class library', () => {
     const failing = jest.fn(async () => ({ ok: false, status: 503 })) as unknown as typeof fetch
     await expect(loadClassLibrary(failing)).rejects.toThrow('CYBERJUDAH_CLASSES_UNAVAILABLE:503')
     expect(readCachedClassLibrary()).toHaveLength(7)
+  })
+})
+
+describe('classes before their notes, as in the Telegram app', () => {
+  const recent = [
+    {
+      video: '4PNO1JAtOv4',
+      title: 'Christianity & the Creation of Criminals',
+      published: '2026-10-31T15:55:20+00:00',
+    },
+    { video: 'P4cR6i32U80', title: 'Already noted', published: '2026-10-26T15:00:00+00:00' },
+  ]
+
+  it('lists a new upload first among the Sabbath classes, notes coming, once', () => {
+    const library = toClassLibrary(feeds, recent)
+    expect(library[0]).toMatchObject({
+      providerId: '4PNO1JAtOv4',
+      series: 'Sabbath classes',
+      date: '2026-10-31',
+      notesPath: '',
+      pending: true,
+      subtitle: '2026-10-31 · Notes coming soon',
+    })
+    expect(library.filter(item => item.providerId === 'P4cR6i32U80')).toHaveLength(1)
+    expect(library.find(item => item.providerId === 'P4cR6i32U80')?.pending).toBeUndefined()
+  })
+
+  it('still loads the classes when the uploads cannot be read', async () => {
+    const fetcher = jest.fn(async (url: string) =>
+      url.includes('/api/app/channel/recent')
+        ? { ok: false, status: 404 }
+        : {
+            ok: true,
+            json: async () => (url.endsWith('/search/classes.json') ? feeds.classes : []),
+          }
+    ) as unknown as typeof fetch
+    const library = await loadClassLibrary(fetcher)
+    expect(library.some(item => item.pending)).toBe(false)
+    expect(library[0].providerId).toBe('P4cR6i32U80')
+  })
+
+  it('reads the uploads into the list when the server has them', async () => {
+    const fetcher = jest.fn(async (url: string) => ({
+      ok: true,
+      json: async () =>
+        url.includes('/api/app/channel/recent')
+          ? { videos: recent, feedOk: true }
+          : url.endsWith('/search/classes.json')
+            ? feeds.classes
+            : [],
+    })) as unknown as typeof fetch
+    expect((await loadClassLibrary(fetcher))[0].providerId).toBe('4PNO1JAtOv4')
+  })
+
+  it('shows the live banner on the air, or within six hours of the start', () => {
+    const now = Date.parse('2026-10-31T15:00:00Z')
+    const base = { video: '4PNO1JAtOv4', title: 'Sabbath', live: false, upcoming: true }
+    expect(liveClassBanner({ ...base, live: true, upcoming: false, starts: null }, now)).toEqual({
+      video: '4PNO1JAtOv4',
+      title: 'Sabbath',
+      starts: undefined,
+    })
+    expect(liveClassBanner({ ...base, starts: '2026-10-31T18:00:00Z' }, now)?.starts).toBe(
+      '2026-10-31T18:00:00Z'
+    )
+    expect(liveClassBanner({ ...base, starts: '2026-11-01T18:00:00Z' }, now)).toBeUndefined()
+    expect(liveClassBanner({ ...base, video: null, starts: null }, now)).toBeUndefined()
+    expect(liveClassBanner(null, now)).toBeUndefined()
   })
 })
 

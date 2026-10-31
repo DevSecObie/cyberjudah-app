@@ -17,6 +17,7 @@ import ColorPickerModal from '~common/ColorPickerModal'
 import InitHooks from '~common/InitHooks'
 import { SheetProvider } from '~common/sheet'
 import ThemedToaster from '~common/ThemedToaster'
+import DockedClassPlayer from '~features/passageMediaLibrary/DockedClassPlayer'
 import UnifiedTagsModal from '~common/UnifiedTagsModal'
 import { AppSwitcherProvider } from '~features/app-switcher/AppSwitcherProvider'
 import { BookSelectorSheetProvider } from '~features/bible/BookSelectorSheet/BookSelectorSheetProvider'
@@ -99,6 +100,7 @@ const FullAppRuntime = ({ theme }: { theme: Theme }) => {
               <WorkspaceAnalytics />
               <AssistantLauncher />
               <ConfirmDialogHost />
+              <DockedClassPlayer />
               <ThemedToaster />
               <ChangelogModal />
               <UnifiedTagsModal />

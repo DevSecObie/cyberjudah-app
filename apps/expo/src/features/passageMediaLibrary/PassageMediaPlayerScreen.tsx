@@ -1,16 +1,27 @@
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { useRef, useState } from 'react'
+import { useGlobalSearchParams, useLocalSearchParams, usePathname, useRouter } from 'expo-router'
+import { useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Linking, useWindowDimensions } from 'react-native'
+import { Linking, Platform, useWindowDimensions } from 'react-native'
 import YoutubePlayer from '~helpers/react-native-youtube-iframe'
 import WebView from 'react-native-webview'
+import { useAtom } from 'jotai'
+import { dockedClassAtom } from './dockedClassPlayerStore'
+import {
+  CLASS_TIME_SCRIPT,
+  classTimeFromMessage,
+  rememberClassPosition,
+  resumeClassAt,
+} from './classVideoPosition'
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes'
 import Header from '~common/Header'
 import Box, { TouchableBox, VStack } from '~common/ui/Box'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
 import Text from '~common/ui/Text'
+import { FeatherIcon, MaterialIcon } from '~common/ui/Icon'
+import PipGlass from './PipGlass'
+import ClassVideoFrame from './ClassVideoFrame'
 import {
   formatPassageMediaDuration,
   getPassageMediaById,
@@ -52,6 +63,9 @@ const PassageMediaPlayerScreen = () => {
   const { width: windowWidth } = useWindowDimensions()
   const [playerError, setPlayerError] = useState<string>()
   const classPlayerRef = useRef<WebView>(null)
+  const [dockedClass, setDockedClass] = useAtom(dockedClassAtom)
+  const pathname = usePathname()
+  const routeParams = useGlobalSearchParams()
   const router = useRouter()
   const item = workId
     ? (getPassageMediaById(workId, language) ?? getCachedClassById(workId))
@@ -86,6 +100,32 @@ const PassageMediaPlayerScreen = () => {
   })
   const playerWidth = Math.min(windowWidth - 32, 720)
   const playerHeight = (playerWidth * 9) / 16
+  const videoId = item?.providerId ?? ''
+  const playingInWindow = usesCyberJudahEditorial() && dockedClass?.videoId === videoId
+  // Where the player here starts, fixed each time it appears: a verse's moment when the page was
+  // opened for one, otherwise wherever the class was left (here or in the floating window).
+  const openedAt = useRef<string | undefined>(undefined)
+  const playerStart = useMemo(() => {
+    if (!videoId) return 0
+    const firstTime = openedAt.current !== videoId
+    openedAt.current = videoId
+    if (firstTime && startSeconds > 0 && !playingInWindow) {
+      rememberClassPosition(videoId, startSeconds)
+      return startSeconds
+    }
+    return resumeClassAt(videoId, startSeconds)
+  }, [videoId, startSeconds, playingInWindow])
+
+  // Into the floating window, carrying on from the moment it is at now.
+  const sendToWindow = () => {
+    if (!item) return
+    setDockedClass({
+      videoId: item.providerId,
+      title: item.title,
+      start: resumeClassAt(item.providerId, startSeconds),
+      returnTo: { pathname, params: routeParams as Record<string, string | string[]> },
+    })
+  }
 
   return (
     <FormSheetScreen isFormSheet={IS_FORM_SHEET}>
@@ -115,18 +155,66 @@ const PassageMediaPlayerScreen = () => {
                     overflow: 'visible',
                   }}
                 >
-                  {usesCyberJudahEditorial() ? (
+                  {playingInWindow ? (
+                    // The class plays in the floating window; tapping here brings it back.
+                    <TouchableBox
+                      accessibilityRole="button"
+                      onPress={() => setDockedClass(null)}
+                      className="flex-1 items-center justify-center gap-[8px] rounded-[14px] bg-[#000]"
+                    >
+                      <FeatherIcon name="maximize-2" size={20} color="white" />
+                      <Text className="text-[14px]" style={{ color: '#fff' }}>
+                        Playing in the small player. Tap to play it here.
+                      </Text>
+                    </TouchableBox>
+                  ) : usesCyberJudahEditorial() ? (
                     // Like the reader's player (and Bible Strong's), the class plays inside
                     // CyberJudah's hosted video page: YouTube refuses embeds from an inline page.
-                    <WebView
-                      ref={classPlayerRef}
-                      source={{ uri: getPassageMediaEmbedUrl(item.providerId, startSeconds) }}
-                      style={{ width: playerWidth, height: playerHeight, borderRadius: 14 }}
-                      allowsInlineMediaPlayback
-                      allowsFullscreenVideo
-                      mediaPlaybackRequiresUserAction={false}
-                      onError={() => setPlayerError('unavailable')}
-                    />
+                    <>
+                      {Platform.OS === 'web' ? (
+                        // The phone's web view has no web version; the site frames the same page.
+                        <Box
+                          style={{
+                            width: playerWidth,
+                            height: playerHeight,
+                            borderRadius: 14,
+                            overflow: 'hidden',
+                          }}
+                        >
+                          <ClassVideoFrame
+                            uri={getPassageMediaEmbedUrl(item.providerId, playerStart)}
+                            onTime={seconds => rememberClassPosition(item.providerId, seconds)}
+                          />
+                        </Box>
+                      ) : (
+                        <WebView
+                          ref={classPlayerRef}
+                          source={{ uri: getPassageMediaEmbedUrl(item.providerId, playerStart) }}
+                          injectedJavaScript={CLASS_TIME_SCRIPT}
+                          onMessage={event => {
+                            const seconds = classTimeFromMessage(event.nativeEvent.data)
+                            if (seconds !== undefined)
+                              rememberClassPosition(item.providerId, seconds)
+                          }}
+                          style={{ width: playerWidth, height: playerHeight, borderRadius: 14 }}
+                          allowsInlineMediaPlayback
+                          allowsFullscreenVideo
+                          mediaPlaybackRequiresUserAction={false}
+                          onError={() => setPlayerError('unavailable')}
+                        />
+                      )}
+                      {/* YouTube's own controls stay as they are; this adds picture in picture,
+                        where the YouTube app has its button to shrink the video. */}
+                      <TouchableBox
+                        accessibilityRole="button"
+                        accessibilityLabel="Picture in picture"
+                        onPress={sendToWindow}
+                        className="absolute top-[10px] left-[10px] w-[36px] h-[36px] rounded-full items-center justify-center"
+                      >
+                        <PipGlass radius={18} />
+                        <MaterialIcon name="picture-in-picture-alt" size={18} color="white" />
+                      </TouchableBox>
+                    </>
                   ) : (
                     <YoutubePlayer
                       height={playerHeight}
@@ -218,6 +306,13 @@ const PassageMediaPlayerScreen = () => {
                     <Text className="text-primary text-[15px]">Try again</Text>
                   </TouchableBox>
                 )}
+              </VStack>
+            ) : cachedClass?.pending ? (
+              // Up on YouTube before its notes are written, as the Telegram app lists it.
+              <VStack className="py-[40px] px-[20px] items-center">
+                <Text className="text-grey text-center">
+                  The notes for this class are coming soon.
+                </Text>
               </VStack>
             ) : null}
           </>

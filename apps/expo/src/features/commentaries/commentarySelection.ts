@@ -11,12 +11,16 @@ export type CommentarySelectionState = CommentaryProjectionId[]
 
 const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
 
-/** CyberJudah publishes one commentary, its teachings, and every reader starts with it. */
-export const CYBERJUDAH_TEACHINGS: CommentaryProjectionId = 'cyberjudah:en'
+/** CyberJudah publishes one commentary per Bishop, and every reader starts with all three. */
+export const CYBERJUDAH_TEACHINGS: readonly CommentaryProjectionId[] = [
+  'bishop-nathanyel:en',
+  'bishop-yawasap:en',
+  'bishop-kani:en',
+]
 
 export const DEFAULT_COMMENTARY_SELECTIONS: Record<ResourceLanguage, CommentarySelectionState> =
   isCyberJudah
-    ? { fr: [CYBERJUDAH_TEACHINGS], en: [CYBERJUDAH_TEACHINGS] }
+    ? { fr: [...CYBERJUDAH_TEACHINGS], en: [...CYBERJUDAH_TEACHINGS] }
     : {
         fr: ['barnes:fr', 'acbc:fr', 'mhy-fr:fr'],
         en: ['barnes:en', 'acbc:en', 'mhcc:en'],
@@ -60,8 +64,8 @@ export const normalizeCommentarySelection = (value: unknown): CommentarySelectio
     result.push(projection.projectionId)
     if (result.length === MAX_SELECTED_COMMENTARIES) break
   }
-  // A selection saved by a build without the CyberJudah catalog (303) holds only Bible
-  // Strong's commentaries, which normalize away here: the teachings come back.
+  // A selection saved by an earlier build (Bible Strong's commentaries in 303, the single
+  // "cyberjudah" commentary after it) normalizes away here: the Bishops' commentaries come back.
   return isCyberJudah && !result.length ? getDefaultCommentarySelection() : result
 }
 

@@ -1,10 +1,14 @@
 import { resolveThemeColor } from '~themes/colorValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import React from 'react'
-import { Platform } from 'react-native'
+import { Image, Platform } from 'react-native'
 import Box from '~common/ui/Box'
 import Text from '~common/ui/Text'
-import { getCommentaryInitials, getCommentaryAvatarColor } from './commentaryAvatarIdentity'
+import {
+  getCommentaryInitials,
+  getCommentaryAvatarColor,
+  getCommentaryHeadshot,
+} from './commentaryAvatarIdentity'
 export { getCommentaryInitials } from './commentaryAvatarIdentity'
 
 type Props = {
@@ -29,6 +33,7 @@ const CommentaryAvatar = ({
   const backgroundColor = getCommentaryAvatarColor(resourceCode)
   const displayedBackgroundColor = muted ? '#B8BDC7' : backgroundColor
   const initials = getCommentaryInitials(author, fallback)
+  const headshot = getCommentaryHeadshot(resourceCode)
 
   return (
     <Box
@@ -48,20 +53,28 @@ const CommentaryAvatar = ({
         ...(size ? { width: size, height: size } : {}),
       }}
     >
-      <Text
-        style={[
-          {
-            fontSize: size * (initials.length > 2 ? 0.31 : 0.39) || 16,
-            lineHeight: size * 0.48,
-            color:
-              resolveThemeColor(stylingTheme, outlined ? displayedBackgroundColor : '#FFFFFF') ||
-              stylingTheme.colors.default,
-          },
-          { fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif' },
-        ]}
-      >
-        {initials}
-      </Text>
+      {headshot ? (
+        <Image
+          source={{ uri: headshot }}
+          accessibilityIgnoresInvertColors
+          style={{ width: size, height: size, borderRadius: size / 2 }}
+        />
+      ) : (
+        <Text
+          style={[
+            {
+              fontSize: size * (initials.length > 2 ? 0.31 : 0.39) || 16,
+              lineHeight: size * 0.48,
+              color:
+                resolveThemeColor(stylingTheme, outlined ? displayedBackgroundColor : '#FFFFFF') ||
+                stylingTheme.colors.default,
+            },
+            { fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif' },
+          ]}
+        >
+          {initials}
+        </Text>
+      )}
     </Box>
   )
 }

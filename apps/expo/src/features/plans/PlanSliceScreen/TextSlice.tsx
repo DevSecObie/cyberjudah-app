@@ -8,15 +8,39 @@ import React from 'react'
 import Box from '~common/ui/Box'
 import { Plan, TextSlice as TextSliceProps } from '~common/types'
 import { FeatherIcon } from '~common/ui/Icon'
+import Loading from '~common/Loading'
+import { ClassNotesBlocks } from '~features/passageMediaLibrary/ClassNotesList'
+import { usePublishedNote } from '~features/publishedNotes/PublishedNoteScreen'
+import { useOpenSiteLink } from '~features/publishedNotes/siteLinks'
+import { noteChapter } from '~features/publishedNotes/noteChapter'
 import ReferenceParagraph from './ReferenceParagraph'
+import ChapterSlice from './ChapterSlice'
 
 type Props = TextSliceProps & {
   planLanguage?: Plan['lang']
 }
 
-const TextSlice = ({ description, subType, planLanguage }: Props) => {
+/** A day's study note in full, in place of the opening lines the plan carries. */
+const PublishedNoteSlice = ({ id, notePath }: { id: string; notePath: string }) => {
+  const note = usePublishedNote(notePath)
+  const { open } = useOpenSiteLink()
+  if (note.isPending) return <Loading />
+  if (!note.data) {
+    // A note not published yet (or not reachable): the chapter is still read, never left out.
+    const chapter = noteChapter(notePath)
+    return chapter ? <ChapterSlice id={id} type="Chapter" chapters={chapter.chapters} /> : null
+  }
+  return (
+    <Box className="px-[20px]">
+      <ClassNotesBlocks blocks={note.data.blocks} onLinkPress={open} />
+    </Box>
+  )
+}
+
+const TextSlice = ({ id, description, subType, planLanguage, notePath }: Props) => {
   const isDevotional = subType === 'devotional'
   const fontFamily = resolveFontFamily(useSelector(selectFontFamily))
+  if (notePath) return <PublishedNoteSlice id={id} notePath={notePath} />
   const content = isDevotional
     ? description.replace(/^\n|\n$/g, '')
     : description.replace(/^\n/, '')

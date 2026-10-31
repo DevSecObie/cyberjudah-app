@@ -5,8 +5,13 @@ import themes, { baseTheme, themeNames, type Theme } from './index'
 const ThemeContext = createContext<Theme>(baseTheme)
 
 /** Keep reader fonts and non-CSS consumers on the same palette as Uniwind. */
-export const ThemeProvider = ({ theme, children }: PropsWithChildren<{ theme: Theme }>) => {
-  const name = themeNames.find(name => themes[name].colors === theme.colors) ?? 'default'
+export const ThemeProvider = ({
+  theme,
+  scope,
+  children,
+}: PropsWithChildren<{ theme: Theme; scope?: (typeof themeNames)[number] }>) => {
+  // `scope` lets a screen bring its own colours on top of a built-in theme's class names.
+  const name = scope ?? themeNames.find(name => themes[name].colors === theme.colors) ?? 'default'
   return (
     <ThemeContext.Provider value={theme}>
       <ScopedTheme theme={name}>{children}</ScopedTheme>

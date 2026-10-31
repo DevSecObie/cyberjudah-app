@@ -1,4 +1,5 @@
 import { to } from 'await-to-js'
+import { Asset } from 'expo-asset'
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
@@ -324,11 +325,24 @@ export const useVersesToContent = (verses: string) => {
   return { status, content }
 }
 
+// Images of the journeys CyberJudah ships with the app, named by the plan's `image`.
+const bundledPlanImages: Record<string, number> = {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  'cyberjudah-lion-reading': require('~assets/images/new-tab/bible-reader.webp'),
+}
+
 export const useFireStorage = (src?: string) => {
   const dispatch = useDispatch<AppDispatch>()
   const cachedUri = useSelector((state: RootState) => src && state.plan.images[src])
-  const directImage = !!src && /^(https:\/\/|data:image\/png;base64,)/.test(src)
-  const imageUrl = directImage ? src : src ? cachedUri || cdnUrl(`images/${src}.png`) : undefined
+  const bundled = src ? bundledPlanImages[src] : undefined
+  const directImage = !!bundled || (!!src && /^(https:\/\/|data:image\/png;base64,)/.test(src))
+  const imageUrl = bundled
+    ? Asset.fromModule(bundled).uri
+    : directImage
+      ? src
+      : src
+        ? cachedUri || cdnUrl(`images/${src}.png`)
+        : undefined
 
   // Keep the external Redux image cache synchronized with the requested source.
   // https://react.dev/learn/you-might-not-need-an-effect

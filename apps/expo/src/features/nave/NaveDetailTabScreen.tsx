@@ -180,7 +180,7 @@ const NaveDetailScreen = ({ naveAtom, isFormSheet = false }: NaveDetailScreenPro
         })
       } catch (e) {
         console.log('[Nave] Error loading verse:', e)
-        toast.error('Impossible de charger ce verset.')
+        toast.error('Could not load this verse.')
       }
     }
 

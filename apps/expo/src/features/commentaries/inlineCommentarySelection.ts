@@ -9,20 +9,27 @@ export function isInlineCommentaryEligible(id: string): boolean {
 
 /** Inline reading is an opt-in subset, never a second independent catalog selection. */
 export function normalizeInlineCommentaries(value: unknown, selected: readonly string[]): string[] {
-  // CyberJudah shows its teachings as chips in the reader unless inline reading is switched off.
-  if (
-    process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah' &&
-    (!Array.isArray(value) || !value.length)
-  ) {
-    value = [CYBERJUDAH_TEACHINGS]
-  }
-  if (!Array.isArray(value)) return []
-  const enabled = new Set(
-    value.filter(
-      (item): item is string => typeof item === 'string' && isInlineCommentaryEligible(item)
-    )
+  const eligible = Array.isArray(value)
+    ? value.filter(
+        (item): item is string => typeof item === 'string' && isInlineCommentaryEligible(item)
+      )
+    : []
+  // CyberJudah shows the Bishops' commentaries as chips in the reader unless inline reading is
+  // switched off; a list saved for the old single "cyberjudah" commentary counts as none.
+  const enabled = new Set<string>(
+    process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah' && !eligible.length
+      ? CYBERJUDAH_TEACHINGS
+      : eligible
   )
   return [...new Set(selected)].filter(item => enabled.has(item)).slice(0, 5)
+}
+
+/**
+ * Paused 2026-10-31 while CyberJudah's notes under the verses said "CyberJudah"; back on now each
+ * Bishop's commentary carries his name. Kept so a later pause is one line.
+ */
+export function isInlineCommentaryPaused(): boolean {
+  return false
 }
 
 /** Selection IDs are UI identities; the delivery API uses publication identities (e.g. MHY). */
@@ -31,7 +38,7 @@ export function getInlineCommentaryResources(
   selected: readonly string[],
   enabled = true
 ) {
-  if (!enabled) return []
+  if (!enabled || isInlineCommentaryPaused()) return []
   return normalizeInlineCommentaries(value, selected).flatMap(id => {
     const projection = parseCommentaryProjectionId(id)
     const entry = projection ? COMMENTARY_CATALOG_BY_ID.get(projection.resourceId) : undefined

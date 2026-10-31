@@ -1,6 +1,11 @@
 import ReadingDatePicker from '~features/daily-reading/ReadingDatePicker'
 import { Image } from 'expo-image'
-import { useLocalSearchParams, useNavigation } from 'expo-router'
+import {
+  useGlobalSearchParams,
+  useLocalSearchParams,
+  useNavigation,
+  usePathname,
+} from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { Platform, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
@@ -31,7 +36,35 @@ import {
   isReadableEntitySlice,
 } from '../planProgress'
 import { getPlanEntityRoute } from '../planEntityRoute'
+import { useSetAtom } from 'jotai'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
+import { dockedClassAtom, youtubeIdOf } from '~features/passageMediaLibrary/dockedClassPlayerStore'
+import { resumeClassAt } from '~features/passageMediaLibrary/classVideoPosition'
 import { getEntitySliceTitle } from '../entitySliceTitle'
+import {
+  chaptersReadingKey,
+  entityReadingKey,
+  forgetFinishedReading,
+  noteReadingKey,
+  onFinishedReading,
+  takeFinishedReading,
+} from '../finishedReading'
+
+/** What has to be finished for an element to count as read; none means opening it is enough. */
+const getFinishKey = (
+  slice: EntitySlice,
+  {
+    planId,
+    readingSliceId,
+    entitySliceId,
+  }: { planId: string; readingSliceId: string; entitySliceId: string }
+) => {
+  if (!usesCyberJudahEditorial()) return undefined
+  if (slice.type === 'Text' && slice.notePath) return noteReadingKey(slice.notePath)
+  if (slice.type === 'Chapter') return chaptersReadingKey(slice.chapters)
+  if (slice.type === 'Quiz') return entityReadingKey(planId, readingSliceId, entitySliceId)
+  return undefined
+}
 
 interface Props {
   plan: ComputedPlan
@@ -45,12 +78,16 @@ const ENTITY_ICONS = {
   Video: 'play-circle',
   Image: 'image',
   Text: 'file-text',
+  Quiz: 'help-circle',
 } as const
 
 const ScheduledPlanContent = ({ plan, initialReadingSliceId }: Props) => {
   const { t, i18n } = useTranslation()
   const pushRouteOnce = usePushRouteOnce()
   const dispatch = useDispatch()
+  const setDockedClass = useSetAtom(dockedClassAtom)
+  const pathname = usePathname()
+  const routeParams = useGlobalSearchParams()
   const participation = useSelector((state: RootState) =>
     state.plan.ongoingPlans.find(item => item.id === plan.id)
   )
@@ -93,28 +130,61 @@ const ScheduledPlanContent = ({ plan, initialReadingSliceId }: Props) => {
     const month = current.toLocaleDateString(i18n.language, { month: 'short' })
     return `${month}\n${current.getDate()}`
   }
-  // Opening is reading. The element is ticked once its page covers the plan, so that a day
-  // completed this way is celebrated on the way back, not while leaving.
+  // A note, the chapters and the quiz are ticked when they are finished: the note read to its
+  // last block, the last chapter read to its end, every question answered. Anything else is
+  // ticked once its page covers the plan, so a day completed that way is celebrated on the way
+  // back, not while leaving.
   const navigation = useNavigation()
-  const openedEntity = useRef<Parameters<typeof markEntitySliceAsRead>[0] | null>(null)
-  useEffect(
-    () =>
-      navigation.addListener('blur', () => {
-        if (!openedEntity.current) return
-        dispatch(markEntitySliceAsRead(openedEntity.current))
+  const openedEntity = useRef<{
+    location: Parameters<typeof markEntitySliceAsRead>[0]
+    finishKey?: string
+  } | null>(null)
+  useEffect(() => {
+    const removeBlur = navigation.addListener('blur', () => {
+      const opened = openedEntity.current
+      if (opened && !opened.finishKey) {
+        dispatch(markEntitySliceAsRead(opened.location))
         openedEntity.current = null
-      }),
-    [navigation, dispatch]
-  )
+      }
+    })
+    // Heard as soon as it happens, even while the plan is under the page that finished it.
+    const removeFinished = onFinishedReading(key => {
+      const opened = openedEntity.current
+      if (!opened?.finishKey || opened.finishKey !== key) return
+      takeFinishedReading(key)
+      dispatch(markEntitySliceAsRead(opened.location))
+      openedEntity.current = null
+    })
+    return () => {
+      removeBlur()
+      removeFinished()
+    }
+  }, [navigation, dispatch])
   const openEntity = (day: ComputedReadingSlice, slice: EntitySlice, index: number) => {
     const location = {
       planId: plan.id,
       readingSliceId: day.id,
       entitySliceId: getEntitySliceKey(day.id, slice, index),
     }
+    // A class video docks and keeps playing while the reader opens the day's chapters.
+    const classVideo =
+      usesCyberJudahEditorial() && slice.type === 'Video' ? youtubeIdOf(slice.url) : undefined
+    if (classVideo && slice.type === 'Video') {
+      setDockedClass({
+        videoId: classVideo,
+        title: slice.title,
+        // Where the class was left, if it played before; else where the reading begins.
+        start: resumeClassAt(classVideo, slice.start ?? 0),
+        returnTo: { pathname, params: routeParams as Record<string, string | string[]> },
+      })
+      dispatch(markEntitySliceAsRead(location))
+      return
+    }
     const route = getPlanEntityRoute({ ...location, slice })
     if (!route) return
-    openedEntity.current = location
+    const finishKey = getFinishKey(slice, location)
+    if (finishKey) forgetFinishedReading(finishKey)
+    openedEntity.current = { location, finishKey }
     pushRouteOnce(route)
   }
   /** Opens the next element to read in a day, or its first one when the day is done. */

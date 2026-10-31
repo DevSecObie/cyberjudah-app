@@ -69,7 +69,7 @@ export default async ({
           loadedVerseCount: Object.keys(versesMap).length,
         })
       }
-      versesContent = 'Impossible de charger ce verset.'
+      versesContent = 'Could not load this verse.'
     }
   }
 

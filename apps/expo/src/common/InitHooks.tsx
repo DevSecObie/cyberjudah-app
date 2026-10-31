@@ -139,7 +139,7 @@ const InitHooks = (_props: InitHooksProps) => {
         } else {
           setMigrationProgressFromOutsideReact({
             overallProgress: 1,
-            message: 'Migration terminée !',
+            message: 'Update complete',
           })
 
           // Increment signal to trigger Bible tabs reload

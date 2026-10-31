@@ -107,7 +107,7 @@ const CommentaryEntryScreen = ({
   const sectionIndex = orderedSections.findIndex(candidate => candidate.id === params.sectionId)
   const previousSection = sectionIndex > 0 ? orderedSections[sectionIndex - 1] : undefined
   const nextSection = sectionIndex >= 0 ? orderedSections[sectionIndex + 1] : undefined
-  const bookLabel = getBook(book)?.Nom ?? String(book)
+  const bookLabel = t(getBook(book)?.Nom ?? String(book))
   const passage = section
     ? `${bookLabel} ${chapter}:${section.rangeStartVerse}${
         section.rangeEndVerse !== section.rangeStartVerse ? `–${section.rangeEndVerse}` : ''

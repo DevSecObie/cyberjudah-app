@@ -9,20 +9,25 @@ export type {
 } from '@bible-strong/resource-catalog/commentaries'
 export const COMMENTARY_CATALOG: readonly CommentaryCatalogEntry[] =
   process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
-    ? [
-        {
-          id: 'cyberjudah',
-          publicationId: 'cyberjudah',
-          shortName: 'CyberJudah',
-          title: 'CyberJudah teachings',
-          description: { en: 'Published CyberJudah classes and Scripture references.' },
-          author: 'CyberJudah',
+    ? // One commentary per Bishop, each holding only his own teaching from the classes (Obie,
+      // 2026-10-31). Other teachers follow once the Bishops' commentaries are complete.
+      (['Bishop Nathanyel', 'Bishop Yawasap', 'Bishop Kani'] as const).map(name => {
+        const id = name.toLowerCase().replace(' ', '-')
+        return {
+          id,
+          publicationId: id,
+          shortName: name,
+          title: name,
+          description: {
+            en: `${name}'s precepts and verse breakdowns from the classes, in the classes' own words.`,
+          },
+          author: name,
           languages: ['en'],
-          tradition: 'CyberJudah',
+          tradition: 'Israel United in Christ',
           tags: [],
-          rights: 'See the original teaching linked in each entry.',
-        },
-      ]
+          rights: 'See the original class linked in each entry.',
+        } satisfies CommentaryCatalogEntry
+      })
     : upstreamCatalog
 export const COMMENTARY_CATALOG_BY_ID = new Map(COMMENTARY_CATALOG.map(entry => [entry.id, entry]))
 export const getCommentaryCatalogForLanguage = (language: CommentaryLanguage) =>

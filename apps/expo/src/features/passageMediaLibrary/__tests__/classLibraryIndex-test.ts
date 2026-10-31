@@ -12,7 +12,10 @@ jest.mock('@react-native-community/netinfo', () => ({
   __esModule: true,
   default: { fetch: async () => ({ isConnected: true, type: 'wifi' }) },
 }))
-jest.mock('react-native', () => ({ AppState: { addEventListener: jest.fn() }, Platform: { OS: 'ios' } }))
+jest.mock('react-native', () => ({
+  AppState: { addEventListener: jest.fn() },
+  Platform: { OS: 'ios' },
+}))
 jest.mock('~helpers/agentObservability', () => ({
   appLogger: { captureError: jest.fn() },
 }))

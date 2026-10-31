@@ -4,11 +4,11 @@ import { Image } from 'expo-image'
 import { useTranslation } from 'react-i18next'
 import Box, { HStack } from '~common/ui/Box'
 import Text from '~common/ui/Text'
-import { FeatherIcon } from '~common/ui/Icon'
 import { sourceLink, timestamp, type CyberJudahSource } from './cyberJudahAsk'
 import { sourceThumbnails } from './cyberJudahSourceArtwork'
 import { CYBERJUDAH_PORTRAITS } from '~features/lexique/cyberJudahPortraits'
 import { useOpenStudySource } from './useOpenStudySource'
+import { useAskPalette } from './askPalette'
 
 function portrait(source: CyberJudahSource) {
   const id = /^\/(?:person)\/([a-z0-9-]+)$/.exec(source.url)?.[1]
@@ -45,14 +45,13 @@ export default function AskSourceCards({
 }) {
   const { t } = useTranslation()
   const openSource = useOpenStudySource()
+  const p = useAskPalette()
   if (!sources.length) return null
   return (
     <Box className="mt-5 gap-2">
-      <HStack className="items-center gap-2">
-        <FeatherIcon name="book-open" size={14} color="grey" />
-        <Text className="text-[13px] text-grey">{t('assistant.cyberjudah.sources')}</Text>
-        <Text className="text-xs text-grey">{sources.length}</Text>
-      </HStack>
+      <Text style={{ color: p.text3, fontSize: 12, fontWeight: '700' }}>
+        {t('assistant.cyberjudah.sources')} · {sources.length}
+      </Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -69,33 +68,47 @@ export default function AskSourceCards({
               accessibilityRole="link"
               accessibilityLabel={`${source.n}. ${source.title}${moment ? `, ${moment}` : ''}`}
               onPress={() => (onOpenSource ? onOpenSource(source) : void openSource(source))}
-              className="w-56 overflow-hidden rounded-2xl bg-light-grey"
-              style={({ pressed }) => ({ opacity: pressed ? 0.75 : 1 })}
+              className="overflow-hidden rounded-2xl"
+              style={({ pressed }) => ({
+                width: 220,
+                backgroundColor: p.surface1,
+                borderWidth: 0.5,
+                borderColor: p.edge,
+                opacity: pressed ? 0.75 : 1,
+              })}
             >
               {hasArtwork && <SourceArtwork source={source} />}
               <Box className="gap-2 p-3">
-                <HStack className="items-center gap-2">
-                  <Box className="h-8 w-8 items-center justify-center rounded-lg bg-opacity5">
-                    <FeatherIcon
-                      name={source.video ? 'play-circle' : 'file-text'}
-                      size={14}
-                      color="grey"
-                    />
+                <HStack className="items-center gap-[6px]">
+                  <Box
+                    className="h-5 min-w-5 items-center justify-center rounded-full px-[5px]"
+                    style={{ backgroundColor: p.accentSoft }}
+                  >
+                    <Text style={{ color: p.accent, fontSize: 11, fontWeight: '700' }}>
+                      {source.n}
+                    </Text>
                   </Box>
                   <Text
-                    className="flex-1 text-xs text-grey"
+                    className="flex-1"
                     numberOfLines={1}
-                    style={{ textTransform: 'capitalize' }}
+                    style={{
+                      color: p.text3,
+                      fontSize: 11.5,
+                      fontWeight: '500',
+                      textTransform: 'capitalize',
+                    }}
                   >
-                    {[source.n, moment].filter(Boolean).join(' · ')}
+                    {moment}
                   </Text>
-                  <FeatherIcon name="arrow-up-right" size={14} color="grey" />
                 </HStack>
-                <Text numberOfLines={3} className="text-sm leading-5">
+                <Text
+                  numberOfLines={2}
+                  style={{ color: p.text1, fontSize: 15, fontWeight: '500', lineHeight: 20 }}
+                >
                   {source.title}
                 </Text>
                 {!!source.excerpt && (
-                  <Text numberOfLines={4} className="text-xs leading-5 text-grey">
+                  <Text numberOfLines={3} style={{ color: p.text3, fontSize: 13, lineHeight: 19 }}>
                     {source.excerpt}
                   </Text>
                 )}
