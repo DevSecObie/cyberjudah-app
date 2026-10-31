@@ -4,6 +4,7 @@ import * as Haptics from 'expo-haptics'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Animated, Platform, StyleSheet } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useDispatch } from 'react-redux'
 import Empty from '~common/Empty'
 import Header from '~common/Header'
@@ -25,6 +26,72 @@ import { getChaptersForPlan, useComputedPlan } from './plan.hooks'
 import { getEntitySliceKey } from './planProgress'
 import { buildPlanQuiz, type QuizVerse } from './planQuiz'
 
+// Each answer tile has its own colour and shape, as in a game, so the four read apart at a glance.
+const TILES = [
+  { color: '#4F6BF5', icon: 'circle' },
+  { color: '#F29D12', icon: 'triangle' },
+  { color: '#8B5CF6', icon: 'square' },
+  { color: '#0FA597', icon: 'hexagon' },
+] as const
+const CHEERS = ['Right!', 'Nice!', 'You got it!', 'Well read!', 'Spot on!']
+const CONFETTI = ['#4F6BF5', '#F29D12', '#8B5CF6', '#0FA597', '#E5484D', '#FFD43B']
+
+/** A shower of colour over the finished quiz. */
+const Confetti = () => {
+  const pieces = useMemo(
+    () =>
+      Array.from({ length: 28 }, (_, at) => ({
+        left: (at * 37) % 100,
+        delay: (at * 53) % 600,
+        size: 7 + (at % 4) * 2,
+        turn: at % 2 ? 1 : -1,
+        color: CONFETTI[at % CONFETTI.length],
+        fall: new Animated.Value(0),
+      })),
+    []
+  )
+  useEffect(() => {
+    Animated.parallel(
+      pieces.map(piece =>
+        Animated.timing(piece.fall, {
+          toValue: 1,
+          duration: 1800,
+          delay: piece.delay,
+          useNativeDriver: true,
+        })
+      )
+    ).start()
+  }, [pieces])
+  return (
+    <Box pointerEvents="none" style={StyleSheet.absoluteFill} className="overflow-hidden">
+      {pieces.map((piece, at) => (
+        <Animated.View
+          key={at}
+          style={{
+            position: 'absolute',
+            top: -20,
+            left: `${piece.left}%`,
+            width: piece.size,
+            height: piece.size * 1.6,
+            borderRadius: 2,
+            backgroundColor: piece.color,
+            opacity: piece.fall.interpolate({ inputRange: [0, 0.85, 1], outputRange: [1, 1, 0] }),
+            transform: [
+              { translateY: piece.fall.interpolate({ inputRange: [0, 1], outputRange: [0, 620] }) },
+              {
+                rotate: piece.fall.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['0deg', `${piece.turn * 540}deg`],
+                }),
+              },
+            ],
+          }}
+        />
+      ))}
+    </Box>
+  )
+}
+
 /**
  * The day's ten questions, one at a time, on the app's own glass. A question answered wrong comes
  * back at the end; the quiz is done only when every one has been answered right.
@@ -38,6 +105,7 @@ const PlanQuizScreen = () => {
   const router = useRouter()
   const dispatch = useDispatch()
   const theme = useTheme()
+  const insets = useSafeAreaInsets()
   const version = useDefaultBibleVersion()
   const plan = useComputedPlan(planId)
   const reading = plan?.sections
@@ -79,6 +147,8 @@ const PlanQuizScreen = () => {
   const [chosen, setChosen] = useState<string>()
   const [right, setRight] = useState<Set<number>>(new Set())
   const [missed, setMissed] = useState<Set<number>>(new Set())
+  // Right answers in a row; a run of them lights up "On a roll".
+  const [streak, setStreak] = useState(0)
   const order = queue ?? questions.map((_, at) => at)
   const current = order[0]
   const question = current === undefined ? undefined : questions[current]
@@ -102,15 +172,36 @@ const PlanQuizScreen = () => {
     }).start()
   }, [right.size, questions.length, fill])
 
+  // The answer bar rises from the bottom once a choice is made.
+  const rise = useRef(new Animated.Value(0)).current
+  useEffect(() => {
+    rise.setValue(0)
+    if (chosen !== undefined)
+      Animated.spring(rise, { toValue: 1, useNativeDriver: true, bounciness: 7 }).start()
+  }, [chosen, rise])
+  const pop = useRef(new Animated.Value(1)).current
+  const onRoll = streak >= 3
+  const flame = useRef(new Animated.Value(0)).current
+  useEffect(() => {
+    Animated.spring(flame, {
+      toValue: onRoll ? 1 : 0,
+      useNativeDriver: true,
+      bounciness: 12,
+    }).start()
+  }, [onRoll, flame])
+
   const choose = (choice: string) => {
     if (chosen !== undefined || current === undefined || !question) return
     setChosen(choice)
+    pop.setValue(0.92)
+    Animated.spring(pop, { toValue: 1, useNativeDriver: true, bounciness: 14 }).start()
     if (choice === question.answer) {
       setRight(set => new Set(set).add(current))
+      setStreak(value => value + 1)
       if (Platform.OS !== 'web')
         void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
     } else {
-      setMissed(set => new Set(set).add(current))
+      setStreak(0)
       if (Platform.OS !== 'web')
         void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
       Animated.sequence(
@@ -123,6 +214,8 @@ const PlanQuizScreen = () => {
   const next = () => {
     if (current === undefined) return
     const rest = order.slice(1)
+    // Marked only as it goes to the back, so "Try again" shows when it comes round again.
+    if (!answeredRight) setMissed(set => new Set(set).add(current))
     setQueue(answeredRight ? rest : [...rest, current])
     setChosen(undefined)
   }
@@ -138,6 +231,8 @@ const PlanQuizScreen = () => {
   const title = slice?.type === 'Quiz' ? slice.title : 'Quiz'
   const titleFont = resolveFontFamily(theme.fontFamily.title)
   const comingBack = current !== undefined && missed.has(current)
+  const cheer = CHEERS[(right.size + (current ?? 0)) % CHEERS.length]
+  const verdictColor = answeredRight ? theme.colors.success : theme.colors.quart
 
   return (
     <Container>
@@ -151,7 +246,7 @@ const PlanQuizScreen = () => {
       ) : (
         <Box className="flex-1">
           <LinearGradient
-            colors={[theme.colors.lightPrimary, theme.colors.reverse]}
+            colors={[theme.colors.lightPrimary, theme.colors.reverse, theme.colors.reverse]}
             style={StyleSheet.absoluteFill}
           />
           <ScrollView
@@ -161,47 +256,69 @@ const PlanQuizScreen = () => {
               maxWidth: 640,
               alignSelf: 'center',
               padding: 20,
-              paddingBottom: 48,
-              gap: 22,
+              paddingBottom: 200,
+              gap: 20,
             }}
           >
-            {/* How much has been answered right, without numbers. */}
-            <Box
-              className="h-[12px] rounded-full overflow-hidden"
-              style={{ backgroundColor: theme.colors.border }}
-            >
-              <Animated.View
-                style={{
-                  height: '100%',
-                  borderRadius: 999,
-                  backgroundColor: theme.colors.success,
-                  width: fill.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }),
-                }}
-              />
+            {/* One step per question, lit as each is answered right: no numbers. */}
+            <Box className="flex-row items-center gap-[10px]">
+              <Box className="flex-1 flex-row gap-[5px]">
+                {questions.map((_, at) => (
+                  <Box
+                    key={at}
+                    className="flex-1 h-[10px] rounded-full"
+                    style={{
+                      backgroundColor: right.has(at) ? theme.colors.success : theme.colors.border,
+                    }}
+                  />
+                ))}
+              </Box>
+              {onRoll && (
+                <Animated.View
+                  style={{
+                    opacity: flame,
+                    transform: [
+                      { scale: flame.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] }) },
+                    ],
+                  }}
+                >
+                  <Box
+                    className="flex-row items-center gap-[4px] rounded-full px-[10px] py-[5px]"
+                    style={{ backgroundColor: theme.colors.secondary }}
+                  >
+                    <FeatherIcon name="zap" size={14} color="white" />
+                    <Text className="text-[12px] font-bold" style={{ color: '#fff' }}>
+                      On a roll
+                    </Text>
+                  </Box>
+                </Animated.View>
+              )}
             </Box>
 
             {done ? (
-              <VStack className="gap-[18px] items-center pt-[28px]">
+              <VStack className="gap-[18px] items-center pt-[40px]">
                 <Box
-                  className="w-[112px] h-[112px] rounded-full items-center justify-center"
+                  className="w-[132px] h-[132px] rounded-full items-center justify-center"
                   style={{
-                    backgroundColor: theme.colors.success,
-                    shadowColor: theme.colors.success,
-                    shadowOpacity: 0.45,
-                    shadowRadius: 24,
-                    shadowOffset: { width: 0, height: 8 },
+                    backgroundColor: theme.colors.secondary,
+                    shadowColor: theme.colors.secondary,
+                    shadowOpacity: 0.55,
+                    shadowRadius: 30,
+                    shadowOffset: { width: 0, height: 10 },
                   }}
                 >
-                  <FeatherIcon name="check" size={56} color="white" />
+                  <FeatherIcon name="award" size={66} color="white" />
                 </Box>
-                <Text className="text-[30px] text-center" style={{ fontFamily: titleFont }}>
+                <Text className="text-[32px] text-center" style={{ fontFamily: titleFont }}>
                   Every answer right
                 </Text>
                 <Text className="text-grey text-[17px] text-center leading-[25px]">
                   You know these chapters. The day&apos;s quiz is done.
                 </Text>
                 <Box className="self-stretch pt-[10px]">
-                  <Button onPress={finish}>Done</Button>
+                  <Button success onPress={finish}>
+                    Done
+                  </Button>
                 </Box>
               </VStack>
             ) : (
@@ -224,21 +341,29 @@ const PlanQuizScreen = () => {
                     <AskGlassBackdrop radius={28} />
                     <Box className="flex-row items-center gap-[8px]">
                       <Box
-                        className="rounded-full px-[10px] py-[4px]"
+                        className="flex-row items-center gap-[5px] rounded-full px-[10px] py-[5px]"
                         style={{ backgroundColor: theme.colors.primary }}
                       >
+                        <FeatherIcon
+                          name={question.kind === 'word' ? 'edit-3' : 'book-open'}
+                          size={13}
+                          color="white"
+                        />
                         <Text className="text-[12px] font-bold" style={{ color: '#fff' }}>
                           {question.kind === 'word' ? 'Fill the gap' : 'Name the chapter'}
                         </Text>
                       </Box>
                       {comingBack && (
-                        <Box className="flex-row items-center gap-[4px]">
-                          <FeatherIcon name="rotate-ccw" size={13} color="grey" />
+                        <Box
+                          className="flex-row items-center gap-[4px] rounded-full px-[10px] py-[5px]"
+                          style={{ backgroundColor: theme.colors.border }}
+                        >
+                          <FeatherIcon name="rotate-ccw" size={12} color="grey" />
                           <Text className="text-grey text-[12px] font-bold">Try again</Text>
                         </Box>
                       )}
                     </Box>
-                    <Text className="text-[21px] leading-[31px]" style={{ fontFamily: titleFont }}>
+                    <Text className="text-[22px] leading-[32px]" style={{ fontFamily: titleFont }}>
                       {question.prompt}
                     </Text>
                     {/* The verse's place would name the chapter, so it never shows on that question. */}
@@ -247,8 +372,10 @@ const PlanQuizScreen = () => {
                     )}
                   </Box>
 
-                  <VStack className="gap-[12px]">
+                  {/* Four big tiles, each with its own colour and shape. */}
+                  <Box className="flex-row flex-wrap justify-between" style={{ rowGap: 12 }}>
                     {question.choices.map((choice, at) => {
+                      const tile = TILES[at % TILES.length]
                       const isAnswer = choice === question.answer
                       const picked = choice === chosen
                       // A wrong choice shows itself wrong; the right one is not given away, as
@@ -266,65 +393,116 @@ const PlanQuizScreen = () => {
                           ? theme.colors.success
                           : state === 'wrong'
                             ? theme.colors.quart
-                            : theme.colors.primary
+                            : tile.color
                       return (
-                        <TouchableBox
+                        <Animated.View
                           key={choice}
-                          testID="quiz-choice"
-                          accessibilityRole="button"
-                          accessibilityState={{ disabled: chosen !== undefined, selected: picked }}
-                          disabled={chosen !== undefined}
-                          onPress={() => choose(choice)}
-                          className="min-h-[60px] flex-row items-center gap-[14px] rounded-[20px] px-[14px] py-[12px] overflow-hidden"
                           style={{
-                            opacity: state === 'faded' ? 0.45 : 1,
-                            borderWidth: state === 'right' || state === 'wrong' ? 2 : 0,
-                            borderColor: color,
+                            width: '48.5%',
+                            opacity: state === 'faded' ? 0.4 : 1,
+                            transform: [{ scale: picked ? pop : 1 }],
                           }}
                         >
-                          <AskGlassBackdrop radius={20} />
-                          <Box
-                            className="w-[34px] h-[34px] rounded-full items-center justify-center"
+                          <TouchableBox
+                            testID="quiz-choice"
+                            accessibilityRole="button"
+                            accessibilityState={{
+                              disabled: chosen !== undefined,
+                              selected: picked,
+                            }}
+                            disabled={chosen !== undefined}
+                            onPress={() => choose(choice)}
+                            className="min-h-[104px] rounded-[22px] p-[14px] justify-between overflow-hidden"
                             style={{
-                              backgroundColor:
-                                state === 'right' || state === 'wrong'
-                                  ? color
-                                  : theme.colors.reverse,
+                              borderWidth: 3,
+                              borderColor:
+                                state === 'idle' || state === 'faded' ? 'transparent' : color,
+                              // A coloured base under the tile, like a game button you press in.
+                              borderBottomWidth: 6,
+                              borderBottomColor: color,
                             }}
                           >
-                            {state === 'right' || state === 'wrong' ? (
+                            <AskGlassBackdrop radius={22} />
+                            <Box
+                              className="w-[32px] h-[32px] rounded-full items-center justify-center"
+                              style={{ backgroundColor: color }}
+                            >
                               <FeatherIcon
-                                name={state === 'right' ? 'check' : 'x'}
-                                size={18}
+                                name={
+                                  state === 'right' ? 'check' : state === 'wrong' ? 'x' : tile.icon
+                                }
+                                size={16}
                                 color="white"
                               />
-                            ) : (
-                              <Text className="text-[15px] font-bold text-primary">
-                                {'ABCD'[at]}
-                              </Text>
-                            )}
-                          </Box>
-                          <Text className="flex-1 text-[18px]">{choice}</Text>
-                        </TouchableBox>
+                            </Box>
+                            <Text className="text-[18px] font-bold" numberOfLines={2}>
+                              {choice}
+                            </Text>
+                          </TouchableBox>
+                        </Animated.View>
                       )
                     })}
-                  </VStack>
-
-                  {chosen !== undefined && (
-                    <VStack className="gap-[12px]">
-                      <Text
-                        className="text-[16px] font-bold text-center"
-                        style={{ color: answeredRight ? theme.colors.success : theme.colors.quart }}
-                      >
-                        {answeredRight ? 'Right!' : 'Not quite. This one will come back.'}
-                      </Text>
-                      <Button onPress={next}>Continue</Button>
-                    </VStack>
-                  )}
+                  </Box>
                 </Animated.View>
               )
             )}
           </ScrollView>
+
+          {done && <Confetti />}
+
+          {/* The verdict rises from the bottom, in green or red, with the way on. */}
+          {!done && chosen !== undefined && (
+            <Animated.View
+              style={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                bottom: 0,
+                transform: [
+                  { translateY: rise.interpolate({ inputRange: [0, 1], outputRange: [220, 0] }) },
+                ],
+              }}
+            >
+              <Box
+                className="rounded-t-[28px] px-[20px] pt-[18px] gap-[14px]"
+                style={{
+                  backgroundColor: verdictColor,
+                  paddingBottom: Math.max(insets.bottom, 16) + 8,
+                }}
+              >
+                <Box className="w-full max-w-[600px] self-center gap-[14px]">
+                  <Box className="flex-row items-center gap-[12px]">
+                    <Box className="w-[40px] h-[40px] rounded-full items-center justify-center bg-white">
+                      <FeatherIcon
+                        name={answeredRight ? 'check' : 'rotate-ccw'}
+                        size={22}
+                        color={verdictColor}
+                      />
+                    </Box>
+                    <VStack className="flex-1">
+                      <Text className="text-[22px] font-bold" style={{ color: '#fff' }}>
+                        {answeredRight ? cheer : 'Not quite'}
+                      </Text>
+                      {!answeredRight && (
+                        <Text className="text-[15px]" style={{ color: 'rgba(255,255,255,0.9)' }}>
+                          This one will come back.
+                        </Text>
+                      )}
+                    </VStack>
+                  </Box>
+                  <TouchableBox
+                    accessibilityRole="button"
+                    onPress={next}
+                    className="h-[54px] rounded-[18px] items-center justify-center bg-white"
+                  >
+                    <Text className="text-[18px] font-bold" style={{ color: verdictColor }}>
+                      Continue
+                    </Text>
+                  </TouchableBox>
+                </Box>
+              </Box>
+            </Animated.View>
+          )}
         </Box>
       )}
     </Container>
