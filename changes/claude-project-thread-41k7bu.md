@@ -13,3 +13,5 @@ the three Bishops for now).
   (paused in 28eb3182), showing the Bishops by default.
 - `features/resources/resourceAccess.web.tsx`: the web build reads the three Bishop ids.
 - Server side: DevSecObie/cyberjudah-telegram #461; data: DevSecObie/cyberjudah #751.
+
+- Each Bishop's commentary shows his headshot (cut from the leadership photo Obie shared) instead of initials, on the reader cards and in every commentary avatar (`commentaryHeadshots.ts`, `getCommentaryHeadshot`).

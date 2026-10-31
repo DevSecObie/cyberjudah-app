@@ -1,3 +1,5 @@
+import { COMMENTARY_HEADSHOTS } from './commentaryHeadshots'
+
 const AVATAR_COLORS = ['#2F6FDB', '#147D82', '#7652A7', '#A45D79', '#A56532'] as const
 
 const hash = (value: string) =>
@@ -22,3 +24,7 @@ export const getCommentaryInitials = (author: string, fallback: string) => {
 
 export const getCommentaryAvatarColor = (resourceCode: string) =>
   AVATAR_COLORS[hash(resourceCode) % AVATAR_COLORS.length]
+
+/** The teacher's photo for a commentary ("bishop-nathanyel" or "bishop-nathanyel:en"), where there is one. */
+export const getCommentaryHeadshot = (resourceCode: string): string | undefined =>
+  COMMENTARY_HEADSHOTS[resourceCode.split(':')[0]]
