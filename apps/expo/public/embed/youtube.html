@@ -63,6 +63,8 @@
           autoplay: '1',
           playsinline: '1',
           rel: '0',
+          // Lets the page hear the playing time, below.
+          enablejsapi: '1',
           origin: window.location.origin,
           widget_referrer: `https://${appId}`,
         })
@@ -78,6 +80,78 @@
         iframe.referrerPolicy = 'strict-origin-when-cross-origin'
 
         player.appendChild(iframe)
+
+        // Tell the app where the video is, about once a second, so a class picks up at the same
+        // moment when it moves between screens, and whether it plays. Only these are sent, and only to the app that
+        // opened this page: the phone's web view, or the page this one is framed in.
+        window.__cyberJudahClassTime = true
+        let heard = false
+        let last = -1
+        let lastState
+        const hello = () =>
+          iframe.contentWindow &&
+          iframe.contentWindow.postMessage(
+            JSON.stringify({ event: 'listening', id: 1, channel: 'widget' }),
+            'https://www.youtube-nocookie.com'
+          )
+        const tell = (key, value) => {
+          const message = JSON.stringify({ [key]: value })
+          if (window.ReactNativeWebView) window.ReactNativeWebView.postMessage(message)
+          else if (window.parent !== window) window.parent.postMessage(message, '*')
+        }
+        window.addEventListener('message', event => {
+          if (
+            event.origin !== 'https://www.youtube-nocookie.com' ||
+            event.source !== iframe.contentWindow
+          )
+            return
+          let data
+          try {
+            data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
+          } catch {
+            return
+          }
+          heard = true
+          const state = data && data.info && data.info.playerState
+          if (typeof state === 'number' && state !== lastState) {
+            lastState = state
+            tell('classState', state)
+          }
+          const time = data && data.info && data.info.currentTime
+          if (typeof time !== 'number' || Math.floor(time) === last) return
+          last = Math.floor(time)
+          tell('classTime', time)
+        })
+        // The site's floating window plays, pauses and skips the video. Only those three commands,
+        // and only from the page that frames this one.
+        window.addEventListener('message', event => {
+          if (window.parent === window || event.source !== window.parent) return
+          let data
+          try {
+            data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
+          } catch {
+            return
+          }
+          const command = data && data.classCommand
+          if (!command || !['playVideo', 'pauseVideo', 'seekTo'].includes(command.func)) return
+          const args =
+            command.func === 'seekTo' && Number.isFinite(Number(command.args && command.args[0]))
+              ? [Math.max(0, Number(command.args[0])), true]
+              : []
+          if (iframe.contentWindow)
+            iframe.contentWindow.postMessage(
+              JSON.stringify({ event: 'command', func: command.func, args }),
+              'https://www.youtube-nocookie.com'
+            )
+        })
+        // The video is started again at a new moment by changing its address; greet it again.
+        iframe.addEventListener('load', () => {
+          heard = false
+          hello()
+        })
+        setInterval(() => {
+          if (!heard) hello()
+        }, 1000)
       }
     </script>
   </body>

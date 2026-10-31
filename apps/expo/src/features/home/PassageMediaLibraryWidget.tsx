@@ -12,6 +12,7 @@ import {
   loadClassLibrary,
   readCachedClassLibrary,
 } from '~features/passageMediaLibrary/cyberJudahClasses'
+import LiveClassBanner from '~features/passageMediaLibrary/LiveClassBanner'
 /** How far the lion rises above the card, inside the space above it. */
 const COURSES_ART_RISE = 18
 
@@ -38,6 +39,7 @@ const PassageMediaLibraryWidget = () => {
 
   return (
     <Box className="overflow-hidden border-continuous bg-light-grey pt-[20px]">
+      {cyberJudah && <LiveClassBanner className="mb-[16px]" />}
       <TouchableBox
         className="overflow-hidden border-continuous rounded-[20px] bg-reverse h-[136px] flex-row items-center"
         accessibilityRole="button"

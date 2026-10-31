@@ -170,7 +170,7 @@ const nameOf = covered => {
   if (runs.length === 1) return `${runs[0].book.name} ${chaptersOf(runs[0])}`
   return runs.map(run => `${run.book.name} ${chaptersOf(run)}`).join(', ')
 }
-const fillVideos = file => {
+const fillVideos = (file, readAlong = false) => {
   const list = []
   const seen = new Set()
   for (const line of readFileSync(resolve(import.meta.dirname, 'data', file), 'utf8').split('\n')) {
@@ -182,14 +182,34 @@ const fillVideos = file => {
     // The channel uploaded a few sessions twice.
     if (seen.has(name)) continue
     seen.add(name)
-    list.push({ video, name, covered: new Set(covered) })
+    list.push({ video, name, covered: new Set(covered), readAlong })
   }
   return list
 }
 const fillSources = [
   fillVideos('four-chapters-a-day-videos-extra.tsv'),
-  fillVideos('four-chapters-a-day-videos-channel.tsv'),
+  // The channel's sessions read the chapters straight through, with no breakdown (Obie: "Read
+  // along" options), so they are named that way.
+  fillVideos('four-chapters-a-day-videos-channel.tsv', true),
 ]
+
+// Where each chapter's reading begins in a class, past the prayer and opening:
+// "video<TAB>book id:chapter<TAB>seconds" (data/four-chapters-a-day-starts.tsv), found from the
+// class's own captions by scripts/find-four-chapters-reading-starts.py. A day opens its class at
+// the first of the day's chapters the class reads; a chapter not listed starts the class at 0.
+const startsFile = resolve(import.meta.dirname, 'data/four-chapters-a-day-starts.tsv')
+const readingStarts = new Map(
+  existsSync(startsFile)
+    ? readFileSync(startsFile, 'utf8')
+        .split('\n')
+        .filter(line => line && !line.startsWith('#') && !line.startsWith('video\t'))
+        .map(line => line.split('\t'))
+        .filter(([, , seconds]) => Number(seconds) > 0)
+        .map(([video, chapter, seconds]) => [`${video} ${chapter}`, Number(seconds)])
+    : []
+)
+const sessionsFile = process.env.FOUR_CHAPTERS_SESSIONS
+const sessionList = []
 
 const days = []
 for (let i = 0; i < chapters.length; i += PER_DAY) days.push(chapters.slice(i, i + PER_DAY))
@@ -213,32 +233,56 @@ const sliceFor = (day, dayNumber) => {
   const first = ({ covered }) =>
     Math.min(...day.map(({ book, chapter }, index) => (covered.has(`${book.id}:${chapter}`) ? index : Infinity)))
   sessions = [...sessions].sort((a, b) => first(a) - first(b))
-  for (const { video, name } of sessions)
+  for (const { video, name, covered, readAlong } of sessions) {
+    const opening = day.find(({ book, chapter }) => covered.has(`${book.id}:${chapter}`))
+    const key = `${opening.book.id}:${opening.chapter}`
+    sessionList.push({ video, chapter: key, slug: opening.book.slug, number: opening.chapter })
+    const start = readingStarts.get(`${video} ${key}`)
     slices.push({
       id: String(slices.length),
       type: 'Video',
-      title: `The class: ${name}`,
+      title: `${readAlong ? 'Read along' : 'The class'}: ${name}`,
       url: `https://www.youtube.com/watch?v=${video}`,
+      ...(start ? { start } : {}),
     })
-  for (const { book, chapter } of day) {
-    // The notes keep the Greek additions with Esther (docs/study/esther/11-16).
-    const note = noteFor(book.slug === 'esther-greek' ? 'esther' : book.slug, chapter)
-    if (note && !slices.some(slice => slice.notePath === note.notePath))
-      slices.push({ id: String(slices.length), type: 'Text', ...note })
   }
-  // One passage per book: "1|1-4", or two when the day crosses into the next book.
+  // In reading order: each chapter's note, or, for a chapter without one, its chapters row (a
+  // run of such chapters in one book is one row), so no chapter is left out or out of place.
   const runs = []
   for (const { book, chapter } of day) {
     const run = runs[runs.length - 1]
     if (run && run.book.id === book.id) run.to = chapter
     else runs.push({ book, from: chapter, to: chapter })
   }
-  for (const run of runs)
-    slices.push({
-      id: String(slices.length),
-      type: 'Chapter',
-      chapters: `${run.book.id}|${run.from === run.to ? run.from : `${run.from}-${run.to}`}`,
-    })
+  let unread
+  for (const { book, chapter } of day) {
+    // The notes keep the Greek additions with Esther (docs/study/esther/11-16).
+    const note = noteFor(book.slug === 'esther-greek' ? 'esther' : book.slug, chapter)
+    if (note) {
+      unread = undefined
+      if (!slices.some(slice => slice.notePath === note.notePath))
+        slices.push({ id: String(slices.length), type: 'Text', ...note })
+      continue
+    }
+    if (unread && unread.book.id === book.id && unread.to === chapter - 1) {
+      unread.to = chapter
+      unread.slice.chapters = `${book.id}|${unread.from}-${chapter}`
+      continue
+    }
+    unread = { book, from: chapter, to: chapter }
+    unread.slice = { id: String(slices.length), type: 'Chapter', chapters: `${book.id}|${chapter}` }
+    slices.push(unread.slice)
+  }
+  // Last, the day's game: ten questions on its chapters, drawn from their own text in the app,
+  // named for Philip's question (Acts 8:30).
+  slices.push({
+    id: String(slices.length),
+    type: 'Quiz',
+    title: 'Understandest thou what thou readest?',
+    chapters: runs.map(
+      run => `${run.book.id}|${run.from === run.to ? run.from : `${run.from}-${run.to}`}`
+    ),
+  })
   return { id: String(dayNumber), title: label(day), slices }
 }
 
@@ -281,6 +325,7 @@ if (process.env.DUMP_SESSIONS) {
   }))
   writeFileSync(process.env.DUMP_SESSIONS, JSON.stringify(sessions.filter(s => s.missing.length), null, 1))
 }
+if (sessionsFile) writeFileSync(sessionsFile, JSON.stringify(sessionList))
 const withVideos = plan.sections
   .flatMap(section => section.readingSlices)
   .filter(reading => reading.slices.some(slice => slice.type === 'Video')).length
