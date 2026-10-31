@@ -10,3 +10,4 @@
 - CyberJudah starts in English even on a French device; French stays in Settings.
 - 4 Chapters a Day: every chapter's note is in its day, and opening it shows the whole published note (verses, precepts and breakdowns), not only its opening.
 - Web: published notes no longer crash (tslib resolves to its ES module build on web).
+- Note pages: the "Read the chapter →" line is gone (Obie).

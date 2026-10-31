@@ -28,7 +28,9 @@ const PublishedNoteScreen = () => {
     queryKey: ['cyberjudah-published-note', path],
     queryFn: async () => {
       const published = await loadPublishedNote(path)
-      return { ...published, blocks: classNotesToBlocks(published.body, '') }
+      // "Read the chapter → Genesis 2" is the website's link; the app opens the chapter elsewhere.
+      const body = published.body.replace(/^Read the chapter →.*\n?/m, '')
+      return { ...published, blocks: classNotesToBlocks(body, '') }
     },
     enabled: !!path,
     staleTime: 60 * 60 * 1000,
