@@ -63,6 +63,8 @@
           autoplay: '1',
           playsinline: '1',
           rel: '0',
+          // Lets the page hear the playing time, below.
+          enablejsapi: '1',
           origin: window.location.origin,
           widget_referrer: `https://${appId}`,
         })
@@ -78,6 +80,50 @@
         iframe.referrerPolicy = 'strict-origin-when-cross-origin'
 
         player.appendChild(iframe)
+
+        // Tell the app where the video is, about once a second, so a class picks up at the same
+        // moment when it moves between screens. Only the time is sent, and only to the app that
+        // opened this page: the phone's web view, or the page this one is framed in.
+        window.__cyberJudahClassTime = true
+        let heard = false
+        let last = -1
+        const hello = () =>
+          iframe.contentWindow &&
+          iframe.contentWindow.postMessage(
+            JSON.stringify({ event: 'listening', id: 1, channel: 'widget' }),
+            'https://www.youtube-nocookie.com'
+          )
+        const tell = time => {
+          const message = JSON.stringify({ classTime: time })
+          if (window.ReactNativeWebView) window.ReactNativeWebView.postMessage(message)
+          else if (window.parent !== window) window.parent.postMessage(message, '*')
+        }
+        window.addEventListener('message', event => {
+          if (
+            event.origin !== 'https://www.youtube-nocookie.com' ||
+            event.source !== iframe.contentWindow
+          )
+            return
+          let data
+          try {
+            data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
+          } catch {
+            return
+          }
+          heard = true
+          const time = data && data.info && data.info.currentTime
+          if (typeof time !== 'number' || Math.floor(time) === last) return
+          last = Math.floor(time)
+          tell(time)
+        })
+        // The video is started again at a new moment by changing its address; greet it again.
+        iframe.addEventListener('load', () => {
+          heard = false
+          hello()
+        })
+        setInterval(() => {
+          if (!heard) hello()
+        }, 1000)
       }
     </script>
   </body>
