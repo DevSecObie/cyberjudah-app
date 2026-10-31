@@ -444,6 +444,28 @@ const Blocks = ({
   </>
 )
 
+const useNoteColors = (): Colors => {
+  const theme = useTheme()
+  return {
+    text: theme.colors.default,
+    muted: theme.colors.grey,
+    link: theme.colors.primary,
+    surface: theme.colors.lightGrey,
+    border: theme.colors.border,
+  }
+}
+
+/** The whole note at once, for a page that already scrolls (the plan day reader). */
+export function ClassNotesBlocks({
+  blocks,
+  onLinkPress,
+}: {
+  blocks: NoteBlock[]
+  onLinkPress: OnLink
+}) {
+  return <Blocks blocks={blocks} colors={useNoteColors()} onLink={onLinkPress} />
+}
+
 /** The notes as a list that lays out only what is on screen, under whatever comes first. */
 export default function ClassNotesList({
   blocks,
@@ -457,13 +479,7 @@ export default function ClassNotesList({
   width: number
 }) {
   const theme = useTheme()
-  const colors: Colors = {
-    text: theme.colors.default,
-    muted: theme.colors.grey,
-    link: theme.colors.primary,
-    surface: theme.colors.lightGrey,
-    border: theme.colors.border,
-  }
+  const colors = useNoteColors()
   return (
     <FlatList
       data={blocks}

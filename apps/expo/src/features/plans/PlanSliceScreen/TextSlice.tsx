@@ -8,15 +8,33 @@ import React from 'react'
 import Box from '~common/ui/Box'
 import { Plan, TextSlice as TextSliceProps } from '~common/types'
 import { FeatherIcon } from '~common/ui/Icon'
+import Loading from '~common/Loading'
+import { ClassNotesBlocks } from '~features/passageMediaLibrary/ClassNotesList'
+import { usePublishedNote } from '~features/publishedNotes/PublishedNoteScreen'
+import { useOpenSiteLink } from '~features/publishedNotes/siteLinks'
 import ReferenceParagraph from './ReferenceParagraph'
 
 type Props = TextSliceProps & {
   planLanguage?: Plan['lang']
 }
 
-const TextSlice = ({ description, subType, planLanguage }: Props) => {
+/** A day's study note in full, in place of the opening lines the plan carries. */
+const PublishedNoteSlice = ({ notePath }: { notePath: string }) => {
+  const note = usePublishedNote(notePath)
+  const { open } = useOpenSiteLink()
+  if (note.isPending) return <Loading />
+  if (!note.data) return null
+  return (
+    <Box className="px-[20px]">
+      <ClassNotesBlocks blocks={note.data.blocks} onLinkPress={open} />
+    </Box>
+  )
+}
+
+const TextSlice = ({ description, subType, planLanguage, notePath }: Props) => {
   const isDevotional = subType === 'devotional'
   const fontFamily = resolveFontFamily(useSelector(selectFontFamily))
+  if (notePath) return <PublishedNoteSlice notePath={notePath} />
   const content = isDevotional
     ? description.replace(/^\n|\n$/g, '')
     : description.replace(/^\n/, '')

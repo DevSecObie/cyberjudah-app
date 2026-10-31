@@ -18,13 +18,9 @@ import { useOpenSiteLink } from './siteLinks'
 
 const KIND: Record<string, string> = { study: '4 Chapters a Day', encyclopedia: 'Encyclopedia' }
 
-/** A study note or an encyclopedia entry, laid out like the class notes, with Save as PDF. */
-const PublishedNoteScreen = () => {
-  const theme = useTheme()
-  const { open } = useOpenSiteLink()
-  const { path = '' } = useLocalSearchParams<{ path?: string }>()
-  const { width } = useWindowDimensions()
-  const note = useQuery({
+/** A published note, loaded and cut into blocks; shared by the note page and the plan day reader. */
+export const usePublishedNote = (path: string) =>
+  useQuery({
     queryKey: ['cyberjudah-published-note', path],
     queryFn: async () => {
       const published = await loadPublishedNote(path)
@@ -37,6 +33,14 @@ const PublishedNoteScreen = () => {
     networkMode: 'always',
     retry: 1,
   })
+
+/** A study note or an encyclopedia entry, laid out like the class notes, with Save as PDF. */
+const PublishedNoteScreen = () => {
+  const theme = useTheme()
+  const { open } = useOpenSiteLink()
+  const { path = '' } = useLocalSearchParams<{ path?: string }>()
+  const { width } = useWindowDimensions()
+  const note = usePublishedNote(path)
   const contentWidth = Math.min(width - 32, 720)
 
   return (
