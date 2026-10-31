@@ -19,6 +19,9 @@ from difflib import SequenceMatcher
 from pathlib import Path
 
 LEAD_SECONDS = 3
+# Sessions where the looser verse-1 match lands on the wrong place (checked by hand): the words
+# it finds belong to another chapter, so these stay at 0.
+LOOSE_WRONG = {("kD_f1njsM8k", "4:19"), ("LnNul0RILYA", "9:28")}
 WORD = re.compile(r"[a-z]+")
 
 
@@ -49,13 +52,19 @@ def opening(bible, slug, chapter):
     return words(" ".join(verses[:2]))[:18]
 
 
-def find(stream, target):
+def opening_verse(bible, slug, chapter):
+    book = json.loads((bible / f"{slug}.json").read_text())
+    verses = book["chapters"].get(str(chapter)) or []
+    return words(verses[0])[:12] if verses else []
+
+
+def find(stream, target, share=0.7, least=6, slack=8):
     """Earliest place in the captions where the target words are read, as a word index."""
-    if len(target) < 6:
+    if len(target) < least:
         return None
-    need = max(6, round(len(target) * 0.7))
+    need = max(least, round(len(target) * share))
     heads = set(target[:3])
-    span = len(target) + 8
+    span = len(target) + slack
     for i, (word, _) in enumerate(stream):
         if word not in heads:
             continue
@@ -77,6 +86,10 @@ def main():
             continue
         stream = [(w, start) for start, text in segments(path) for w in words(text)]
         at = find(stream, opening(bible, session["slug"], session["number"]))
+        if at is None and (session["video"], session["chapter"]) not in LOOSE_WRONG:
+            # Verse 1 alone, looser: captions that mangle verse 2, or a class that reads verse 1
+            # and then teaches before going on.
+            at = find(stream, opening_verse(bible, session["slug"], session["number"]), 0.6, 5, 6)
         if at is None:
             missing.append((session["video"], session["chapter"], "opening not read"))
             continue

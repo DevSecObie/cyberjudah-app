@@ -26,7 +26,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Genesis 1-4",
-              "url": "https://www.youtube.com/watch?v=02EDfNJEq7Q"
+              "url": "https://www.youtube.com/watch?v=02EDfNJEq7Q",
+              "start": 561
             },
             {
               "id": "1",
@@ -74,7 +75,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Genesis 5-8",
-              "url": "https://www.youtube.com/watch?v=ExZKvMbLAcM"
+              "url": "https://www.youtube.com/watch?v=ExZKvMbLAcM",
+              "start": 765
             },
             {
               "id": "1",
@@ -122,7 +124,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Genesis 9-12",
-              "url": "https://www.youtube.com/watch?v=5pBTejCJUL0"
+              "url": "https://www.youtube.com/watch?v=5pBTejCJUL0",
+              "start": 234
             },
             {
               "id": "1",
@@ -170,7 +173,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Genesis 13-16",
-              "url": "https://www.youtube.com/watch?v=TK8o3Me1guQ"
+              "url": "https://www.youtube.com/watch?v=TK8o3Me1guQ",
+              "start": 233
             },
             {
               "id": "1",
@@ -218,7 +222,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Genesis 15–18",
-              "url": "https://www.youtube.com/watch?v=2A3IDNHiO7g"
+              "url": "https://www.youtube.com/watch?v=2A3IDNHiO7g",
+              "start": 399
             },
             {
               "id": "1",
@@ -272,13 +277,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Genesis 21-24",
-              "url": "https://www.youtube.com/watch?v=0NSaNmteuQ8"
+              "url": "https://www.youtube.com/watch?v=0NSaNmteuQ8",
+              "start": 88
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Genesis 24-27",
-              "url": "https://www.youtube.com/watch?v=N47Jaic-W_E"
+              "url": "https://www.youtube.com/watch?v=N47Jaic-W_E",
+              "start": 358
             },
             {
               "id": "2",
@@ -326,13 +333,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Genesis 24-27",
-              "url": "https://www.youtube.com/watch?v=N47Jaic-W_E"
+              "url": "https://www.youtube.com/watch?v=N47Jaic-W_E",
+              "start": 1311
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Genesis 28-31",
-              "url": "https://www.youtube.com/watch?v=pNW-zmjWLu8"
+              "url": "https://www.youtube.com/watch?v=pNW-zmjWLu8",
+              "start": 215
             },
             {
               "id": "2",
@@ -380,13 +389,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Genesis 28-31",
-              "url": "https://www.youtube.com/watch?v=pNW-zmjWLu8"
+              "url": "https://www.youtube.com/watch?v=pNW-zmjWLu8",
+              "start": 69
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Genesis 32-35",
-              "url": "https://www.youtube.com/watch?v=rO174sVPB3Q"
+              "url": "https://www.youtube.com/watch?v=rO174sVPB3Q",
+              "start": 248
             },
             {
               "id": "2",
@@ -434,13 +445,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Genesis 32-35",
-              "url": "https://www.youtube.com/watch?v=rO174sVPB3Q"
+              "url": "https://www.youtube.com/watch?v=rO174sVPB3Q",
+              "start": 1721
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Genesis 36-39",
-              "url": "https://www.youtube.com/watch?v=2TCNko2cWbw"
+              "url": "https://www.youtube.com/watch?v=2TCNko2cWbw",
+              "start": 317
             },
             {
               "id": "2",
@@ -488,13 +501,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Genesis 36-39",
-              "url": "https://www.youtube.com/watch?v=2TCNko2cWbw"
+              "url": "https://www.youtube.com/watch?v=2TCNko2cWbw",
+              "start": 1673
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Genesis 40-43",
-              "url": "https://www.youtube.com/watch?v=wj38e_uwOlY"
+              "url": "https://www.youtube.com/watch?v=wj38e_uwOlY",
+              "start": 212
             },
             {
               "id": "2",
@@ -542,13 +557,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Genesis 40-43",
-              "url": "https://www.youtube.com/watch?v=wj38e_uwOlY"
+              "url": "https://www.youtube.com/watch?v=wj38e_uwOlY",
+              "start": 664
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Genesis 44-47",
-              "url": "https://www.youtube.com/watch?v=HWk6ylHX-ew"
+              "url": "https://www.youtube.com/watch?v=HWk6ylHX-ew",
+              "start": 1146
             },
             {
               "id": "2",
@@ -596,13 +613,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Genesis 44-47",
-              "url": "https://www.youtube.com/watch?v=HWk6ylHX-ew"
+              "url": "https://www.youtube.com/watch?v=HWk6ylHX-ew",
+              "start": 1540
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Genesis 48-50; Exodus 1",
-              "url": "https://www.youtube.com/watch?v=g7wmfriBk0Y"
+              "url": "https://www.youtube.com/watch?v=g7wmfriBk0Y",
+              "start": 496
             },
             {
               "id": "2",
@@ -650,13 +669,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Genesis 48-50; Exodus 1",
-              "url": "https://www.youtube.com/watch?v=g7wmfriBk0Y"
+              "url": "https://www.youtube.com/watch?v=g7wmfriBk0Y",
+              "start": 876
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Exodus 2-5",
-              "url": "https://www.youtube.com/watch?v=psqChJ_P7QA"
+              "url": "https://www.youtube.com/watch?v=psqChJ_P7QA",
+              "start": 425
             },
             {
               "id": "2",
@@ -705,13 +726,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Exodus 2-5",
-              "url": "https://www.youtube.com/watch?v=psqChJ_P7QA"
+              "url": "https://www.youtube.com/watch?v=psqChJ_P7QA",
+              "start": 1591
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Exodus 6-9",
-              "url": "https://www.youtube.com/watch?v=XctJW_wDn_Q"
+              "url": "https://www.youtube.com/watch?v=XctJW_wDn_Q",
+              "start": 370
             },
             {
               "id": "2",
@@ -759,13 +782,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Exodus 6-9",
-              "url": "https://www.youtube.com/watch?v=XctJW_wDn_Q"
+              "url": "https://www.youtube.com/watch?v=XctJW_wDn_Q",
+              "start": 784
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Exodus 10-13",
-              "url": "https://www.youtube.com/watch?v=MtFC99gF8LM"
+              "url": "https://www.youtube.com/watch?v=MtFC99gF8LM",
+              "start": 419
             },
             {
               "id": "2",
@@ -813,13 +838,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Exodus 10-13",
-              "url": "https://www.youtube.com/watch?v=MtFC99gF8LM"
+              "url": "https://www.youtube.com/watch?v=MtFC99gF8LM",
+              "start": 1621
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Exodus 14-17",
-              "url": "https://www.youtube.com/watch?v=w1ETjIYhrVo"
+              "url": "https://www.youtube.com/watch?v=w1ETjIYhrVo",
+              "start": 458
             },
             {
               "id": "2",
@@ -867,13 +894,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Exodus 14-17",
-              "url": "https://www.youtube.com/watch?v=w1ETjIYhrVo"
+              "url": "https://www.youtube.com/watch?v=w1ETjIYhrVo",
+              "start": 1399
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Exodus 18-21",
-              "url": "https://www.youtube.com/watch?v=0pzVDaqHUEY"
+              "url": "https://www.youtube.com/watch?v=0pzVDaqHUEY",
+              "start": 653
             },
             {
               "id": "2",
@@ -921,13 +950,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Exodus 18-21",
-              "url": "https://www.youtube.com/watch?v=0pzVDaqHUEY"
+              "url": "https://www.youtube.com/watch?v=0pzVDaqHUEY",
+              "start": 2273
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Exodus 22-25",
-              "url": "https://www.youtube.com/watch?v=gun0GcuDqKM"
+              "url": "https://www.youtube.com/watch?v=gun0GcuDqKM",
+              "start": 335
             },
             {
               "id": "2",
@@ -975,7 +1006,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Exodus 22-25",
-              "url": "https://www.youtube.com/watch?v=gun0GcuDqKM"
+              "url": "https://www.youtube.com/watch?v=gun0GcuDqKM",
+              "start": 2902
             },
             {
               "id": "1",
@@ -1029,13 +1061,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Exodus 26-29",
-              "url": "https://www.youtube.com/watch?v=d9RKlMNaHWY"
+              "url": "https://www.youtube.com/watch?v=d9RKlMNaHWY",
+              "start": 613
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Exodus 30-33",
-              "url": "https://www.youtube.com/watch?v=toxDRnEFPEw"
+              "url": "https://www.youtube.com/watch?v=toxDRnEFPEw",
+              "start": 509
             },
             {
               "id": "2",
@@ -1083,13 +1117,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Exodus 30-33",
-              "url": "https://www.youtube.com/watch?v=toxDRnEFPEw"
+              "url": "https://www.youtube.com/watch?v=toxDRnEFPEw",
+              "start": 2135
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Exodus 34-37",
-              "url": "https://www.youtube.com/watch?v=IdWfjOEdRvE"
+              "url": "https://www.youtube.com/watch?v=IdWfjOEdRvE",
+              "start": 130
             },
             {
               "id": "2",
@@ -1137,13 +1173,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Exodus 34-37",
-              "url": "https://www.youtube.com/watch?v=IdWfjOEdRvE"
+              "url": "https://www.youtube.com/watch?v=IdWfjOEdRvE",
+              "start": 1338
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Exodus 38-40 Leviticus 1",
-              "url": "https://www.youtube.com/watch?v=jorNcF8DpYM"
+              "url": "https://www.youtube.com/watch?v=jorNcF8DpYM",
+              "start": 513
             },
             {
               "id": "2",
@@ -1191,13 +1229,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Exodus 38-40 Leviticus 1",
-              "url": "https://www.youtube.com/watch?v=jorNcF8DpYM"
+              "url": "https://www.youtube.com/watch?v=jorNcF8DpYM",
+              "start": 1379
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Leviticus 2-5",
-              "url": "https://www.youtube.com/watch?v=4vRX_xSIAiI"
+              "url": "https://www.youtube.com/watch?v=4vRX_xSIAiI",
+              "start": 162
             },
             {
               "id": "2",
@@ -1246,13 +1286,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Leviticus 2-5",
-              "url": "https://www.youtube.com/watch?v=4vRX_xSIAiI"
+              "url": "https://www.youtube.com/watch?v=4vRX_xSIAiI",
+              "start": 1232
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Leviticus 6-9 israelites",
-              "url": "https://www.youtube.com/watch?v=loX9sIjXFsM"
+              "url": "https://www.youtube.com/watch?v=loX9sIjXFsM",
+              "start": 1507
             },
             {
               "id": "2",
@@ -1300,13 +1342,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Leviticus 6-9 israelites",
-              "url": "https://www.youtube.com/watch?v=loX9sIjXFsM"
+              "url": "https://www.youtube.com/watch?v=loX9sIjXFsM",
+              "start": 4514
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Leviticus 10-13 israelites",
-              "url": "https://www.youtube.com/watch?v=LlwWxRfIRkQ"
+              "url": "https://www.youtube.com/watch?v=LlwWxRfIRkQ",
+              "start": 104
             },
             {
               "id": "2",
@@ -1354,7 +1398,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Leviticus 10-13 israelites",
-              "url": "https://www.youtube.com/watch?v=LlwWxRfIRkQ"
+              "url": "https://www.youtube.com/watch?v=LlwWxRfIRkQ",
+              "start": 1337
             },
             {
               "id": "1",
@@ -1414,7 +1459,8 @@
               "id": "1",
               "type": "Video",
               "title": "The class: Leviticus 18-21",
-              "url": "https://www.youtube.com/watch?v=Mj4o-OKzGlk"
+              "url": "https://www.youtube.com/watch?v=Mj4o-OKzGlk",
+              "start": 275
             },
             {
               "id": "2",
@@ -1455,13 +1501,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Leviticus 18-21",
-              "url": "https://www.youtube.com/watch?v=Mj4o-OKzGlk"
+              "url": "https://www.youtube.com/watch?v=Mj4o-OKzGlk",
+              "start": 275
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Leviticus 22-25 israelites",
-              "url": "https://www.youtube.com/watch?v=DsC_ZcfwN0E"
+              "url": "https://www.youtube.com/watch?v=DsC_ZcfwN0E",
+              "start": 203
             },
             {
               "id": "2",
@@ -1509,13 +1557,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Leviticus 22-25 israelites",
-              "url": "https://www.youtube.com/watch?v=DsC_ZcfwN0E"
+              "url": "https://www.youtube.com/watch?v=DsC_ZcfwN0E",
+              "start": 574
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Leviticus 26 -27 & Numbers 1-2 israelites",
-              "url": "https://www.youtube.com/watch?v=cfanwF8QFsI"
+              "url": "https://www.youtube.com/watch?v=cfanwF8QFsI",
+              "start": 588
             },
             {
               "id": "2",
@@ -1563,7 +1613,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Leviticus 26 -27 & Numbers 1-2 israelites",
-              "url": "https://www.youtube.com/watch?v=cfanwF8QFsI"
+              "url": "https://www.youtube.com/watch?v=cfanwF8QFsI",
+              "start": 2064
             },
             {
               "id": "1",
@@ -1618,13 +1669,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Numbers 3-6 israelites",
-              "url": "https://www.youtube.com/watch?v=kn_vFCx3I3Q"
+              "url": "https://www.youtube.com/watch?v=kn_vFCx3I3Q",
+              "start": 1325
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Numbers 7-10 israelites",
-              "url": "https://www.youtube.com/watch?v=DRiiNftpUpo"
+              "url": "https://www.youtube.com/watch?v=DRiiNftpUpo",
+              "start": 1612
             },
             {
               "id": "2",
@@ -1672,7 +1725,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Numbers 7-10 israelites",
-              "url": "https://www.youtube.com/watch?v=DRiiNftpUpo"
+              "url": "https://www.youtube.com/watch?v=DRiiNftpUpo",
+              "start": 2605
             },
             {
               "id": "1",
@@ -1732,7 +1786,8 @@
               "id": "1",
               "type": "Video",
               "title": "The class: Numbers 15-18 israelites",
-              "url": "https://www.youtube.com/watch?v=5f4Pz77Dgz0"
+              "url": "https://www.youtube.com/watch?v=5f4Pz77Dgz0",
+              "start": 95
             },
             {
               "id": "2",
@@ -1780,7 +1835,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Numbers 15-18 israelites",
-              "url": "https://www.youtube.com/watch?v=5f4Pz77Dgz0"
+              "url": "https://www.youtube.com/watch?v=5f4Pz77Dgz0",
+              "start": 773
             },
             {
               "id": "1",
@@ -1834,13 +1890,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Numbers 19-22 ISRAELITES",
-              "url": "https://www.youtube.com/watch?v=kD_f1njsM8k"
+              "url": "https://www.youtube.com/watch?v=kD_f1njsM8k",
+              "start": 404
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Numbers 23-26 ISRAELITES",
-              "url": "https://www.youtube.com/watch?v=12EbEAiK5vU"
+              "url": "https://www.youtube.com/watch?v=12EbEAiK5vU",
+              "start": 113
             },
             {
               "id": "2",
@@ -1881,13 +1939,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Numbers 23-26 ISRAELITES",
-              "url": "https://www.youtube.com/watch?v=12EbEAiK5vU"
+              "url": "https://www.youtube.com/watch?v=12EbEAiK5vU",
+              "start": 1257
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Numbers 27-30 ISRAELITES",
-              "url": "https://www.youtube.com/watch?v=fP_MOK4Nxxk"
+              "url": "https://www.youtube.com/watch?v=fP_MOK4Nxxk",
+              "start": 559
             },
             {
               "id": "2",
@@ -1935,13 +1995,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Numbers 27-30 ISRAELITES",
-              "url": "https://www.youtube.com/watch?v=fP_MOK4Nxxk"
+              "url": "https://www.youtube.com/watch?v=fP_MOK4Nxxk",
+              "start": 1999
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Numbers 31-34",
-              "url": "https://www.youtube.com/watch?v=i1sPQU6IcwA"
+              "url": "https://www.youtube.com/watch?v=i1sPQU6IcwA",
+              "start": 81
             },
             {
               "id": "2",
@@ -1989,13 +2051,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Numbers 31-34",
-              "url": "https://www.youtube.com/watch?v=i1sPQU6IcwA"
+              "url": "https://www.youtube.com/watch?v=i1sPQU6IcwA",
+              "start": 1109
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Numbers 35-36 & Deuteronomy 1-2",
-              "url": "https://www.youtube.com/watch?v=HIvYxOdHA2o"
+              "url": "https://www.youtube.com/watch?v=HIvYxOdHA2o",
+              "start": 191
             },
             {
               "id": "2",
@@ -2043,13 +2107,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Numbers 35-36 & Deuteronomy 1-2",
-              "url": "https://www.youtube.com/watch?v=HIvYxOdHA2o"
+              "url": "https://www.youtube.com/watch?v=HIvYxOdHA2o",
+              "start": 2187
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: DEUTERONOMY 3-6",
-              "url": "https://www.youtube.com/watch?v=_tskU9vaITY"
+              "url": "https://www.youtube.com/watch?v=_tskU9vaITY",
+              "start": 314
             },
             {
               "id": "2",
@@ -2098,13 +2164,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: DEUTERONOMY 3-6",
-              "url": "https://www.youtube.com/watch?v=_tskU9vaITY"
+              "url": "https://www.youtube.com/watch?v=_tskU9vaITY",
+              "start": 1639
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: DEUTERONOMY 7-_- 10",
-              "url": "https://www.youtube.com/watch?v=8lsssy0iWws"
+              "url": "https://www.youtube.com/watch?v=8lsssy0iWws",
+              "start": 473
             },
             {
               "id": "2",
@@ -2152,13 +2220,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: DEUTERONOMY 7-_- 10",
-              "url": "https://www.youtube.com/watch?v=8lsssy0iWws"
+              "url": "https://www.youtube.com/watch?v=8lsssy0iWws",
+              "start": 1894
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: DEUTERONOMY 11-14",
-              "url": "https://www.youtube.com/watch?v=-BMEEfsHp_U"
+              "url": "https://www.youtube.com/watch?v=-BMEEfsHp_U",
+              "start": 42
             },
             {
               "id": "2",
@@ -2206,13 +2276,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: DEUTERONOMY 11-14",
-              "url": "https://www.youtube.com/watch?v=-BMEEfsHp_U"
+              "url": "https://www.youtube.com/watch?v=-BMEEfsHp_U",
+              "start": 1239
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: DEUTERONOMY 15-18",
-              "url": "https://www.youtube.com/watch?v=SERhEroVSBU"
+              "url": "https://www.youtube.com/watch?v=SERhEroVSBU",
+              "start": 87
             },
             {
               "id": "2",
@@ -2260,13 +2332,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: DEUTERONOMY 15-18",
-              "url": "https://www.youtube.com/watch?v=SERhEroVSBU"
+              "url": "https://www.youtube.com/watch?v=SERhEroVSBU",
+              "start": 572
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: DEUTERONOMY 19-22",
-              "url": "https://www.youtube.com/watch?v=KLDx0cqOxrM"
+              "url": "https://www.youtube.com/watch?v=KLDx0cqOxrM",
+              "start": 17
             },
             {
               "id": "2",
@@ -2314,13 +2388,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: DEUTERONOMY 19-22",
-              "url": "https://www.youtube.com/watch?v=KLDx0cqOxrM"
+              "url": "https://www.youtube.com/watch?v=KLDx0cqOxrM",
+              "start": 1256
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: DEUTERONOMY 23-26",
-              "url": "https://www.youtube.com/watch?v=N5BGCNPTljI"
+              "url": "https://www.youtube.com/watch?v=N5BGCNPTljI",
+              "start": 70
             },
             {
               "id": "2",
@@ -2368,7 +2444,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: DEUTERONOMY 23-26",
-              "url": "https://www.youtube.com/watch?v=N5BGCNPTljI"
+              "url": "https://www.youtube.com/watch?v=N5BGCNPTljI",
+              "start": 2127
             },
             {
               "id": "1",
@@ -2422,13 +2499,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: DEUTERONOMY 27-30",
-              "url": "https://www.youtube.com/watch?v=c3enjQQ2eMA"
+              "url": "https://www.youtube.com/watch?v=c3enjQQ2eMA",
+              "start": 722
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: DEUTERONOMY 31-34",
-              "url": "https://www.youtube.com/watch?v=Zsk04QXABTE"
+              "url": "https://www.youtube.com/watch?v=Zsk04QXABTE",
+              "start": 452
             },
             {
               "id": "2",
@@ -2476,13 +2555,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: DEUTERONOMY 31-34",
-              "url": "https://www.youtube.com/watch?v=Zsk04QXABTE"
+              "url": "https://www.youtube.com/watch?v=Zsk04QXABTE",
+              "start": 1757
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Joshua 1-4",
-              "url": "https://www.youtube.com/watch?v=Hj3P2VMGjmA"
+              "url": "https://www.youtube.com/watch?v=Hj3P2VMGjmA",
+              "start": 375
             },
             {
               "id": "2",
@@ -2531,13 +2612,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Joshua 1-4",
-              "url": "https://www.youtube.com/watch?v=Hj3P2VMGjmA"
+              "url": "https://www.youtube.com/watch?v=Hj3P2VMGjmA",
+              "start": 4354
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: JOSHUA 5-8",
-              "url": "https://www.youtube.com/watch?v=tEz3c1dQfAA"
+              "url": "https://www.youtube.com/watch?v=tEz3c1dQfAA",
+              "start": 259
             },
             {
               "id": "2",
@@ -2585,13 +2668,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: JOSHUA 5-8",
-              "url": "https://www.youtube.com/watch?v=tEz3c1dQfAA"
+              "url": "https://www.youtube.com/watch?v=tEz3c1dQfAA",
+              "start": 2139
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: JOSHUA 9-12",
-              "url": "https://www.youtube.com/watch?v=phJeIboS994"
+              "url": "https://www.youtube.com/watch?v=phJeIboS994",
+              "start": 385
             },
             {
               "id": "2",
@@ -2639,13 +2724,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: JOSHUA 9-12",
-              "url": "https://www.youtube.com/watch?v=phJeIboS994"
+              "url": "https://www.youtube.com/watch?v=phJeIboS994",
+              "start": 1322
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Joshua 13-16",
-              "url": "https://www.youtube.com/watch?v=qpZH4DXvn8c"
+              "url": "https://www.youtube.com/watch?v=qpZH4DXvn8c",
+              "start": 495
             },
             {
               "id": "2",
@@ -2693,13 +2780,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Joshua 13-16",
-              "url": "https://www.youtube.com/watch?v=qpZH4DXvn8c"
+              "url": "https://www.youtube.com/watch?v=qpZH4DXvn8c",
+              "start": 1123
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Joshua 17-20",
-              "url": "https://www.youtube.com/watch?v=xpSYsvWbsNc"
+              "url": "https://www.youtube.com/watch?v=xpSYsvWbsNc",
+              "start": 184
             },
             {
               "id": "2",
@@ -2747,13 +2836,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Joshua 17-20",
-              "url": "https://www.youtube.com/watch?v=xpSYsvWbsNc"
+              "url": "https://www.youtube.com/watch?v=xpSYsvWbsNc",
+              "start": 1923
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Joshua 21-24",
-              "url": "https://www.youtube.com/watch?v=iUbszcdpVTg"
+              "url": "https://www.youtube.com/watch?v=iUbszcdpVTg",
+              "start": 812
             },
             {
               "id": "2",
@@ -2801,13 +2892,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Joshua 21-24",
-              "url": "https://www.youtube.com/watch?v=iUbszcdpVTg"
+              "url": "https://www.youtube.com/watch?v=iUbszcdpVTg",
+              "start": 1425
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Judges 1-4",
-              "url": "https://www.youtube.com/watch?v=wTa0MpVRnvo"
+              "url": "https://www.youtube.com/watch?v=wTa0MpVRnvo",
+              "start": 193
             },
             {
               "id": "2",
@@ -2856,13 +2949,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Judges 1-4",
-              "url": "https://www.youtube.com/watch?v=wTa0MpVRnvo"
+              "url": "https://www.youtube.com/watch?v=wTa0MpVRnvo",
+              "start": 1167
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Judges 5-8",
-              "url": "https://www.youtube.com/watch?v=87H3_BSzffc"
+              "url": "https://www.youtube.com/watch?v=87H3_BSzffc",
+              "start": 524
             },
             {
               "id": "2",
@@ -2910,13 +3005,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Judges 5-8",
-              "url": "https://www.youtube.com/watch?v=87H3_BSzffc"
+              "url": "https://www.youtube.com/watch?v=87H3_BSzffc",
+              "start": 1789
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: JUDGES 9-12",
-              "url": "https://www.youtube.com/watch?v=wLZSBp5mNvc"
+              "url": "https://www.youtube.com/watch?v=wLZSBp5mNvc",
+              "start": 319
             },
             {
               "id": "2",
@@ -2964,13 +3061,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: JUDGES 9-12",
-              "url": "https://www.youtube.com/watch?v=wLZSBp5mNvc"
+              "url": "https://www.youtube.com/watch?v=wLZSBp5mNvc",
+              "start": 2072
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Judges 13-16",
-              "url": "https://www.youtube.com/watch?v=93iIcVJZNzk"
+              "url": "https://www.youtube.com/watch?v=93iIcVJZNzk",
+              "start": 373
             },
             {
               "id": "2",
@@ -3018,13 +3117,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Judges 13-16",
-              "url": "https://www.youtube.com/watch?v=93iIcVJZNzk"
+              "url": "https://www.youtube.com/watch?v=93iIcVJZNzk",
+              "start": 1337
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Judges 17-20",
-              "url": "https://www.youtube.com/watch?v=Eo6_WJKewAY"
+              "url": "https://www.youtube.com/watch?v=Eo6_WJKewAY",
+              "start": 1081
             },
             {
               "id": "2",
@@ -3072,13 +3173,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Judges 17-20",
-              "url": "https://www.youtube.com/watch?v=Eo6_WJKewAY"
+              "url": "https://www.youtube.com/watch?v=Eo6_WJKewAY",
+              "start": 1543
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Judges 21& Ruth 1-3",
-              "url": "https://www.youtube.com/watch?v=YedTr1_ePjo"
+              "url": "https://www.youtube.com/watch?v=YedTr1_ePjo",
+              "start": 292
             },
             {
               "id": "2",
@@ -3126,13 +3229,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Judges 21& Ruth 1-3",
-              "url": "https://www.youtube.com/watch?v=YedTr1_ePjo"
+              "url": "https://www.youtube.com/watch?v=YedTr1_ePjo",
+              "start": 869
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Ruth 4 & 1st Samuel 1-3",
-              "url": "https://www.youtube.com/watch?v=waSO2BiTXNU"
+              "url": "https://www.youtube.com/watch?v=waSO2BiTXNU",
+              "start": 459
             },
             {
               "id": "2",
@@ -3180,13 +3285,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ruth 4 & 1st Samuel 1-3",
-              "url": "https://www.youtube.com/watch?v=waSO2BiTXNU"
+              "url": "https://www.youtube.com/watch?v=waSO2BiTXNU",
+              "start": 1406
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 1 Samuel 4-7",
-              "url": "https://www.youtube.com/watch?v=cMupAPdK4Mo"
+              "url": "https://www.youtube.com/watch?v=cMupAPdK4Mo",
+              "start": 754
             },
             {
               "id": "2",
@@ -3234,13 +3341,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Samuel 4-7",
-              "url": "https://www.youtube.com/watch?v=cMupAPdK4Mo"
+              "url": "https://www.youtube.com/watch?v=cMupAPdK4Mo",
+              "start": 1957
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 1 Samuel 8-11",
-              "url": "https://www.youtube.com/watch?v=6stdYQRzXyI"
+              "url": "https://www.youtube.com/watch?v=6stdYQRzXyI",
+              "start": 34
             },
             {
               "id": "2",
@@ -3288,13 +3397,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Samuel 8-11",
-              "url": "https://www.youtube.com/watch?v=6stdYQRzXyI"
+              "url": "https://www.youtube.com/watch?v=6stdYQRzXyI",
+              "start": 1893
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 1 Samuel 12-15",
-              "url": "https://www.youtube.com/watch?v=2UWpG6NF0vk"
+              "url": "https://www.youtube.com/watch?v=2UWpG6NF0vk",
+              "start": 473
             },
             {
               "id": "2",
@@ -3342,13 +3453,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Samuel 12-15",
-              "url": "https://www.youtube.com/watch?v=2UWpG6NF0vk"
+              "url": "https://www.youtube.com/watch?v=2UWpG6NF0vk",
+              "start": 1766
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 1 Samuel 16-19",
-              "url": "https://www.youtube.com/watch?v=1JYww4L2_DM"
+              "url": "https://www.youtube.com/watch?v=1JYww4L2_DM",
+              "start": 554
             },
             {
               "id": "2",
@@ -3396,13 +3509,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Samuel 16-19",
-              "url": "https://www.youtube.com/watch?v=1JYww4L2_DM"
+              "url": "https://www.youtube.com/watch?v=1JYww4L2_DM",
+              "start": 3087
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 1 Samuel 20-23",
-              "url": "https://www.youtube.com/watch?v=FabR4MzXIfs"
+              "url": "https://www.youtube.com/watch?v=FabR4MzXIfs",
+              "start": 293
             },
             {
               "id": "2",
@@ -3450,13 +3565,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Samuel 20-23",
-              "url": "https://www.youtube.com/watch?v=FabR4MzXIfs"
+              "url": "https://www.youtube.com/watch?v=FabR4MzXIfs",
+              "start": 823
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 1 Samuel 24-27",
-              "url": "https://www.youtube.com/watch?v=q2rWid4FGps"
+              "url": "https://www.youtube.com/watch?v=q2rWid4FGps",
+              "start": 243
             },
             {
               "id": "2",
@@ -3504,7 +3621,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Samuel 24-27",
-              "url": "https://www.youtube.com/watch?v=q2rWid4FGps"
+              "url": "https://www.youtube.com/watch?v=q2rWid4FGps",
+              "start": 1072
             },
             {
               "id": "1",
@@ -3558,13 +3676,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 SAMUEL 28-31",
-              "url": "https://www.youtube.com/watch?v=LnNul0RILYA"
+              "url": "https://www.youtube.com/watch?v=LnNul0RILYA",
+              "start": 375
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 SAMUEL 1-4",
-              "url": "https://www.youtube.com/watch?v=PtpMw2Tq2sM"
+              "url": "https://www.youtube.com/watch?v=PtpMw2Tq2sM",
+              "start": 939
             },
             {
               "id": "2",
@@ -3613,13 +3733,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 SAMUEL 1-4",
-              "url": "https://www.youtube.com/watch?v=PtpMw2Tq2sM"
+              "url": "https://www.youtube.com/watch?v=PtpMw2Tq2sM",
+              "start": 1621
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 Samuel 5-8",
-              "url": "https://www.youtube.com/watch?v=QbNHL8CrKM8"
+              "url": "https://www.youtube.com/watch?v=QbNHL8CrKM8",
+              "start": 86
             },
             {
               "id": "2",
@@ -3667,13 +3789,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Samuel 5-8",
-              "url": "https://www.youtube.com/watch?v=QbNHL8CrKM8"
+              "url": "https://www.youtube.com/watch?v=QbNHL8CrKM8",
+              "start": 1282
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 Samuel 9-12",
-              "url": "https://www.youtube.com/watch?v=2yGbXqW1LwE"
+              "url": "https://www.youtube.com/watch?v=2yGbXqW1LwE",
+              "start": 183
             },
             {
               "id": "2",
@@ -3721,13 +3845,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Samuel 9-12",
-              "url": "https://www.youtube.com/watch?v=2yGbXqW1LwE"
+              "url": "https://www.youtube.com/watch?v=2yGbXqW1LwE",
+              "start": 575
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 Samuel 13-16",
-              "url": "https://www.youtube.com/watch?v=C-Ti9z2C1Dw"
+              "url": "https://www.youtube.com/watch?v=C-Ti9z2C1Dw",
+              "start": 241
             },
             {
               "id": "2",
@@ -3775,13 +3901,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Samuel 13-16",
-              "url": "https://www.youtube.com/watch?v=C-Ti9z2C1Dw"
+              "url": "https://www.youtube.com/watch?v=C-Ti9z2C1Dw",
+              "start": 1080
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 Samuel 17-20",
-              "url": "https://www.youtube.com/watch?v=JKuoqDv2jAA"
+              "url": "https://www.youtube.com/watch?v=JKuoqDv2jAA",
+              "start": 487
             },
             {
               "id": "2",
@@ -3829,13 +3957,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Samuel 17-20",
-              "url": "https://www.youtube.com/watch?v=JKuoqDv2jAA"
+              "url": "https://www.youtube.com/watch?v=JKuoqDv2jAA",
+              "start": 2746
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 Samuel 21-24",
-              "url": "https://www.youtube.com/watch?v=RQiJ7d0Seqc"
+              "url": "https://www.youtube.com/watch?v=RQiJ7d0Seqc",
+              "start": 566
             },
             {
               "id": "2",
@@ -3883,7 +4013,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Samuel 21-24",
-              "url": "https://www.youtube.com/watch?v=RQiJ7d0Seqc"
+              "url": "https://www.youtube.com/watch?v=RQiJ7d0Seqc",
+              "start": 1315
             },
             {
               "id": "1",
@@ -3938,13 +4069,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Kings 1-4",
-              "url": "https://www.youtube.com/watch?v=JKUHXwEV9hQ"
+              "url": "https://www.youtube.com/watch?v=JKUHXwEV9hQ",
+              "start": 965
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 1 Kings 5-8",
-              "url": "https://www.youtube.com/watch?v=zNOkEFiw5sM"
+              "url": "https://www.youtube.com/watch?v=zNOkEFiw5sM",
+              "start": 603
             },
             {
               "id": "2",
@@ -3992,13 +4125,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Kings 5-8",
-              "url": "https://www.youtube.com/watch?v=zNOkEFiw5sM"
+              "url": "https://www.youtube.com/watch?v=zNOkEFiw5sM",
+              "start": 1757
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 1 Kings 9-12",
-              "url": "https://www.youtube.com/watch?v=70J6Jgh1QS8"
+              "url": "https://www.youtube.com/watch?v=70J6Jgh1QS8",
+              "start": 374
             },
             {
               "id": "2",
@@ -4046,13 +4181,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Kings 9-12",
-              "url": "https://www.youtube.com/watch?v=70J6Jgh1QS8"
+              "url": "https://www.youtube.com/watch?v=70J6Jgh1QS8",
+              "start": 1761
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 1 Kings 13-16",
-              "url": "https://www.youtube.com/watch?v=7pRlFeJ6vDI"
+              "url": "https://www.youtube.com/watch?v=7pRlFeJ6vDI",
+              "start": 476
             },
             {
               "id": "2",
@@ -4100,13 +4237,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Kings 13-16",
-              "url": "https://www.youtube.com/watch?v=7pRlFeJ6vDI"
+              "url": "https://www.youtube.com/watch?v=7pRlFeJ6vDI",
+              "start": 1542
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 1 KINGS 17-20",
-              "url": "https://www.youtube.com/watch?v=vjyC2y5tE6A"
+              "url": "https://www.youtube.com/watch?v=vjyC2y5tE6A",
+              "start": 346
             },
             {
               "id": "2",
@@ -4154,7 +4293,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 KINGS 17-20",
-              "url": "https://www.youtube.com/watch?v=vjyC2y5tE6A"
+              "url": "https://www.youtube.com/watch?v=vjyC2y5tE6A",
+              "start": 1106
             },
             {
               "id": "1",
@@ -4202,13 +4342,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Kings 22 & 2 Kings 1- 3",
-              "url": "https://www.youtube.com/watch?v=p_v4FahZt1c"
+              "url": "https://www.youtube.com/watch?v=p_v4FahZt1c",
+              "start": 1211
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 Kings 3-6",
-              "url": "https://www.youtube.com/watch?v=Te0DfV_ajtg"
+              "url": "https://www.youtube.com/watch?v=Te0DfV_ajtg",
+              "start": 545
             },
             {
               "id": "2",
@@ -4257,13 +4399,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Kings 3-6",
-              "url": "https://www.youtube.com/watch?v=Te0DfV_ajtg"
+              "url": "https://www.youtube.com/watch?v=Te0DfV_ajtg",
+              "start": 1028
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 Kings 7-10",
-              "url": "https://www.youtube.com/watch?v=ygmOTJo_1ZE"
+              "url": "https://www.youtube.com/watch?v=ygmOTJo_1ZE",
+              "start": 1173
             },
             {
               "id": "2",
@@ -4311,13 +4455,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Kings 7-10",
-              "url": "https://www.youtube.com/watch?v=ygmOTJo_1ZE"
+              "url": "https://www.youtube.com/watch?v=ygmOTJo_1ZE",
+              "start": 1624
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2Kings 11-14",
-              "url": "https://www.youtube.com/watch?v=dyK7bX7k5HI"
+              "url": "https://www.youtube.com/watch?v=dyK7bX7k5HI",
+              "start": 157
             },
             {
               "id": "2",
@@ -4365,13 +4511,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2Kings 11-14",
-              "url": "https://www.youtube.com/watch?v=dyK7bX7k5HI"
+              "url": "https://www.youtube.com/watch?v=dyK7bX7k5HI",
+              "start": 579
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2Kings 15-18",
-              "url": "https://www.youtube.com/watch?v=RLXefyz3tyI"
+              "url": "https://www.youtube.com/watch?v=RLXefyz3tyI",
+              "start": 302
             },
             {
               "id": "2",
@@ -4419,13 +4567,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2Kings 15-18",
-              "url": "https://www.youtube.com/watch?v=RLXefyz3tyI"
+              "url": "https://www.youtube.com/watch?v=RLXefyz3tyI",
+              "start": 922
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 KINGS 19-22",
-              "url": "https://www.youtube.com/watch?v=wrrws0F26OA"
+              "url": "https://www.youtube.com/watch?v=wrrws0F26OA",
+              "start": 310
             },
             {
               "id": "2",
@@ -4473,13 +4623,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 KINGS 19-22",
-              "url": "https://www.youtube.com/watch?v=wrrws0F26OA"
+              "url": "https://www.youtube.com/watch?v=wrrws0F26OA",
+              "start": 1776
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 Kings 23- 1Chronicles 1",
-              "url": "https://www.youtube.com/watch?v=aHczVDSsFTw"
+              "url": "https://www.youtube.com/watch?v=aHczVDSsFTw",
+              "start": 609
             },
             {
               "id": "2",
@@ -4527,13 +4679,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Kings 23- 1Chronicles 1",
-              "url": "https://www.youtube.com/watch?v=aHczVDSsFTw"
+              "url": "https://www.youtube.com/watch?v=aHczVDSsFTw",
+              "start": 3087
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 1Chroicles 2-5",
-              "url": "https://www.youtube.com/watch?v=WJp3MrMjoTU"
+              "url": "https://www.youtube.com/watch?v=WJp3MrMjoTU",
+              "start": 228
             },
             {
               "id": "2",
@@ -4582,13 +4736,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1Chroicles 2-5",
-              "url": "https://www.youtube.com/watch?v=WJp3MrMjoTU"
+              "url": "https://www.youtube.com/watch?v=WJp3MrMjoTU",
+              "start": 2003
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 1 Chronicles 6-9",
-              "url": "https://www.youtube.com/watch?v=DI_OGp7CybI"
+              "url": "https://www.youtube.com/watch?v=DI_OGp7CybI",
+              "start": 807
             },
             {
               "id": "2",
@@ -4636,13 +4792,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Chronicles 6-9",
-              "url": "https://www.youtube.com/watch?v=DI_OGp7CybI"
+              "url": "https://www.youtube.com/watch?v=DI_OGp7CybI",
+              "start": 1955
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 1 Chronicles 10-13",
-              "url": "https://www.youtube.com/watch?v=UNLPzvk9Ffc"
+              "url": "https://www.youtube.com/watch?v=UNLPzvk9Ffc",
+              "start": 352
             },
             {
               "id": "2",
@@ -4690,13 +4848,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Chronicles 10-13",
-              "url": "https://www.youtube.com/watch?v=UNLPzvk9Ffc"
+              "url": "https://www.youtube.com/watch?v=UNLPzvk9Ffc",
+              "start": 903
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 1 Chronicles 14-17",
-              "url": "https://www.youtube.com/watch?v=YqtaasgMXXA"
+              "url": "https://www.youtube.com/watch?v=YqtaasgMXXA",
+              "start": 281
             },
             {
               "id": "2",
@@ -4744,13 +4904,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Chronicles 14-17",
-              "url": "https://www.youtube.com/watch?v=YqtaasgMXXA"
+              "url": "https://www.youtube.com/watch?v=YqtaasgMXXA",
+              "start": 595
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 1Chronicles 18-21",
-              "url": "https://www.youtube.com/watch?v=jNJHL-GkmVc"
+              "url": "https://www.youtube.com/watch?v=jNJHL-GkmVc",
+              "start": 427
             },
             {
               "id": "2",
@@ -4798,13 +4960,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1Chronicles 18-21",
-              "url": "https://www.youtube.com/watch?v=jNJHL-GkmVc"
+              "url": "https://www.youtube.com/watch?v=jNJHL-GkmVc",
+              "start": 680
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 1Chronicles 22-25",
-              "url": "https://www.youtube.com/watch?v=q5C1opNhRTI"
+              "url": "https://www.youtube.com/watch?v=q5C1opNhRTI",
+              "start": 482
             },
             {
               "id": "2",
@@ -4852,7 +5016,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1Chronicles 22-25",
-              "url": "https://www.youtube.com/watch?v=q5C1opNhRTI"
+              "url": "https://www.youtube.com/watch?v=q5C1opNhRTI",
+              "start": 911
             },
             {
               "id": "1",
@@ -4893,7 +5058,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Chronicles 1-4",
-              "url": "https://www.youtube.com/watch?v=9KJG2HQm-K8"
+              "url": "https://www.youtube.com/watch?v=9KJG2HQm-K8",
+              "start": 462
             },
             {
               "id": "1",
@@ -4942,13 +5108,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Chronicles 1-4",
-              "url": "https://www.youtube.com/watch?v=9KJG2HQm-K8"
+              "url": "https://www.youtube.com/watch?v=9KJG2HQm-K8",
+              "start": 951
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 Chronicles 5-8",
-              "url": "https://www.youtube.com/watch?v=3Lx3n2BwExE"
+              "url": "https://www.youtube.com/watch?v=3Lx3n2BwExE",
+              "start": 421
             },
             {
               "id": "2",
@@ -4996,13 +5164,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Chronicles 5-8",
-              "url": "https://www.youtube.com/watch?v=3Lx3n2BwExE"
+              "url": "https://www.youtube.com/watch?v=3Lx3n2BwExE",
+              "start": 1208
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 Chronicles 9-12",
-              "url": "https://www.youtube.com/watch?v=Jpks1ENYhqU"
+              "url": "https://www.youtube.com/watch?v=Jpks1ENYhqU",
+              "start": 1013
             },
             {
               "id": "2",
@@ -5050,13 +5220,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Chronicles 9-12",
-              "url": "https://www.youtube.com/watch?v=Jpks1ENYhqU"
+              "url": "https://www.youtube.com/watch?v=Jpks1ENYhqU",
+              "start": 1545
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 Chronicles 13-16",
-              "url": "https://www.youtube.com/watch?v=xGrgDlQhtzg"
+              "url": "https://www.youtube.com/watch?v=xGrgDlQhtzg",
+              "start": 472
             },
             {
               "id": "2",
@@ -5104,13 +5276,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Chronicles 13-16",
-              "url": "https://www.youtube.com/watch?v=xGrgDlQhtzg"
+              "url": "https://www.youtube.com/watch?v=xGrgDlQhtzg",
+              "start": 1495
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 Chronicles 17-20",
-              "url": "https://www.youtube.com/watch?v=0wSBnyqDcNc"
+              "url": "https://www.youtube.com/watch?v=0wSBnyqDcNc",
+              "start": 256
             },
             {
               "id": "2",
@@ -5158,13 +5332,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Chronicles 17-20",
-              "url": "https://www.youtube.com/watch?v=0wSBnyqDcNc"
+              "url": "https://www.youtube.com/watch?v=0wSBnyqDcNc",
+              "start": 1083
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 Chronicles 21-24",
-              "url": "https://www.youtube.com/watch?v=iyZtmYWG2SE"
+              "url": "https://www.youtube.com/watch?v=iyZtmYWG2SE",
+              "start": 243
             },
             {
               "id": "2",
@@ -5212,13 +5388,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Chronicles 21-24",
-              "url": "https://www.youtube.com/watch?v=iyZtmYWG2SE"
+              "url": "https://www.youtube.com/watch?v=iyZtmYWG2SE",
+              "start": 894
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 Chronicles 25-28",
-              "url": "https://www.youtube.com/watch?v=Dw-vyvSjf_k"
+              "url": "https://www.youtube.com/watch?v=Dw-vyvSjf_k",
+              "start": 649
             },
             {
               "id": "2",
@@ -5266,13 +5444,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Chronicles 25-28",
-              "url": "https://www.youtube.com/watch?v=Dw-vyvSjf_k"
+              "url": "https://www.youtube.com/watch?v=Dw-vyvSjf_k",
+              "start": 2031
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 Chronicles 29-32",
-              "url": "https://www.youtube.com/watch?v=DyNBYkZB4Zk"
+              "url": "https://www.youtube.com/watch?v=DyNBYkZB4Zk",
+              "start": 1248
             },
             {
               "id": "2",
@@ -5320,13 +5500,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Chronicles 29-32",
-              "url": "https://www.youtube.com/watch?v=DyNBYkZB4Zk"
+              "url": "https://www.youtube.com/watch?v=DyNBYkZB4Zk",
+              "start": 2080
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 Chronicles 33-36",
-              "url": "https://www.youtube.com/watch?v=acVvRINMVOA"
+              "url": "https://www.youtube.com/watch?v=acVvRINMVOA",
+              "start": 350
             },
             {
               "id": "2",
@@ -5374,13 +5556,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Chronicles 33-36",
-              "url": "https://www.youtube.com/watch?v=acVvRINMVOA"
+              "url": "https://www.youtube.com/watch?v=acVvRINMVOA",
+              "start": 1144
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Ezra 1-4",
-              "url": "https://www.youtube.com/watch?v=FEf6Fs7Eot4"
+              "url": "https://www.youtube.com/watch?v=FEf6Fs7Eot4",
+              "start": 395
             },
             {
               "id": "2",
@@ -5429,13 +5613,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ezra 1-4",
-              "url": "https://www.youtube.com/watch?v=FEf6Fs7Eot4"
+              "url": "https://www.youtube.com/watch?v=FEf6Fs7Eot4",
+              "start": 712
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Ezra 5-8",
-              "url": "https://www.youtube.com/watch?v=qXclub7AdKw"
+              "url": "https://www.youtube.com/watch?v=qXclub7AdKw",
+              "start": 380
             },
             {
               "id": "2",
@@ -5483,13 +5669,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ezra 5-8",
-              "url": "https://www.youtube.com/watch?v=qXclub7AdKw"
+              "url": "https://www.youtube.com/watch?v=qXclub7AdKw",
+              "start": 862
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Ezra 9-10; Nehemiah 1-2",
-              "url": "https://www.youtube.com/watch?v=Ui2SFVtetws"
+              "url": "https://www.youtube.com/watch?v=Ui2SFVtetws",
+              "start": 88
             },
             {
               "id": "2",
@@ -5537,13 +5725,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ezra 9-10; Nehemiah 1-2",
-              "url": "https://www.youtube.com/watch?v=Ui2SFVtetws"
+              "url": "https://www.youtube.com/watch?v=Ui2SFVtetws",
+              "start": 480
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Nehemiah 3-6",
-              "url": "https://www.youtube.com/watch?v=4Myp03d9bio"
+              "url": "https://www.youtube.com/watch?v=4Myp03d9bio",
+              "start": 482
             },
             {
               "id": "2",
@@ -5592,13 +5782,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Nehemiah 3-6",
-              "url": "https://www.youtube.com/watch?v=4Myp03d9bio"
+              "url": "https://www.youtube.com/watch?v=4Myp03d9bio",
+              "start": 950
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Nehemiah 7-11",
-              "url": "https://www.youtube.com/watch?v=PikWJZDWT7I"
+              "url": "https://www.youtube.com/watch?v=PikWJZDWT7I",
+              "start": 646
             },
             {
               "id": "2",
@@ -5646,13 +5838,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Nehemiah 7-11",
-              "url": "https://www.youtube.com/watch?v=PikWJZDWT7I"
+              "url": "https://www.youtube.com/watch?v=PikWJZDWT7I",
+              "start": 2121
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Nehemiah 11-13 & Esther 1",
-              "url": "https://www.youtube.com/watch?v=VF7dQxxNbOY"
+              "url": "https://www.youtube.com/watch?v=VF7dQxxNbOY",
+              "start": 352
             },
             {
               "id": "2",
@@ -5700,13 +5894,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Nehemiah 11-13 & Esther 1",
-              "url": "https://www.youtube.com/watch?v=VF7dQxxNbOY"
+              "url": "https://www.youtube.com/watch?v=VF7dQxxNbOY",
+              "start": 990
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Esther 2-5",
-              "url": "https://www.youtube.com/watch?v=_X7NkIy2URk"
+              "url": "https://www.youtube.com/watch?v=_X7NkIy2URk",
+              "start": 325
             },
             {
               "id": "2",
@@ -5755,13 +5951,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Esther 2-5",
-              "url": "https://www.youtube.com/watch?v=_X7NkIy2URk"
+              "url": "https://www.youtube.com/watch?v=_X7NkIy2URk",
+              "start": 1231
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Esther 6-9",
-              "url": "https://www.youtube.com/watch?v=F2pn4cC_Iyo"
+              "url": "https://www.youtube.com/watch?v=F2pn4cC_Iyo",
+              "start": 328
             },
             {
               "id": "2",
@@ -5809,13 +6007,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Esther 6-9",
-              "url": "https://www.youtube.com/watch?v=F2pn4cC_Iyo"
+              "url": "https://www.youtube.com/watch?v=F2pn4cC_Iyo",
+              "start": 790
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Esther 10-12",
-              "url": "https://www.youtube.com/watch?v=6QziCtvEKMw"
+              "url": "https://www.youtube.com/watch?v=6QziCtvEKMw",
+              "start": 597
             },
             {
               "id": "2",
@@ -5863,7 +6063,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Job 1-4",
-              "url": "https://www.youtube.com/watch?v=5AIf71q4_U8"
+              "url": "https://www.youtube.com/watch?v=5AIf71q4_U8",
+              "start": 323
             },
             {
               "id": "1",
@@ -5911,7 +6112,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Job 5-8",
-              "url": "https://www.youtube.com/watch?v=9gkN8vHW3SI"
+              "url": "https://www.youtube.com/watch?v=9gkN8vHW3SI",
+              "start": 9
             },
             {
               "id": "1",
@@ -6007,7 +6209,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Job 13-16",
-              "url": "https://www.youtube.com/watch?v=SckWbNc9Fkk"
+              "url": "https://www.youtube.com/watch?v=SckWbNc9Fkk",
+              "start": 1144
             },
             {
               "id": "1",
@@ -6055,7 +6258,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Job 17-20",
-              "url": "https://www.youtube.com/watch?v=37-QxX_mlIA"
+              "url": "https://www.youtube.com/watch?v=37-QxX_mlIA",
+              "start": 402
             },
             {
               "id": "1",
@@ -6151,7 +6355,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Job 25-28",
-              "url": "https://www.youtube.com/watch?v=EGnjrneRU_Q"
+              "url": "https://www.youtube.com/watch?v=EGnjrneRU_Q",
+              "start": 178
             },
             {
               "id": "1",
@@ -6199,7 +6404,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Job 29 - 32",
-              "url": "https://www.youtube.com/watch?v=y30V64a-gN4"
+              "url": "https://www.youtube.com/watch?v=y30V64a-gN4",
+              "start": 238
             },
             {
               "id": "1",
@@ -6247,7 +6453,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Job 33-36",
-              "url": "https://www.youtube.com/watch?v=hu1cqETpRaM"
+              "url": "https://www.youtube.com/watch?v=hu1cqETpRaM",
+              "start": 916
             },
             {
               "id": "1",
@@ -6295,7 +6502,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Job 37-40",
-              "url": "https://www.youtube.com/watch?v=mYIe3STls20"
+              "url": "https://www.youtube.com/watch?v=mYIe3STls20",
+              "start": 210
             },
             {
               "id": "1",
@@ -6343,7 +6551,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Job 41-42 & Psalm 1-2",
-              "url": "https://www.youtube.com/watch?v=QCiXIWI4VCE"
+              "url": "https://www.youtube.com/watch?v=QCiXIWI4VCE",
+              "start": 282
             },
             {
               "id": "1",
@@ -6392,7 +6601,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 3-6",
-              "url": "https://www.youtube.com/watch?v=5m0ibSZa9Zk"
+              "url": "https://www.youtube.com/watch?v=5m0ibSZa9Zk",
+              "start": 854
             },
             {
               "id": "1",
@@ -6440,7 +6650,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalm 7-10",
-              "url": "https://www.youtube.com/watch?v=Rocpn06I36A"
+              "url": "https://www.youtube.com/watch?v=Rocpn06I36A",
+              "start": 757
             },
             {
               "id": "1",
@@ -6488,13 +6699,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 8–11",
-              "url": "https://www.youtube.com/watch?v=Cyxto2muCaE"
+              "url": "https://www.youtube.com/watch?v=Cyxto2muCaE",
+              "start": 719
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Psalms 12–15",
-              "url": "https://www.youtube.com/watch?v=hpg4F5kZz74"
+              "url": "https://www.youtube.com/watch?v=hpg4F5kZz74",
+              "start": 19
             },
             {
               "id": "2",
@@ -6535,7 +6748,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 15-18",
-              "url": "https://www.youtube.com/watch?v=LELIQHe8cZM"
+              "url": "https://www.youtube.com/watch?v=LELIQHe8cZM",
+              "start": 816
             },
             {
               "id": "1",
@@ -6631,7 +6845,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 23-26",
-              "url": "https://www.youtube.com/watch?v=atflvujeWNg"
+              "url": "https://www.youtube.com/watch?v=atflvujeWNg",
+              "start": 582
             },
             {
               "id": "1",
@@ -6679,7 +6894,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 27-30",
-              "url": "https://www.youtube.com/watch?v=8lrCy7mVs6g"
+              "url": "https://www.youtube.com/watch?v=8lrCy7mVs6g",
+              "start": 274
             },
             {
               "id": "1",
@@ -6727,7 +6943,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 31-34",
-              "url": "https://www.youtube.com/watch?v=qgzPk7h18Qk"
+              "url": "https://www.youtube.com/watch?v=qgzPk7h18Qk",
+              "start": 1353
             },
             {
               "id": "1",
@@ -6775,7 +6992,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 35-38",
-              "url": "https://www.youtube.com/watch?v=-vaaGYgB8bA"
+              "url": "https://www.youtube.com/watch?v=-vaaGYgB8bA",
+              "start": 306
             },
             {
               "id": "1",
@@ -6823,7 +7041,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 39-42",
-              "url": "https://www.youtube.com/watch?v=at7Hrqkz7rw"
+              "url": "https://www.youtube.com/watch?v=at7Hrqkz7rw",
+              "start": 306
             },
             {
               "id": "1",
@@ -6871,7 +7090,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 43-46",
-              "url": "https://www.youtube.com/watch?v=w9E7i5lD0T0"
+              "url": "https://www.youtube.com/watch?v=w9E7i5lD0T0",
+              "start": 794
             },
             {
               "id": "1",
@@ -6919,7 +7139,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 47-50",
-              "url": "https://www.youtube.com/watch?v=orcldE2CMYU"
+              "url": "https://www.youtube.com/watch?v=orcldE2CMYU",
+              "start": 505
             },
             {
               "id": "1",
@@ -6967,7 +7188,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 51-54",
-              "url": "https://www.youtube.com/watch?v=MHl-c46PYF4"
+              "url": "https://www.youtube.com/watch?v=MHl-c46PYF4",
+              "start": 494
             },
             {
               "id": "1",
@@ -7015,7 +7237,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 55-58",
-              "url": "https://www.youtube.com/watch?v=Dfj5KnQnh0M"
+              "url": "https://www.youtube.com/watch?v=Dfj5KnQnh0M",
+              "start": 464
             },
             {
               "id": "1",
@@ -7063,7 +7286,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 59-62",
-              "url": "https://www.youtube.com/watch?v=GQ5vnL_BfOI"
+              "url": "https://www.youtube.com/watch?v=GQ5vnL_BfOI",
+              "start": 470
             },
             {
               "id": "1",
@@ -7111,7 +7335,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 63-66",
-              "url": "https://www.youtube.com/watch?v=kw5Dl1wXLC0"
+              "url": "https://www.youtube.com/watch?v=kw5Dl1wXLC0",
+              "start": 209
             },
             {
               "id": "1",
@@ -7159,7 +7384,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 67-70",
-              "url": "https://www.youtube.com/watch?v=XoZ3e_Xn_GU"
+              "url": "https://www.youtube.com/watch?v=XoZ3e_Xn_GU",
+              "start": 427
             },
             {
               "id": "1",
@@ -7207,7 +7433,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 71-74",
-              "url": "https://www.youtube.com/watch?v=p1oHHrfuVZ4"
+              "url": "https://www.youtube.com/watch?v=p1oHHrfuVZ4",
+              "start": 259
             },
             {
               "id": "1",
@@ -7255,7 +7482,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 75-78",
-              "url": "https://www.youtube.com/watch?v=XqvPwH1PDzQ"
+              "url": "https://www.youtube.com/watch?v=XqvPwH1PDzQ",
+              "start": 445
             },
             {
               "id": "1",
@@ -7303,7 +7531,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 79-82",
-              "url": "https://www.youtube.com/watch?v=xOiS4wuYPRE"
+              "url": "https://www.youtube.com/watch?v=xOiS4wuYPRE",
+              "start": 480
             },
             {
               "id": "1",
@@ -7351,7 +7580,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 83-86",
-              "url": "https://www.youtube.com/watch?v=7ftoK8U7CYc"
+              "url": "https://www.youtube.com/watch?v=7ftoK8U7CYc",
+              "start": 227
             },
             {
               "id": "1",
@@ -7399,7 +7629,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 87-90",
-              "url": "https://www.youtube.com/watch?v=_E007Y4yJKY"
+              "url": "https://www.youtube.com/watch?v=_E007Y4yJKY",
+              "start": 451
             },
             {
               "id": "1",
@@ -7495,7 +7726,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 95-98",
-              "url": "https://www.youtube.com/watch?v=aq7fnQ8jWFg"
+              "url": "https://www.youtube.com/watch?v=aq7fnQ8jWFg",
+              "start": 262
             },
             {
               "id": "1",
@@ -7543,7 +7775,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 99-102",
-              "url": "https://www.youtube.com/watch?v=uOowk9V2i-A"
+              "url": "https://www.youtube.com/watch?v=uOowk9V2i-A",
+              "start": 211
             },
             {
               "id": "1",
@@ -7591,7 +7824,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 103-106",
-              "url": "https://www.youtube.com/watch?v=korGlU7C9Eg"
+              "url": "https://www.youtube.com/watch?v=korGlU7C9Eg",
+              "start": 467
             },
             {
               "id": "1",
@@ -7645,7 +7879,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 107-110",
-              "url": "https://www.youtube.com/watch?v=giNJyBQTxCo"
+              "url": "https://www.youtube.com/watch?v=giNJyBQTxCo",
+              "start": 350
             },
             {
               "id": "1",
@@ -7693,7 +7928,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 111-114",
-              "url": "https://www.youtube.com/watch?v=RtMm3P4XPL4"
+              "url": "https://www.youtube.com/watch?v=RtMm3P4XPL4",
+              "start": 264
             },
             {
               "id": "1",
@@ -7741,7 +7977,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 115-118",
-              "url": "https://www.youtube.com/watch?v=9dEzXToRfL8"
+              "url": "https://www.youtube.com/watch?v=9dEzXToRfL8",
+              "start": 451
             },
             {
               "id": "1",
@@ -7789,7 +8026,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 119-122",
-              "url": "https://www.youtube.com/watch?v=Ps-hlCjhYMc"
+              "url": "https://www.youtube.com/watch?v=Ps-hlCjhYMc",
+              "start": 595
             },
             {
               "id": "1",
@@ -7837,7 +8075,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 123-126",
-              "url": "https://www.youtube.com/watch?v=3yiz7ilKDzM"
+              "url": "https://www.youtube.com/watch?v=3yiz7ilKDzM",
+              "start": 116
             },
             {
               "id": "1",
@@ -7885,7 +8124,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 127-130",
-              "url": "https://www.youtube.com/watch?v=Nf5lCbFQQdo"
+              "url": "https://www.youtube.com/watch?v=Nf5lCbFQQdo",
+              "start": 907
             },
             {
               "id": "1",
@@ -7933,7 +8173,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 131-134",
-              "url": "https://www.youtube.com/watch?v=4CmgiC3jtGQ"
+              "url": "https://www.youtube.com/watch?v=4CmgiC3jtGQ",
+              "start": 1041
             },
             {
               "id": "1",
@@ -7981,13 +8222,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 132–135",
-              "url": "https://www.youtube.com/watch?v=S3Vo31w1QB4"
+              "url": "https://www.youtube.com/watch?v=S3Vo31w1QB4",
+              "start": 459
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Psalms 136–139",
-              "url": "https://www.youtube.com/watch?v=NSEGsm3bdR0"
+              "url": "https://www.youtube.com/watch?v=NSEGsm3bdR0",
+              "start": 190
             },
             {
               "id": "2",
@@ -8028,7 +8271,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 139-142",
-              "url": "https://www.youtube.com/watch?v=mH709XTcsSg"
+              "url": "https://www.youtube.com/watch?v=mH709XTcsSg",
+              "start": 377
             },
             {
               "id": "1",
@@ -8076,7 +8320,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 143-146",
-              "url": "https://www.youtube.com/watch?v=bk9BQjFqSwA"
+              "url": "https://www.youtube.com/watch?v=bk9BQjFqSwA",
+              "start": 325
             },
             {
               "id": "1",
@@ -8124,7 +8369,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Psalms 147-150",
-              "url": "https://www.youtube.com/watch?v=Ph0utt1IEvE"
+              "url": "https://www.youtube.com/watch?v=Ph0utt1IEvE",
+              "start": 286
             },
             {
               "id": "1",
@@ -8172,7 +8418,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Proverbs 1-4",
-              "url": "https://www.youtube.com/watch?v=cfIy0lfzNIs"
+              "url": "https://www.youtube.com/watch?v=cfIy0lfzNIs",
+              "start": 471
             },
             {
               "id": "1",
@@ -8220,7 +8467,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Proverbs 5-8",
-              "url": "https://www.youtube.com/watch?v=n8JtPcWzLvY"
+              "url": "https://www.youtube.com/watch?v=n8JtPcWzLvY",
+              "start": 862
             },
             {
               "id": "1",
@@ -8268,13 +8516,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Proverbs 6–9",
-              "url": "https://www.youtube.com/watch?v=Up2PJoyKCd8"
+              "url": "https://www.youtube.com/watch?v=Up2PJoyKCd8",
+              "start": 659
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Proverbs 10–13",
-              "url": "https://www.youtube.com/watch?v=Q-D8n3lzILE"
+              "url": "https://www.youtube.com/watch?v=Q-D8n3lzILE",
+              "start": 248
             },
             {
               "id": "2",
@@ -8315,7 +8565,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Proverbs 13-14",
-              "url": "https://www.youtube.com/watch?v=U1h5FM4rhw4"
+              "url": "https://www.youtube.com/watch?v=U1h5FM4rhw4",
+              "start": 189
             },
             {
               "id": "1",
@@ -8356,7 +8607,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Proverbs 17-20",
-              "url": "https://www.youtube.com/watch?v=6I4SIpItUTQ"
+              "url": "https://www.youtube.com/watch?v=6I4SIpItUTQ",
+              "start": 1013
             },
             {
               "id": "1",
@@ -8404,7 +8656,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Proverbs 21-24",
-              "url": "https://www.youtube.com/watch?v=vvPC4gKiL6Y"
+              "url": "https://www.youtube.com/watch?v=vvPC4gKiL6Y",
+              "start": 387
             },
             {
               "id": "1",
@@ -8452,7 +8705,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Proverbs 25-28",
-              "url": "https://www.youtube.com/watch?v=MpdmSpYlbPM"
+              "url": "https://www.youtube.com/watch?v=MpdmSpYlbPM",
+              "start": 502
             },
             {
               "id": "1",
@@ -8500,7 +8754,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Proverbs 29- Ecclesiastes 1",
-              "url": "https://www.youtube.com/watch?v=zN77hn7LawY"
+              "url": "https://www.youtube.com/watch?v=zN77hn7LawY",
+              "start": 320
             },
             {
               "id": "1",
@@ -8549,7 +8804,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ecclesiastes 2-5",
-              "url": "https://www.youtube.com/watch?v=drQenudtQTs"
+              "url": "https://www.youtube.com/watch?v=drQenudtQTs",
+              "start": 215
             },
             {
               "id": "1",
@@ -8597,7 +8853,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ecclesiastes 6-9",
-              "url": "https://www.youtube.com/watch?v=j_6JP_i88a4"
+              "url": "https://www.youtube.com/watch?v=j_6JP_i88a4",
+              "start": 438
             },
             {
               "id": "1",
@@ -8645,7 +8902,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ecclesiastes 10- Songs of Solomon 1",
-              "url": "https://www.youtube.com/watch?v=EAOlKXAFCls"
+              "url": "https://www.youtube.com/watch?v=EAOlKXAFCls",
+              "start": 517
             },
             {
               "id": "1",
@@ -8694,7 +8952,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Song of Solomon 2-5",
-              "url": "https://www.youtube.com/watch?v=phrYMbw0IVM"
+              "url": "https://www.youtube.com/watch?v=phrYMbw0IVM",
+              "start": 563
             },
             {
               "id": "1",
@@ -8742,7 +9001,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Song of Solomon 6- Isaiah 1",
-              "url": "https://www.youtube.com/watch?v=u7aOUfYhUxE"
+              "url": "https://www.youtube.com/watch?v=u7aOUfYhUxE",
+              "start": 477
             },
             {
               "id": "1",
@@ -8791,7 +9051,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Isaiah 2-5",
-              "url": "https://www.youtube.com/watch?v=ceMRapyF28c"
+              "url": "https://www.youtube.com/watch?v=ceMRapyF28c",
+              "start": 190
             },
             {
               "id": "1",
@@ -8839,7 +9100,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Isaiah 6-9",
-              "url": "https://www.youtube.com/watch?v=zjyqsiVuwY8"
+              "url": "https://www.youtube.com/watch?v=zjyqsiVuwY8",
+              "start": 175
             },
             {
               "id": "1",
@@ -8887,7 +9149,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Isaiah 10-13",
-              "url": "https://www.youtube.com/watch?v=clNKShx8oxw"
+              "url": "https://www.youtube.com/watch?v=clNKShx8oxw",
+              "start": 432
             },
             {
               "id": "1",
@@ -8935,7 +9198,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Isaiah 14-17",
-              "url": "https://www.youtube.com/watch?v=ndqrHUU0M2s"
+              "url": "https://www.youtube.com/watch?v=ndqrHUU0M2s",
+              "start": 500
             },
             {
               "id": "1",
@@ -8983,7 +9247,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Isaiah 18-21",
-              "url": "https://www.youtube.com/watch?v=YFjOl5x4pZo"
+              "url": "https://www.youtube.com/watch?v=YFjOl5x4pZo",
+              "start": 225
             },
             {
               "id": "1",
@@ -9031,7 +9296,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Isaiah 22-25",
-              "url": "https://www.youtube.com/watch?v=YTNbInkFYMY"
+              "url": "https://www.youtube.com/watch?v=YTNbInkFYMY",
+              "start": 428
             },
             {
               "id": "1",
@@ -9079,7 +9345,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Isaiah 26-29",
-              "url": "https://www.youtube.com/watch?v=sYWuvOrOhYA"
+              "url": "https://www.youtube.com/watch?v=sYWuvOrOhYA",
+              "start": 453
             },
             {
               "id": "1",
@@ -9127,7 +9394,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Isaiah 30-33",
-              "url": "https://www.youtube.com/watch?v=2cFAuwrsyaU"
+              "url": "https://www.youtube.com/watch?v=2cFAuwrsyaU",
+              "start": 1102
             },
             {
               "id": "1",
@@ -9175,7 +9443,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Isaiah 34-37",
-              "url": "https://www.youtube.com/watch?v=HFZfKFKoKBM"
+              "url": "https://www.youtube.com/watch?v=HFZfKFKoKBM",
+              "start": 489
             },
             {
               "id": "1",
@@ -9223,7 +9492,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Isaiah 38-41",
-              "url": "https://www.youtube.com/watch?v=5NU7L9f8C0I"
+              "url": "https://www.youtube.com/watch?v=5NU7L9f8C0I",
+              "start": 222
             },
             {
               "id": "1",
@@ -9271,7 +9541,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Isaiah 42-45",
-              "url": "https://www.youtube.com/watch?v=j3OFmJCObS8"
+              "url": "https://www.youtube.com/watch?v=j3OFmJCObS8",
+              "start": 939
             },
             {
               "id": "1",
@@ -9325,7 +9596,8 @@
               "id": "1",
               "type": "Video",
               "title": "The class: Isaiah 47–50",
-              "url": "https://www.youtube.com/watch?v=QBA-kPTXhhM"
+              "url": "https://www.youtube.com/watch?v=QBA-kPTXhhM",
+              "start": 147
             },
             {
               "id": "2",
@@ -9366,7 +9638,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Isaiah 50-53",
-              "url": "https://www.youtube.com/watch?v=9GkewMTpcfU"
+              "url": "https://www.youtube.com/watch?v=9GkewMTpcfU",
+              "start": 163
             },
             {
               "id": "1",
@@ -9414,7 +9687,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Isaiah 54-57",
-              "url": "https://www.youtube.com/watch?v=iQH5ZZufKoQ"
+              "url": "https://www.youtube.com/watch?v=iQH5ZZufKoQ",
+              "start": 348
             },
             {
               "id": "1",
@@ -9462,7 +9736,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Isaiah 58-61",
-              "url": "https://www.youtube.com/watch?v=7wHZCRcEWBk"
+              "url": "https://www.youtube.com/watch?v=7wHZCRcEWBk",
+              "start": 235
             },
             {
               "id": "1",
@@ -9510,13 +9785,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Isaiah 59–62",
-              "url": "https://www.youtube.com/watch?v=Ki4YZyksQJU"
+              "url": "https://www.youtube.com/watch?v=Ki4YZyksQJU",
+              "start": 1132
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Isaiah 63–66",
-              "url": "https://www.youtube.com/watch?v=RNRQ7ehHNgM"
+              "url": "https://www.youtube.com/watch?v=RNRQ7ehHNgM",
+              "start": 243
             },
             {
               "id": "2",
@@ -9557,7 +9834,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Isaiah 66, Jeremiah 1-3",
-              "url": "https://www.youtube.com/watch?v=GEEs3cjiotU"
+              "url": "https://www.youtube.com/watch?v=GEEs3cjiotU",
+              "start": 390
             },
             {
               "id": "1",
@@ -9606,7 +9884,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Jeremiah 4-7",
-              "url": "https://www.youtube.com/watch?v=tjmHQh9blus"
+              "url": "https://www.youtube.com/watch?v=tjmHQh9blus",
+              "start": 25
             },
             {
               "id": "1",
@@ -9654,7 +9933,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Jeremiah 8-11",
-              "url": "https://www.youtube.com/watch?v=fmD9ZlU2G2E"
+              "url": "https://www.youtube.com/watch?v=fmD9ZlU2G2E",
+              "start": 266
             },
             {
               "id": "1",
@@ -9702,7 +9982,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Jeremiah 12-15",
-              "url": "https://www.youtube.com/watch?v=YGDhIfHM0mI"
+              "url": "https://www.youtube.com/watch?v=YGDhIfHM0mI",
+              "start": 205
             },
             {
               "id": "1",
@@ -9798,7 +10079,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Jeremiah 20-23",
-              "url": "https://www.youtube.com/watch?v=u8wkQzGDYS8"
+              "url": "https://www.youtube.com/watch?v=u8wkQzGDYS8",
+              "start": 321
             },
             {
               "id": "1",
@@ -9846,7 +10128,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Jeremiah 24-27",
-              "url": "https://www.youtube.com/watch?v=WJALYMdhzZM"
+              "url": "https://www.youtube.com/watch?v=WJALYMdhzZM",
+              "start": 140
             },
             {
               "id": "1",
@@ -9894,7 +10177,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Jeremiah 28-31",
-              "url": "https://www.youtube.com/watch?v=bdu25qT6WIo"
+              "url": "https://www.youtube.com/watch?v=bdu25qT6WIo",
+              "start": 23
             },
             {
               "id": "1",
@@ -9942,7 +10226,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Jeremiah 32-35",
-              "url": "https://www.youtube.com/watch?v=Vim7KEyumGs"
+              "url": "https://www.youtube.com/watch?v=Vim7KEyumGs",
+              "start": 285
             },
             {
               "id": "1",
@@ -9990,7 +10275,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Jeremiah 36-39",
-              "url": "https://www.youtube.com/watch?v=zYBMwgJ_BPo"
+              "url": "https://www.youtube.com/watch?v=zYBMwgJ_BPo",
+              "start": 373
             },
             {
               "id": "1",
@@ -10038,7 +10324,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Jeremiah 40-43",
-              "url": "https://www.youtube.com/watch?v=WFbUDbX_RAM"
+              "url": "https://www.youtube.com/watch?v=WFbUDbX_RAM",
+              "start": 495
             },
             {
               "id": "1",
@@ -10086,7 +10373,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Jeremiah 44-47",
-              "url": "https://www.youtube.com/watch?v=e9Rw4Ri2gvA"
+              "url": "https://www.youtube.com/watch?v=e9Rw4Ri2gvA",
+              "start": 559
             },
             {
               "id": "1",
@@ -10134,7 +10422,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Jeremiah 48-51",
-              "url": "https://www.youtube.com/watch?v=M1YHA1XOyGQ"
+              "url": "https://www.youtube.com/watch?v=M1YHA1XOyGQ",
+              "start": 339
             },
             {
               "id": "1",
@@ -10182,7 +10471,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Jeremiah 52- Lamentations 3",
-              "url": "https://www.youtube.com/watch?v=Zu8xpoOvNfk"
+              "url": "https://www.youtube.com/watch?v=Zu8xpoOvNfk",
+              "start": 960
             },
             {
               "id": "1",
@@ -10237,7 +10527,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Lamentation 4; Ezekiel 1-2",
-              "url": "https://www.youtube.com/watch?v=XF1J20wu0IQ"
+              "url": "https://www.youtube.com/watch?v=XF1J20wu0IQ",
+              "start": 498
             },
             {
               "id": "1",
@@ -10286,13 +10577,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ezekiel 3-6",
-              "url": "https://www.youtube.com/watch?v=BjZ1OOk4_mA"
+              "url": "https://www.youtube.com/watch?v=BjZ1OOk4_mA",
+              "start": 230
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Ezekiel 3-6",
-              "url": "https://www.youtube.com/watch?v=x26YIOemqvE"
+              "url": "https://www.youtube.com/watch?v=x26YIOemqvE",
+              "start": 230
             },
             {
               "id": "2",
@@ -10388,7 +10681,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ezekiel: 11-14",
-              "url": "https://www.youtube.com/watch?v=1aD5S5GVhqI"
+              "url": "https://www.youtube.com/watch?v=1aD5S5GVhqI",
+              "start": 471
             },
             {
               "id": "1",
@@ -10436,7 +10730,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ezekiel 15-18",
-              "url": "https://www.youtube.com/watch?v=eGnanJUMVTk"
+              "url": "https://www.youtube.com/watch?v=eGnanJUMVTk",
+              "start": 602
             },
             {
               "id": "1",
@@ -10484,7 +10779,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ezekiel 19-22",
-              "url": "https://www.youtube.com/watch?v=D4414DfVsEw"
+              "url": "https://www.youtube.com/watch?v=D4414DfVsEw",
+              "start": 310
             },
             {
               "id": "1",
@@ -10532,7 +10828,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ezekiel 23-26",
-              "url": "https://www.youtube.com/watch?v=ZS2FCVN7LuA"
+              "url": "https://www.youtube.com/watch?v=ZS2FCVN7LuA",
+              "start": 588
             },
             {
               "id": "1",
@@ -10580,7 +10877,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ezekiel 27-30",
-              "url": "https://www.youtube.com/watch?v=RnMccWhvplY"
+              "url": "https://www.youtube.com/watch?v=RnMccWhvplY",
+              "start": 346
             },
             {
               "id": "1",
@@ -10628,13 +10926,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ezekiel 28–31",
-              "url": "https://www.youtube.com/watch?v=Ia5QUey6ffs"
+              "url": "https://www.youtube.com/watch?v=Ia5QUey6ffs",
+              "start": 879
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Ezekiel 32–35",
-              "url": "https://www.youtube.com/watch?v=IND7LooU-iE"
+              "url": "https://www.youtube.com/watch?v=IND7LooU-iE",
+              "start": 207
             },
             {
               "id": "2",
@@ -10723,7 +11023,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ezekiel 39-42",
-              "url": "https://www.youtube.com/watch?v=sVJrxTkXdTk"
+              "url": "https://www.youtube.com/watch?v=sVJrxTkXdTk",
+              "start": 311
             },
             {
               "id": "1",
@@ -10771,13 +11072,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ezekiel 40–43",
-              "url": "https://www.youtube.com/watch?v=K-jKs8SX6eY"
+              "url": "https://www.youtube.com/watch?v=K-jKs8SX6eY",
+              "start": 1635
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Ezekiel 44–47",
-              "url": "https://www.youtube.com/watch?v=y7ytcYkdI7o"
+              "url": "https://www.youtube.com/watch?v=y7ytcYkdI7o",
+              "start": 9
             },
             {
               "id": "2",
@@ -10818,7 +11121,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ezekiel 47 - Daniel 2",
-              "url": "https://www.youtube.com/watch?v=24Q4Za8VoBo"
+              "url": "https://www.youtube.com/watch?v=24Q4Za8VoBo",
+              "start": 557
             },
             {
               "id": "1",
@@ -10867,7 +11171,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Daniel 3-6",
-              "url": "https://www.youtube.com/watch?v=s4BamK-b-6Q"
+              "url": "https://www.youtube.com/watch?v=s4BamK-b-6Q",
+              "start": 399
             },
             {
               "id": "1",
@@ -10915,7 +11220,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Daniel 7-10",
-              "url": "https://www.youtube.com/watch?v=IGxNPOu5bkk"
+              "url": "https://www.youtube.com/watch?v=IGxNPOu5bkk",
+              "start": 544
             },
             {
               "id": "1",
@@ -10963,7 +11269,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Daniel 11- Hosea 2",
-              "url": "https://www.youtube.com/watch?v=lXF_1mNMYWo"
+              "url": "https://www.youtube.com/watch?v=lXF_1mNMYWo",
+              "start": 362
             },
             {
               "id": "1",
@@ -11012,13 +11319,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Daniel 12, Hosea 1–3",
-              "url": "https://www.youtube.com/watch?v=lsTET69viVw"
+              "url": "https://www.youtube.com/watch?v=lsTET69viVw",
+              "start": 951
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Hosea 4–7",
-              "url": "https://www.youtube.com/watch?v=nkjhGuf6u2Q"
+              "url": "https://www.youtube.com/watch?v=nkjhGuf6u2Q",
+              "start": 209
             },
             {
               "id": "2",
@@ -11059,13 +11368,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Hosea 4–7",
-              "url": "https://www.youtube.com/watch?v=nkjhGuf6u2Q"
+              "url": "https://www.youtube.com/watch?v=nkjhGuf6u2Q",
+              "start": 665
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Hosea 8–11",
-              "url": "https://www.youtube.com/watch?v=_z0mfAzWPwg"
+              "url": "https://www.youtube.com/watch?v=_z0mfAzWPwg",
+              "start": 48
             },
             {
               "id": "2",
@@ -11113,7 +11424,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Hoea 11-14",
-              "url": "https://www.youtube.com/watch?v=wh_kcET7Neo"
+              "url": "https://www.youtube.com/watch?v=wh_kcET7Neo",
+              "start": 662
             },
             {
               "id": "1",
@@ -11161,7 +11473,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Joel 1- Amos 1",
-              "url": "https://www.youtube.com/watch?v=G3YQazAY08k"
+              "url": "https://www.youtube.com/watch?v=G3YQazAY08k",
+              "start": 819
             },
             {
               "id": "1",
@@ -11210,7 +11523,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Amos 2-5",
-              "url": "https://www.youtube.com/watch?v=m7IHxFkBYUM"
+              "url": "https://www.youtube.com/watch?v=m7IHxFkBYUM",
+              "start": 357
             },
             {
               "id": "1",
@@ -11258,7 +11572,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Amos 6-9",
-              "url": "https://www.youtube.com/watch?v=VphnVIa0xNo"
+              "url": "https://www.youtube.com/watch?v=VphnVIa0xNo",
+              "start": 146
             },
             {
               "id": "1",
@@ -11306,13 +11621,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Amos 7–9, Obadiah 1",
-              "url": "https://www.youtube.com/watch?v=6T9GSJm78Wk"
+              "url": "https://www.youtube.com/watch?v=6T9GSJm78Wk",
+              "start": 556
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Jonah 1–4",
-              "url": "https://www.youtube.com/watch?v=FNu59Xl-uIs"
+              "url": "https://www.youtube.com/watch?v=FNu59Xl-uIs",
+              "start": 16
             },
             {
               "id": "2",
@@ -11361,13 +11678,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Jonah 1–4",
-              "url": "https://www.youtube.com/watch?v=FNu59Xl-uIs"
+              "url": "https://www.youtube.com/watch?v=FNu59Xl-uIs",
+              "start": 362
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Micah 1–4",
-              "url": "https://www.youtube.com/watch?v=C0Egm9vLFdk"
+              "url": "https://www.youtube.com/watch?v=C0Egm9vLFdk",
+              "start": 43
             },
             {
               "id": "2",
@@ -11416,13 +11735,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Micah 1–4",
-              "url": "https://www.youtube.com/watch?v=C0Egm9vLFdk"
+              "url": "https://www.youtube.com/watch?v=C0Egm9vLFdk",
+              "start": 571
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Micah 5–7, Nahum 1",
-              "url": "https://www.youtube.com/watch?v=KH4BO91mjeQ"
+              "url": "https://www.youtube.com/watch?v=KH4BO91mjeQ",
+              "start": 255
             },
             {
               "id": "2",
@@ -11470,13 +11791,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Micah 5–7, Nahum 1",
-              "url": "https://www.youtube.com/watch?v=KH4BO91mjeQ"
+              "url": "https://www.youtube.com/watch?v=KH4BO91mjeQ",
+              "start": 615
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Nahum 2–3, Habakkuk 1–2",
-              "url": "https://www.youtube.com/watch?v=_TR2iMjA8HA"
+              "url": "https://www.youtube.com/watch?v=_TR2iMjA8HA",
+              "start": 106
             },
             {
               "id": "2",
@@ -11525,13 +11848,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Nahum 2–3, Habakkuk 1–2",
-              "url": "https://www.youtube.com/watch?v=_TR2iMjA8HA"
+              "url": "https://www.youtube.com/watch?v=_TR2iMjA8HA",
+              "start": 422
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Habakkuk 3, Zephaniah 1–3",
-              "url": "https://www.youtube.com/watch?v=oPl2YArkmaA"
+              "url": "https://www.youtube.com/watch?v=oPl2YArkmaA",
+              "start": 43
             },
             {
               "id": "2",
@@ -11580,7 +11905,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Haggai 2, Zechariah 1–3",
-              "url": "https://www.youtube.com/watch?v=8gLWYfMdFz0"
+              "url": "https://www.youtube.com/watch?v=8gLWYfMdFz0",
+              "start": 421
             },
             {
               "id": "1",
@@ -11630,13 +11956,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Haggai 2, Zechariah 1–3",
-              "url": "https://www.youtube.com/watch?v=8gLWYfMdFz0"
+              "url": "https://www.youtube.com/watch?v=8gLWYfMdFz0",
+              "start": 1155
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Zechariah 4–7",
-              "url": "https://www.youtube.com/watch?v=hafly3NWEwY"
+              "url": "https://www.youtube.com/watch?v=hafly3NWEwY",
+              "start": 327
             },
             {
               "id": "2",
@@ -11684,13 +12012,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Zechariah 4–7",
-              "url": "https://www.youtube.com/watch?v=hafly3NWEwY"
+              "url": "https://www.youtube.com/watch?v=hafly3NWEwY",
+              "start": 473
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Zechariah 8–11",
-              "url": "https://www.youtube.com/watch?v=3Ft1DnNvqlw"
+              "url": "https://www.youtube.com/watch?v=3Ft1DnNvqlw",
+              "start": 399
             },
             {
               "id": "2",
@@ -11738,7 +12068,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Zechariah 8–11",
-              "url": "https://www.youtube.com/watch?v=3Ft1DnNvqlw"
+              "url": "https://www.youtube.com/watch?v=3Ft1DnNvqlw",
+              "start": 1831
             },
             {
               "id": "1",
@@ -11786,7 +12117,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Zechariah 11–14",
-              "url": "https://www.youtube.com/watch?v=U5RQ6n4dLbw"
+              "url": "https://www.youtube.com/watch?v=U5RQ6n4dLbw",
+              "start": 645
             },
             {
               "id": "1",
@@ -11814,7 +12146,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Esdras 1–4",
-              "url": "https://www.youtube.com/watch?v=4uOCNVWGRZ4"
+              "url": "https://www.youtube.com/watch?v=4uOCNVWGRZ4",
+              "start": 385
             },
             {
               "id": "1",
@@ -11863,13 +12196,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Esdras 1–4",
-              "url": "https://www.youtube.com/watch?v=4uOCNVWGRZ4"
+              "url": "https://www.youtube.com/watch?v=4uOCNVWGRZ4",
+              "start": 1844
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 1 Esdras 5–8",
-              "url": "https://www.youtube.com/watch?v=Mw3rACs22Gk"
+              "url": "https://www.youtube.com/watch?v=Mw3rACs22Gk",
+              "start": 129
             },
             {
               "id": "2",
@@ -11917,13 +12252,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Esdras 5–8",
-              "url": "https://www.youtube.com/watch?v=Mw3rACs22Gk"
+              "url": "https://www.youtube.com/watch?v=Mw3rACs22Gk",
+              "start": 1592
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 1 Esdras 9, 2 Esdras 1–3",
-              "url": "https://www.youtube.com/watch?v=Yappu2S73A4"
+              "url": "https://www.youtube.com/watch?v=Yappu2S73A4",
+              "start": 138
             },
             {
               "id": "2",
@@ -11972,13 +12309,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Esdras 9, 2 Esdras 1–3",
-              "url": "https://www.youtube.com/watch?v=Yappu2S73A4"
+              "url": "https://www.youtube.com/watch?v=Yappu2S73A4",
+              "start": 1301
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 Esdras 4–7",
-              "url": "https://www.youtube.com/watch?v=phgwveZlkh0"
+              "url": "https://www.youtube.com/watch?v=phgwveZlkh0",
+              "start": 152
             },
             {
               "id": "2",
@@ -12026,13 +12365,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Esdras 4–7",
-              "url": "https://www.youtube.com/watch?v=phgwveZlkh0"
+              "url": "https://www.youtube.com/watch?v=phgwveZlkh0",
+              "start": 1721
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 Esdras 8–11",
-              "url": "https://www.youtube.com/watch?v=P4xS35icSdU"
+              "url": "https://www.youtube.com/watch?v=P4xS35icSdU",
+              "start": 93
             },
             {
               "id": "2",
@@ -12080,13 +12421,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Esdras 8–11",
-              "url": "https://www.youtube.com/watch?v=P4xS35icSdU"
+              "url": "https://www.youtube.com/watch?v=P4xS35icSdU",
+              "start": 1271
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 Esdras 12–15",
-              "url": "https://www.youtube.com/watch?v=2xrZuDavC4U"
+              "url": "https://www.youtube.com/watch?v=2xrZuDavC4U",
+              "start": 86
             },
             {
               "id": "2",
@@ -12134,13 +12477,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Esdras 12–15",
-              "url": "https://www.youtube.com/watch?v=2xrZuDavC4U"
+              "url": "https://www.youtube.com/watch?v=2xrZuDavC4U",
+              "start": 1252
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: 2 Esdras 16, Tobit 1–3",
-              "url": "https://www.youtube.com/watch?v=RsknJnvIFE0"
+              "url": "https://www.youtube.com/watch?v=RsknJnvIFE0",
+              "start": 533
             },
             {
               "id": "2",
@@ -12168,13 +12513,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Esdras 16, Tobit 1–3",
-              "url": "https://www.youtube.com/watch?v=RsknJnvIFE0"
+              "url": "https://www.youtube.com/watch?v=RsknJnvIFE0",
+              "start": 1783
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Tobit 4–7",
-              "url": "https://www.youtube.com/watch?v=-NqUMJHI3Pc"
+              "url": "https://www.youtube.com/watch?v=-NqUMJHI3Pc",
+              "start": 272
             },
             {
               "id": "2",
@@ -12199,13 +12546,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Tobit 4–7",
-              "url": "https://www.youtube.com/watch?v=-NqUMJHI3Pc"
+              "url": "https://www.youtube.com/watch?v=-NqUMJHI3Pc",
+              "start": 753
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Tobit 8–11",
-              "url": "https://www.youtube.com/watch?v=BtB-ZaoBC7Q"
+              "url": "https://www.youtube.com/watch?v=BtB-ZaoBC7Q",
+              "start": 24
             },
             {
               "id": "2",
@@ -12230,13 +12579,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Tobit 8–11",
-              "url": "https://www.youtube.com/watch?v=BtB-ZaoBC7Q"
+              "url": "https://www.youtube.com/watch?v=BtB-ZaoBC7Q",
+              "start": 330
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Tobit 12–14, Judith 1",
-              "url": "https://www.youtube.com/watch?v=B9pawl8utgw"
+              "url": "https://www.youtube.com/watch?v=B9pawl8utgw",
+              "start": 86
             },
             {
               "id": "2",
@@ -12261,13 +12612,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Tobit 12–14, Judith 1",
-              "url": "https://www.youtube.com/watch?v=B9pawl8utgw"
+              "url": "https://www.youtube.com/watch?v=B9pawl8utgw",
+              "start": 798
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Judith 2–5",
-              "url": "https://www.youtube.com/watch?v=aigx2ygCbfQ"
+              "url": "https://www.youtube.com/watch?v=aigx2ygCbfQ",
+              "start": 216
             },
             {
               "id": "2",
@@ -12292,13 +12645,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Judith 2–5",
-              "url": "https://www.youtube.com/watch?v=aigx2ygCbfQ"
+              "url": "https://www.youtube.com/watch?v=aigx2ygCbfQ",
+              "start": 809
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Judith 6–9",
-              "url": "https://www.youtube.com/watch?v=03AE99evqq0"
+              "url": "https://www.youtube.com/watch?v=03AE99evqq0",
+              "start": 222
             },
             {
               "id": "2",
@@ -12323,13 +12678,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Judith 6–9",
-              "url": "https://www.youtube.com/watch?v=03AE99evqq0"
+              "url": "https://www.youtube.com/watch?v=03AE99evqq0",
+              "start": 1491
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Judith 10–13",
-              "url": "https://www.youtube.com/watch?v=aV5Eq5FucD8"
+              "url": "https://www.youtube.com/watch?v=aV5Eq5FucD8",
+              "start": 22
             },
             {
               "id": "2",
@@ -12354,13 +12711,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Judith 10–13",
-              "url": "https://www.youtube.com/watch?v=aV5Eq5FucD8"
+              "url": "https://www.youtube.com/watch?v=aV5Eq5FucD8",
+              "start": 937
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Judith 14–16, Rest of Esther 10",
-              "url": "https://www.youtube.com/watch?v=Cou9U6SCahk"
+              "url": "https://www.youtube.com/watch?v=Cou9U6SCahk",
+              "start": 258
             },
             {
               "id": "2",
@@ -12385,13 +12744,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Esther 10-12",
-              "url": "https://www.youtube.com/watch?v=6QziCtvEKMw"
+              "url": "https://www.youtube.com/watch?v=6QziCtvEKMw",
+              "start": 896
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Esther 13-16",
-              "url": "https://www.youtube.com/watch?v=hCnnAV0p30g"
+              "url": "https://www.youtube.com/watch?v=hCnnAV0p30g",
+              "start": 446
             },
             {
               "id": "2",
@@ -12439,7 +12800,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Esther 13-16",
-              "url": "https://www.youtube.com/watch?v=hCnnAV0p30g"
+              "url": "https://www.youtube.com/watch?v=hCnnAV0p30g",
+              "start": 1012
             },
             {
               "id": "1",
@@ -12481,13 +12843,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Rest of Esther 15–16, Wisdom of Solomon 1–2",
-              "url": "https://www.youtube.com/watch?v=Flm-iKChJ_4"
+              "url": "https://www.youtube.com/watch?v=Flm-iKChJ_4",
+              "start": 2687
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Wisdom of Solomon 3–6",
-              "url": "https://www.youtube.com/watch?v=u-tfPb7boaM"
+              "url": "https://www.youtube.com/watch?v=u-tfPb7boaM",
+              "start": 206
             },
             {
               "id": "2",
@@ -12512,13 +12876,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Wisdom of Solomon 3–6",
-              "url": "https://www.youtube.com/watch?v=u-tfPb7boaM"
+              "url": "https://www.youtube.com/watch?v=u-tfPb7boaM",
+              "start": 746
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Wisdom of Solomon 7–10",
-              "url": "https://www.youtube.com/watch?v=eb4eISBmqZA"
+              "url": "https://www.youtube.com/watch?v=eb4eISBmqZA",
+              "start": 220
             },
             {
               "id": "2",
@@ -12543,13 +12909,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Wisdom of Solomon 7–10",
-              "url": "https://www.youtube.com/watch?v=eb4eISBmqZA"
+              "url": "https://www.youtube.com/watch?v=eb4eISBmqZA",
+              "start": 828
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Wisdom of Solomon 11–14",
-              "url": "https://www.youtube.com/watch?v=hkWKziuclnM"
+              "url": "https://www.youtube.com/watch?v=hkWKziuclnM",
+              "start": 399
             },
             {
               "id": "2",
@@ -12574,13 +12942,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Wisdom of Solomon 11–14",
-              "url": "https://www.youtube.com/watch?v=hkWKziuclnM"
+              "url": "https://www.youtube.com/watch?v=hkWKziuclnM",
+              "start": 1324
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Wisdom of Solomon 15–18",
-              "url": "https://www.youtube.com/watch?v=L865cMT4WI0"
+              "url": "https://www.youtube.com/watch?v=L865cMT4WI0",
+              "start": 24
             },
             {
               "id": "2",
@@ -12605,13 +12975,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Wisdom of Solomon 15–18",
-              "url": "https://www.youtube.com/watch?v=L865cMT4WI0"
+              "url": "https://www.youtube.com/watch?v=L865cMT4WI0",
+              "start": 939
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Wisdom of Solomon 19, Ecclesiasticus 1–3",
-              "url": "https://www.youtube.com/watch?v=Mz3qtRTJcws"
+              "url": "https://www.youtube.com/watch?v=Mz3qtRTJcws",
+              "start": 46
             },
             {
               "id": "2",
@@ -12642,13 +13014,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Wisdom of Solomon 19, Ecclesiasticus 1–3",
-              "url": "https://www.youtube.com/watch?v=Mz3qtRTJcws"
+              "url": "https://www.youtube.com/watch?v=Mz3qtRTJcws",
+              "start": 694
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Ecclesiasticus 4–7",
-              "url": "https://www.youtube.com/watch?v=0Pmf7brWzCw"
+              "url": "https://www.youtube.com/watch?v=0Pmf7brWzCw",
+              "start": 102
             },
             {
               "id": "2",
@@ -12673,13 +13047,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ecclesiasticus 4–7",
-              "url": "https://www.youtube.com/watch?v=0Pmf7brWzCw"
+              "url": "https://www.youtube.com/watch?v=0Pmf7brWzCw",
+              "start": 697
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Ecclesiasticus 8–11",
-              "url": "https://www.youtube.com/watch?v=MpghDnimuIE"
+              "url": "https://www.youtube.com/watch?v=MpghDnimuIE",
+              "start": 122
             },
             {
               "id": "2",
@@ -12704,13 +13080,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ecclesiasticus 8–11",
-              "url": "https://www.youtube.com/watch?v=MpghDnimuIE"
+              "url": "https://www.youtube.com/watch?v=MpghDnimuIE",
+              "start": 2434
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Ecclesiasticus 12–15",
-              "url": "https://www.youtube.com/watch?v=lOGjdYPHSFs"
+              "url": "https://www.youtube.com/watch?v=lOGjdYPHSFs",
+              "start": 97
             },
             {
               "id": "2",
@@ -12735,13 +13113,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ecclesiasticus 12–15",
-              "url": "https://www.youtube.com/watch?v=lOGjdYPHSFs"
+              "url": "https://www.youtube.com/watch?v=lOGjdYPHSFs",
+              "start": 2942
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Ecclesiasticus 16–19",
-              "url": "https://www.youtube.com/watch?v=EpdmVAxV_u8"
+              "url": "https://www.youtube.com/watch?v=EpdmVAxV_u8",
+              "start": 34
             },
             {
               "id": "2",
@@ -12766,13 +13146,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ecclesiasticus 16–19",
-              "url": "https://www.youtube.com/watch?v=EpdmVAxV_u8"
+              "url": "https://www.youtube.com/watch?v=EpdmVAxV_u8",
+              "start": 1013
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Ecclesiasticus 20–23",
-              "url": "https://www.youtube.com/watch?v=QpDUejvHxxw"
+              "url": "https://www.youtube.com/watch?v=QpDUejvHxxw",
+              "start": 140
             },
             {
               "id": "2",
@@ -12797,13 +13179,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ecclesiasticus 20–23",
-              "url": "https://www.youtube.com/watch?v=QpDUejvHxxw"
+              "url": "https://www.youtube.com/watch?v=QpDUejvHxxw",
+              "start": 1082
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Ecclesiasticus 24–27",
-              "url": "https://www.youtube.com/watch?v=F88samsajl8"
+              "url": "https://www.youtube.com/watch?v=F88samsajl8",
+              "start": 99
             },
             {
               "id": "2",
@@ -12828,13 +13212,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ecclesiasticus 24–27",
-              "url": "https://www.youtube.com/watch?v=F88samsajl8"
+              "url": "https://www.youtube.com/watch?v=F88samsajl8",
+              "start": 3421
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Ecclesiasticus 28–31",
-              "url": "https://www.youtube.com/watch?v=arkHdRJfZ-g"
+              "url": "https://www.youtube.com/watch?v=arkHdRJfZ-g",
+              "start": 67
             },
             {
               "id": "2",
@@ -12859,13 +13245,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ecclesiasticus 28–31",
-              "url": "https://www.youtube.com/watch?v=arkHdRJfZ-g"
+              "url": "https://www.youtube.com/watch?v=arkHdRJfZ-g",
+              "start": 843
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Ecclesiasticus 32–35",
-              "url": "https://www.youtube.com/watch?v=yU4bcANJwx8"
+              "url": "https://www.youtube.com/watch?v=yU4bcANJwx8",
+              "start": 51
             },
             {
               "id": "2",
@@ -12890,13 +13278,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ecclesiasticus 32–35",
-              "url": "https://www.youtube.com/watch?v=yU4bcANJwx8"
+              "url": "https://www.youtube.com/watch?v=yU4bcANJwx8",
+              "start": 498
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Ecclesiasticus 36–39",
-              "url": "https://www.youtube.com/watch?v=B9vvt0gVhsM"
+              "url": "https://www.youtube.com/watch?v=B9vvt0gVhsM",
+              "start": 161
             },
             {
               "id": "2",
@@ -12921,13 +13311,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ecclesiasticus 36–39",
-              "url": "https://www.youtube.com/watch?v=B9vvt0gVhsM"
+              "url": "https://www.youtube.com/watch?v=B9vvt0gVhsM",
+              "start": 1050
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Ecclesiasticus 40–43",
-              "url": "https://www.youtube.com/watch?v=cDuJ3PeOSYk"
+              "url": "https://www.youtube.com/watch?v=cDuJ3PeOSYk",
+              "start": 250
             },
             {
               "id": "2",
@@ -12952,13 +13344,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ecclesiasticus 40–43",
-              "url": "https://www.youtube.com/watch?v=cDuJ3PeOSYk"
+              "url": "https://www.youtube.com/watch?v=cDuJ3PeOSYk",
+              "start": 706
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Ecclesiasticus 44–47",
-              "url": "https://www.youtube.com/watch?v=suBHf9JbVog"
+              "url": "https://www.youtube.com/watch?v=suBHf9JbVog",
+              "start": 126
             },
             {
               "id": "2",
@@ -12983,7 +13377,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Ecclesiasticus 44–47",
-              "url": "https://www.youtube.com/watch?v=suBHf9JbVog"
+              "url": "https://www.youtube.com/watch?v=suBHf9JbVog",
+              "start": 824
             },
             {
               "id": "1",
@@ -13240,7 +13635,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Matthew 2–5",
-              "url": "https://www.youtube.com/watch?v=4hcG4hB0o-o"
+              "url": "https://www.youtube.com/watch?v=4hcG4hB0o-o",
+              "start": 277
             },
             {
               "id": "1",
@@ -13275,7 +13671,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Matthew 2–5",
-              "url": "https://www.youtube.com/watch?v=4hcG4hB0o-o"
+              "url": "https://www.youtube.com/watch?v=4hcG4hB0o-o",
+              "start": 1364
             },
             {
               "id": "1",
@@ -13316,7 +13713,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Matthew 10–13",
-              "url": "https://www.youtube.com/watch?v=QJ6gPpJItcY"
+              "url": "https://www.youtube.com/watch?v=QJ6gPpJItcY",
+              "start": 56
             },
             {
               "id": "1",
@@ -13343,7 +13741,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Matthew 10–13",
-              "url": "https://www.youtube.com/watch?v=QJ6gPpJItcY"
+              "url": "https://www.youtube.com/watch?v=QJ6gPpJItcY",
+              "start": 912
             },
             {
               "id": "1",
@@ -13384,7 +13783,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Matthew 18–21",
-              "url": "https://www.youtube.com/watch?v=BseqNSLZ10Y"
+              "url": "https://www.youtube.com/watch?v=BseqNSLZ10Y",
+              "start": 566
             },
             {
               "id": "1",
@@ -13411,13 +13811,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Matthew 18–21",
-              "url": "https://www.youtube.com/watch?v=BseqNSLZ10Y"
+              "url": "https://www.youtube.com/watch?v=BseqNSLZ10Y",
+              "start": 1543
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Matthew 22–25",
-              "url": "https://www.youtube.com/watch?v=xT9pPDaWvNc"
+              "url": "https://www.youtube.com/watch?v=xT9pPDaWvNc",
+              "start": 342
             },
             {
               "id": "2",
@@ -13465,7 +13867,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Matthew 22–25",
-              "url": "https://www.youtube.com/watch?v=xT9pPDaWvNc"
+              "url": "https://www.youtube.com/watch?v=xT9pPDaWvNc",
+              "start": 887
             },
             {
               "id": "1",
@@ -13531,7 +13934,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Mark 6–9",
-              "url": "https://www.youtube.com/watch?v=zyDLOJIu15k"
+              "url": "https://www.youtube.com/watch?v=zyDLOJIu15k",
+              "start": 107
             },
             {
               "id": "1",
@@ -13558,13 +13962,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Mark 6–9",
-              "url": "https://www.youtube.com/watch?v=zyDLOJIu15k"
+              "url": "https://www.youtube.com/watch?v=zyDLOJIu15k",
+              "start": 912
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Mark 10–13",
-              "url": "https://www.youtube.com/watch?v=Bs9Yer2qxa8"
+              "url": "https://www.youtube.com/watch?v=Bs9Yer2qxa8",
+              "start": 170
             },
             {
               "id": "2",
@@ -13612,7 +14018,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Mark 10–13",
-              "url": "https://www.youtube.com/watch?v=Bs9Yer2qxa8"
+              "url": "https://www.youtube.com/watch?v=Bs9Yer2qxa8",
+              "start": 786
             },
             {
               "id": "1",
@@ -13653,7 +14060,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Luke 2–5",
-              "url": "https://www.youtube.com/watch?v=7X6EGZ1b-4U"
+              "url": "https://www.youtube.com/watch?v=7X6EGZ1b-4U",
+              "start": 452
             },
             {
               "id": "1",
@@ -13681,13 +14089,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Luke 2–5",
-              "url": "https://www.youtube.com/watch?v=7X6EGZ1b-4U"
+              "url": "https://www.youtube.com/watch?v=7X6EGZ1b-4U",
+              "start": 1164
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Luke 6–9",
-              "url": "https://www.youtube.com/watch?v=PcbMQgZMllQ"
+              "url": "https://www.youtube.com/watch?v=PcbMQgZMllQ",
+              "start": 545
             },
             {
               "id": "2",
@@ -13735,13 +14145,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Luke 6–9",
-              "url": "https://www.youtube.com/watch?v=PcbMQgZMllQ"
+              "url": "https://www.youtube.com/watch?v=PcbMQgZMllQ",
+              "start": 1024
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: Luke 10–13",
-              "url": "https://www.youtube.com/watch?v=rbe14dyrkmI"
+              "url": "https://www.youtube.com/watch?v=rbe14dyrkmI",
+              "start": 587
             },
             {
               "id": "2",
@@ -13789,7 +14201,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Luke 10–13",
-              "url": "https://www.youtube.com/watch?v=rbe14dyrkmI"
+              "url": "https://www.youtube.com/watch?v=rbe14dyrkmI",
+              "start": 1357
             },
             {
               "id": "1",
@@ -13849,7 +14262,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Luke 22–24, John 1",
-              "url": "https://www.youtube.com/watch?v=0R3FQuEf6ms"
+              "url": "https://www.youtube.com/watch?v=0R3FQuEf6ms",
+              "start": 412
             },
             {
               "id": "1",
@@ -13876,13 +14290,15 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Luke 22–24, John 1",
-              "url": "https://www.youtube.com/watch?v=0R3FQuEf6ms"
+              "url": "https://www.youtube.com/watch?v=0R3FQuEf6ms",
+              "start": 1522
             },
             {
               "id": "1",
               "type": "Video",
               "title": "The class: John 2–5",
-              "url": "https://www.youtube.com/watch?v=_FE03UwLfy0"
+              "url": "https://www.youtube.com/watch?v=_FE03UwLfy0",
+              "start": 353
             },
             {
               "id": "2",
@@ -13931,7 +14347,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: John 2–5",
-              "url": "https://www.youtube.com/watch?v=_FE03UwLfy0"
+              "url": "https://www.youtube.com/watch?v=_FE03UwLfy0",
+              "start": 1471
             },
             {
               "id": "1",
@@ -14620,7 +15037,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Timothy 1–4",
-              "url": "https://www.youtube.com/watch?v=um_MzoEYask"
+              "url": "https://www.youtube.com/watch?v=um_MzoEYask",
+              "start": 493
             },
             {
               "id": "1",
@@ -14645,7 +15063,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Timothy 5–6, 2 Timothy 1–2",
-              "url": "https://www.youtube.com/watch?v=Xp5JYGtZ43g"
+              "url": "https://www.youtube.com/watch?v=Xp5JYGtZ43g",
+              "start": 725
             },
             {
               "id": "1",
@@ -14676,7 +15095,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 2 Timothy 3–4, Titus 1–2",
-              "url": "https://www.youtube.com/watch?v=9s3_xP-3uls"
+              "url": "https://www.youtube.com/watch?v=9s3_xP-3uls",
+              "start": 120
             },
             {
               "id": "1",
@@ -14738,7 +15158,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Hebrews 3–6",
-              "url": "https://www.youtube.com/watch?v=U4frQL9_fho"
+              "url": "https://www.youtube.com/watch?v=U4frQL9_fho",
+              "start": 382
             },
             {
               "id": "1",
@@ -14782,7 +15203,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Hebrews 11–13, James 1",
-              "url": "https://www.youtube.com/watch?v=p7rkiOtjbF8"
+              "url": "https://www.youtube.com/watch?v=p7rkiOtjbF8",
+              "start": 796
             },
             {
               "id": "1",
@@ -14813,7 +15235,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: James 2–5",
-              "url": "https://www.youtube.com/watch?v=1LOVEdcSBP8"
+              "url": "https://www.youtube.com/watch?v=1LOVEdcSBP8",
+              "start": 53
             },
             {
               "id": "1",
@@ -14838,7 +15261,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Peter 1–4",
-              "url": "https://www.youtube.com/watch?v=_SpYRkWo_do"
+              "url": "https://www.youtube.com/watch?v=_SpYRkWo_do",
+              "start": 23
             },
             {
               "id": "1",
@@ -14863,7 +15287,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 Peter 5, 2 Peter 1–3",
-              "url": "https://www.youtube.com/watch?v=hFpeNsXhvGs"
+              "url": "https://www.youtube.com/watch?v=hFpeNsXhvGs",
+              "start": 16
             },
             {
               "id": "1",
@@ -14894,7 +15319,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 John 1–4",
-              "url": "https://www.youtube.com/watch?v=qJ08PQr9u9E"
+              "url": "https://www.youtube.com/watch?v=qJ08PQr9u9E",
+              "start": 381
             },
             {
               "id": "1",
@@ -14919,7 +15345,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: 1 John 5, 2 John 1, 3 John 1, Jude 1",
-              "url": "https://www.youtube.com/watch?v=-HSeS2dWD2U"
+              "url": "https://www.youtube.com/watch?v=-HSeS2dWD2U",
+              "start": 46
             },
             {
               "id": "1",
@@ -14962,7 +15389,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Revelation 1–4",
-              "url": "https://www.youtube.com/watch?v=T6s-FS6to8U"
+              "url": "https://www.youtube.com/watch?v=T6s-FS6to8U",
+              "start": 188
             },
             {
               "id": "1",
@@ -14987,7 +15415,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Revelation 5–8",
-              "url": "https://www.youtube.com/watch?v=HMqyTVblXuM"
+              "url": "https://www.youtube.com/watch?v=HMqyTVblXuM",
+              "start": 208
             },
             {
               "id": "1",
@@ -15012,7 +15441,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Revelation 9–12",
-              "url": "https://www.youtube.com/watch?v=a39-rewHszM"
+              "url": "https://www.youtube.com/watch?v=a39-rewHszM",
+              "start": 332
             },
             {
               "id": "1",
@@ -15037,7 +15467,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Revelation 13–16",
-              "url": "https://www.youtube.com/watch?v=7FREi8cErjs"
+              "url": "https://www.youtube.com/watch?v=7FREi8cErjs",
+              "start": 21
             },
             {
               "id": "1",
@@ -15062,7 +15493,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Revelation 17–20",
-              "url": "https://www.youtube.com/watch?v=Eonrss_45yw"
+              "url": "https://www.youtube.com/watch?v=Eonrss_45yw",
+              "start": 311
             },
             {
               "id": "1",
@@ -15087,7 +15519,8 @@
               "id": "0",
               "type": "Video",
               "title": "The class: Revelation 21–22",
-              "url": "https://www.youtube.com/watch?v=kfqCyY-mlTM"
+              "url": "https://www.youtube.com/watch?v=kfqCyY-mlTM",
+              "start": 45
             },
             {
               "id": "1",
