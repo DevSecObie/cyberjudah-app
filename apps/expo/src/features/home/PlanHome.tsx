@@ -14,7 +14,7 @@ import { hasPlanParticipation } from '~features/plans/planProgress'
 import FollowedPlanCard from '~features/plans/FollowedPlanCard'
 import useLanguage from '~helpers/useLanguage'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
-import { addPlan } from '~redux/modules/plan'
+import { addPlan, replacePlan } from '~redux/modules/plan'
 import type { RootState } from '~redux/modules/reducer'
 
 const readResponseText = async (response: Response): Promise<string> => {
@@ -63,19 +63,21 @@ const useGetFirstPlans = () => {
   const hasPlan = useSelector((state: RootState) =>
     state.plan.myPlans.some(plan => plan.id === planId)
   )
+  // Our bundled plan is refreshed on every open, so a phone that added it earlier gets new rows.
+  const refreshBundled = usesCyberJudahEditorial()
   const dispatch = useDispatch()
   useEffect(() => {
-    if (hasPlan) return
+    if (hasPlan && !refreshBundled) return
     let active = true
     void loadBundledPlan(lang)
       .then(plan => {
-        if (active && plan) dispatch(addPlan(plan))
+        if (active && plan) dispatch(refreshBundled ? replacePlan(plan) : addPlan(plan))
       })
       .catch(error => console.warn('[Home] Could not load bundled reading plan', error))
     return () => {
       active = false
     }
-  }, [hasPlan, lang, dispatch])
+  }, [hasPlan, refreshBundled, lang, dispatch])
 }
 
 const PlanHome = ({ compact = false }: { compact?: boolean }) => {

@@ -162,6 +162,13 @@ const planSlice = createSlice({
       if (!state.myPlans.some(plan => plan.id === action.payload.id))
         state.myPlans.push(action.payload)
     },
+    // Puts the given copy in place of the stored one with the same id (or adds it), so a bundled
+    // plan picks up new days and rows. Reading progress lives under the slice ids and is kept.
+    replacePlan(state, action: PayloadAction<Plan>) {
+      const index = state.myPlans.findIndex(plan => plan.id === action.payload.id)
+      if (index === -1) state.myPlans.push(action.payload)
+      else state.myPlans[index] = action.payload
+    },
     markAsRead(state, action: PayloadAction<{ readingSliceId: string; planId: string }>) {
       const { readingSliceId, planId } = action.payload
       const plan = state.myPlans.find(p => p.id === planId)
@@ -252,6 +259,7 @@ export const {
   markEntitySliceAsUnread,
   removePlan,
   addPlan,
+  replacePlan,
   startPlan,
   setPlanReminder,
 } = planSlice.actions
