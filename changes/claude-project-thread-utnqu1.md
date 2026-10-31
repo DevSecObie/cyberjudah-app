@@ -25,3 +25,4 @@
 - A phone that added 4 Chapters a Day earlier now gets the latest copy of the plan (quiz rows and tonight's changes); reading progress is kept.
 - The 4 Chapters a Day quiz plays like a game: four colour tiles with shapes, a step bar that lights up, an "On a roll" streak, a green or red answer bar that rises from the bottom, and confetti when every answer is right.
 - 4 Chapters a Day (Obie): each day's class opens where the reading begins, a few seconds before the first verse, found from the class captions (scripts/find-four-chapters-reading-starts.py, scripts/data/four-chapters-a-day-starts.tsv). Classes without captions, or whose captions never read the chapter's opening, still open at the start or where the reader left off.
+- Day game (Obie): the quiz is now "Understandest thou what thou readest?" (Acts 8:30), on the day's row and on a new title card with the day's chapters, the rules and Start; answer tiles slide in one after another.

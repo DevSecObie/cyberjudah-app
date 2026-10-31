@@ -33,6 +33,9 @@ const TILES = [
   { color: '#8B5CF6', icon: 'square' },
   { color: '#0FA597', icon: 'hexagon' },
 ] as const
+// The game is named for Philip's question to the reader of Esaias.
+const GAME_TITLE = 'Understandest thou what thou readest?'
+const GAME_SOURCE = 'Acts 8:30'
 const CHEERS = ['Right!', 'Nice!', 'You got it!', 'Well read!', 'Spot on!']
 const CONFETTI = ['#4F6BF5', '#F29D12', '#8B5CF6', '#0FA597', '#E5484D', '#FFD43B']
 
@@ -92,6 +95,18 @@ const Confetti = () => {
   )
 }
 
+/** The day's chapter names, in reading order, from the loaded chapters. */
+const chapterNames = (
+  chapters: {
+    data?: { bookName: string; chapters: { viewMore: { params: { chapter: unknown } } }[] }
+  }[]
+) =>
+  chapters.flatMap(query =>
+    (query.data?.chapters ?? []).map(
+      chapter => `${query.data!.bookName} ${chapter.viewMore.params.chapter}`
+    )
+  )
+
 /**
  * The day's ten questions, one at a time, on the app's own glass. A question answered wrong comes
  * back at the end; the quiz is done only when every one has been answered right.
@@ -147,6 +162,8 @@ const PlanQuizScreen = () => {
   const [chosen, setChosen] = useState<string>()
   const [right, setRight] = useState<Set<number>>(new Set())
   const [missed, setMissed] = useState<Set<number>>(new Set())
+  // The game opens on its title card; the questions start when the reader is ready.
+  const [started, setStarted] = useState(false)
   // Right answers in a row; a run of them lights up "On a roll".
   const [streak, setStreak] = useState(0)
   const order = queue ?? questions.map((_, at) => at)
@@ -161,7 +178,19 @@ const PlanQuizScreen = () => {
   useEffect(() => {
     enter.setValue(0)
     Animated.spring(enter, { toValue: 1, useNativeDriver: true, bounciness: 6 }).start()
-  }, [current, order.length, enter])
+  }, [current, order.length, started, enter])
+  // The title card's tiles drop in one after another.
+  const intro = useRef(new Animated.Value(0)).current
+  useEffect(() => {
+    if (!loaded || started) return
+    intro.setValue(0)
+    Animated.spring(intro, { toValue: 1, useNativeDriver: true, bounciness: 10 }).start()
+  }, [loaded, started, intro])
+  const dayChapters = useMemo(
+    () => [...new Set(questions.length ? chapterNames(chapters) : [])],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [questions]
+  )
 
   const fill = useRef(new Animated.Value(0)).current
   useEffect(() => {
@@ -228,7 +257,7 @@ const PlanQuizScreen = () => {
     goBack()
   }
 
-  const title = slice?.type === 'Quiz' ? slice.title : 'Quiz'
+  const title = reading?.title || GAME_TITLE
   const titleFont = resolveFontFamily(theme.fontFamily.title)
   const comingBack = current !== undefined && missed.has(current)
   const cheer = CHEERS[(right.size + (current ?? 0)) % CHEERS.length]
@@ -261,41 +290,135 @@ const PlanQuizScreen = () => {
             }}
           >
             {/* One step per question, lit as each is answered right: no numbers. */}
-            <Box className="flex-row items-center gap-[10px]">
-              <Box className="flex-1 flex-row gap-[5px]">
-                {questions.map((_, at) => (
-                  <Box
-                    key={at}
-                    className="flex-1 h-[10px] rounded-full"
+            {started && (
+              <Box className="flex-row items-center gap-[10px]">
+                <Box className="flex-1 flex-row gap-[5px]">
+                  {questions.map((_, at) => (
+                    <Box
+                      key={at}
+                      className="flex-1 h-[10px] rounded-full"
+                      style={{
+                        backgroundColor: right.has(at) ? theme.colors.success : theme.colors.border,
+                      }}
+                    />
+                  ))}
+                </Box>
+                {onRoll && (
+                  <Animated.View
                     style={{
-                      backgroundColor: right.has(at) ? theme.colors.success : theme.colors.border,
+                      opacity: flame,
+                      transform: [
+                        { scale: flame.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] }) },
+                      ],
                     }}
-                  />
-                ))}
-              </Box>
-              {onRoll && (
-                <Animated.View
-                  style={{
-                    opacity: flame,
-                    transform: [
-                      { scale: flame.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] }) },
-                    ],
-                  }}
-                >
-                  <Box
-                    className="flex-row items-center gap-[4px] rounded-full px-[10px] py-[5px]"
-                    style={{ backgroundColor: theme.colors.secondary }}
                   >
-                    <FeatherIcon name="zap" size={14} color="white" />
-                    <Text className="text-[12px] font-bold" style={{ color: '#fff' }}>
-                      On a roll
-                    </Text>
-                  </Box>
-                </Animated.View>
-              )}
-            </Box>
+                    <Box
+                      className="flex-row items-center gap-[4px] rounded-full px-[10px] py-[5px]"
+                      style={{ backgroundColor: theme.colors.secondary }}
+                    >
+                      <FeatherIcon name="zap" size={14} color="white" />
+                      <Text className="text-[12px] font-bold" style={{ color: '#fff' }}>
+                        On a roll
+                      </Text>
+                    </Box>
+                  </Animated.View>
+                )}
+              </Box>
+            )}
 
-            {done ? (
+            {!started ? (
+              <Animated.View
+                style={{
+                  opacity: intro,
+                  transform: [
+                    { translateY: intro.interpolate({ inputRange: [0, 1], outputRange: [30, 0] }) },
+                  ],
+                }}
+              >
+                <Box className="rounded-[32px] px-[22px] pt-[30px] pb-[24px] gap-[18px] items-center overflow-hidden">
+                  <AskGlassBackdrop radius={32} />
+                  <Box className="flex-row gap-[10px]">
+                    {TILES.map((tile, at) => (
+                      <Animated.View
+                        key={tile.icon}
+                        style={{
+                          transform: [
+                            {
+                              translateY: intro.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [-40 - at * 18, 0],
+                              }),
+                            },
+                            { rotate: `${at % 2 ? 7 : -7}deg` },
+                          ],
+                        }}
+                      >
+                        <Box
+                          className="w-[50px] h-[50px] rounded-[16px] items-center justify-center"
+                          style={{
+                            backgroundColor: tile.color,
+                            borderBottomWidth: 5,
+                            borderBottomColor: 'rgba(0,0,0,0.18)',
+                          }}
+                        >
+                          <FeatherIcon name={tile.icon} size={22} color="white" />
+                        </Box>
+                      </Animated.View>
+                    ))}
+                  </Box>
+                  <VStack className="gap-[6px] items-center">
+                    <Text
+                      className="text-[30px] leading-[38px] text-center"
+                      style={{ fontFamily: titleFont }}
+                    >
+                      {GAME_TITLE}
+                    </Text>
+                    <Text className="text-grey text-[15px] font-bold">{GAME_SOURCE}</Text>
+                  </VStack>
+                  <Box className="flex-row flex-wrap justify-center gap-[8px]">
+                    {dayChapters.map(name => (
+                      <Box
+                        key={name}
+                        className="flex-row items-center gap-[5px] rounded-full px-[12px] py-[6px]"
+                        style={{ backgroundColor: theme.colors.lightPrimary }}
+                      >
+                        <FeatherIcon name="book-open" size={13} color="primary" />
+                        <Text
+                          className="text-[13px] font-bold"
+                          style={{ color: theme.colors.primary }}
+                        >
+                          {name}
+                        </Text>
+                      </Box>
+                    ))}
+                  </Box>
+                  <VStack className="self-stretch gap-[10px] pt-[4px]">
+                    {(
+                      [
+                        { icon: 'target', text: 'Answer every question right to finish.' },
+                        { icon: 'rotate-ccw', text: 'A wrong answer comes back until you get it.' },
+                        { icon: 'zap', text: 'Answer three in a row and you are on a roll.' },
+                      ] as const
+                    ).map(rule => (
+                      <Box key={rule.icon} className="flex-row items-center gap-[12px]">
+                        <Box
+                          className="w-[32px] h-[32px] rounded-full items-center justify-center"
+                          style={{ backgroundColor: theme.colors.lightPrimary }}
+                        >
+                          <FeatherIcon name={rule.icon} size={15} color="primary" />
+                        </Box>
+                        <Text className="flex-1 text-[15px] leading-[21px]">{rule.text}</Text>
+                      </Box>
+                    ))}
+                  </VStack>
+                  <Box className="self-stretch pt-[6px]">
+                    <Button success onPress={() => setStarted(true)}>
+                      Start
+                    </Button>
+                  </Box>
+                </Box>
+              </Animated.View>
+            ) : done ? (
               <VStack className="gap-[18px] items-center pt-[40px]">
                 <Box
                   className="w-[132px] h-[132px] rounded-full items-center justify-center"
@@ -313,7 +436,7 @@ const PlanQuizScreen = () => {
                   Every answer right
                 </Text>
                 <Text className="text-grey text-[17px] text-center leading-[25px]">
-                  You know these chapters. The day&apos;s quiz is done.
+                  You understand what you read in {reading?.title || dayChapters.join(', ')}.
                 </Text>
                 <Box className="self-stretch pt-[10px]">
                   <Button success onPress={finish}>
@@ -400,7 +523,15 @@ const PlanQuizScreen = () => {
                           style={{
                             width: '48.5%',
                             opacity: state === 'faded' ? 0.4 : 1,
-                            transform: [{ scale: picked ? pop : 1 }],
+                            transform: [
+                              { scale: picked ? pop : 1 },
+                              {
+                                translateY: enter.interpolate({
+                                  inputRange: [0, 1],
+                                  outputRange: [24 + at * 12, 0],
+                                }),
+                              },
+                            ],
                           }}
                         >
                           <TouchableBox

@@ -266,11 +266,12 @@ const sliceFor = (day, dayNumber) => {
         type: 'Chapter',
         chapters: `${run.book.id}|${run.from === run.to ? run.from : `${run.from}-${run.to}`}`,
       })
-  // Last, ten questions on the day's chapters, drawn from their own text in the app.
+  // Last, the day's game: ten questions on its chapters, drawn from their own text in the app,
+  // named for Philip's question (Acts 8:30).
   slices.push({
     id: String(slices.length),
     type: 'Quiz',
-    title: `Quiz: ${label(day)}`,
+    title: 'Understandest thou what thou readest?',
     chapters: runs.map(
       run => `${run.book.id}|${run.from === run.to ? run.from : `${run.from}-${run.to}`}`
     ),
