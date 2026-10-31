@@ -12,6 +12,9 @@ import {
   loadClassLibrary,
   readCachedClassLibrary,
 } from '~features/passageMediaLibrary/cyberJudahClasses'
+/** How far the lion rises above the card, inside the space above it. */
+const COURSES_ART_RISE = 18
+
 const PassageMediaLibraryWidget = () => {
   const stylingTheme = useStylingTheme()
 
@@ -50,7 +53,15 @@ const PassageMediaLibraryWidget = () => {
           overflow: 'visible',
         }}
       >
-        <Box className="border-continuous overflow-visible w-[48%] h-[100%] bg-light-grey rounded-tl-[20px] rounded-bl-[20px]">
+        <Box
+          className={
+            latest
+              ? 'border-continuous overflow-visible w-[48%] h-[100%] bg-light-grey rounded-tl-[20px] rounded-bl-[20px]'
+              : 'border-continuous overflow-visible w-[48%] h-[100%] rounded-tl-[20px] rounded-bl-[20px]'
+          }
+          // Without a class yet, the lion sits on a light panel and rises above the card.
+          style={latest ? undefined : { backgroundColor: '#E6EDFF' }}
+        >
           <Image
             source={
               latest
@@ -59,14 +70,19 @@ const PassageMediaLibraryWidget = () => {
             }
             placeholder={latest ? { blurhash: latest.blurHash } : undefined}
             cachePolicy="memory-disk"
-            contentFit="cover"
-            contentPosition="center"
-            style={{
-              width: '100%',
-              height: '100%',
-              borderBottomLeftRadius: 20,
-              borderTopLeftRadius: 20,
-            }}
+            contentFit={latest ? 'cover' : 'contain'}
+            contentPosition={latest ? 'center' : 'bottom'}
+            accessible={latest ? undefined : false}
+            style={
+              latest
+                ? {
+                    width: '100%',
+                    height: '100%',
+                    borderBottomLeftRadius: 20,
+                    borderTopLeftRadius: 20,
+                  }
+                : { position: 'absolute', left: 0, right: 0, bottom: 0, top: -COURSES_ART_RISE }
+            }
           />
         </Box>
         <Box className="overflow-hidden border-continuous flex-[1] h-[100%] px-[16px] pb-[24px] pt-[22px]">
