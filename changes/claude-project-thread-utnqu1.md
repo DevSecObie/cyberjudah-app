@@ -3,3 +3,5 @@
 - Home's Courses & videos and Timeline cards show CyberJudah's own approved pictures on web and phone. They had been added at older paths, and Home still used Bible Strong's pictures.
 - English for French words left on screen: Home, More, Read the Bible, "Scripture reference not found", "Couldn't load today's verse".
 - Old cyberjudah.io Bible links without a version (/bible/john/3) open that chapter in the KJV instead of "not found".
+- The computer-width Home matches the phone: the lion rises out of the Courses & videos, Bible timeline and new Case studies cards on a light panel; two cards a row so each has room.
+- Brought over from the phone build: the lion in the Timeline, Bible, Courses and Case studies cards, and in onboarding in place of Bible Strong's characters.

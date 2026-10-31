@@ -64,25 +64,30 @@ function ResourceLink({
 function LearningCard({
   title,
   source,
+  rising = false,
   ...props
 }: {
   title: string
   source: ImageSource
+  /** A transparent CyberJudah lion picture drawn taller than its light panel, so it rises above the card. */
+  rising?: boolean
 } & LinkProps<keyof MainStackProps>) {
   return (
-    <div className="bs-home-learning-card">
+    <div className={rising ? 'bs-home-learning-card bs-home-learning-card-rising' : 'bs-home-learning-card'}>
       <LinkBox
         {...props}
         className="bg-reverse rounded-[18px] overflow-hidden shadow-[0_2px_7px_rgba(89,131,240,0.1)]"
       >
         <div className="bs-home-learning-body">
           <div className="bs-home-learning-image">
-            <Image
-              source={source}
-              contentFit="cover"
-              style={{ width: '100%', height: '100%' }}
-              accessible={false}
-            />
+            {!rising && (
+              <Image
+                source={source}
+                contentFit="cover"
+                style={{ width: '100%', height: '100%' }}
+                accessible={false}
+              />
+            )}
           </div>
           <HStack className="p-[16px] gap-[10px] items-center">
             <Text className="font-bold text-[16px] flex-1">{title}</Text>
@@ -92,6 +97,18 @@ function LearningCard({
           </HStack>
         </div>
       </LinkBox>
+      {/* Drawn over the card, outside its clipped corners, so the lion can rise above it. */}
+      {rising && (
+        <div className="bs-home-learning-art" aria-hidden>
+          <Image
+            source={source}
+            contentFit="contain"
+            contentPosition="bottom"
+            style={{ width: '100%', height: '100%' }}
+            accessible={false}
+          />
+        </div>
+      )}
     </div>
   )
 }
@@ -211,6 +228,7 @@ export default function DesktopHome() {
                   <LearningCard
                     title={t('passageMediaLibrary.title')}
                     source={require('~assets/images/home/courses-videos.webp')}
+                    rising
                     onPress={() => pushRoute({ pathname: '/(library)/passage-media' })}
                   />
                   <LearningCard
@@ -226,7 +244,14 @@ export default function DesktopHome() {
                   <LearningCard
                     title={t('home.desktop.timeline')}
                     source={require('~assets/images/home/bible-timeline.webp')}
+                    rising
                     route="TimelineHome"
+                  />
+                  <LearningCard
+                    title="Case studies"
+                    source={require('~assets/images/home/illustrations/dictionary-universe-v3.webp')}
+                    rising
+                    onPress={() => pushRoute({ pathname: '/(library)/case-studies' })}
                   />
                 </div>
               </Box>

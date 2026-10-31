@@ -117,7 +117,7 @@
 
 .bs-home-learning {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
 }
 
@@ -138,6 +138,27 @@
 .bs-home-learning-image {
   height: 120px;
   min-width: 0;
+}
+
+/* Cards with the CyberJudah lion, like the phone's: a light panel (the same in every theme, like
+   the picture it frames), and the lion drawn taller than it so his head rises above the card and
+   the scroll spills a little onto the title. The row leaves room above for the overflow. */
+.bs-home-learning:has(.bs-home-learning-card-rising) {
+  padding-top: 52px;
+}
+.bs-home-learning-card {
+  position: relative;
+}
+.bs-home-learning-card-rising .bs-home-learning-image {
+  background-color: #e6edff;
+}
+.bs-home-learning-art {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -52px;
+  height: 185px;
+  pointer-events: none;
 }
 
 .bs-home-tools {
@@ -207,6 +228,13 @@
   }
 }
 
+@container home-main (max-width: 699px) {
+  .bs-home-learning {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 66px;
+  }
+}
+
 @container home-main (max-width: 599px) {
   .bs-home-main [data-home-stats-grid] {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -228,6 +256,17 @@
     height: 100%;
     min-height: 120px;
   }
+  .bs-home-learning:has(.bs-home-learning-card-rising) {
+    padding-top: 0;
+    row-gap: 40px;
+    margin-top: 40px;
+  }
+  .bs-home-learning-art {
+    right: auto;
+    width: 130px;
+    top: -40px;
+    height: 170px;
+  }
   .bs-home-main [data-home-verse-illustration] {
     display: none;
   }
@@ -245,6 +284,9 @@
   }
   .bs-home-learning-body {
     grid-template-columns: 95px minmax(0, 1fr);
+  }
+  .bs-home-learning-art {
+    width: 95px;
   }
 }
 
