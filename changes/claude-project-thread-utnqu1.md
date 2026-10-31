@@ -21,3 +21,4 @@
 - The floating class player stays in front of every sheet, menu and window the app opens; the class page's "Keep playing while you browse" button is gone (the picture in picture button does it).
 - 4 Chapters a Day: a note is ticked once it is read to its last block and the chapters once the last one is read to its end, not on opening; each day ends with a ten-question quiz made from the day's own chapters (a verse with a word left out, or which chapter a verse is from), on the app's glass.
 - 4 Chapters a Day: days with notes no longer have a separate chapters row; the quiz is the last row. Days without notes keep the chapters row.
+- The floating class player moves from a press anywhere on it, not just its top edge. A tap shows play, pause and 15-second skips, which hide again after a few seconds, like the iPhone's picture in picture.

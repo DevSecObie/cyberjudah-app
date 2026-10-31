@@ -58,3 +58,45 @@ export const CLASS_TIME_SCRIPT = `(() => {
     frame.src = url.toString()
   } else hello()
 })(); true`
+
+/** Reads whether the video plays, as the video page reports it (YouTube's 1 playing, 2 paused). */
+export const classStateFromMessage = (data: unknown): number | undefined => {
+  if (typeof data !== 'string' || !data.includes('classState')) return undefined
+  try {
+    const value = (JSON.parse(data) as { classState?: unknown }).classState
+    return typeof value === 'number' ? value : undefined
+  } catch {
+    return undefined
+  }
+}
+
+export type ClassCommand = { func: 'playVideo' | 'pauseVideo' | 'seekTo'; args?: unknown[] }
+
+/**
+ * Run inside the hosted video page on the phone, beside CLASS_TIME_SCRIPT: it reports whether the
+ * video plays, and passes the floating window's play, pause and skip on to the video.
+ */
+export const CLASS_CONTROL_SCRIPT = `(() => {
+  if (window.__cyberJudahClassControls) return
+  window.__cyberJudahClassControls = true
+  const frame = document.querySelector('iframe')
+  if (!frame || !window.ReactNativeWebView) return
+  let lastState
+  window.addEventListener('message', event => {
+    if (!/^https:\\/\\/www\\.youtube(-nocookie)?\\.com$/.test(event.origin)) return
+    let data
+    try { data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data } catch (e) { return }
+    const state = data && data.info && data.info.playerState
+    if (typeof state !== 'number' || state === lastState) return
+    lastState = state
+    window.ReactNativeWebView.postMessage(JSON.stringify({ classState: state }))
+  })
+  window.__cyberJudahCommand = (func, args) => {
+    if (frame.contentWindow)
+      frame.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args: args || [] }), '*')
+  }
+})(); true`
+
+/** The call that hands a command to the video page from the app (CLASS_CONTROL_SCRIPT). */
+export const classCommandScript = ({ func, args = [] }: ClassCommand) =>
+  `window.__cyberJudahCommand && window.__cyberJudahCommand(${JSON.stringify(func)}, ${JSON.stringify(args)}); true`
