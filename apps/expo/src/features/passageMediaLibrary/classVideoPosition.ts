@@ -133,3 +133,12 @@ export const classClock = (seconds: number) => {
   const s = String(total % 60).padStart(2, '0')
   return h ? `${h}:${String(m).padStart(2, '0')}:${s}` : `${m}:${s}`
 }
+
+/** "1:35:20" or "12:38" as seconds. */
+export const secondsOfClock = (clock?: string): number => {
+  if (!clock || !/^\d+(?::\d{1,2}){0,2}$/.test(clock.trim())) return 0
+  return clock
+    .trim()
+    .split(':')
+    .reduce((total, part) => total * 60 + Number(part), 0)
+}

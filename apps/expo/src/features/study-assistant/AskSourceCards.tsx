@@ -7,6 +7,7 @@ import Text from '~common/ui/Text'
 import { sourceLink, timestamp, type CyberJudahSource } from './cyberJudahAsk'
 import { sourceThumbnails } from './cyberJudahSourceArtwork'
 import { CYBERJUDAH_PORTRAITS } from '~features/lexique/cyberJudahPortraits'
+import ClassVideoEmbed from '~features/passageMediaLibrary/ClassVideoEmbed'
 import { useOpenStudySource } from './useOpenStudySource'
 import { useAskPalette } from './askPalette'
 
@@ -77,7 +78,17 @@ export default function AskSourceCards({
                 opacity: pressed ? 0.75 : 1,
               })}
             >
-              {hasArtwork && <SourceArtwork source={source} />}
+              {source.video && /^[\w-]{11}$/.test(source.video) ? (
+                // A class plays right in its card, from the moment the answer cites.
+                <ClassVideoEmbed
+                  videoId={source.video}
+                  start={source.t ?? 0}
+                  title={source.title}
+                  bare
+                />
+              ) : (
+                hasArtwork && <SourceArtwork source={source} />
+              )}
               <Box className="gap-2 p-3">
                 <HStack className="items-center gap-[6px]">
                   <Box
