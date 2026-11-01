@@ -1,2 +1,3 @@
 - First-run onboarding shows Bible Strong's tour again (the seven Genesis 4:2 screens), and CyberJudah's own tour (Deuteronomy 28:68) now follows it instead of replacing it. Then comes the usual online or offline setup choice.
 - The "Know who is who in scripture" screen of CyberJudah's tour shows the redrawn Black Israelite group figure (group-israel-5).
+- The "Know who is who in scripture" screen shows only the biblical names (Israel, Edom, Ishmael), with no subtext under them.

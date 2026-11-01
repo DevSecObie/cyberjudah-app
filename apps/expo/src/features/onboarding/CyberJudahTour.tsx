@@ -56,17 +56,14 @@ const TAGS = [
 const NATIONS = [
   {
     name: 'Israel',
-    today: 'The 12 tribes',
     image: require('~assets/images/entity-avatars/group-israel-5.webp'),
   },
   {
     name: 'Edom',
-    today: 'The white man',
     image: require('~assets/images/entity-avatars/group-edom.jpg'),
   },
   {
     name: 'Ishmael',
-    today: 'The Arabs',
     image: require('~assets/images/entity-avatars/group-ishmael.jpg'),
   },
 ]
@@ -187,7 +184,6 @@ const Scene = ({ index }: { index: number }) => {
               style={{ width: 92, height: 92, borderRadius: 46 }}
             />
             <Text className="text-[15px] font-semibold text-default">{nation.name}</Text>
-            <Text className="text-[12px] text-center text-tertiary">{nation.today}</Text>
           </VStack>
         ))}
       </HStack>
