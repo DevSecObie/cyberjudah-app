@@ -57,7 +57,7 @@ const SheetButton = ({
 
 const WikipediaSheet = ({ url, onClose }: { url?: string; onClose: () => void }) => {
   const { t } = useTranslation()
-  const webView = useRef<WebView>(null)
+  const webView = useRef<{ goBack: () => void } | null>(null)
   const [pageUrl, setPageUrl] = useState(url)
   const [title, setTitle] = useState<string>()
   const [canGoBack, setCanGoBack] = useState(false)
@@ -111,7 +111,7 @@ const WikipediaSheet = ({ url, onClose }: { url?: string; onClose: () => void })
         {url ? (
           <View style={{ flex: 1 }}>
             <WebView
-              ref={webView}
+              ref={webView as never}
               source={{ uri: url }}
               style={{ flex: 1 }}
               originWhitelist={['https://*', 'http://*']}
