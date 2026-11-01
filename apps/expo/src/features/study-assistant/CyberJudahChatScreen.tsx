@@ -583,7 +583,7 @@ function AccountChat({ account }: { account: string }) {
                 >
                   <Image
                     source={require('~assets/images/icon.png')}
-                    style={{ width: 72, height: 72, borderRadius: 18 }}
+                    style={{ width: 88, height: 88 }}
                     accessible={false}
                   />
                 </Box>
