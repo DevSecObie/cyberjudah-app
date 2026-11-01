@@ -30,7 +30,8 @@ import { useStrongIndexLexiconModuleId } from '~features/resources/useStrongInde
 import { resourceNeedsUpdate } from '~features/resources/availableUpdates'
 import { useMarkAvailableUpdatesSeen } from '~features/resources/useAvailableUpdates'
 import { createOfflineCopyDownloadPlan, dedupeDownloadItems } from '~helpers/downloadItemFactory'
-import { parseOfflineCopyId } from '~helpers/offlineCopy'
+import { createOfflineCopyId, parseOfflineCopyId } from '~helpers/offlineCopy'
+import { isStrongCapableBibleVersion } from '~helpers/strongBiblePublications'
 import { useDownloadQueue } from '~helpers/useDownloadQueue'
 import useLanguage from '~helpers/useLanguage'
 import { toast } from '~helpers/toast'
@@ -180,7 +181,7 @@ const DownloadsScreen = () => {
   const [collapsedSubsections, setCollapsedSubsections] = useState<Set<string>>(() => new Set())
 
   const {
-    downloadedSet,
+    downloadedSet: installedSet,
     invalidSet,
     needsUpdateSet,
     strongAvailability,
@@ -190,6 +191,22 @@ const DownloadsScreen = () => {
     isAvailabilityError,
     refreshDownloadedItems,
   } = useDownloadedItems()
+  // CyberJudah's one Bible row stands for the text and its Strong's numbers together: it shows as
+  // downloaded only once both are on the phone, and a tap fetches whichever is missing.
+  const downloadedSet = usesCyberJudahEditorial()
+    ? new Set(
+        Array.from(installedSet).filter(id => {
+          const identity = parseOfflineCopyId(id)
+          return (
+            identity?.kind !== 'bible' ||
+            !isStrongCapableBibleVersion(identity.versionId) ||
+            installedSet.has(
+              createOfflineCopyId({ kind: 'strong-bible-index', versionId: identity.versionId })
+            )
+          )
+        })
+      )
+    : installedSet
   const allSections = buildDownloadCatalogSections(lang, t, dictionaryCatalogQuery.data ?? [])
   const allSectionKeys = allSections.map(section => section.key).join(',')
   const collapseSourceKey = `${lang}:${allSectionKeys}`
@@ -335,6 +352,17 @@ const DownloadsScreen = () => {
             strongLexiconAvailability.get('core')?.status === 'available',
         })
       case 'bible':
+        if (usesCyberJudahEditorial() && isStrongCapableBibleVersion(identity.versionId)) {
+          return createOfflineCopyDownloadPlan(
+            { kind: 'strong-bible-index', versionId: identity.versionId },
+            {
+              availabilityStatus:
+                strongAvailability.get(identity.versionId)?.status ?? 'base-missing',
+              strongIndexLexiconModuleId,
+            }
+          )
+        }
+        return createOfflineCopyDownloadPlan(identity)
       case 'dictionary-directory':
       case 'study-links':
       case 'commentary':

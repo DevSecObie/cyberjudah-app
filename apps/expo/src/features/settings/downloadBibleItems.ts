@@ -66,7 +66,13 @@ export function buildBibleItems(
       ]
     }
 
-    if (!isStrongCapableBibleVersion(version.id)) return [base]
+    // CyberJudah has one Bible: its Strong's numbers come with it in the same row, so they are
+    // never listed as a second Bible to download.
+    if (
+      !isStrongCapableBibleVersion(version.id) ||
+      process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+    )
+      return [base]
 
     const strongIndexBibleName = getStrongIndexBibleName(displayName)
     return [
