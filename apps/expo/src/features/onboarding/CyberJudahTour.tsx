@@ -64,7 +64,7 @@ const NATIONS = [
   },
   {
     name: 'Ishmael',
-    image: require('~assets/images/entity-avatars/group-ishmael-arab.webp'),
+    image: require('~assets/images/entity-avatars/group-ishmael.jpg'),
   },
 ]
 const LIBRARY = [
