@@ -11,10 +11,10 @@ import { setDefaultBibleVersion } from '~redux/modules/user'
 import { isOnboardingCompletedAtom } from './atom'
 import AbelOnboarding from './AbelOnboarding'
 import CyberJudahTour from './CyberJudahTour'
-
-const IS_CYBERJUDAH = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
 import SelectResources from './SelectResources'
 import ResourceSetupChoice from './ResourceSetupChoice'
+
+const IS_CYBERJUDAH = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
 const useOptionalOnboarding = () => {
   const lang = useLanguage()
   const dispatch = useDispatch()
@@ -50,7 +50,7 @@ const useOptionalOnboarding = () => {
 }
 
 const OnBoarding = () => {
-  const [step, setStep] = useState<'abel' | 'choice' | 'resources'>('abel')
+  const [step, setStep] = useState<'abel' | 'tour' | 'choice' | 'resources'>('abel')
   const setIsOnboardingCompleted = useSetAtom(isOnboardingCompletedAtom)
   const { hideOnboarding, showOnboarding } = useOptionalOnboarding()
 
@@ -75,12 +75,11 @@ const OnBoarding = () => {
           accessibilityViewIsModal
           onAccessibilityEscape={completeOnboarding}
         >
+          {/* Bible Strong's tour comes first, then CyberJudah's own tour is added after it. */}
           {step === 'abel' ? (
-            IS_CYBERJUDAH ? (
-              <CyberJudahTour onComplete={() => setStep('choice')} />
-            ) : (
-              <AbelOnboarding onComplete={() => setStep('choice')} />
-            )
+            <AbelOnboarding onComplete={() => setStep(IS_CYBERJUDAH ? 'tour' : 'choice')} />
+          ) : step === 'tour' ? (
+            <CyberJudahTour onComplete={() => setStep('choice')} />
           ) : step === 'choice' ? (
             <ResourceSetupChoice
               onContinueOnline={completeOnboarding}

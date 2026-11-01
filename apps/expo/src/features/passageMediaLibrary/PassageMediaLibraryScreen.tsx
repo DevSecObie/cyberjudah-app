@@ -12,6 +12,7 @@ import { Image } from 'expo-image'
 import { TouchableBox } from '~common/ui/Box'
 import Box, { SafeAreaBox, VStack } from '~common/ui/Box'
 import Text from '~common/ui/Text'
+import { FeatherIcon } from '~common/ui/Icon'
 import {
   getPassageMediaLibrary,
   type ResolvedPassageMediaLibraryItem,
@@ -322,6 +323,26 @@ const PassageMediaLibraryScreen = () => {
                   : 'passageMediaLibrary.subtitle'
               )}
             </Text>
+            {cyberJudah && classLibrary.isError && (
+              // A failed refresh says so instead of quietly showing an old or empty list.
+              <TouchableBox
+                accessibilityRole="button"
+                accessibilityLabel="The classes could not be refreshed. Try again"
+                accessibilityLiveRegion="polite"
+                onPress={() => void classLibrary.refetch()}
+                className="mt-[18px] flex-row items-center gap-[10px] rounded-[12px] bg-light-grey px-[14px] py-[12px]"
+              >
+                <FeatherIcon name="wifi-off" size={16} color="grey" />
+                <Text className="flex-1 text-[14px] leading-[20px]">
+                  {classes.length
+                    ? 'The classes could not be refreshed. Showing the list saved on this phone.'
+                    : 'The classes could not be loaded. Check your connection.'}
+                </Text>
+                <Text className="text-primary text-[14px] font-bold">
+                  {classLibrary.isFetching ? 'Trying…' : 'Try again'}
+                </Text>
+              </TouchableBox>
+            )}
             {cyberJudah && <LiveClassBanner className="mt-[18px]" />}
             {!!featured && (
               <TouchableBox
