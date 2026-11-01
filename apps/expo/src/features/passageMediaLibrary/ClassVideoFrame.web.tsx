@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import {
   type ClassCommand,
+  classDurationFromMessage,
   classStateFromMessage,
   classTimeFromMessage,
 } from './classVideoPosition'
@@ -12,14 +13,16 @@ type Props = {
   onTime?: (seconds: number) => void
   /** YouTube's player state: 1 playing, 2 paused. */
   onState?: (state: number) => void
+  /** The video's length in seconds, once YouTube reports it. */
+  onDuration?: (seconds: number) => void
 }
 
 /** CyberJudah's hosted video page in a frame, as on the phone. */
 const ClassVideoFrame = forwardRef<ClassVideoFrameHandle, Props>(
-  ({ uri, onTime, onState }, ref) => {
+  ({ uri, onTime, onState, onDuration }, ref) => {
     const frame = useRef<HTMLIFrameElement>(null)
-    const handlers = useRef({ onTime, onState })
-    handlers.current = { onTime, onState }
+    const handlers = useRef({ onTime, onState, onDuration })
+    handlers.current = { onTime, onState, onDuration }
     // The page passes play, pause and skip on to the video (public/embed/youtube.html).
     useImperativeHandle(ref, () => ({
       command: command =>
@@ -33,6 +36,8 @@ const ClassVideoFrame = forwardRef<ClassVideoFrameHandle, Props>(
         if (seconds !== undefined) handlers.current.onTime?.(seconds)
         const state = classStateFromMessage(event.data)
         if (state !== undefined) handlers.current.onState?.(state)
+        const duration = classDurationFromMessage(event.data)
+        if (duration !== undefined) handlers.current.onDuration?.(duration)
       }
       window.addEventListener('message', listen)
       return () => window.removeEventListener('message', listen)

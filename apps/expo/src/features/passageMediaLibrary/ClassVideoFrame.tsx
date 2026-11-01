@@ -5,6 +5,7 @@ import {
   CLASS_TIME_SCRIPT,
   type ClassCommand,
   classCommandScript,
+  classDurationFromMessage,
   classStateFromMessage,
   classTimeFromMessage,
 } from './classVideoPosition'
@@ -16,11 +17,13 @@ type Props = {
   onTime?: (seconds: number) => void
   /** YouTube's player state: 1 playing, 2 paused. */
   onState?: (state: number) => void
+  /** The video's length in seconds, once YouTube reports it. */
+  onDuration?: (seconds: number) => void
 }
 
 /** CyberJudah's hosted video page: YouTube refuses embeds from an inline page on the phone. */
 const ClassVideoFrame = forwardRef<ClassVideoFrameHandle, Props>(
-  ({ uri, onTime, onState }, ref) => {
+  ({ uri, onTime, onState, onDuration }, ref) => {
     const view = useRef<WebView>(null)
     useImperativeHandle(ref, () => ({
       command: command => view.current?.injectJavaScript(classCommandScript(command)),
@@ -39,6 +42,8 @@ const ClassVideoFrame = forwardRef<ClassVideoFrameHandle, Props>(
           if (seconds !== undefined) onTime?.(seconds)
           const state = classStateFromMessage(event.nativeEvent.data)
           if (state !== undefined) onState?.(state)
+          const duration = classDurationFromMessage(event.nativeEvent.data)
+          if (duration !== undefined) onDuration?.(duration)
         }}
       />
     )
