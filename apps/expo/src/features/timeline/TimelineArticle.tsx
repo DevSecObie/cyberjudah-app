@@ -2,7 +2,7 @@ import { Feather } from '@expo/vector-icons'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import React, { type ReactNode, useState } from 'react'
-import { Linking, Pressable, View, useWindowDimensions } from 'react-native'
+import { Linking, Platform, Pressable, View, useWindowDimensions } from 'react-native'
 import WebView from 'react-native-webview'
 import Paragraph from '~common/ui/Paragraph'
 import Text from '~common/ui/Text'
@@ -11,15 +11,26 @@ import { getCommentaryBibleViewRoute } from '~features/commentaries/commentaryRe
 import { parseInlineBibleReferences } from '~helpers/bcvParser'
 import { useTheme } from '~themes/ThemeProvider'
 import { articlePieces, type ArticlePiece, withoutDisagreements } from './articlePieces'
+import WikipediaSheet from './WikipediaSheet'
+import { isWikipediaUrl } from './wikipediaLinks'
 
 // An event's article as the Timeline writes it: paragraphs, where a class it cites is a line
 // "Title — date — time" followed by the class's link at that moment. The class becomes a card that
-// plays inside the page from that moment, and every scripture and link in the text opens.
+// plays inside the page from that moment, and every scripture and link in the text opens: a
+// Wikipedia page on a sheet inside the app, any other link in the browser.
 
 const URL_IN_TEXT = /https?:\/\/[^\s)]+/g
 
-/** A paragraph with each scripture opening the Bible and each web link opening in the browser. */
-const LinkedText = ({ text, onOpenOsis }: { text: string; onOpenOsis: (osis: string) => void }) => {
+/** A paragraph with each scripture opening the Bible and each web link opening where it reads. */
+const LinkedText = ({
+  text,
+  onOpenOsis,
+  onOpenUrl,
+}: {
+  text: string
+  onOpenOsis: (osis: string) => void
+  onOpenUrl: (url: string) => void
+}) => {
   const parts: ReactNode[] = []
   const links = [
     ...parseInlineBibleReferences(text, 'en').map(reference => ({
@@ -32,7 +43,7 @@ const LinkedText = ({ text, onOpenOsis }: { text: string; onOpenOsis: (osis: str
       start: match.index ?? 0,
       end: (match.index ?? 0) + match[0].length,
       label: match[0],
-      open: () => void Linking.openURL(match[0]),
+      open: () => onOpenUrl(match[0]),
     })),
   ].sort((left, right) => left.start - right.start)
   let at = 0
@@ -132,9 +143,15 @@ const ClassCard = ({ piece }: { piece: Extract<ArticlePiece, { kind: 'class' }> 
 /** The article, its scriptures and links tappable and the classes it cites playable in place. */
 const TimelineArticle = ({ article }: { article: string }) => {
   const router = useRouter()
+  const [wikipediaUrl, setWikipediaUrl] = useState<string>()
   const openOsis = (osis: string) => {
     const route = getCommentaryBibleViewRoute(osis)
     if (route) router.push(route)
+  }
+  // The Web app has no sheet to read a page in; there the link opens as before.
+  const openUrl = (url: string) => {
+    if (Platform.OS !== 'web' && isWikipediaUrl(url)) setWikipediaUrl(url)
+    else void Linking.openURL(url)
   }
   return (
     <View style={{ marginTop: 20 }}>
@@ -142,9 +159,12 @@ const TimelineArticle = ({ article }: { article: string }) => {
         piece.kind === 'class' ? (
           <ClassCard key={index} piece={piece} />
         ) : (
-          <LinkedText key={index} text={piece.text} onOpenOsis={openOsis} />
+          <LinkedText key={index} text={piece.text} onOpenOsis={openOsis} onOpenUrl={openUrl} />
         )
       )}
+      {Platform.OS !== 'web' ? (
+        <WikipediaSheet url={wikipediaUrl} onClose={() => setWikipediaUrl(undefined)} />
+      ) : null}
     </View>
   )
 }
