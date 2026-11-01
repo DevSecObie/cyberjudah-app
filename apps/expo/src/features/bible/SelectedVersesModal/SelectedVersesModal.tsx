@@ -65,6 +65,7 @@ const SelectedVersesModal = ({
     onOpenReferences,
     onOpenNave,
     sendVerseData,
+    askAboutVerses,
   } = useVerseActions({
     selectedVerses,
     version,
@@ -136,6 +137,7 @@ const SelectedVersesModal = ({
                   onOpenReferences={onOpenReferences}
                   openCommentariesScreen={openCommentariesScreen}
                   compareVerses={compareVerses}
+                  askAboutVerses={askAboutVerses}
                   moreThanOneVerseSelected={moreThanOneVerseSelected}
                 />
               ),

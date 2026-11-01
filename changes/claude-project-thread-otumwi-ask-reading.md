@@ -1,0 +1,1 @@
+- Bible reader: an Ask button in the selected verses' Study actions opens Ask about those verses. Ask shows "Asking about Genesis 1:3" over the question (✕ clears it) and sends the passage with each question, so Ask starts from that verse's precepts and classes. Needs the server's `reading` field (cyberjudah-telegram, Ask improvements); an older server ignores it.
