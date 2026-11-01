@@ -213,10 +213,14 @@ export const loadRecentClassVideos = async (
     const response = await fetcher(`${API_ORIGIN}/api/app/channel/recent`, {
       headers: { accept: 'application/json' },
     })
-    if (!response.ok) return []
+    if (!response.ok) {
+      console.warn('[Classes] recent uploads unavailable', response.status)
+      return []
+    }
     const body = (await response.json()) as { videos?: unknown }
     return Array.isArray(body?.videos) ? (body.videos as RecentClassVideo[]) : []
-  } catch {
+  } catch (error) {
+    console.warn('[Classes] recent uploads failed', error)
     return []
   }
 }
