@@ -57,7 +57,7 @@ const NATIONS = [
   {
     name: 'Israel',
     today: 'The 12 tribes',
-    image: require('~assets/images/entity-avatars/group-israel-1.webp'),
+    image: require('~assets/images/entity-avatars/group-israel-5.webp'),
   },
   {
     name: 'Edom',
