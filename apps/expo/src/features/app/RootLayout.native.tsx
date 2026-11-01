@@ -1,4 +1,6 @@
 import { ThemeProvider } from '~themes/ThemeProvider'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
+import AnimatedSplash from './AnimatedSplash'
 import * as Sentry from '@sentry/react-native'
 import * as SplashScreen from 'expo-splash-screen'
 import * as Font from 'expo-font'
@@ -245,6 +247,9 @@ function InnerApp() {
 // Root layout component
 function RootLayout() {
   const { isLoadingCompleted, loadError, retry } = useAppLoad()
+  // The animated lion takes over from the launch image once, when the app first draws.
+  const [showsSplash, setShowsSplash] = useState(usesCyberJudahEditorial)
+  const hideSplash = useCallback(() => setShowsSplash(false), [])
 
   const onLayoutRootView = useCallback(() => {
     if (isLoadingCompleted) {
@@ -299,6 +304,7 @@ function RootLayout() {
             </View>
           </KeyboardProvider>
         </SafeAreaProvider>
+        {showsSplash && <AnimatedSplash onDone={hideSplash} />}
       </GestureHandlerRootView>
     </>
   )
