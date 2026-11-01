@@ -1,10 +1,11 @@
-import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
+import { titleFontStyle } from '~themes/styleValues'
 import { useTranslation } from 'react-i18next'
 import { HStack, VStack } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
+import { radii } from '~common/ui/surfaces'
 import Text from '~common/ui/Text'
-import { collection, firebaseDb, getDocs, query, where } from '~helpers/firebase'
+import { collection, firebaseDb, getDocs, limit, query, where } from '~helpers/firebase'
 import { useQuery } from '@tanstack/react-query'
 import { remoteQueryOptions } from '~helpers/queryOptions'
 import { getLanguage } from '~i18n'
@@ -44,16 +45,22 @@ export const normalizeEventDate = (value: FirestoreTimestamp | undefined): Date 
   return Number.isFinite(normalized.getTime()) ? normalized : null
 }
 
+// The home shows the first published event of the language only. Without an explicit order,
+// Firestore returns the matches by document id: the first one is the same with `limit(1)`.
 const getEvents = async (language: string) => {
   const events = await getDocs(
     query(
       collection(firebaseDb, 'events'),
       where('status', '==', 'published'),
-      where('lang', '==', language)
+      where('lang', '==', language),
+      limit(1)
     )
   )
   return events.docs.map((x: { data: () => unknown }) => x.data() as Event)
 }
+
+// Events are published by hand, rarely: the home reads them again at most once an hour.
+const EVENTS_STALE_TIME_MS = 60 * 60 * 1000
 
 const EventPeriod = ({ event }: { event: Event }) => {
   const locale = getDateLocale(getLanguage())
@@ -99,6 +106,7 @@ export const Events = () => {
   const { data: events } = useQuery({
     queryKey: ['events', language],
     queryFn: () => getEvents(language),
+    staleTime: EVENTS_STALE_TIME_MS,
     ...remoteQueryOptions,
   })
 
@@ -113,9 +121,10 @@ export const Events = () => {
 
   if (!event) return null
 
+  // A deliberate dark feature card, one of the hub's large cards; its edge is its contrast.
   return (
     <TouchableOpacity accessibilityRole="button" onPress={handlePress} activeOpacity={0.8}>
-      <VStack className="border-continuous overflow-hidden px-[20px] rounded-[30px] border-[3px] border-light-primary mx-[20px] bg-[black] py-[20px] gap-[8px]">
+      <VStack className="border-continuous overflow-hidden px-[20px] rounded-[24px] mx-[20px] bg-[black] py-[20px] gap-[8px]">
         {imageUri && (
           <MaskedView
             style={StyleSheet.absoluteFill}
@@ -129,21 +138,18 @@ export const Events = () => {
             }
           >
             <Image
-              style={[StyleSheet.absoluteFill, { borderRadius: 30 }]}
+              style={[StyleSheet.absoluteFill, { borderRadius: radii.sheet }]}
               source={{ uri: imageUri }}
               contentFit="cover"
             />
           </MaskedView>
         )}
         <HStack className="overflow-hidden border-continuous gap-[8px] items-center">
-          <HStack className="overflow-hidden border-continuous bg-light-primary rounded-[10px] items-center justify-center h-[22px] gap-[4px] px-[8px]">
+          <HStack className="overflow-hidden border-continuous bg-light-primary rounded-full items-center justify-center h-[22px] gap-[4px] px-[8px]">
             <Text className="font-bold text-[12px]">{t('event')}</Text>
           </HStack>
         </HStack>
-        <Text
-          className="text-[22px] text-[white]"
-          style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
-        >
+        <Text className="text-[22px] text-[white]" style={titleFontStyle(stylingTheme)}>
           {event?.title}
         </Text>
         <Text className="font-bold text-[white]">{event?.description}</Text>

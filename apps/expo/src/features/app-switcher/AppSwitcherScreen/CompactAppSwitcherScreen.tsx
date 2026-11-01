@@ -1,7 +1,7 @@
 import { compactWorkspaceDrawerAtom } from '../workspaceViewTracking'
 import { useAtomValue, useSetAtom } from 'jotai/react'
-import React, { useEffect, useRef, useState } from 'react'
-import { useWindowDimensions } from 'react-native'
+import React, { useEffect, useEffectEvent, useRef, useState } from 'react'
+import { StyleSheet, useWindowDimensions } from 'react-native'
 import { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated'
 import Box, { AnimatedBox } from '~common/ui/Box'
 import BottomTabBar from '~features/app-switcher/BottomTabBar/BottomTabBar'
@@ -26,7 +26,7 @@ const MAX_DRAWER_WIDTH = 450
 
 const AppSwitcherScreen = ({ openHome, openMenu }: AppSwitcherScreenFuncs) => (
   <TabContextProvider>
-    <Box nativeID="compact-workspace" className="flex-1 bg-light-grey overflow-hidden">
+    <Box nativeID="compact-workspace" className="flex-1 bg-canvas overflow-hidden">
       <TabGroupPager />
       <CachedTabScreens />
       <SharedBibleDOM />
@@ -78,29 +78,32 @@ const AppSwitcherScreenWrapper = () => {
     isHomeOpen.current = false
   }
 
-  // Not the best, but when adding a new tab, close home drawer
-  useEffect(() => {
+  const closeDrawers = useEffectEvent(() => {
     closeHome()
     closeMenu()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  })
+
+  // Not the best, but when adding a new tab, close home drawer
+  useEffect(() => {
+    closeDrawers()
   }, [tabsCount])
 
+  const onHardwareBackPress = useEffectEvent(() => {
+    if (isMenuOpen.current) {
+      closeMenu()
+      return true
+    }
+
+    if (isHomeOpen.current) {
+      closeHome()
+      return true
+    }
+
+    return false
+  })
+
   useEffect(() => {
-    return subscribeToHardwareBackPress(() => {
-      if (isMenuOpen.current) {
-        closeMenu()
-        return true
-      }
-
-      if (isHomeOpen.current) {
-        closeHome()
-        return true
-      }
-
-      return false
-    })
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return subscribeToHardwareBackPress(() => onHardwareBackPress())
   }, [])
 
   const containerStyle = useAnimatedStyle(() => ({
@@ -108,7 +111,7 @@ const AppSwitcherScreenWrapper = () => {
   }))
 
   return (
-    <Box className="border-continuous overflow-visible flex-[1] bg-light-grey">
+    <Box className="border-continuous overflow-visible flex-[1] bg-canvas">
       <AnimatedBox
         className="overflow-hidden border-continuous flex-row flex-[1]"
         style={[{ width: drawerWidth * 2 + screenWidth, marginLeft: -drawerWidth }, containerStyle]}
@@ -121,7 +124,11 @@ const AppSwitcherScreenWrapper = () => {
           <AppSwitcherScreen openHome={openHome} openMenu={openMenu} />
         </Box>
 
-        <Box className="overflow-hidden border-continuous" style={{ width: drawerWidth }}>
+        {/* The menu drawer leaves a strip of the switcher visible; a hairline marks its edge. */}
+        <Box
+          className="overflow-hidden border-continuous border-separator"
+          style={{ width: drawerWidth, borderLeftWidth: StyleSheet.hairlineWidth }}
+        >
           {hasOpenedMenu && <More closeMenu={closeMenu} />}
         </Box>
       </AnimatedBox>

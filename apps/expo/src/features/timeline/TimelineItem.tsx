@@ -1,8 +1,9 @@
-import { resolveThemeColor, resolveFontFamily } from '~themes/styleValues'
+import { resolveThemeColor, titleFontStyle } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { twMerge } from '~common/ui/classNames'
 import React from 'react'
 import Box from '~common/ui/Box'
+import Card from '~common/ui/Card'
 import Link from '~common/Link'
 import Text from '~common/ui/Text'
 import { TimelineSection } from './types'
@@ -49,48 +50,32 @@ const TimelineItem = ({
       params={onPress ? undefined : { goTo }}
       onPress={onPress ? () => onPress(goTo) : undefined}
     >
-      <Box
-        className="overflow-hidden border-continuous relative z-[2] w-[45%] max-w-[180px] rounded-[10px] h-[180px] bg-reverse p-[20px] justify-between"
-        style={{
-          transform: [{ translateX: 20 }],
-          shadowColor: 'rgb(89,131,240)',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 7,
-          elevation: 1,
-          overflow: 'visible',
-        }}
+      <Card
+        className="relative z-[2] w-[45%] max-w-[180px] h-[180px] p-[20px] justify-between"
+        style={{ transform: [{ translateX: 20 }] }}
       >
-        <Text
-          className="text-[12px]"
-          style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
-        >
+        <Text className="text-[12px]" style={titleFontStyle(stylingTheme)}>
           {getLegacyLocalizedField(lang, { fr: sectionTitle, en: sectionTitleEn })}
         </Text>
-        <Text
-          className="text-[18px]"
-          style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
-        >
+        <Text className="text-[18px]" style={titleFontStyle(stylingTheme)}>
           {getLegacyLocalizedField(lang, { fr: title, en: titleEn })}
         </Text>
 
         <Box className="overflow-hidden border-continuous">
           <Box className="overflow-hidden border-continuous h-[2px] bg-default" />
 
-          <Text
-            className="py-[3px] text-center text-[10px]"
-            style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
-          >
+          <Text className="py-[3px] text-center text-[10px]" style={titleFontStyle(stylingTheme)}>
             {getLegacyLocalizedField(lang, { fr: subTitle, en: subTitleEn })}
           </Text>
           <Box className="overflow-hidden border-continuous h-[2px] bg-default" />
         </Box>
         <Box
-          className="overflow-hidden border-continuous mx-[40px] h-[10px] rounded-[10px]"
+          className="overflow-hidden border-continuous mx-[40px] h-[10px] rounded-full"
           style={{ backgroundColor: resolveThemeColor(stylingTheme, color) }}
         />
-      </Box>
-      <Box className="overflow-hidden border-continuous w-[55%] h-[250px] rounded-[10px]">
+      </Card>
+      {/* The period's image is the card's partner: it takes the card's radius. */}
+      <Box className="overflow-hidden border-continuous w-[55%] h-[250px] rounded-[16px]">
         <Image
           source={getTimelinePeriodImageSource(image)}
           contentFit="cover"

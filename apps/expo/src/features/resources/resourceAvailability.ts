@@ -7,9 +7,11 @@ import {
   getDbPath,
   getDictionaryDbPath,
   getDictionaryDirectoryDbPath,
+  getStudyLinksDbPath,
   initLanguageDirs,
 } from '~helpers/databases'
 import { dbManager, initSQLiteDir, openSQLiteDatabase } from '~helpers/sqlite'
+import { isMalformedDatabaseError } from '~helpers/sqliteErrors'
 import {
   LANGUAGE_SPECIFIC_DBS,
   SHARED_DBS,
@@ -99,11 +101,12 @@ type ResourceAvailabilityDependencies = {
   getStrongLexiconAvailability?: (
     moduleId: Extract<OfflineCopyIdentity, { kind: 'strong-lexicon-module' }>['moduleId']
   ) => Promise<StrongLexiconModuleAvailability>
+  /** `'discarded'`: SQLite could not read the file, which was removed to be downloaded again. */
   validateDatabaseResource: (
     databaseId: Exclude<DatabaseId, 'BIBLES'>,
     language: ResourceLanguage,
     path: string
-  ) => Promise<boolean>
+  ) => Promise<boolean | 'discarded'>
   validateStandaloneResource: (kind: 'dictionary' | 'commentary', path: string) => Promise<boolean>
 }
 
@@ -111,7 +114,7 @@ const validateDatabaseResource = async (
   databaseId: Exclude<DatabaseId, 'BIBLES'>,
   language: ResourceLanguage,
   path: string
-): Promise<boolean> => {
+): Promise<boolean | 'discarded'> => {
   try {
     if (databaseId === 'TIMELINE') {
       const decoded: unknown = JSON.parse(await FileSystem.readAsStringAsync(path))
@@ -133,7 +136,18 @@ const validateDatabaseResource = async (
       if (!table) return false
     }
     return true
-  } catch {
+  } catch (error) {
+    // A copy cut short by an interrupted download (before downloads were verified) fails on
+    // every launch and cannot be repaired in place: removing it offers a fresh download.
+    if (isMalformedDatabaseError(error)) {
+      return dbManager
+        .getDB(databaseId, language)
+        .discardUnreadableCopy()
+        .then(
+          () => 'discarded' as const,
+          () => false
+        )
+    }
     return false
   }
 }
@@ -224,7 +238,13 @@ export const probeLocalResourceAvailability = async (
     const file = await dependencies.getFileInfo(expectedPath)
 
     if (file.exists) {
-      if (!(await dependencies.validateDatabaseResource(resource.databaseId, lang, expectedPath))) {
+      const validation = await dependencies.validateDatabaseResource(
+        resource.databaseId,
+        lang,
+        expectedPath
+      )
+      if (validation === 'discarded') return { status: 'missing', resource, expectedPath }
+      if (!validation) {
         return { status: 'corrupt', resource, reason: 'integrity-check-failed' }
       }
       return {
@@ -248,6 +268,36 @@ export const probeLocalResourceAvailability = async (
     return (await dependencies.validateStandaloneResource('dictionary', expectedPath))
       ? { status: 'available', resource }
       : { status: 'corrupt', resource, reason: 'integrity-check-failed' }
+  }
+
+  if (resource.kind === 'study-links') {
+    const expectedPath = getStudyLinksDbPath()
+    await dependencies.restoreBackup?.(expectedPath)
+    const file = await dependencies.getFileInfo(expectedPath)
+    if (!file.exists) return { status: 'missing', resource, expectedPath }
+    const fileName = expectedPath.split('/').pop()!
+    const directory = expectedPath.slice(0, -(fileName.length + 1))
+    try {
+      const database = await openSQLiteDatabase(fileName, { useNewConnection: true }, directory)
+      try {
+        const integrity = await database.getFirstAsync<{ quick_check: string }>(
+          'PRAGMA quick_check'
+        )
+        const tables = await database.getAllAsync<{ name: string }>(
+          `SELECT name FROM sqlite_schema WHERE type = 'table'`
+        )
+        const tableNames = new Set(tables.map(table => table.name.toLowerCase()))
+        return integrity?.quick_check === 'ok' &&
+          tableNames.has('study_link_nodes') &&
+          tableNames.has('study_links')
+          ? { status: 'available', resource }
+          : { status: 'corrupt', resource, reason: 'integrity-check-failed' }
+      } finally {
+        await database.closeAsync()
+      }
+    } catch {
+      return { status: 'corrupt', resource, reason: 'integrity-check-failed' }
+    }
   }
 
   if (resource.kind === 'dictionary-directory') {
@@ -371,6 +421,7 @@ const parseRegistryResourceId = (
   catalogEntry?: MobileResourceCatalog['resources'][string]
 ): LocalResourceRef | undefined => {
   if (id === 'dictionary-directory') return { kind: 'dictionary-directory' }
+  if (id === 'study-links') return { kind: 'study-links' }
   const parts = id.split(':')
   const language = parts.at(-1) as ResourceLanguage
   if (parts[0] === 'bible' && parts[1]) return { kind: 'bible', versionId: parts[1] }

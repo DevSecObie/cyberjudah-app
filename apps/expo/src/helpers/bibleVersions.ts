@@ -121,6 +121,8 @@ export interface Version {
   versificationId?: BibleVersificationId
   strongDatasetId?: StrongBibleDatasetId
   hidden?: boolean
+  /** Other words the version list finds it by, such as the name of a version it replaces. */
+  searchKeywords?: string[]
 }
 
 const getLsgAudioUrl = (bookNum: number, chapterNum: number) => {
@@ -229,6 +231,17 @@ const upstreamVersions: Record<string, Version> = {
     type: 'other',
     language: 'he-grc',
     readingProfile: null,
+    // It replaces the French and English interlinear Bibles (INT, INT_EN)
+    searchKeywords: [
+      'interlinéaire',
+      'interlinear',
+      'INT',
+      'hébreu',
+      'hebrew',
+      'grec',
+      'greek',
+      'original',
+    ],
   },
   KJF: {
     id: 'KJF',

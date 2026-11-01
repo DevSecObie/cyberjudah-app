@@ -1,8 +1,9 @@
-import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
+import { titleFontStyle } from '~themes/styleValues'
 import React from 'react'
 import { Image } from 'react-native'
-import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel'
+import { Carousel, type CarouselRef } from 'react-native-reanimated-carousel'
+import { configureCarouselPan } from '~helpers/configureCarouselPan'
 import { useMediaQueriesArray } from '~helpers/useMediaQueries'
 import { useLayoutSize } from '~helpers/useLayoutSize'
 import { wp } from '~helpers/utils'
@@ -33,10 +34,7 @@ const Item = ({ item }: { item: Slide; index: number }) => {
           }}
         />
       )}
-      <Text
-        className="text-[38px]"
-        style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
-      >
+      <Text className="text-[38px]" style={titleFontStyle(stylingTheme)}>
         {item.title}
       </Text>
       <Paragraph fontFamily="text" scale={2}>
@@ -52,7 +50,7 @@ const OnBoardingSlides = ({
   setStep: React.Dispatch<React.SetStateAction<number>>
 }) => {
   const [activeSlide, setActiveSlide] = React.useState(0)
-  const carousel = React.useRef<ICarouselInstance>(null)
+  const carousel = React.useRef<CarouselRef>(null)
   const { t } = useTranslation()
   const slides = getSlides(t)
   const {
@@ -62,7 +60,7 @@ const OnBoardingSlides = ({
   } = useLayoutSize()
 
   return (
-    <SafeAreaBox className="overflow-hidden border-continuous">
+    <SafeAreaBox reserveBottom className="overflow-hidden border-continuous">
       <Box
         className="overflow-hidden border-continuous items-center justify-center flex-[1]"
         ref={carouselContainerRef}
@@ -70,28 +68,25 @@ const OnBoardingSlides = ({
       >
         <Carousel
           ref={carousel}
-          mode="horizontal-stack"
+          layout={{
+            type: 'horizontal-stack',
+            opacityStep: 0.8,
+            scaleStep: 0,
+            spacing: itemWidth,
+            rotation: 0,
+          }}
           data={slides}
           loop={false}
-          scrollAnimationDuration={400}
-          onConfigurePanGesture={gestureChain => {
-            gestureChain.activeOffsetX([-3, 3])
-          }}
-          modeConfig={{
-            opacityInterval: 0.8,
-            scaleInterval: 0,
-            stackInterval: itemWidth,
-            rotateZDeg: 0,
-          }}
+          onConfigurePanGesture={configureCarouselPan([-3, 3])}
           renderItem={props => <Item {...props} />}
           style={{
             width: sliderWidth,
+            height: carouselContainerSize.height,
             alignItems: 'center',
             justifyContent: 'center',
           }}
-          width={itemWidth}
-          height={carouselContainerSize.height}
-          onScrollEnd={setActiveSlide}
+          itemSize={itemWidth}
+          onSnapToItem={setActiveSlide}
         />
       </Box>
       <Box className="overflow-hidden border-continuous mt-[20px] mx-[20px]">

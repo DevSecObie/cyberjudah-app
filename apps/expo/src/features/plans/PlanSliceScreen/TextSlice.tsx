@@ -58,7 +58,7 @@ const TextSlice = ({ id, description, subType, planLanguage, notePath }: Props) 
         scaleLineHeight={1}
         planLanguage={planLanguage}
         style={{ textAlign: isDevotional ? 'center' : 'left', fontFamily }}
-        className={twMerge(isDevotional ? 'text-primary' : 'text-default')}
+        className={twMerge(isDevotional ? 'text-link' : 'text-default')}
       >
         {content}
       </ReferenceParagraph>

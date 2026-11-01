@@ -1,4 +1,4 @@
-import { resolveFontFamily } from '~themes/styleValues'
+import { resolveFontFamily, titleFontStyle } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { pageContentStyle } from '~common/ui/PageContent'
 import { useRouter } from 'expo-router'
@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SectionList, useWindowDimensions } from 'react-native'
 import Header from '~common/Header'
+<<<<<<< CYBERJUDAH
 import FiltersHeader, { type FiltersHeaderItem } from '~common/FiltersHeader'
 import PanelSearch from '~common/ContextualPanel/PanelSearch'
 import { Image } from 'expo-image'
@@ -13,6 +14,11 @@ import { TouchableBox } from '~common/ui/Box'
 import Box, { SafeAreaBox, VStack } from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import { FeatherIcon } from '~common/ui/Icon'
+=======
+import Box, { SafeAreaBox, usePageBottomInset, VStack } from '~common/ui/Box'
+import Text from '~common/ui/Text'
+import { ListSectionTitle } from '~common/ui/ListSection'
+>>>>>>> BIBLESTRONG-28
 import {
   getPassageMediaLibrary,
   type ResolvedPassageMediaLibraryItem,
@@ -114,6 +120,7 @@ const PassageMediaLibraryScreen = () => {
   const router = useRouter()
   const language = useLanguage()
   const { width: windowWidth } = useWindowDimensions()
+<<<<<<< CYBERJUDAH
   const cyberJudah = usesCyberJudahEditorial()
   // CyberJudah lists every published class, read live and kept for offline opens.
   const classLibrary = useQuery({
@@ -254,6 +261,10 @@ const PassageMediaLibraryScreen = () => {
     },
   ]
   const episodes = getHowToReadTheBibleEpisodes(library)
+=======
+  const bottomInset = usePageBottomInset()
+  const episodes = getHowToReadTheBibleEpisodes(getPassageMediaLibrary({ language }))
+>>>>>>> BIBLESTRONG-28
   const contentWidth = Math.min(windowWidth, 760)
   const thumbnailWidth = Math.min(176, Math.max(128, (contentWidth - 40) * 0.38))
   const sections: LibrarySection[] = insideSection
@@ -293,7 +304,6 @@ const PassageMediaLibraryScreen = () => {
         keyExtractor={item => item.editionId}
         stickySectionHeadersEnabled={false}
         showsVerticalScrollIndicator={false}
-        contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={[
           pageContentStyle,
           {
@@ -302,15 +312,12 @@ const PassageMediaLibraryScreen = () => {
             alignSelf: 'center',
             paddingHorizontal: 20,
             paddingTop: 24,
-            paddingBottom: 48,
+            paddingBottom: 48 + bottomInset,
           },
         ]}
         ListHeaderComponent={
           <VStack className="overflow-hidden border-continuous mb-[22px] gap-[5px]">
-            <Text
-              className="text-[25px] leading-[31px]"
-              style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
-            >
+            <Text className="text-[25px] leading-[31px]" style={titleFontStyle(stylingTheme)}>
               {t('passageMediaLibrary.heading')}
             </Text>
             <Text
@@ -374,6 +381,7 @@ const PassageMediaLibraryScreen = () => {
           </VStack>
         }
         renderSectionHeader={({ section }) => (
+<<<<<<< CYBERJUDAH
           <Box className="overflow-hidden border-continuous bg-reverse pt-[30px] pb-[20px] flex-row items-center">
             <Text
               className="text-[19px] flex-[1]"
@@ -392,6 +400,10 @@ const PassageMediaLibraryScreen = () => {
                 </Text>
               </TouchableBox>
             )}
+=======
+          <Box className="overflow-hidden border-continuous bg-reverse pt-[22px] pb-[4px]">
+            <ListSectionTitle className="ml-[0px]">{section.title}</ListSectionTitle>
+>>>>>>> BIBLESTRONG-28
           </Box>
         )}
         renderItem={({ item, index }) => {

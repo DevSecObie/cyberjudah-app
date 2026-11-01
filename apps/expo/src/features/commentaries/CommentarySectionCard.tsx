@@ -2,8 +2,9 @@ import { Linking } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import type { CommentaryCatalogEntry } from '~helpers/commentaryCatalog'
 import Box from '~common/ui/Box'
+import Card from '~common/ui/Card'
 import SwitchableHTMLView from '~common/SwitchableHTMLView'
-import { getBook } from '~helpers/bibleBookCatalog'
+import { getCommentaryBookLabel } from './commentaryBookLabel'
 import CommentaryRoomIntro from './CommentaryRoomIntro'
 import CommentaryEntryNavigation from './CommentaryEntryNavigation'
 import { commentaryHrefToOsis } from './commentaryResourceParams'
@@ -39,11 +40,32 @@ export default function CommentarySectionCard({
   const { t } = useTranslation()
   const start = section.rangeStartVerse
   const end = section.rangeEndVerse
-  return (
+  const article = (
     <>
       {!preview && (
-        <CommentaryRoomIntro compact entry={entry} language={language} onPress={onResourcePress} />
+        <CommentaryEntryNavigation
+          hasPrevious={!!onPrevious}
+          hasNext={!!onNext}
+          onPrevious={() => onPrevious?.()}
+          onNext={() => onNext?.()}
+          reference={
+            start === 0
+              ? t('commentaries.resource.introduction')
+              : `${getCommentaryBookLabel(book)} ${chapter}:${start}${end !== start ? `–${end}` : ''}`
+          }
+          referenceDisabled={start === 0}
+          onReferencePress={() => {
+            const route = getCommentaryPassageBibleViewRoute({
+              book,
+              chapter,
+              startVerse: start,
+              endVerse: end,
+            })
+            if (route) pushRouteOnce(route)
+          }}
+        />
       )}
+<<<<<<< CYBERJUDAH
       <Box
         className="bg-reverse rounded-[20px] px-[18px] py-[18px]"
         style={{
@@ -88,7 +110,27 @@ export default function CommentarySectionCard({
             }}
           />
         </Box>
+=======
+      <Box className={preview ? undefined : 'mt-[14px]'}>
+        <SwitchableHTMLView
+          value={section.content}
+          onLinkPress={href => {
+            const osis = commentaryHrefToOsis(href)
+            const route = osis ? getCommentaryBibleViewRoute(osis) : undefined
+            if (route) pushRouteOnce(route)
+            else if (/^https?:\/\//iu.test(href)) void Linking.openURL(href)
+          }}
+        />
+>>>>>>> BIBLESTRONG-28
       </Box>
+    </>
+  )
+  // The preview sits on its sheet, which is already the raised surface: it takes no card.
+  if (preview) return <Box>{article}</Box>
+  return (
+    <>
+      <CommentaryRoomIntro compact entry={entry} language={language} onPress={onResourcePress} />
+      <Card className="px-[18px] py-[18px]">{article}</Card>
     </>
   )
 }

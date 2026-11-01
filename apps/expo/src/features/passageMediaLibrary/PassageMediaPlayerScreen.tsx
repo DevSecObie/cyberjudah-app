@@ -1,10 +1,11 @@
-import { resolveFontFamily } from '~themes/styleValues'
+import { resolveFontFamily, titleFontStyle } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { useGlobalSearchParams, useLocalSearchParams, usePathname, useRouter } from 'expo-router'
 import { useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Linking, Platform, useWindowDimensions } from 'react-native'
 import YoutubePlayer from '~helpers/react-native-youtube-iframe'
+<<<<<<< CYBERJUDAH
 import WebView from 'react-native-webview'
 import { useAtom } from 'jotai'
 import { dockedClassAtom } from './dockedClassPlayerStore'
@@ -15,9 +16,16 @@ import {
   resumeClassAt,
 } from './classVideoPosition'
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes'
+=======
+>>>>>>> BIBLESTRONG-28
 import Header from '~common/Header'
 import Box, { TouchableBox, VStack } from '~common/ui/Box'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
+<<<<<<< CYBERJUDAH
+=======
+import ScrollView from '~common/ui/ScrollView'
+import { radii } from '~common/ui/surfaces'
+>>>>>>> BIBLESTRONG-28
 import Text from '~common/ui/Text'
 import { FeatherIcon, MaterialIcon } from '~common/ui/Icon'
 import PipGlass from './PipGlass'
@@ -29,6 +37,7 @@ import {
 } from '~features/bible/passageMedia'
 import { IS_FORM_SHEET } from '~helpers/constants'
 import useLanguage from '~helpers/useLanguage'
+<<<<<<< CYBERJUDAH
 import { useQuery } from '@tanstack/react-query'
 import { getCommentaryBibleViewRoute } from '~features/commentaries/commentaryReferenceNavigation'
 import ClassNotesList from './ClassNotesList'
@@ -37,6 +46,8 @@ import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import { CLASS_SEEK_PREFIX, getCachedClassById, loadClassNoteBlocks } from './cyberJudahClasses'
 const YOUTUBE_PLAYER_BASE_URL =
   'https://lonelycpp.github.io/react-native-youtube-iframe/iframe_v2.html'
+=======
+>>>>>>> BIBLESTRONG-28
 
 const PassageMediaPlayerScreen = () => {
   const stylingTheme = useStylingTheme()
@@ -128,6 +139,7 @@ const PassageMediaPlayerScreen = () => {
   }
 
   return (
+<<<<<<< CYBERJUDAH
     <FormSheetScreen isFormSheet={IS_FORM_SHEET}>
       <Box className="overflow-hidden border-continuous flex-[1] bg-reverse">
         <Header
@@ -154,6 +166,44 @@ const PassageMediaPlayerScreen = () => {
                     elevation: 1,
                     overflow: 'visible',
                   }}
+=======
+    <FormSheetScreen className="bg-canvas" isFormSheet={IS_FORM_SHEET}>
+      <Box className="overflow-hidden border-continuous flex-[1] bg-canvas">
+        <Header title={item?.title ?? t('passageMediaLibrary.playerTitle')} />
+        <ScrollView
+          backgroundColor="canvas"
+          contentInsetAdjustmentBehavior="automatic"
+          contentContainerStyle={{ alignItems: 'center', paddingHorizontal: 16, paddingTop: 24 }}
+        >
+          {item ? (
+            <VStack
+              className="overflow-hidden border-continuous gap-[18px]"
+              style={{ width: playerWidth }}
+            >
+              <Box
+                className="border-continuous overflow-hidden rounded-[16px] bg-surface"
+                style={{ width: playerWidth, height: playerHeight }}
+              >
+                <YoutubePlayer
+                  height={playerHeight}
+                  width={playerWidth}
+                  videoId={item.providerId}
+                  play
+                  onError={error => setPlayerError(error || 'unknown')}
+                  onReady={() => setPlayerError(undefined)}
+                  initialPlayerParams={{ rel: false }}
+                  viewContainerStyle={{ borderRadius: radii.card, overflow: 'hidden' }}
+                  webViewStyle={{ borderRadius: radii.card, overflow: 'hidden' }}
+                />
+              </Box>
+              <VStack className="overflow-hidden border-continuous gap-[7px] px-[2px]">
+                <Text className="text-[22px] leading-[28px]" style={titleFontStyle(stylingTheme)}>
+                  {item.title}
+                </Text>
+                <Text
+                  className="text-grey text-[14px]"
+                  style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.text) }}
+>>>>>>> BIBLESTRONG-28
                 >
                   {playingInWindow ? (
                     // The class plays in the floating window; tapping here brings it back.

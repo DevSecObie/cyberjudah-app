@@ -11,18 +11,20 @@ import { useAtomValue, useSetAtom } from 'jotai/react'
 import { getDefaultStore, PrimitiveAtom } from 'jotai/vanilla'
 import { useTranslation } from 'react-i18next'
 import { FadeIn, FadeOut } from 'react-native-reanimated'
-import { Platform } from 'react-native'
+import { Platform, StyleSheet } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useSelector } from 'react-redux'
 import { isFullScreenBibleAtom } from 'src/state/app'
 import {
   BibleTab,
+  getSelectedVersesVersion,
   parallelColumnWidthAtom,
   parallelDisplayModeAtom,
   useBibleTabActions,
 } from 'src/state/tabs'
 import Back from '~common/Back'
 import ParallelIcon from '~common/ParallelIcon'
+import { getReadingBookName, getReadingLanguage } from '~helpers/readingLanguage'
 import { type SheetRef } from '~common/sheet'
 import Box, {
   AnimatedBox,
@@ -31,10 +33,8 @@ import Box, {
   HStack,
   TouchableBox,
 } from '~common/ui/Box'
-import { FormSheetHandle } from '~common/ui/FormSheetScreen'
 import { FeatherIcon, IonIcon } from '~common/ui/Icon'
 import Text, { AnimatedText } from '~common/ui/Text'
-import Progress from '~common/ui/Progress'
 import {
   BIBLE_FORM_SHEET_HEADER_HEIGHT,
   HEADER_HEIGHT,
@@ -47,8 +47,6 @@ import { SHARE_LINK_ACTION, shareResourceLink } from '~features/share/resourceSh
 import truncate from '~helpers/truncate'
 import useDimensions from '~helpers/useDimensions'
 import verseToReference from '~helpers/verseToReference'
-import { chapterToReference } from '~helpers/chapterToReference'
-import { getPlanPassagePosition } from './planPassage'
 import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
 import { RootState } from '~redux/modules/reducer'
 import { makeSelectBookmarkForChapter } from '~redux/selectors/bookmarks'
@@ -63,35 +61,39 @@ import {
   isInterlinearCapableBibleVersion,
   isInterlinearModeEnabled,
 } from '~helpers/interlinearBiblePublications'
-import { downloadItemStatesAtom } from '~state/downloadQueue'
-import { getBibleModeAcquisitionPresentation } from '~helpers/bibleModeAcquisition'
 import InterlinearMark from './InterlinearMark'
-import InterlinearModeSelectorSheet from './InterlinearModeSelectorSheet'
-import StrongModeSelectorSheet from './StrongModeSelectorSheet'
-import { useBibleModeAcquisitionCompletion } from './useBibleModeAcquisitionCompletion'
+import type { BibleTextModeKind } from './BibleTextModeSheets'
+import type { BibleTextModeColumn } from '~helpers/bibleColumnTextModes'
 import type { BibleVersionCoverage } from '~helpers/biblesDb'
+import { useWorkspaceHeaderInset } from '~features/app-switcher/workspaceHeaderInset'
 interface BibleHeaderProps {
   bibleAtom: PrimitiveAtom<BibleTab>
   isFormSheet?: boolean
   onBibleParamsClick: () => void
-  onExitAnnotationMode?: () => void
   annotationModeEnabled?: boolean
+  /** The verse keys the words selected in annotation mode start and end in, if any */
+  annotationSelection?: { startVerseKey: string; endVerseKey: string } | null
+  annotatedVersion?: string
   hidePersonalBibleData?: boolean
   isInTab?: boolean
   coverage?: BibleVersionCoverage
   onNavigateToVerse: (verse: number) => void
+  /** Opens the Strong or interlinear sheet of a column: 0 is the main version. */
+  onOpenTextMode: (kind: BibleTextModeKind, column: BibleTextModeColumn) => void
 }
 
 const Header = ({
   isFormSheet,
   bibleAtom,
   onBibleParamsClick,
-  onExitAnnotationMode,
   annotationModeEnabled,
+  annotationSelection,
+  annotatedVersion,
   hidePersonalBibleData = false,
   isInTab,
   coverage,
   onNavigateToVerse,
+  onOpenTextMode,
 }: BibleHeaderProps) => {
   const router = useRouter()
   const { t } = useTranslation()
@@ -99,6 +101,7 @@ const Header = ({
   const isSmall = dimensions.screen.width < 400
   const actions = useBibleTabActions(bibleAtom)
   const insets = useSafeAreaInsets()
+  const workspaceHeaderInset = useWorkspaceHeaderInset()
   const { openBookSelector, openVersionSelector } = useBookAndVersionSelector()
   const isFullScreenBible = useAtomValue(isFullScreenBibleAtom)
   const setIsFullScreenBible = useSetAtom(isFullScreenBibleAtom)
@@ -117,8 +120,6 @@ const Header = ({
   // Bookmark ref
   const bookmarkModalRef = useRef<SheetRef>(null)
   const exportSheetRef = useRef<SheetRef>(null)
-  const interlinearModeSheetRef = useRef<SheetRef>(null)
-  const strongModeSheetRef = useRef<SheetRef>(null)
   const bible = useAtomValue(bibleAtom)
   const {
     selectedBook: book,
@@ -130,41 +131,46 @@ const Header = ({
     focusVerses,
     strongMode = 'hidden',
     interlinearMode = 'hidden',
-    pendingModeAcquisition,
     planPassage,
   } = bible.data
   const bookNumber = book.Numero
-  const bookName = book.Nom
+  // The frame of the reading speaks the main version's language
+  const readingLanguage = getReadingLanguage(version)
+  const bookName = getReadingBookName(book, version)
   const isParallel = parallelVersions.length > 0
   const displayVerses = focusVerses
-  const downloadStates = useAtomValue(downloadItemStatesAtom)
-  const acquisitionPresentation = getBibleModeAcquisitionPresentation(
-    pendingModeAcquisition,
-    downloadStates
-  )
-  const isInterlinearDownloadVisible =
-    interlinearMode === 'hidden' &&
-    pendingModeAcquisition?.kind === 'interlinear' &&
-    (acquisitionPresentation.status === 'active' || acquisitionPresentation.status === 'completed')
-  const isStrongDownloadVisible =
-    strongMode === 'hidden' &&
-    pendingModeAcquisition?.kind === 'strong' &&
-    pendingModeAcquisition.versionId === version &&
-    (acquisitionPresentation.status === 'active' || acquisitionPresentation.status === 'completed')
-
-  useBibleModeAcquisitionCompletion({
-    acquisition: pendingModeAcquisition,
-    finish: actions.finishBibleModeAcquisition,
-    onSucceeded: acquisition => {
-      const sheetRef = acquisition.kind === 'strong' ? strongModeSheetRef : interlinearModeSheetRef
-      sheetRef.current?.dismiss()
-    },
-  })
 
   // Check if verses are selected
   const hasSelectedVerses =
     !hidePersonalBibleData && selectedVerses && Object.keys(selectedVerses).length > 0
-  const selectedVersesReference = verseToReference(selectedVerses)
+  // Parallel reading: the selection belongs to one version, named after the reference
+  const selectedVersesReference = isParallel
+    ? `${verseToReference(selectedVerses)} · ${getSelectedVersesVersion(bible.data)}`
+    : verseToReference(selectedVerses)
+
+  // Annotation mode: the verses the selected words are in, or the chapter without a selection
+  const annotationVerseNumbers = annotationSelection
+    ? [annotationSelection.startVerseKey, annotationSelection.endVerseKey]
+        .map(verseKey => Number(verseKey.split('-')[2]))
+        .sort((a, b) => a - b)
+    : []
+  const annotationReference = [
+    verseToReference(
+      {
+        bookNum: bookNumber,
+        chapterNum: chapter,
+        verses: annotationVerseNumbers.length
+          ? Array.from(
+              { length: annotationVerseNumbers[1] - annotationVerseNumbers[0] + 1 },
+              (_, index) => annotationVerseNumbers[0] + index
+            )
+          : undefined,
+      },
+      { language: readingLanguage }
+    ),
+    // Annotations belong to the version they are made on
+    ...(annotatedVersion ? [annotatedVersion] : []),
+  ].join(' · ')
 
   // Check if current chapter has a bookmark
   const selectBookmarkForChapter = makeSelectBookmarkForChapter()
@@ -175,7 +181,10 @@ const Header = ({
 
   const hasFocusVerses = focusVerses && focusVerses.length > 0
   const focusedReference = hasFocusVerses
-    ? verseToReference({ bookNum: bookNumber, chapterNum: chapter, verses: displayVerses })
+    ? verseToReference(
+        { bookNum: bookNumber, chapterNum: chapter, verses: displayVerses },
+        { language: readingLanguage }
+      )
     : ''
   useEffect(() => {
     const { selectedBook, selectedChapter, selectedVersion, focusVerses } = bible.data
@@ -186,21 +195,6 @@ const Header = ({
     })
     actions.setTitle(`${ref} - ${selectedVersion}`)
   }, [actions, bible])
-
-  // Plan mode names the whole passage, and where the reader stands when it spans chapters.
-  const planPosition = planPassage && getPlanPassagePosition(planPassage, chapter)
-  const planChapters = planPassage
-    ? `${planPassage.book}|${planPassage.startChapter}${
-        planPassage.endChapter > planPassage.startChapter ? `-${planPassage.endChapter}` : ''
-      }`
-    : ''
-  const planReference = !planPassage
-    ? ''
-    : hasFocusVerses
-      ? focusedReference
-      : `${chapterToReference(planChapters)}${
-          planPosition ? ` · ${planPosition.current}/${planPosition.total}` : ''
-        }`
 
   const { addParallelVersion, removeParallelVersion, removeAllParallelVersions } = actions
 
@@ -234,6 +228,24 @@ const Header = ({
       },
     })
   }
+
+  // Parallel reading chooses each version in its own column: the book stands alone
+  const bookTriggerClassName = `overflow-hidden border-continuous items-center justify-center pl-[12px] h-[32px] ${
+    isParallel ? 'pr-[12px]' : 'pr-[7px]'
+  }`
+  const bookTriggerContent = (
+    <>
+      <AnimatedBox
+        className={`overflow-hidden border-continuous bg-light-grey absolute left-[0px] bottom-[0px] right-[0px] top-[0px] ${
+          isParallel ? 'rounded-full' : 'rounded-tl-[16px] rounded-bl-[16px]'
+        }`}
+        style={opacityTransitionStyle}
+      />
+      <AnimatedText className="font-bold text-[14px]" style={translateYTransitionStyle}>
+        {isSmall ? truncate(`${bookName} ${chapter}`, 10) : `${bookName} ${chapter}`}
+      </AnimatedText>
+    </>
+  )
 
   const isVerticalParallelMode = displayMode === 'vertical'
   const nextColumnWidth = columnWidth === 50 ? 75 : columnWidth === 75 ? 100 : 50
@@ -285,14 +297,20 @@ const Header = ({
   // The chapter as the public site shows it; a version the site does not serve has no link.
   const chapterShareUrl = getChapterShareUrl(bookNumber, chapter, version)
 
+  // Parallel display sits in the header, unless a back button leaves no room on a phone
+  const hasParallelButton = !planPassage && (isParallel || !(hasBackButton && isSmall))
+
   const mainMenuActions: MenuAction[] = [
-    { id: 'params', title: t('Police et paramêtres'), image: 'textformat' },
-    {
-      id: 'parallel',
-      title: t('Affichage parallèle'),
-      image: 'rectangle.split.2x1',
-      state: isParallel ? 'on' : 'off',
-    },
+    ...(!hasParallelButton
+      ? [
+          {
+            id: 'parallel',
+            title: t('Affichage parallèle'),
+            image: 'rectangle.split.2x1' as const,
+            state: isParallel ? ('on' as const) : ('off' as const),
+          },
+        ]
+      : []),
     { id: 'history', title: t('history.title'), image: 'clock.arrow.circlepath' },
     ...(!hidePersonalBibleData
       ? [
@@ -320,26 +338,19 @@ const Header = ({
     },
   ]
 
-  // The read-only header has no version selector, so plan mode offers it from the menu.
-  const planMenuActions: MenuAction[] = [
-    { id: 'version', title: `${t('Changer de version')} (${version})`, image: 'book' },
-    ...getPassagePreviewMenuActions(mainMenuActions),
-  ]
+  // Plan mode keeps the chapter header, bound to its passage: no parallel display.
+  const chapterMenuActions = planPassage
+    ? getPassagePreviewMenuActions(mainMenuActions)
+    : mainMenuActions
 
   const handleMenuAction = (id: string) => {
     switch (id) {
-      case 'params':
-        onBibleParamsClick()
-        break
-      case 'version':
-        openVersionSelector({ actions, data: getDefaultStore().get(bibleAtom).data })
-        break
       case 'parallel':
         if (isParallel) removeAllParallelVersions()
         else addParallelVersion()
         break
       case 'history':
-        router.push('/history')
+        router.push({ pathname: '/history', params: { filter: 'bible' } })
         break
       case 'bookmark':
         bookmarkModalRef.current?.present()
@@ -359,83 +370,104 @@ const Header = ({
     }
   }
 
-  const strongModeButton = isStrongCapableBibleVersion(version) ? (
-    <DisplayModeTrigger
-      kind="strong"
-      bibleAtom={bibleAtom}
-      className="overflow-hidden border-continuous items-center justify-center w-[40px] h-[40px]"
-      onPress={() => strongModeSheetRef.current?.present()}
-      disabled={isStrongDownloadVisible}
-      accessibilityRole="button"
-      accessibilityLabel={
-        isStrongDownloadVisible
-          ? t('Téléchargement en cours')
-          : t('Choisir l’affichage de la Bible Strong')
-      }
-      accessibilityState={{
-        disabled: isStrongDownloadVisible,
-        selected: strongMode !== 'hidden',
-      }}
-      style={[
-        { opacity: isStrongDownloadVisible ? 0.6 : 1 },
-        [
-          { opacity: isStrongDownloadVisible ? 0.6 : 1 },
-          {
-            opacity: fullScreenOpacity,
-            transitionProperty: 'opacity',
-            transitionDuration: 300,
-          },
-        ],
-      ]}
-    >
-      {isStrongDownloadVisible ? (
-        <Progress
-          progress={Math.max(acquisitionPresentation.progress, 0.04)}
-          size={22}
-          thickness={2.5}
-        />
-      ) : (
-        <StrongMark highlighted={strongMode !== 'hidden'} />
-      )}
-    </DisplayModeTrigger>
-  ) : null
+  // One display segment after the version: the interlinear sheet also offers Strong.
+  // Parallel reading: each version sets its own modes, from its chip in the reader.
+  const textModeKind: BibleTextModeKind | null = isParallel
+    ? null
+    : isInterlinearCapableBibleVersion(version)
+      ? 'interlinear'
+      : isStrongCapableBibleVersion(version)
+        ? 'strong'
+        : null
+  const isTextModeActive =
+    textModeKind === 'interlinear'
+      ? isInterlinearModeEnabled(interlinearMode)
+      : strongMode !== 'hidden'
 
-  const interlinearModeButton = isInterlinearCapableBibleVersion(version) ? (
-    <DisplayModeTrigger
-      kind="interlinear"
-      bibleAtom={bibleAtom}
-      className="overflow-hidden border-continuous items-center justify-center w-[40px] h-[40px]"
-      onPress={() => interlinearModeSheetRef.current?.present()}
-      disabled={isInterlinearDownloadVisible}
-      accessibilityRole="button"
-      accessibilityLabel={
-        isInterlinearDownloadVisible ? t('Téléchargement en cours') : t('Options du texte original')
-      }
-      accessibilityState={{
-        disabled: isInterlinearDownloadVisible,
-        selected: isInterlinearModeEnabled(interlinearMode),
-      }}
-      style={[
-        { opacity: isInterlinearDownloadVisible ? 0.6 : 1 },
-        [{ opacity: isInterlinearDownloadVisible ? 0.6 : 1 }, opacityTransitionStyle],
-      ]}
-    >
-      {isInterlinearDownloadVisible ? (
-        <Progress
-          progress={Math.max(acquisitionPresentation.progress, 0.04)}
-          size={22}
-          thickness={2.5}
+  // After the version in the chip; alone, a whole pill, in focus where the version is a label
+  const renderTextModeSegment = (standalone: boolean) =>
+    textModeKind ? (
+      <DisplayModeTrigger
+        kind={textModeKind}
+        bibleAtom={bibleAtom}
+        className={`overflow-hidden border-continuous items-center justify-center pr-[11px] h-[32px] ${
+          standalone ? 'pl-[11px]' : 'pl-[8px]'
+        }`}
+        onPress={() => onOpenTextMode(textModeKind, 0)}
+        accessibilityRole="button"
+        accessibilityLabel={
+          textModeKind === 'interlinear'
+            ? t('Options du texte original')
+            : t('Choisir l’affichage de la Bible Strong')
+        }
+        accessibilityState={{ selected: isTextModeActive }}
+      >
+        <AnimatedBox
+          className={`overflow-hidden border-continuous bg-light-grey rounded-tr-[16px] rounded-br-[16px] absolute left-[0px] bottom-[0px] right-[0px] top-[0px] ${
+            standalone ? 'rounded-tl-[16px] rounded-bl-[16px]' : ''
+          }`}
+          style={opacityTransitionStyle}
         />
-      ) : (
-        <InterlinearMark highlighted={isInterlinearModeEnabled(interlinearMode)} />
-      )}
-    </DisplayModeTrigger>
-  ) : null
+        <AnimatedBox style={opacityTransitionStyle}>
+          {textModeKind === 'interlinear' ? (
+            <InterlinearMark highlighted={isTextModeActive} />
+          ) : (
+            <StrongMark highlighted={isTextModeActive} />
+          )}
+        </AnimatedBox>
+      </DisplayModeTrigger>
+    ) : null
 
+  // The version opens its selector, after the book
+  const versionChip = (
+    <>
+      <BibleSelectorTrigger
+        kind="version"
+        data={getDefaultStore().get(bibleAtom).data}
+        actions={actions}
+        className={`overflow-hidden border-continuous items-center justify-center pl-[7px] h-[32px] ${
+          textModeKind ? 'pr-[7px]' : 'pr-[12px]'
+        }`}
+        onPress={() =>
+          openVersionSelector({
+            actions,
+            data: getDefaultStore().get(bibleAtom).data,
+          })
+        }
+        accessibilityRole="button"
+        accessibilityLabel={t('accessibility.chooseVersion', { version })}
+      >
+        <AnimatedBox
+          className={`overflow-hidden border-continuous bg-light-grey absolute left-[0px] bottom-[0px] right-[0px] top-[0px] ${
+            textModeKind ? '' : 'rounded-tr-[16px] rounded-br-[16px]'
+          }`}
+          style={opacityTransitionStyle}
+        />
+        <AnimatedText className="font-bold text-[14px]" style={translateYTransitionStyle}>
+          {version}
+        </AnimatedText>
+      </BibleSelectorTrigger>
+      {renderTextModeSegment(false)}
+    </>
+  )
+
+  const paramsButton = (
+    <AnimatedTouchableBox
+      className="overflow-hidden border-continuous items-center justify-center w-[36px] h-[40px]"
+      onPress={onBibleParamsClick}
+      accessibilityRole="button"
+      accessibilityLabel={t('Police et paramêtres')}
+      style={opacityTransitionStyle}
+    >
+      <Text className="font-bold text-[16px]">Aa</Text>
+    </AnimatedTouchableBox>
+  )
+
+  // Annotation mode keeps the reading header, naming the selected verses and the mode
   if (annotationModeEnabled) {
     return (
       <AnimatedVStack
-        className="border-continuous overflow-visible justify-center w-[100%] bg-primary px-[15px] border-b-[1px] border-border absolute top-[0px] left-[0px]"
+        className="border-continuous overflow-visible w-[100%] bg-reverse justify-center px-[15px] border-separator absolute top-[0px] left-[0px]"
         entering={FadeIn}
         exiting={FadeOut}
         key="annotation-mode-header"
@@ -443,45 +475,29 @@ const Header = ({
           paddingTop: TOP_INSET,
           height: headerHeight + TOP_INSET,
           zIndex: nativeHeaderZIndex,
+          borderBottomWidth: StyleSheet.hairlineWidth,
         }}
       >
-        {isFormSheet && <FormSheetHandle />}
-
         <HStack
-          className="border-continuous overflow-visible mx-auto items-center w-[100%]"
+          className="overflow-hidden border-continuous mx-auto items-center w-[100%]"
           style={{ maxWidth: PAGE_CONTENT_MAX_WIDTH }}
         >
-          <Box className="w-[80px] h-[40px] justify-center items-start">
-            {hasBackButton && (
-              <Back
-                onGoBack={() => {
-                  setIsFullScreenBible(false)
-                  console.log('[Bible] onGoBack')
-                }}
-              >
-                <Box className="overflow-hidden border-continuous items-center justify-center w-[50px] h-[32px]">
-                  <FeatherIcon name="arrow-left" size={20} color="reverse" />
-                </Box>
-              </Back>
-            )}
-          </Box>
-          <Box className="overflow-hidden border-continuous flex-[1] min-w-0 items-center justify-center">
-            <Text className="font-bold text-reverse text-[14px]" numberOfLines={1}>
-              {`${verseToReference({ bookNum: bookNumber, chapterNum: chapter, verses: displayVerses })} - ${version}`}
-            </Text>
-          </Box>
-
-          <Box className="w-[80px] h-[40px] justify-center items-end">
-            <AnimatedTouchableBox
-              className="overflow-hidden border-continuous min-h-[40px] justify-center"
-              onPress={onExitAnnotationMode}
-              accessibilityRole="button"
-              accessibilityLabel={t('accessibility.exitAnnotationMode')}
+          {hasBackButton && (
+            <Back
+              onGoBack={() => {
+                setIsFullScreenBible(false)
+                console.log('[Bible] onGoBack')
+              }}
             >
-              <Box className="overflow-hidden border-continuous bg-reverse rounded-[8px] h-[28px] px-[12px] items-center justify-center">
-                <Text className="text-primary font-bold text-[12px]">{t('Terminé')}</Text>
+              <Box className="overflow-hidden border-continuous items-center justify-center w-[50px] h-[32px]">
+                <FeatherIcon name="arrow-left" size={20} />
               </Box>
-            </AnimatedTouchableBox>
+            </Back>
+          )}
+          <Box className="overflow-hidden border-continuous flex-[1] min-w-0 items-center justify-center">
+            <Text className="font-bold text-[14px]" numberOfLines={1}>
+              {annotationReference}
+            </Text>
           </Box>
         </HStack>
       </AnimatedVStack>
@@ -491,7 +507,7 @@ const Header = ({
   if (hasSelectedVerses) {
     return (
       <AnimatedVStack
-        className="border-continuous overflow-visible w-[100%] bg-reverse justify-center px-[15px] border-b-[1px] border-border absolute top-[0px] left-[0px]"
+        className="border-continuous overflow-visible w-[100%] bg-reverse justify-center px-[15px] border-separator absolute top-[0px] left-[0px]"
         entering={FadeIn}
         exiting={FadeOut}
         key="selected-verses-header"
@@ -499,10 +515,9 @@ const Header = ({
           paddingTop: TOP_INSET,
           height: headerHeight + TOP_INSET,
           zIndex: nativeHeaderZIndex,
+          borderBottomWidth: StyleSheet.hairlineWidth,
         }}
       >
-        {isFormSheet && <FormSheetHandle />}
-
         <HStack
           className="overflow-hidden border-continuous mx-auto items-center w-[100%]"
           style={{ maxWidth: PAGE_CONTENT_MAX_WIDTH }}
@@ -531,9 +546,14 @@ const Header = ({
   // the newly mounted book selector invisible on iOS.
   return (
     <AnimatedVStack
-      className="border-continuous overflow-visible justify-center w-[100%] bg-reverse border-b-[1px] border-border absolute top-[0px] left-[0px]"
+      className="border-continuous overflow-visible justify-center w-[100%] bg-reverse border-separator absolute top-[0px] left-[0px]"
       style={[
-        { paddingTop: TOP_INSET, zIndex: nativeHeaderZIndex },
+        {
+          paddingTop: TOP_INSET,
+          paddingLeft: workspaceHeaderInset,
+          zIndex: nativeHeaderZIndex,
+          borderBottomWidth: StyleSheet.hairlineWidth,
+        },
         {
           height: isHeaderCollapsed ? 20 + TOP_INSET : undefined,
           minHeight: isHeaderCollapsed ? 20 + TOP_INSET : headerHeight + TOP_INSET,
@@ -546,8 +566,6 @@ const Header = ({
       entering={FadeIn}
       exiting={FadeOut}
     >
-      {isFormSheet && <FormSheetHandle />}
-
       <HStack
         className="overflow-hidden border-continuous mx-auto items-center w-[100%]"
         style={{ maxWidth: PAGE_CONTENT_MAX_WIDTH }}
@@ -567,106 +585,75 @@ const Header = ({
             </AnimatedBox>
           </Back>
         ) : null}
-        {hasFocusVerses || planPassage ? (
+        {hasFocusVerses && !planPassage ? (
           <HStack className="overflow-hidden border-continuous flex-1 items-center">
-            <Box className="overflow-hidden border-continuous flex-1 pl-[22px]">
+            <HStack className="overflow-hidden border-continuous flex-1 min-w-0 items-center gap-[10px] pl-[22px]">
               <AnimatedText
                 className="font-bold text-[14px]"
                 numberOfLines={1}
                 style={[{ flexShrink: 1 }, translateYTransitionStyle]}
               >
-                {`${planPassage ? planReference : focusedReference} - ${version}`}
+                {`${focusedReference} - ${version}`}
               </AnimatedText>
-            </Box>
-            {strongModeButton}
-            {interlinearModeButton}
+              {renderTextModeSegment(true)}
+            </HStack>
+            {paramsButton}
             <BibleOptionsMenu
               bookNumber={bookNumber}
               chapter={chapter}
               version={version}
               accessibilityLabel={t('accessibility.bibleOptions')}
-              actions={
-                planPassage ? planMenuActions : getPassagePreviewMenuActions(mainMenuActions)
-              }
+              actions={getPassagePreviewMenuActions(mainMenuActions)}
               onPressAction={({ nativeEvent }) => handleMenuAction(nativeEvent.event)}
             >
               <AnimatedBox
-                className="overflow-hidden border-continuous items-center justify-center w-[40px] h-[40px]"
+                className="overflow-hidden border-continuous items-center justify-center w-[36px] h-[40px]"
                 style={opacityTransitionStyle}
               >
                 <FeatherIcon name="more-vertical" size={18} />
               </AnimatedBox>
             </BibleOptionsMenu>
-            {planPassage && (
-              <TouchableBox
-                className="overflow-hidden border-continuous items-center justify-center w-[40px] h-[32px]"
-                onPress={() => actions.exitPlanMode()}
-                accessibilityRole="button"
-                accessibilityLabel={t('accessibility.exitPlanMode')}
-              >
-                <FeatherIcon name="x" size={20} />
-              </TouchableBox>
-            )}
           </HStack>
         ) : (
           <>
             <HStack className="overflow-hidden border-continuous items-center gap-[3px] pl-[10px]">
               <HStack className="overflow-hidden border-continuous">
-                <BibleSelectorTrigger
-                  kind="book"
-                  data={getDefaultStore().get(bibleAtom).data}
-                  actions={actions}
-                  coverage={coverage}
-                  className="overflow-hidden border-continuous items-center justify-center pl-[12px] pr-[7px] h-[32px]"
-                  onPress={() => {
-                    openBookSelector({
-                      actions,
-                      data: getDefaultStore().get(bibleAtom).data,
-                    })
-                  }}
-                  accessibilityRole="button"
-                  accessibilityLabel={t('accessibility.chooseBookAndChapter', {
-                    reference: `${t(bookName)} ${chapter}`,
-                  })}
-                >
-                  <AnimatedBox
-                    className="overflow-hidden border-continuous bg-light-grey rounded-tl-[20px] rounded-bl-[20px] absolute left-[0px] bottom-[0px] right-[0px] top-[0px]"
-                    style={opacityTransitionStyle}
-                  />
-                  <AnimatedText className="font-bold text-[14px]" style={translateYTransitionStyle}>
-                    {isSmall
-                      ? truncate(`${t(bookName)} ${chapter}`, 10)
-                      : `${t(bookName)} ${chapter}`}
-                  </AnimatedText>
-                </BibleSelectorTrigger>
+                {planPassage ? (
+                  // The plan bounds the reading, so the passage reads as a label, not a selector.
+                  <Box
+                    className={bookTriggerClassName}
+                    accessibilityLabel={`${bookName} ${chapter}`}
+                  >
+                    {bookTriggerContent}
+                  </Box>
+                ) : (
+                  <BibleSelectorTrigger
+                    kind="book"
+                    data={getDefaultStore().get(bibleAtom).data}
+                    actions={actions}
+                    coverage={coverage}
+                    className={bookTriggerClassName}
+                    onPress={() => {
+                      openBookSelector({
+                        actions,
+                        data: getDefaultStore().get(bibleAtom).data,
+                      })
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel={t('accessibility.chooseBookAndChapter', {
+                      reference: `${bookName} ${chapter}`,
+                    })}
+                  >
+                    {bookTriggerContent}
+                  </BibleSelectorTrigger>
+                )}
               </HStack>
-              <BibleSelectorTrigger
-                kind="version"
-                data={getDefaultStore().get(bibleAtom).data}
-                actions={actions}
-                className="overflow-hidden border-continuous items-center justify-center pl-[7px] pr-[12px] h-[32px]"
-                onPress={() =>
-                  openVersionSelector({
-                    actions,
-                    data: getDefaultStore().get(bibleAtom).data,
-                  })
-                }
-                accessibilityRole="button"
-                accessibilityLabel={t('accessibility.chooseVersion', { version })}
-              >
-                <AnimatedBox
-                  className="overflow-hidden border-continuous bg-light-grey rounded-tr-[20px] rounded-br-[20px] absolute left-[0px] bottom-[0px] right-[0px] top-[0px]"
-                  style={opacityTransitionStyle}
-                />
-                <AnimatedText className="font-bold text-[14px]" style={translateYTransitionStyle}>
-                  {version}
-                </AnimatedText>
-              </BibleSelectorTrigger>
+              {!isParallel && versionChip}
             </HStack>
 
             <VerseSelectorPopup bibleAtom={bibleAtom} coverage={coverage} preferCoverage>
               <AnimatedBox
-                className="overflow-hidden border-continuous items-center justify-center w-[40px] h-[100%]"
+                className="overflow-hidden border-continuous items-center justify-center w-[32px] h-[100%]"
                 style={opacityTransitionStyle}
               >
                 <FeatherIcon name="chevrons-down" size={20} style={{ opacity: 0.3 }} />
@@ -702,7 +689,7 @@ const Header = ({
                     }}
                   >
                     <AnimatedBox
-                      className="overflow-hidden border-continuous items-center justify-center w-[40px] h-[40px]"
+                      className="overflow-hidden border-continuous items-center justify-center w-[36px] h-[40px]"
                       style={{
                         opacity: fullScreenOpacity,
                         transitionProperty: 'opacity',
@@ -711,7 +698,7 @@ const Header = ({
                     >
                       <Box className="border-continuous overflow-visible relative">
                         <ParallelIcon color="primary" />
-                        <Box className="overflow-hidden border-continuous absolute bottom-[-2px] right-[-4px] bg-grey rounded-[99px] w-[12px] h-[12px] items-center justify-center">
+                        <Box className="overflow-hidden border-continuous absolute bottom-[-2px] right-[-4px] bg-grey rounded-full w-[12px] h-[12px] items-center justify-center">
                           <Text className="text-[9px] text-reverse font-bold">
                             {parallelVersions.length + 1}
                           </Text>
@@ -720,9 +707,19 @@ const Header = ({
                     </AnimatedBox>
                   </MenuView>
                 )}
+                {!isParallel && hasParallelButton && (
+                  <AnimatedTouchableBox
+                    className="overflow-hidden border-continuous items-center justify-center w-[36px] h-[40px]"
+                    onPress={addParallelVersion}
+                    accessibilityRole="button"
+                    accessibilityLabel={t('Affichage parallèle')}
+                    style={opacityTransitionStyle}
+                  >
+                    <ParallelIcon color="default" />
+                  </AnimatedTouchableBox>
+                )}
 
-                {strongModeButton}
-                {interlinearModeButton}
+                {paramsButton}
 
                 {/* Three-dots menu */}
                 <BibleOptionsMenu
@@ -730,11 +727,11 @@ const Header = ({
                   chapter={chapter}
                   version={version}
                   accessibilityLabel={t('accessibility.bibleOptions')}
-                  actions={mainMenuActions}
+                  actions={chapterMenuActions}
                   onPressAction={({ nativeEvent }) => handleMenuAction(nativeEvent.event)}
                 >
                   <AnimatedBox
-                    className="overflow-hidden border-continuous items-center justify-center w-[40px] h-[40px]"
+                    className="overflow-hidden border-continuous items-center justify-center w-[36px] h-[40px]"
                     style={{
                       opacity: fullScreenOpacity,
                       transitionProperty: 'opacity',
@@ -744,7 +741,7 @@ const Header = ({
                     <FeatherIcon name="more-vertical" size={18} />
                   </AnimatedBox>
                 </BibleOptionsMenu>
-                {focusVerses && focusVerses.length > 0 && (
+                {hasFocusVerses && !planPassage && (
                   <TouchableBox
                     className="overflow-hidden border-continuous items-center justify-center w-[40px] h-[32px]"
                     onPress={() => actions.clearFocusVerses()}
@@ -778,12 +775,6 @@ const Header = ({
         chapterNumber={chapter}
         version={version}
       />
-      {isInterlinearCapableBibleVersion(version) && (
-        <InterlinearModeSelectorSheet bibleAtom={bibleAtom} sheetRef={interlinearModeSheetRef} />
-      )}
-      {isStrongCapableBibleVersion(version) && (
-        <StrongModeSelectorSheet bibleAtom={bibleAtom} sheetRef={strongModeSheetRef} />
-      )}
       {currentChapterBookmark && (
         <Box className="overflow-hidden border-continuous absolute right-[24px] bottom-[-18px]">
           <BibleBookmarkTrigger

@@ -26,10 +26,19 @@ import { selectBibleTabVersion } from '~helpers/bibleTabVersionSelection'
 import { type StrongBibleVersionId, type StrongMode } from '~helpers/strongBiblePublications'
 import type { InterlinearMode } from '~helpers/interlinearBiblePublications'
 import type { ResourceLanguage } from '~helpers/databaseTypes'
-import type { PendingBibleModeAcquisition } from '~helpers/bibleModeAcquisition'
+import {
+  materializeParallelTextModes,
+  resetParallelColumnTextModes,
+  setBibleColumnTextModes,
+  getHiddenColumnTextModes,
+  type BibleColumnTextModes,
+  type BibleTextModeColumn,
+} from '~helpers/bibleColumnTextModes'
 import { migrateLegacyBibleTabData } from '../migrations/legacyBibleVersionMigration'
+import { omitSessionTabPreview, withTabPreviewUri, withoutLegacyTabPreview } from './tabPreview'
 import { appLogger } from '~helpers/agentObservability'
 import { useBibleRouteNavigation } from './bibleRouteNavigation'
+import { getSelectedVersesVersion, setSelectedVersesVersion } from './bibleSelectionVersion'
 
 // ============================================================================
 // SHARED BIBLE DOM (single WebView instance for all Bible tabs)
@@ -46,8 +55,15 @@ export type TabBase = {
   title: string
   isRemovable: boolean
   hasBackButton?: boolean
+<<<<<<< CYBERJUDAH
   base64Preview?: string
   /** Retained when upgrading from the previous CyberJudah testing build. */
+=======
+  /**
+   * Screenshot shown in the switcher: a JPEG file on native, a data URI held for the session
+   * on the web. It never leaves the device (see `withoutTabPreview`).
+   */
+>>>>>>> BIBLESTRONG-28
   previewUri?: string
 }
 
@@ -56,6 +72,8 @@ export type BookName = (typeof books)[number]['Nom']
 export type SelectedVerses = VerseIds
 export type BibleContextDisplayMode = 'focused' | 'fullChapter'
 
+export { getSelectedVersesVersion } from './bibleSelectionVersion'
+
 export const getBibleContextDisplayMode = (data: {
   contextDisplayMode?: BibleContextDisplayMode
   isReadOnly?: boolean
@@ -63,7 +81,13 @@ export const getBibleContextDisplayMode = (data: {
   data.contextDisplayMode ?? (data.isReadOnly ? 'focused' : 'fullChapter')
 
 /** A reading-plan passage: one book, from a first to a last chapter. */
-export type BiblePlanPassage = { book: number; startChapter: number; endChapter: number }
+export type BiblePlanPassage = {
+  book: number
+  startChapter: number
+  endChapter: number
+  /** The element of a plan day this passage is, so that the reader can lead on to the next. */
+  entity?: { planId: string; readingSliceId: string; entitySliceId: string }
+}
 
 export interface BibleTab extends TabBase {
   type: 'bible'
@@ -73,11 +97,14 @@ export interface BibleTab extends TabBase {
     strongBibleSourceVersionId?: StrongBibleVersionId
     interlinearMode?: InterlinearMode
     interlinearLocale?: ResourceLanguage
-    pendingModeAcquisition?: PendingBibleModeAcquisition
     selectedBook: Book
     selectedChapter: number
     selectedVerse: number
     parallelVersions: VersionCode[]
+<<<<<<< CYBERJUDAH
+=======
+    /** Parallel reading: the Strong and interlinear modes of each parallel version, by position. */
+>>>>>>> BIBLESTRONG-28
     parallelTextModes?: BibleColumnTextModes[]
     temp: {
       selectedBook: Book
@@ -85,6 +112,10 @@ export interface BibleTab extends TabBase {
       selectedVerse: number
     }
     selectedVerses: SelectedVerses
+<<<<<<< CYBERJUDAH
+=======
+    /** Parallel reading: the version the verses were selected in. Absent: the main version. */
+>>>>>>> BIBLESTRONG-28
     selectedVersesVersion?: VersionCode
     selectionMode: 'grid' | 'list'
     focusVerses?: (string | number)[]
@@ -442,15 +473,18 @@ const migrateTabTypes = (tab: TabItem): TabItem => {
 // Migration function to make all existing tabs removable
 const migrateTabsToRemovable = (tabs: TabItem[]): TabItem[] => {
   return tabs.map(tab => {
-    // First migrate old tab types
-    tab = migrateTabTypes(tab)
+    // First migrate old tab types. The inline preview of earlier versions is dropped rather than
+    // turned into a file: the switcher takes a new one the next time the tab is shown.
+    tab = withoutLegacyTabPreview(migrateTabTypes(tab))
     if (tab.type === 'bible') {
       tab = {
         ...tab,
-        data: migrateLegacyBibleTabData(
-          tab.data as BibleTab['data'] & {
-            selectedVersion: string
-          }
+        data: materializeParallelTextModes(
+          migrateLegacyBibleTabData(
+            tab.data as BibleTab['data'] & {
+              selectedVersion: string
+            }
+          )
         ),
       }
     }
@@ -537,7 +571,7 @@ const maxCachedTabs = 5
 export const tabGroupsAtom = atomWithAsyncStorage<TabGroup[]>(
   'tabGroupsAtom',
   [createDefaultGroup()],
-  { migrate: migrateTabGroups }
+  { migrate: migrateTabGroups, replacer: omitSessionTabPreview }
 )
 
 // Active group ID (persisted)
@@ -594,6 +628,16 @@ export const tabsAtom = atom(
       typeof newTabsOrUpdater === 'function' ? newTabsOrUpdater(currentTabs) : newTabsOrUpdater
 
     set(tabGroupsAtom, updateTabGroupTabs(groups, activeId, newTabs))
+  }
+)
+
+// Sets the preview of a tab without marking its group as changed (see `withTabPreviewUri`).
+export const setTabPreviewAtom = atom(
+  null,
+  (get, set, { tabId, uri }: { tabId: string; uri: string }) => {
+    const groups = get(tabGroupsAtom)
+    const next = withTabPreviewUri(groups, tabId, uri)
+    if (next !== groups) set(tabGroupsAtom, next)
   }
 )
 
@@ -809,80 +853,51 @@ export const useBibleTabActions = (tabAtom: PrimitiveAtom<BibleTab>) => {
     )
   }
 
-  const setStrongMode = (strongMode: StrongMode) => {
-    if (routeNavigation) return routeNavigation.changeStrongMode(strongMode)
+  /**
+   * Switches the main version to an interlinear-capable Bible shown in interlinear at once. The
+   * glosses keep the language chosen in the tab, or follow the language of the application.
+   */
+  const setSelectedVersionInInterlinear = (selectedVersion: VersionCode) => {
+    if (routeNavigation) {
+      // A public interlinear address names its gloss language
+      const interlinearLocale = getDefaultStore().get(tabAtom).data.interlinearLocale
+      return routeNavigation.changeVersion(selectedVersion, {
+        interlinear: true,
+        interlinearLocale: interlinearLocale ?? getLanguage(),
+      })
+    }
     setBibleTab(
       produce(draft => {
-        draft.data.strongMode = strongMode
-        draft.data.pendingModeAcquisition = undefined
+        draft.data = selectBibleTabVersion(draft.data, selectedVersion)
+        setBibleColumnTextModes(draft.data, 0, { interlinearMode: 'interlinear' })
+      })
+    )
+  }
+
+  /** Column 0 is the main version, n the n-th parallel version. */
+  const setStrongMode = (strongMode: StrongMode, column: BibleTextModeColumn = 0) => {
+    if (column === 0 && routeNavigation) return routeNavigation.changeStrongMode(strongMode)
+    setBibleTab(
+      produce(draft => {
+        setBibleColumnTextModes(draft.data, column, { strongMode })
       })
     )
   }
 
   const setInterlinearMode = (
     interlinearMode: InterlinearMode,
-    interlinearLocale?: ResourceLanguage
+    interlinearLocale?: ResourceLanguage,
+    column: BibleTextModeColumn = 0
   ) => {
-    if (routeNavigation?.changeInterlinearMode?.(interlinearMode, interlinearLocale)) return
-    setBibleTab(
-      produce(draft => {
-        draft.data.interlinearMode = interlinearMode
-        draft.data.interlinearLocale = interlinearLocale
-        draft.data.pendingModeAcquisition = undefined
-      })
-    )
-  }
-
-  const startBibleModeAcquisition = (acquisition: PendingBibleModeAcquisition) =>
-    setBibleTab(
-      produce(draft => {
-        draft.data.pendingModeAcquisition = acquisition
-      })
-    )
-
-  const finishBibleModeAcquisition = (succeeded: boolean) => {
-    const current = getDefaultStore().get(tabAtom).data
-    const acquisition = current.pendingModeAcquisition
     if (
-      routeNavigation &&
-      succeeded &&
-      acquisition?.kind === 'strong' &&
-      current.selectedVersion === acquisition.versionId
+      column === 0 &&
+      routeNavigation?.changeInterlinearMode?.(interlinearMode, interlinearLocale)
     ) {
-      setBibleTab(
-        produce(draft => {
-          draft.data.pendingModeAcquisition = undefined
-        })
-      )
-      routeNavigation.changeStrongMode(acquisition.mode)
-      return
-    }
-    if (
-      succeeded &&
-      acquisition?.kind === 'interlinear' &&
-      current.selectedVersion === 'BHG' &&
-      routeNavigation?.changeInterlinearMode?.(acquisition.mode, acquisition.locale)
-    ) {
-      setBibleTab(
-        produce(draft => {
-          draft.data.pendingModeAcquisition = undefined
-        })
-      )
       return
     }
     setBibleTab(
       produce(draft => {
-        const acquisition = draft.data.pendingModeAcquisition
-        draft.data.pendingModeAcquisition = undefined
-        if (!succeeded || !acquisition) return
-
-        if (acquisition.kind === 'strong' && draft.data.selectedVersion === acquisition.versionId) {
-          draft.data.strongMode = acquisition.mode
-        }
-        if (acquisition.kind === 'interlinear' && draft.data.selectedVersion === 'BHG') {
-          draft.data.interlinearMode = acquisition.mode
-          draft.data.interlinearLocale = acquisition.locale
-        }
+        setBibleColumnTextModes(draft.data, column, { interlinearMode, interlinearLocale })
       })
     )
   }
@@ -916,16 +931,16 @@ export const useBibleTabActions = (tabAtom: PrimitiveAtom<BibleTab>) => {
     setBibleTab(
       produce(draft => {
         if (currentParallelVersions.length === 0) {
-          // Entering parallel mode - restore saved versions
+          // Entering parallel mode - restore saved versions, without their modes
           const savedVersions = store.get(savedParallelVersionsAtom)
-          if (savedVersions.length > 0) {
-            draft.data.parallelVersions = [...savedVersions]
-          } else {
-            draft.data.parallelVersions.push(getDefaultBibleVersion(getLanguage()))
-          }
+          draft.data.parallelVersions =
+            savedVersions.length > 0 ? [...savedVersions] : [getDefaultBibleVersion(getLanguage())]
+          draft.data.parallelTextModes = draft.data.parallelVersions.map(getHiddenColumnTextModes)
         } else {
           // Already in parallel mode - add a version
-          draft.data.parallelVersions.push(getDefaultBibleVersion(getLanguage()))
+          const version = getDefaultBibleVersion(getLanguage())
+          resetParallelColumnTextModes(draft.data, draft.data.parallelVersions.length, version)
+          draft.data.parallelVersions.push(version)
         }
       })
     )
@@ -940,6 +955,7 @@ export const useBibleTabActions = (tabAtom: PrimitiveAtom<BibleTab>) => {
   const setParallelVersion = (version: VersionCode, index: number) => {
     setBibleTab(
       produce(draft => {
+        resetParallelColumnTextModes(draft.data, index, version)
         draft.data.parallelVersions[index] = version
       })
     )
@@ -952,6 +968,8 @@ export const useBibleTabActions = (tabAtom: PrimitiveAtom<BibleTab>) => {
   const removeParallelVersion = (index: number) => {
     setBibleTab(
       produce(draft => {
+        const parallelTextModes = materializeParallelTextModes(draft.data).parallelTextModes ?? []
+        draft.data.parallelTextModes = parallelTextModes.filter((_, i) => i !== index)
         draft.data.parallelVersions = draft.data.parallelVersions.filter((_, i) => i !== index)
       })
     )
@@ -965,6 +983,7 @@ export const useBibleTabActions = (tabAtom: PrimitiveAtom<BibleTab>) => {
     setBibleTab(
       produce(draft => {
         draft.data.parallelVersions = []
+        draft.data.parallelTextModes = []
       })
     )
 
@@ -1019,17 +1038,25 @@ export const useBibleTabActions = (tabAtom: PrimitiveAtom<BibleTab>) => {
       })
     )
 
-  const selectAllVerses = (ids: VerseIds) => {
+  // Without a version, a selection action keeps the version the selection is in.
+  const selectAllVerses = (ids: VerseIds, version?: VersionCode) => {
     setBibleTab(
       produce(draft => {
         draft.data.selectedVerses = ids
+        if (version) setSelectedVersesVersion(draft.data, version)
       })
     )
   }
 
-  const addSelectedVerse = (id: string) => {
+  const addSelectedVerse = (id: string, version?: VersionCode) => {
     setBibleTab(
       produce(draft => {
+        // A selection stays in one version: a verse of another version starts a new one.
+        if (version && version !== getSelectedVersesVersion(draft.data)) {
+          draft.data.selectedVerses = {}
+          delete draft.data.selectedVersesVersion
+          setSelectedVersesVersion(draft.data, version)
+        }
         draft.data.selectedVerses[id] = true
       })
     )
@@ -1043,12 +1070,13 @@ export const useBibleTabActions = (tabAtom: PrimitiveAtom<BibleTab>) => {
     )
   }
 
-  const selectSelectedVerse = (id: string) => {
+  const selectSelectedVerse = (id: string, version?: VersionCode) => {
     setBibleTab(
       produce(draft => {
         draft.data.selectedVerses = {
           [id]: true,
         }
+        if (version) setSelectedVersesVersion(draft.data, version)
       })
     )
   }
@@ -1065,6 +1093,7 @@ export const useBibleTabActions = (tabAtom: PrimitiveAtom<BibleTab>) => {
     setBibleTab(
       produce(draft => {
         draft.data.selectedVerses = {}
+        delete draft.data.selectedVersesVersion
       })
     )
   }
@@ -1073,6 +1102,9 @@ export const useBibleTabActions = (tabAtom: PrimitiveAtom<BibleTab>) => {
     setBibleTab(
       produce(draft => {
         draft.data.contextDisplayMode = 'fullChapter'
+        // The chapter opens on the passage the reader was studying.
+        const firstFocusVerse = Math.min(...(draft.data.focusVerses ?? []).map(Number))
+        if (Number.isFinite(firstFocusVerse)) draft.data.selectedVerse = firstFocusVerse
       })
     )
   }
@@ -1096,6 +1128,20 @@ export const useBibleTabActions = (tabAtom: PrimitiveAtom<BibleTab>) => {
         draft.data.focusVerses = verseNumbers
         draft.data.contextDisplayMode = 'focused'
         draft.data.selectedVerses = {}
+        delete draft.data.selectedVersesVersion
+      })
+    )
+  }
+
+  // Words studied from annotation mode: their verses, which no verse selection holds
+  const pinVerses = (verseNumbers: number[]) => {
+    if (verseNumbers.length === 0) return
+    setBibleTab(
+      produce(draft => {
+        draft.data.focusVerses = verseNumbers
+        draft.data.contextDisplayMode = 'focused'
+        draft.data.selectedVerses = {}
+        delete draft.data.selectedVersesVersion
       })
     )
   }
@@ -1110,6 +1156,7 @@ export const useBibleTabActions = (tabAtom: PrimitiveAtom<BibleTab>) => {
         draft.data.focusVerses = undefined
         draft.data.contextDisplayMode = 'fullChapter'
         draft.data.selectedVerses = {}
+        delete draft.data.selectedVersesVersion
       })
     )
   }
@@ -1121,6 +1168,7 @@ export const useBibleTabActions = (tabAtom: PrimitiveAtom<BibleTab>) => {
         draft.data.focusVerses = undefined
         draft.data.contextDisplayMode = 'fullChapter'
         draft.data.selectedVerses = {}
+        delete draft.data.selectedVersesVersion
       })
     )
 
@@ -1239,10 +1287,9 @@ export const useBibleTabActions = (tabAtom: PrimitiveAtom<BibleTab>) => {
 
   return {
     setSelectedVersion,
+    setSelectedVersionInInterlinear,
     setStrongMode,
     setInterlinearMode,
-    startBibleModeAcquisition,
-    finishBibleModeAcquisition,
     setSelectedBook,
     setSelectedChapter,
     setSelectedVerse,
@@ -1268,6 +1315,7 @@ export const useBibleTabActions = (tabAtom: PrimitiveAtom<BibleTab>) => {
     expandContext,
     collapseContext,
     pinSelectedVerses,
+    pinVerses,
     clearFocusVerses,
     exitPlanMode,
 

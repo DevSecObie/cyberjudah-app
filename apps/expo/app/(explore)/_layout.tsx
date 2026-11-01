@@ -38,6 +38,7 @@ const ExploreLayout = () => {
         <Stack.Screen name="false-doctrine" />
         <Stack.Screen name="law-section" />
         <Stack.Screen name="passage-resources" />
+        <Stack.Screen name="plan-entity" />
       </Stack>
     </ModalRouteFrame>
   )

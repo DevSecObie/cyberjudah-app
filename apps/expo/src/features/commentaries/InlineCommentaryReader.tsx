@@ -8,7 +8,7 @@ import Box from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import { MenuView } from '~common/ui/MenuView'
 import Text from '~common/ui/Text'
-import { getBook } from '~helpers/bibleBookCatalog'
+import { getCommentaryBookLabel } from './commentaryBookLabel'
 import CommentarySectionCard from './CommentarySectionCard'
 import { getCommentaryShare } from './shareCommentary'
 import { resourceShareMenuActions, runResourceShareAction } from '~features/share/resourceShare'
@@ -90,7 +90,11 @@ export default function InlineCommentaryReader({
     query.data && entry && request
       ? getCommentaryShare({
           entry,
+<<<<<<< CYBERJUDAH
           passage: `${t(getBook(request.book)?.Nom ?? String(request.book))} ${request.chapter}:${
+=======
+          passage: `${getCommentaryBookLabel(request.book)} ${request.chapter}:${
+>>>>>>> BIBLESTRONG-28
             query.data.section.rangeStartVerse
           }${
             query.data.section.rangeEndVerse !== query.data.section.rangeStartVerse
@@ -127,7 +131,7 @@ export default function InlineCommentaryReader({
             <Box className="gap-[12px]">
               <Text className="text-tertiary">{t('inlineCommentary.editionUnavailable')}</Text>
               <Text
-                className="text-primary font-semibold"
+                className="text-link font-semibold"
                 onPress={() => {
                   if (!request) return
                   void queryClient.invalidateQueries({

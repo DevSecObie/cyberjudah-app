@@ -168,6 +168,65 @@ describe('strongLexiconAccess', () => {
     expect(cards.map(card => card.stepCode)).toEqual(['H0430G', 'H0776G'])
   })
 
+  it('sends equal lists of codes as equal addresses and keeps the requested order', async () => {
+    const fetcher = jest.fn(async (url: string) => {
+      const path = new URL(url).pathname
+      if (path.endsWith('/morphologies')) {
+        const codes = new URL(url).searchParams.get('codes')!.split(',')
+        return new Response(
+          JSON.stringify({
+            resource: { revision: 'core-r1' },
+            morphologies: codes.map(code => ({ code, meaning: `meaning of ${code}` })),
+          }),
+          { status: 200 }
+        )
+      }
+      return new Response(JSON.stringify({ resource: { revision: 'entities-r1' }, entities: [] }), {
+        status: 200,
+      })
+    })
+    const access = createHttpStrongLexiconAccess({
+      baseUrl: 'https://resources.test',
+      fetcher: fetcher as typeof fetch,
+      isOnline: async () => true,
+    })
+
+    const morphologies = await access.loadMorphologies([' HVqp3ms', 'HNcmpa', 'HVqp3ms', ''], 'fr')
+    await access.loadChapterEntities(1, 1, 'fr', ['G2316', 'G0001', 'G2316'])
+
+    expect(morphologies.map(morphology => morphology.code)).toEqual([
+      'HVqp3ms',
+      'HNcmpa',
+      'HVqp3ms',
+    ])
+    expect(new URL(fetcher.mock.calls[0][0]).searchParams.get('codes')).toBe('HNcmpa,HVqp3ms')
+    expect(new URL(fetcher.mock.calls[1][0]).searchParams.get('strongCodes')).toBe('G0001,G2316')
+  })
+
+  it('asks for the same entry cards address whatever the order of the identities', async () => {
+    const fetcher = jest.fn(
+      async (_url: string) => new Response(JSON.stringify({ entries: [] }), { status: 200 })
+    )
+    const access = createHttpStrongLexiconAccess({
+      baseUrl: 'https://resources.test',
+      fetcher: fetcher as typeof fetch,
+      isOnline: async () => true,
+    })
+
+    await access.loadEntryCards(
+      [
+        { kind: 'strong', code: 'H776' },
+        { kind: 'strong', code: 'H0430' },
+        { kind: 'strong', code: 'H0776' },
+      ],
+      'fr'
+    )
+
+    expect(new URL(fetcher.mock.calls[0][0]).searchParams.get('identities')).toBe(
+      'strong:H0430,strong:H0776'
+    )
+  })
+
   it('normalizes unpadded identities for offline cards', async () => {
     const cards = await localStrongLexiconAccess.loadEntryCards(
       [{ kind: 'strong', code: 'H413' }],
@@ -1116,6 +1175,46 @@ describe('strongLexiconAccess', () => {
     await expect(localStrongLexiconAccess.loadChapterEntities(1, 23, 'fr')).resolves.toEqual([])
   })
 
+  it('lists the located places of the entity module in the reader language', async () => {
+    const entitiesDatabase = {
+      getAllAsync: jest.fn().mockResolvedValueOnce([
+        {
+          uniqueName: 'Jerusalem@Gen.14.18-Rev',
+          displayName: 'Jerusalem',
+          localizedDisplayName: 'Jérusalem',
+          type: 'Place',
+          brief: 'Capital of Israel',
+          localizedBrief: 'Capitale d’Israël',
+          latitude: 31.78,
+          longitude: 35.23,
+          chapterCount: 351,
+        },
+      ]),
+    }
+    mockGetStrongLexiconModuleAvailability.mockResolvedValue({
+      status: 'available',
+      moduleId: 'entities',
+      schemaVersion: 1,
+    })
+    mockWithOptionalStrongLexiconDatabase.mockImplementation(async (_moduleId, operation) =>
+      operation(entitiesDatabase as unknown as SQLiteDatabase)
+    )
+
+    await expect(localStrongLexiconAccess.loadPlaces('fr')).resolves.toEqual([
+      {
+        uniqueName: 'Jerusalem@Gen.14.18-Rev',
+        name: 'Jérusalem',
+        category: 'place',
+        type: 'Place',
+        brief: 'Capitale d’Israël',
+        chapterCount: 351,
+        latitude: 31.78,
+        longitude: 35.23,
+      },
+    ])
+    expect(entitiesDatabase.getAllAsync.mock.calls[0][1]).toEqual(['fr'])
+  })
+
   it('does not query chapter entities when the module or book is unavailable', async () => {
     await expect(localStrongLexiconAccess.loadChapterEntities(1, 1, 'fr')).resolves.toEqual([])
     await expect(localStrongLexiconAccess.loadChapterEntities(67, 1, 'fr')).resolves.toEqual([])
@@ -1163,6 +1262,7 @@ const createHybridStub = (
   loadMorphologies: jest.fn(async () => []),
   loadEntity: jest.fn(async () => undefined),
   loadChapterEntities: jest.fn(async () => []),
+  loadPlaces: jest.fn(async () => []),
   listEntries: jest.fn(async () => ({ entries: [{ gloss: label }] as never })),
   search: jest.fn(async () => [{ gloss: label }] as never),
   browseByGlossPrefix: jest.fn(async () => [{ gloss: label }] as never),

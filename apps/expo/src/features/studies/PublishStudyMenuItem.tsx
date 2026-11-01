@@ -1,7 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ActivityIndicator, Linking, PermissionsAndroid, Platform, Share } from 'react-native'
+import {
+  ActivityIndicator,
+  Linking,
+  PermissionsAndroid,
+  Platform,
+  Share,
+  StyleSheet,
+} from 'react-native'
 import PanelAction from '~common/ContextualPanel/PanelAction'
 import { useDispatch } from 'react-redux'
 import slugify from 'slugify'
@@ -27,8 +34,10 @@ const useStudyStatus = (study: Study) => {
   const query = useQuery({
     queryKey: ['published-study-status', study.id],
     queryFn: async () => {
-      const response = await fetch(url)
-      return response.status
+      // Only the status of the public page is needed, not the page itself.
+      const response = await fetch(url, { method: 'HEAD' })
+      if (response.status !== 405 && response.status !== 501) return response.status
+      return (await fetch(url)).status
     },
     enabled: study.published,
     ...remoteQueryOptions,
@@ -151,7 +160,10 @@ const PublishStudyMenuItem = ({ study, onClosed }: Props) => {
 
   if (Platform.OS === 'web') {
     return (
-      <Box className="pb-1 mb-1 border-b border-border">
+      <Box
+        className="pb-1 mb-1 border-separator"
+        style={{ borderBottomWidth: StyleSheet.hairlineWidth }}
+      >
         {!study.published ? (
           <PanelAction
             icon="upload-cloud"

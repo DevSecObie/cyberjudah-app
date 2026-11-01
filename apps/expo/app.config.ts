@@ -1,8 +1,12 @@
 import { ExpoConfig, ConfigContext } from 'expo/config'
 
+<<<<<<< CYBERJUDAH
 const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
 // CyberJudah keeps its own TestFlight version while using Bible Strong's 27.2 mobile UI.
 const APP_VERSION = isCyberJudah ? '28.2.0' : '27.2.0'
+=======
+const APP_VERSION = '28.0.1'
+>>>>>>> BIBLESTRONG-28
 // Patch releases share a runtime and receive the same OTA updates. Any native change must
 // ship in a new major or minor version, which creates a new runtime.
 const [majorVersion, minorVersion] = APP_VERSION.split('.')
@@ -11,6 +15,20 @@ const RUNTIME_VERSION = `${majorVersion}.${minorVersion}`
 const isCyberJudahPreview = process.env.BUNDLE_IDENTIFIER === 'io.cyberjudah.app.preview'
 // CyberJudah's own Expo project (free tier), used only for over-the-air updates.
 const CYBERJUDAH_EAS_PROJECT_ID = 'ee1c2f69-3a80-46c5-b67d-7f4a75def656'
+
+// Icon fonts built into the Android app. Loaded at run time, a font file an update copied can
+// be empty on disk, and every icon of that family stays blank. Each family is named as
+// @expo/vector-icons checks it with Font.isLoaded, so the icons never load it again. The plugin
+// resolves the path as a module when it is not a file of the project.
+const vectorIconFont = (fontFamily: string, file: string) => ({
+  fontFamily,
+  fontDefinitions: [
+    {
+      path: `@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/${file}`,
+      weight: 400,
+    },
+  ],
+})
 
 // The families of public pages a link opens in the application.
 const PUBLIC_RESOURCE_PATHS = [
@@ -41,8 +59,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   userInterfaceStyle: 'automatic',
 
   android: {
+<<<<<<< CYBERJUDAH
     versionCode: isCyberJudah ? 515 : 511,
     package: isCyberJudah ? 'io.cyberjudah.app' : 'com.smontlouis.biblestrong',
+=======
+    versionCode: 514,
+    package: 'com.smontlouis.biblestrong',
+>>>>>>> BIBLESTRONG-28
     googleServicesFile:
       process.env.ANDROID_GOOGLE_SERVICES_FILE ??
       (isCyberJudah
@@ -69,11 +92,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
   },
   ios: {
+<<<<<<< CYBERJUDAH
     bundleIdentifier:
       process.env.BUNDLE_IDENTIFIER ??
       (isCyberJudah ? 'io.cyberjudah.app.dev' : 'com.smontlouis.biblestrong.dev'),
     appleTeamId: isCyberJudah ? process.env.CYBERJUDAH_APPLE_TEAM_ID : undefined,
     buildNumber: isCyberJudah ? '310' : '297',
+=======
+    bundleIdentifier: process.env.BUNDLE_IDENTIFIER ?? 'com.smontlouis.biblestrong.dev',
+    buildNumber: '301',
+>>>>>>> BIBLESTRONG-28
     googleServicesFile:
       process.env.IOS_GOOGLE_SERVICES_FILE ??
       (isCyberJudah
@@ -153,7 +181,17 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-font',
       {
+<<<<<<< CYBERJUDAH
         fonts: ['./src/assets/fonts/LiterataBook-Regular.otf', './src/assets/fonts/Inter-Bold.ttf'],
+=======
+        fonts: ['./src/assets/fonts/LiterataBook-Regular.otf'],
+        android: {
+          fonts: [
+            vectorIconFont('feather', 'Feather.ttf'),
+            vectorIconFont('ionicons', 'Ionicons.ttf'),
+          ],
+        },
+>>>>>>> BIBLESTRONG-28
       },
     ],
     [
@@ -204,7 +242,29 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       projectId: isCyberJudah ? CYBERJUDAH_EAS_PROJECT_ID : 'fdf72b90-346b-11e9-ad9a-255491359311',
     },
     ethern: {
+<<<<<<< CYBERJUDAH
       projectId: isCyberJudah ? undefined : 'ccb42b86-1286-4ca0-99bd-929b7ce418c1',
+=======
+      projectId: 'ccb42b86-1286-4ca0-99bd-929b7ce418c1',
+    },
+  },
+  // Our own update server (Open OTA on Cloudflare), see docs/adr/0085. The address, the channel
+  // and the certificate are native settings: changing any of them needs a new build.
+  updates: {
+    url: 'https://updates.bible-strong.app/manifest',
+    checkAutomatically: 'NEVER',
+    // Only builds with a channel (staging, production) receive updates. A development client
+    // with the certificate would also demand a signed manifest from Metro.
+    ...(process.env.EAS_BUILD_CHANNEL && {
+      codeSigningCertificate: './certs/certificate.pem',
+      codeSigningMetadata: {
+        keyid: 'main',
+        alg: 'rsa-v1_5-sha256',
+      },
+    }),
+    requestHeaders: {
+      'expo-channel-name': process.env.EAS_BUILD_CHANNEL,
+>>>>>>> BIBLESTRONG-28
     },
   },
   // CyberJudah's testers get JS-only fixes over the air: downloaded in the background at launch

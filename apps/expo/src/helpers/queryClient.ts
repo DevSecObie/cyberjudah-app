@@ -1,16 +1,17 @@
 import NetInfo from '@react-native-community/netinfo'
 import { focusManager, onlineManager, QueryClient } from '@tanstack/react-query'
 import { AppState, Platform } from 'react-native'
-import { connectionStatusFromNetInfo } from './useConnection'
+import { connectionStatusFromNetInfo, isOfflineFailureFromNetInfo } from './useConnection'
 import { isOfflineModeForced } from './runtimeConfig'
 import { resourceQueryKeys } from './resourceQueryKeys'
-import { refetchResourceOnReconnect } from './resourceQueryRecovery'
+import { retryUnlessRefused } from './resourceQueryRecovery'
+import { staticResourceQueryOptions } from './queryOptions'
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       networkMode: 'offlineFirst',
-      retry: 1,
+      retry: retryUnlessRefused,
     },
     mutations: {
       networkMode: 'online',
@@ -18,11 +19,9 @@ export const queryClient = new QueryClient({
   },
 })
 
-queryClient.setQueryDefaults(resourceQueryKeys.all(), {
-  refetchOnReconnect: refetchResourceOnReconnect,
-  // An inactive screen may miss the reconnect event while its failure stays cached.
-  refetchOnMount: refetchResourceOnReconnect,
-})
+// An inactive screen may miss the reconnect event while its failure stays cached, hence the
+// recovery on mount and on return to the foreground too.
+queryClient.setQueryDefaults(resourceQueryKeys.all(), staticResourceQueryOptions)
 
 let managersConfigured = false
 
@@ -33,11 +32,20 @@ export const configureQueryManagers = () => {
   if (isOfflineModeForced) {
     onlineManager.setOnline(false)
   } else {
-    onlineManager.setEventListener(setOnline =>
-      NetInfo.addEventListener(state => {
-        setOnline(connectionStatusFromNetInfo(state) === 'internet')
+    onlineManager.setEventListener(setOnline => {
+      let unreachable = false
+      return NetInfo.addEventListener(state => {
+        const online = connectionStatusFromNetInfo(state) !== 'offline'
+        const nowUnreachable = isOfflineFailureFromNetInfo(state)
+        const regainedInternet =
+          online && onlineManager.isOnline() && unreachable && !nowUnreachable
+        unreachable = nowUnreachable
+        setOnline(online)
+        // A connected network that regains Internet access never toggles the online state, so
+        // failed resource queries are refetched here as they would be on a reconnection.
+        if (regainedInternet) queryClient.getQueryCache().onOnline()
       })
-    )
+    })
   }
 
   if (Platform.OS !== 'web') {

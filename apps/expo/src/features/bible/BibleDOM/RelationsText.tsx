@@ -1,6 +1,6 @@
+import { personalContentIcons } from '~common/personalContent'
 import { resolveUniverseColors } from '~themes/universeColors'
 import Feather from '@expo/vector-icons/Feather'
-import Ionicons from '@expo/vector-icons/Ionicons'
 import { useState } from 'react'
 import { styled } from 'goober'
 import { RootState } from '~redux/modules/reducer'
@@ -25,26 +25,22 @@ interface Props {
   relationItems: VerseRelationItem[]
   settings: RootState['user']['bible']['settings']
   onClick: (item: VerseRelationItem) => void
-  isParallel?: boolean
   isDisabled?: boolean
 }
 
-const RelationTag = styled('span')<RootStyles & { isParallel?: boolean }>(
-  ({ isParallel, settings: { fontSizeScale, theme, colors, fontFamily } }) => ({
+const RelationTag = styled('span')<RootStyles>(
+  ({ settings: { fontSizeScale, theme, colors, fontFamily } }) => ({
     fontFamily,
     padding: '0px 4px',
     borderRadius: '4px',
     color: colors[theme].default,
     backgroundColor: colors[theme].lightGrey,
-    fontSize: scaleFontSize(isParallel ? 10 : 16, fontSizeScale),
-    '@media (min-width: 768px)': {
-      fontSize: scaleFontSize(16, fontSizeScale),
-    },
+    fontSize: scaleFontSize(16, fontSizeScale),
     marginRight: '5px',
     cursor: 'pointer',
     display: 'inline-flex',
     alignItems: 'center',
-    maxWidth: isParallel ? '110px' : '190px',
+    maxWidth: '190px',
     ...noSelect,
 
     '&:active': {
@@ -156,11 +152,11 @@ const RelationIcon = ({
 
   switch (item.targetType) {
     case 'note':
-      return <Ionicons color={color} name="document-text-outline" size={16} />
+      return <Feather color={color} name={personalContentIcons.notes} size={16} />
     case 'externalLink':
-      return <Feather color={color} name="link" size={16} />
+      return <Feather color={color} name={personalContentIcons.links} size={16} />
     case 'study':
-      return <Feather color={color} name="edit-3" size={16} />
+      return <Feather color={color} name={personalContentIcons.study} size={16} />
     case 'strong':
       return <SvgMaskIcon source={relationSvgSources.strong} color={color} />
     case 'nave':
@@ -168,7 +164,7 @@ const RelationIcon = ({
     case 'dictionary':
       return <SvgMaskIcon source={relationSvgSources.dictionary} color={color} />
     case 'annotation':
-      return <Feather color={color} name="edit-3" size={16} />
+      return <Feather color={color} name={personalContentIcons.highlights} size={16} />
     case 'word':
       return <Feather color={color} name="type" size={16} />
     case 'verse':
@@ -177,7 +173,7 @@ const RelationIcon = ({
   }
 }
 
-const RelationsText = ({ relationItems, settings, onClick, isParallel, isDisabled }: Props) => {
+const RelationsText = ({ relationItems, settings, onClick, isDisabled }: Props) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const visibleItems = isExpanded ? relationItems : relationItems.slice(0, 3)
   const hiddenCount = relationItems.length - visibleItems.length
@@ -205,7 +201,6 @@ const RelationsText = ({ relationItems, settings, onClick, isParallel, isDisable
         <RelationTag
           key={item.key}
           settings={settings}
-          isParallel={isParallel}
           role={isDisabled ? undefined : 'link'}
           tabIndex={isDisabled ? -1 : 0}
           onKeyDown={(event: React.KeyboardEvent) => {

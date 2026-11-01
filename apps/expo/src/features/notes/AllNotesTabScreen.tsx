@@ -1,6 +1,6 @@
 import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
 import { useAtom, useSetAtom } from 'jotai'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 
@@ -9,7 +9,6 @@ import FiltersHeader from '~common/FiltersHeader'
 import { Tag } from '~common/types'
 import Container from '~common/ui/Container'
 import FlatList from '~common/ui/FlatList'
-import { useSheet } from '~helpers/useSheet'
 import { getNoteTitle } from '~helpers/getNoteTitle'
 import { RootState } from '~redux/modules/reducer'
 import { selectRelationCountsByEndpointIdentity } from '~redux/selectors/bible'
@@ -20,11 +19,14 @@ import { endpointIdentity, type RelationEndpoint } from '~features/studyRelation
 import { createNoteEndpoint } from '~features/studyRelations/endpoints'
 import { useOpenEntityRelations } from '~features/studyRelations/useOpenEntityRelations'
 import BibleNoteItem from '../bible/BibleNoteItem'
+<<<<<<< CYBERJUDAH
 import { ActivityIndicator } from 'react-native'
 import Link from '~common/Link'
 import { FeatherIcon } from '~common/ui/Icon'
 import { useExportPersonalNotes } from '~features/notesExport/useExportPersonalNotes'
 import NotesSettingsModal from './NotesSettingsModal'
+=======
+>>>>>>> BIBLESTRONG-28
 import { useEntityListQueryFilters } from '~common/EntityListQueryFilters'
 import { queryEntityList, type EntityListSort } from '~features/entityListQuery/entityListQuery'
 import {
@@ -42,7 +44,6 @@ const AllNotesTabScreen = ({ hasBackButton }: AllNotesTabScreenProps) => {
   const pushRouteOnce = usePushRouteOnce()
 
   const [queryState, setQueryState] = useAtom(notesListQueryAtom)
-  const [noteSettingsId, setNoteSettingsId] = useState<string | null>(null)
 
   const notes = useSelector((state: RootState) => selectNoteListRows(state, t('annotation')))
   const tags = useSelector((state: RootState) => state.user.bible.tags)
@@ -62,7 +63,6 @@ const AllNotesTabScreen = ({ hasBackButton }: AllNotesTabScreenProps) => {
   }, [queryState.tagId, setQueryState, tags, tagsReady])
   const relationCountsByEndpoint = useSelector(selectRelationCountsByEndpointIdentity)
   const setUnifiedTagsModal = useSetAtom(unifiedTagsModalAtom)
-  const noteSettingsModal = useSheet()
   const openEntityRelations = useOpenEntityRelations()
 
   const openTagsModal = () => {
@@ -73,10 +73,6 @@ const AllNotesTabScreen = ({ hasBackButton }: AllNotesTabScreenProps) => {
     })
   }
 
-  const openNoteSettings = (noteId: string) => {
-    setNoteSettingsId(noteId)
-    noteSettingsModal.open()
-  }
   const openNoteDetail = (noteId: string) => {
     pushRouteOnce({ pathname: '/note', params: { noteId } })
   }
@@ -92,7 +88,6 @@ const AllNotesTabScreen = ({ hasBackButton }: AllNotesTabScreenProps) => {
         key={item.noteId}
         item={item}
         onPress={openNoteDetail}
-        onMenuPress={openNoteSettings}
         relationCount={relationCountsByEndpoint[endpointIdentity(endpoint)] || 0}
         onRelationPress={() => {
           openEntityRelations(endpoint)
@@ -192,11 +187,6 @@ const AllNotesTabScreen = ({ hasBackButton }: AllNotesTabScreenProps) => {
           }
         />
       )}
-      <NotesSettingsModal
-        ref={noteSettingsModal.getRef()}
-        noteId={noteSettingsId}
-        onClosed={() => setNoteSettingsId(null)}
-      />
     </Container>
   )
 }

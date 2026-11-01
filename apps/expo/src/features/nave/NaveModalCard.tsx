@@ -10,6 +10,7 @@ import { resourcesLanguageAtom } from 'src/state/resourcesLanguage'
 import NaveForVerse from './NaveModalForVerse'
 import { SheetScrollView } from '~common/sheet'
 import { resourceQueryKeys } from '~helpers/resourceQueryKeys'
+import { staticResourceQueryOptions } from '~helpers/queryOptions'
 import ResourceUnavailableView from '~features/resources/ResourceUnavailableView'
 import {
   resourceFailureFromAccessError,
@@ -53,6 +54,7 @@ const NaveModalCard = ({ selectedVerse, selectedVersion, updateVerse }: Props) =
   const naveQuery = useQuery({
     queryKey: ['nave', selectedVerse, resourceLang, isConnected],
     queryFn: () => resources.nave.loadByVerse(selectedVerse, resourceLang),
+    ...staticResourceQueryOptions,
   })
   const { isLoading, error, data } = naveQuery
 
@@ -98,7 +100,7 @@ const NaveModalCard = ({ selectedVerse, selectedVersion, updateVerse }: Props) =
   const hasTopics = Boolean(naveItemsForVerse?.length || naveItemsForChapter?.length)
 
   return (
-    <Box className="overflow-hidden border-continuous flex-[1] bg-light-grey">
+    <Box className="overflow-hidden border-continuous flex-[1] bg-canvas">
       <ResourceVerseContext
         verse={selectedVerse}
         {...verseContext}

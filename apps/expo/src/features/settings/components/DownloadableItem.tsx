@@ -13,6 +13,7 @@ import { useDownloadItemStatus } from '~helpers/useDownloadQueue'
 import type { DownloadItemState } from '~state/downloadQueue'
 import { downloadManager } from '~helpers/downloadManager'
 import { useResourcePublicationStatus } from '~helpers/useResourcePublicationStatus'
+import { getDownloadFailureMessageKey } from '~helpers/resourceDeviceCondition'
 import { DOWNLOAD_LIST_LAYOUT } from './downloadListLayout'
 interface DownloadableItemProps {
   itemId: string
@@ -32,8 +33,6 @@ interface DownloadableItemProps {
   isInvalid?: boolean
   relatedResources?: { resourceId: string }[]
   variant?: 'standard' | 'dependency'
-  hasDependency?: boolean
-  hasFollowingSibling?: boolean
   onlineAccessStatus?: 'remotely-readable' | 'temporarily-unavailable' | 'unsupported'
   downloadsDisabled?: boolean
 }
@@ -65,8 +64,6 @@ const DownloadableItem = ({
   isInvalid,
   relatedResources,
   variant = 'standard',
-  hasDependency = false,
-  hasFollowingSibling = false,
   downloadsDisabled = false,
 }: DownloadableItemProps) => {
   const { t } = useTranslation()
@@ -89,6 +86,7 @@ const DownloadableItem = ({
     isInvalid,
     needsUpdate: effectiveNeedsUpdate,
   })
+  const failureMessageKey = getDownloadFailureMessageKey(queueState?.error)
 
   const handlePress = () => {
     if (isSelectMode) {
@@ -136,22 +134,13 @@ const DownloadableItem = ({
   return (
     <Animated.View
       style={{
-        minHeight: isDependency ? 52 : 76,
-        paddingRight: 12,
+        minHeight: isDependency ? 52 : 64,
+        paddingRight: DOWNLOAD_LIST_LAYOUT.cardPaddingHorizontal,
         paddingLeft: isDependency
           ? DOWNLOAD_LIST_LAYOUT.dependencyPaddingLeft
-          : DOWNLOAD_LIST_LAYOUT.itemPaddingLeft,
+          : DOWNLOAD_LIST_LAYOUT.cardPaddingHorizontal,
         paddingVertical: isDependency ? 8 : 12,
         backgroundColor: visualState === 'selected' ? theme.colors.lightPrimary : 'transparent',
-        borderBottomWidth: hasDependency || hasFollowingSibling ? 0 : 1,
-        borderBottomColor: theme.colors.border,
-        borderLeftWidth: ['needs-update', 'invalid'].includes(visualState) ? 4 : 0,
-        borderLeftColor:
-          visualState === 'needs-update'
-            ? theme.colors.success
-            : visualState === 'invalid'
-              ? theme.colors.quart
-              : 'transparent',
         overflow: 'visible',
         transitionProperty: ['opacity', 'backgroundColor'],
         transitionDuration: 200,
@@ -159,7 +148,7 @@ const DownloadableItem = ({
     >
       {isDependency ? (
         <Box
-          className="border-continuous overflow-hidden absolute top-[-10px] w-[16px] h-[36px] border-l-[2px] border-b-[2px] rounded-bl-[10px] border-border"
+          className="border-continuous overflow-hidden absolute top-[-10px] w-[16px] h-[36px] border-l-[2px] border-b-[2px] rounded-bl-[8px] border-separator"
           style={{ left: DOWNLOAD_LIST_LAYOUT.dependencyConnectorLeft }}
         />
       ) : null}
@@ -201,7 +190,7 @@ const DownloadableItem = ({
                 transitionDuration: 200,
               }}
             >
-              <Checkbox checked={Boolean(isSelected)} variant="icon" size={22} />
+              <Checkbox checked={Boolean(isSelected)} size={22} />
             </Animated.View>
           )}
 
@@ -211,7 +200,7 @@ const DownloadableItem = ({
               <Text
                 numberOfLines={1}
                 style={[{ fontSize: isDependency ? 14 : 16 }, { flexShrink: 1 }]}
-                className={twMerge(isDownloaded ? 'text-primary' : 'text-default')}
+                className={twMerge(isDownloaded ? 'text-link' : 'text-default')}
               >
                 {name}
               </Text>
@@ -228,11 +217,16 @@ const DownloadableItem = ({
             )}
             {visualState === 'failed' && queueState?.error && (
               <Text className="text-[12px] text-quart mt-[2px]" numberOfLines={1}>
-                {queueState.error}
+                {failureMessageKey ? t(failureMessageKey) : queueState.error}
               </Text>
             )}
             {visualState === 'invalid' && (
               <Text className="text-[12px] text-quart mt-[2px]">{t('downloads.invalidCopy')}</Text>
+            )}
+            {visualState === 'needs-update' && (
+              <Text className="text-[12px] text-success mt-[2px]">
+                {t('downloads.updateAvailable')}
+              </Text>
             )}
             {subtitle && visualState !== 'queued' && visualState !== 'failed' && (
               <Text
@@ -244,11 +238,11 @@ const DownloadableItem = ({
             )}
             {/* Progress bar */}
             {(visualState === 'downloading' || visualState === 'inserting') && queueState && (
-              <Box className="border-continuous overflow-visible mt-[6px] h-[4px] rounded-[2px] bg-border">
+              <Box className="border-continuous overflow-visible mt-[6px] h-[4px] rounded-full bg-border">
                 <Animated.View
                   style={{
                     height: 4,
-                    borderRadius: 2,
+                    borderRadius: 999,
                     backgroundColor:
                       visualState === 'inserting' ? theme.colors.success : theme.colors.primary,
                     width: `${Math.round(
@@ -394,7 +388,7 @@ const DownloadableItem = ({
               >
                 <Text
                   className={twMerge(
-                    downloadsDisabled ? 'text-tertiary' : 'text-primary',
+                    downloadsDisabled ? 'text-tertiary' : 'text-link',
                     'text-[12px] font-bold'
                   )}
                 >

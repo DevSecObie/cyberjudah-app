@@ -1,30 +1,9 @@
-import { styled } from 'goober'
 import { RootStyles } from './BibleDOMWrapper'
 import { scaleFontSize } from './scaleFontSize'
-import { isDarkTheme } from './utils'
 import { InlineItemContainer, InlineItemIconWrapper, InlineItemText } from './InlineItem'
 import Feather from '@expo/vector-icons/Feather'
-
-/**
- * Discrete indicator showing when annotations exist in other Bible versions
- * Example: "LSG" or "LSG +1" when viewing KJV but annotations exist in LSG and another version
- */
-
-const Indicator = styled('span')<RootStyles>(({ settings: { fontSizeScale, theme, colors } }) => ({
-  fontSize: scaleFontSize(14, fontSizeScale),
-  color: colors[theme].tertiary,
-  backgroundColor: colors[theme].reverse,
-  boxShadow: isDarkTheme(theme)
-    ? `0 0 10px 0 rgba(255, 255, 255, 0.1)`
-    : `0 0 10px 0 rgba(0, 0, 0, 0.2)`,
-  borderRadius: '8px',
-  padding: '4px ',
-  marginRight: '4px',
-  marginLeft: '4px',
-  '&:active': {
-    opacity: 0.4,
-  },
-}))
+import { personalContentIcons } from '~common/personalContent'
+import { resolveUniverseColors } from '~themes/universeColors'
 
 export interface CrossVersionAnnotation {
   version: string
@@ -38,6 +17,10 @@ interface Props {
   isDisabled?: boolean
 }
 
+/**
+ * Discrete indicator showing when annotations exist in other Bible versions
+ * Example: "LSG" or "LSG +1" when viewing KJV but annotations exist in LSG and another version
+ */
 const VersionAnnotationIndicator = ({ versions, settings, onClick, isDisabled }: Props) => {
   if (!versions || versions.length === 0) return null
 
@@ -47,7 +30,11 @@ const VersionAnnotationIndicator = ({ versions, settings, onClick, isDisabled }:
   return (
     <InlineItemContainer settings={settings} onClick={onClick} isButton isDisabled={isDisabled}>
       <InlineItemIconWrapper settings={settings}>
-        <Feather color={settings.colors[settings.theme].secondary} name="edit-3" size={16} />
+        <Feather
+          color={resolveUniverseColors(settings.colors[settings.theme], 'highlights').foreground}
+          name={personalContentIcons.highlights}
+          size={16}
+        />
       </InlineItemIconWrapper>
       <InlineItemText
         settings={settings}

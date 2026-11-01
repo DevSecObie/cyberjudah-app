@@ -2,8 +2,7 @@ import i18n from '~i18n'
 import * as Icon from '~common/ui/classNameIcons'
 import { useQuery } from '@tanstack/react-query'
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
-import * as NativeUI from 'react-native'
-import { FlatList, TouchableOpacity } from 'react-native'
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
 import { pageContentStyle } from '~common/ui/PageContent'
@@ -13,7 +12,7 @@ import { useLocalSearchParams } from 'expo-router'
 import { useSelector } from 'react-redux'
 import Header from '~common/Header'
 import Loading from '~common/Loading'
-import Box from '~common/ui/Box'
+import Box, { usePageBottomInset } from '~common/ui/Box'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
 import Text from '~common/ui/Text'
 import { useResourceAccess } from '~features/resources/resourceAccess'
@@ -27,7 +26,7 @@ import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
 import type { RootState } from '~redux/modules/reducer'
 
 const OccurencesNumber = (
-  componentProps: Omit<UIComponentProps<typeof NativeUI.View>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof View>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
@@ -35,14 +34,14 @@ const OccurencesNumber = (
   const { theme: _themeOverride, className, ...props } = componentProps
 
   const resolvedClassName = twMerge(
-    'ml-[10px] pr-[4px] pl-[4px] pt-[2px] pb-[2px] rounded-[3px] bg-light-primary',
+    'ml-[10px] pr-[6px] pl-[6px] pt-[2px] pb-[2px] rounded-full bg-light-primary',
     className
   )
   return (
-    <NativeUI.View
+    <View
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof NativeUI.View>['style']}
+      style={[props.style] as UIComponentProps<typeof View>['style']}
     />
   )
 }
@@ -55,11 +54,16 @@ const ListItem = (
 ) => {
   const { theme: _themeOverride, className, ...props } = componentProps
 
-  const resolvedClassName = twMerge('border-b-[1px] border-b-border', className)
+  // Rows of a continuous list, split by a hairline
+  const resolvedClassName = twMerge('border-b-separator', className)
   return (
     <Box
       {...props}
-      style={[props.style] as UIComponentProps<typeof Box>['style']}
+      style={
+        [{ borderBottomWidth: StyleSheet.hairlineWidth }, props.style] as UIComponentProps<
+          typeof Box
+        >['style']
+      }
       className={twMerge('overflow-hidden border-continuous', resolvedClassName)}
     />
   )
@@ -94,6 +98,7 @@ const ConcordanceScreen = () => {
   const isFormSheet = IS_FORM_SHEET
   const canGoBackInStack = useCanGoBackInStack()
   const hasBackButton = isFormSheet ? canGoBackInStack : true
+  const bottomInset = usePageBottomInset()
 
   // Parse params from URL strings
   const strongReference = params.strongReference ? JSON.parse(params.strongReference) : {}
@@ -136,7 +141,7 @@ const ConcordanceScreen = () => {
       {isPending && <Loading />}
       {isSuccess && (
         <FlatList
-          contentContainerStyle={pageContentStyle}
+          contentContainerStyle={[pageContentStyle, { paddingBottom: 16 + bottomInset }]}
           style={{ marginTop: 5, padding: 20 }}
           removeClippedSubviews
           data={data}

@@ -1,9 +1,9 @@
-import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
+import { titleFontStyle } from '~themes/styleValues'
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import * as NativeUI from 'react-native'
+import { TouchableOpacity } from 'react-native'
 import { useDispatch } from 'react-redux'
 import { twMerge } from '~common/ui/classNames'
 
@@ -25,10 +25,10 @@ const getProviderIcon = (provider: string) => {
     case 'google.com':
       return { icon: 'logo-google' as const, color: '#4285F4' }
     case 'apple.com':
-      return { icon: 'logo-apple' as const, color: '#000000' }
+      return { icon: 'logo-apple' as const, color: 'default' }
     case 'password':
     default:
-      return { icon: 'mail' as const, color: '#6B7280' }
+      return { icon: 'mail' as const, color: 'grey' }
   }
 }
 
@@ -74,10 +74,7 @@ const ProfileHeader = () => {
 
       <VStack className="overflow-hidden border-continuous gap-[10px] items-center justify-center">
         <HStack className="overflow-hidden border-continuous items-center gap-[10px]">
-          <Text
-            className="text-[24px]"
-            style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
-          >
+          <Text className="text-[24px]" style={titleFontStyle(stylingTheme)}>
             {user.displayName || t('profile.noName')}
           </Text>
           <EditButton onPress={() => renameModalRef.current?.present()}>
@@ -118,7 +115,7 @@ const ProfileHeader = () => {
 }
 
 const EditButton = (
-  componentProps: Omit<UIComponentProps<typeof NativeUI.TouchableOpacity>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof TouchableOpacity>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
@@ -127,16 +124,16 @@ const EditButton = (
 
   const resolvedClassName = twMerge('p-[5px]', className)
   return (
-    <NativeUI.TouchableOpacity
+    <TouchableOpacity
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof NativeUI.TouchableOpacity>['style']}
+      style={[props.style] as UIComponentProps<typeof TouchableOpacity>['style']}
     />
   )
 }
 
 const WarningButton = (
-  componentProps: Omit<UIComponentProps<typeof NativeUI.TouchableOpacity>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof TouchableOpacity>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
@@ -145,10 +142,10 @@ const WarningButton = (
 
   const resolvedClassName = twMerge('p-[2px]', className)
   return (
-    <NativeUI.TouchableOpacity
+    <TouchableOpacity
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof NativeUI.TouchableOpacity>['style']}
+      style={[props.style] as UIComponentProps<typeof TouchableOpacity>['style']}
     />
   )
 }

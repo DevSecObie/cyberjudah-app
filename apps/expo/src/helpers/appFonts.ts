@@ -7,6 +7,9 @@ export const appFonts = {
   ...MaterialIcons.font,
   ...MaterialCommunityIcons.font,
   'Literata Book': require('~assets/fonts/LiterataBook-Regular.otf'),
+<<<<<<< CYBERJUDAH
   'eina-03-bold': require('~assets/fonts/Inter-Bold.ttf'),
+=======
+>>>>>>> BIBLESTRONG-28
   FiraCode: require('~assets/fonts/FiraCode-Regular.otf'),
 }

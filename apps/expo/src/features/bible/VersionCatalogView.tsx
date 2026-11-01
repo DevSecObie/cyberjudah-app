@@ -341,6 +341,10 @@ export const VersionCatalogList = ({
   const panelNavigation = React.useContext(PanelNavigationContext)
   const { height: windowHeight } = useWindowDimensions()
   const isWebPanel = Platform.OS === 'web' && Boolean(panelNavigation)
+  // On the web every row is rendered: rows differ in height (a description, an interlinear
+  // button), so a windowed list placed them by guess and left blanks under a fast scroll.
+  const isWeb = Platform.OS === 'web'
+  const itemCount = sections.reduce((count, section) => count + section.data.length, 0)
   const { t } = useTranslation()
   const listRef = React.useRef<SectionList<VersionCatalogItem, VersionCatalogSection>>(null)
   const listHeightRef = React.useRef(0)
@@ -369,6 +373,7 @@ export const VersionCatalogList = ({
   }, [scrollToTopKey])
 
   React.useEffect(() => {
+<<<<<<< CYBERJUDAH
     if (!isRevealPending() || !revealVersionId || listHeightRef.current <= 0) return
 
     const frame = scheduleCatalogVersionReveal(
@@ -376,12 +381,26 @@ export const VersionCatalogList = ({
       sections,
       revealVersionId,
       markRevealed
+=======
+    if (
+      !revealVersionId ||
+      revealedRequestKeyRef.current === revealRequestKey ||
+      listHeightRef.current <= 0
+>>>>>>> BIBLESTRONG-28
     )
+      return
+
+    const frame = scheduleCatalogVersionReveal(listRef.current, sections, revealVersionId, () => {
+      revealedRequestKeyRef.current = revealRequestKey
+    })
 
     return () => {
       if (frame !== null) cancelAnimationFrame(frame)
     }
+<<<<<<< CYBERJUDAH
     // eslint-disable-next-line react-hooks/exhaustive-deps
+=======
+>>>>>>> BIBLESTRONG-28
   }, [revealRequestKey, revealRetry, revealVersionId, sections])
 
   function revealSelectedVersion() {
@@ -402,6 +421,7 @@ export const VersionCatalogList = ({
       stickySectionHeadersEnabled
       sections={sections}
       keyExtractor={item => item.id}
+<<<<<<< CYBERJUDAH
       // About a screen of rows: the sheet waits for them before it opens
       initialNumToRender={isWebPanel ? 8 : 12}
       maxToRenderPerBatch={isWebPanel ? 8 : undefined}
@@ -411,6 +431,19 @@ export const VersionCatalogList = ({
         length: ESTIMATED_CATALOG_ROW_HEIGHT,
         offset: ESTIMATED_CATALOG_ROW_HEIGHT * index,
       })}
+=======
+      // Native: about a screen of rows, which the sheet waits for before it opens
+      initialNumToRender={isWeb ? Math.max(itemCount, 12) : 12}
+      getItemLayout={
+        isWeb
+          ? undefined
+          : (_, index) => ({
+              index,
+              length: ESTIMATED_CATALOG_ROW_HEIGHT,
+              offset: ESTIMATED_CATALOG_ROW_HEIGHT * index,
+            })
+      }
+>>>>>>> BIBLESTRONG-28
       onLayout={event => {
         listHeightRef.current = event.nativeEvent.layout.height
         revealSelectedVersion()
@@ -428,8 +461,11 @@ export const VersionCatalogList = ({
       renderSectionHeader={({ section }) => {
         if (grouping === 'alphabetical') return null
         return (
-          <Box className="overflow-hidden border-continuous min-h-[48px] pl-[20px] pr-[8px] flex-row items-center bg-light-grey border-b-[1px] border-border">
-            <Text className="flex-[1] text-[16px] opacity-[0.8]">{section.title}</Text>
+          // Sticky, so it takes the sheet's own ground to cover the rows scrolling under it.
+          <Box className="overflow-hidden border-continuous min-h-[40px] pl-[20px] pr-[8px] pt-[10px] flex-row items-center bg-reverse">
+            <Text className="flex-[1] text-[13px] text-grey" accessibilityRole="header">
+              {section.title}
+            </Text>
             {grouping === 'style' && section.readingProfile && (
               <TouchableOpacity
                 accessibilityRole="button"

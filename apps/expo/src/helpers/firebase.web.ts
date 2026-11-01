@@ -27,8 +27,11 @@ import { getStorage, ref } from 'firebase/storage'
 import type { ResourceLanguage, DatabaseId } from '~helpers/databaseTypes'
 import { firebaseApp } from './firebaseApp.web'
 
+<<<<<<< CYBERJUDAH
 import { scopeFirestorePath } from './firestoreScope'
 
+=======
+>>>>>>> BIBLESTRONG-28
 // The cache survives reloads, as in the native apps: a listener attached again within 30 minutes
 // is billed only for the documents that changed, instead of the whole account.
 const createFirestore = () => {

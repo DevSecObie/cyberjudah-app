@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { getEditorialKind } from '~features/plans/readingCalendar'
 import { useComputedPlanItems } from '~features/plans/plan.hooks'
-import { getEvents } from '~features/timeline/events'
+import { timelineEventsQueryOptions } from '~features/timeline/timelineEventsQuery'
 import { matchesQuery } from '../shared/matchesQuery'
 import {
   searchCommentaries,
@@ -30,7 +30,13 @@ export function useCatalogSearch(
   const dispatch = useDispatch<AppDispatch>()
   const catalog = useQuery({
     queryKey: ['search-plan-catalog'],
-    queryFn: () => dispatch(fetchPlans()).unwrap(),
+    queryFn: async () => {
+      const action = await dispatch(fetchPlans({ reuseRecent: true }))
+      if (fetchPlans.fulfilled.match(action)) return action.payload
+      // A recent catalog was not read again: the one in the store is used.
+      if (action.meta.condition) return null
+      throw action.error
+    },
     enabled: includes('plan'),
     staleTime: 5 * 60 * 1000,
     retry: false,
@@ -42,10 +48,8 @@ export function useCatalogSearch(
     ),
   ]
   const timeline = useQuery({
-    queryKey: ['timeline'],
-    queryFn: getEvents,
+    ...timelineEventsQueryOptions,
     enabled: includes('timeline'),
-    staleTime: Infinity,
   })
   const items: CatalogResult[] = enabled
     ? [

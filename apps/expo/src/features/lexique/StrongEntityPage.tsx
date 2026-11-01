@@ -1,26 +1,29 @@
 import { pageContentStyle } from '~common/ui/PageContent'
 import React from 'react'
-import { Linking, ScrollView } from 'react-native'
+import { ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import Empty from '~common/Empty'
 import Loading from '~common/Loading'
-import Box, { HStack, TouchableBox, VStack } from '~common/ui/Box'
-import { FeatherIcon } from '~common/ui/Icon'
-import Text from '~common/ui/Text'
+import { usePageBottomInset } from '~common/ui/Box'
 import type {
   StrongLexiconEntity,
   StrongLexiconEntityRelation,
 } from '~features/resources/strongLexiconAccess'
-import {
-  StrongEditorialSection,
-  StrongEntityRelationList,
-  StrongEntitySummaryCard,
-} from './StrongDetailUI'
+import Card from '~common/ui/Card'
+import { StrongEntityRelationList, StrongEntitySummaryCard } from './StrongDetailUI'
+import { STUDY_COLUMN_MAX_WIDTH, StudyCardBody, StudySection } from '~common/ui/StudySection'
 import { StrongEntityRelationGraph } from './StrongEntityRelationGraph'
+<<<<<<< CYBERJUDAH
 import CyberJudahPersonSections from './CyberJudahPersonSections'
 import { loadCyberJudahPerson } from './cyberJudahPerson'
 import { useQuery } from '@tanstack/react-query'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
+=======
+import StudyLinksSections from '~features/studyLinks/StudyLinksSections'
+import StrongEntityPortraitHeader from './StrongEntityPortraitHeader'
+import StrongEntityPlaceMap from './biblicalMap/StrongEntityPlaceMap'
+import { useEntityPortraitCatalog } from './entityPortraitManifest'
+>>>>>>> BIBLESTRONG-28
 import { splitStrongEntityRelations } from './strongEntityPresentation'
 import type { StrongReadingTypography } from './strongEditorialHtmlStyles'
 type Props = {
@@ -32,9 +35,9 @@ type Props = {
   onOpenStrong: (stepCode: string) => void
   onOpenEntityProfile: (entityKey: string) => void
   onOpenEntityRelation: (relation: StrongLexiconEntityRelation) => void
+  /** The map of the places of the Bible, opened on this place. */
+  onOpenMap?: (focus: string) => void
 }
-
-const ENTITY_LOCATION_VISIBLE = false
 
 const StrongEntityPage = ({
   language,
@@ -45,7 +48,9 @@ const StrongEntityPage = ({
   onOpenStrong,
   onOpenEntityProfile,
   onOpenEntityRelation,
+  onOpenMap,
 }: Props) => {
+<<<<<<< CYBERJUDAH
   const { t } = useTranslation()
   // CyberJudah's People data names the person's tribe, shown at the top as in Telegram.
   const cyberJudahPerson = useQuery({
@@ -57,6 +62,11 @@ const StrongEntityPage = ({
     retry: 1,
   })
   const tribe = (cyberJudahPerson.data as { tribe?: string } | undefined)?.tribe || undefined
+=======
+  const { t, i18n } = useTranslation()
+  const bottomInset = usePageBottomInset()
+  const catalog = useEntityPortraitCatalog()
+>>>>>>> BIBLESTRONG-28
   if (loading) return <Loading message={t('Chargement...')} />
   if (!entity) {
     return <Empty message={t('strongDetail.entity.unavailable')} />
@@ -64,15 +74,23 @@ const StrongEntityPage = ({
 
   const { graph, remaining } = splitStrongEntityRelations(entity)
   const place = entity.place
+  // A painted entity opens on its portrait (ADR-0089); the others keep the compact card.
+  const portrait = catalog?.entities[entity.uniqueName]
 
   return (
     <ScrollView
       style={{ flex: 1 }}
       contentContainerStyle={[
         pageContentStyle,
-        { maxWidth: 600, paddingHorizontal: 20, paddingTop: 22, paddingBottom: 90 },
+        {
+          maxWidth: STUDY_COLUMN_MAX_WIDTH + 40,
+          paddingHorizontal: 20,
+          paddingTop: 22,
+          paddingBottom: 90 + bottomInset,
+        },
       ]}
     >
+<<<<<<< CYBERJUDAH
       <StrongEntitySummaryCard
         entity={entity}
         eyebrowDetail={tribe}
@@ -81,53 +99,50 @@ const StrongEntityPage = ({
         onOpenBibleReference={onOpenBibleReference}
         onOpenStrong={onOpenStrong}
       />
+=======
+      {catalog && portrait && (
+        <StrongEntityPortraitHeader
+          entity={entity}
+          entry={portrait}
+          catalog={catalog}
+          language={language ?? i18n.language}
+          onOpenStrong={onOpenStrong}
+        />
+      )}
+      {portrait ? (
+        <StudySection title={t('strongDetail.entity.presentation')}>
+          <StrongEntitySummaryCard
+            entity={entity}
+            expanded
+            hidesHeader
+            readingTypography={readingTypography}
+            onOpenBibleReference={onOpenBibleReference}
+            onOpenStrong={onOpenStrong}
+          />
+        </StudySection>
+      ) : (
+        <Card>
+          <StudyCardBody>
+            <StrongEntitySummaryCard
+              entity={entity}
+              expanded
+              readingTypography={readingTypography}
+              onOpenBibleReference={onOpenBibleReference}
+              onOpenStrong={onOpenStrong}
+            />
+          </StudyCardBody>
+        </Card>
+      )}
+>>>>>>> BIBLESTRONG-28
 
-      {ENTITY_LOCATION_VISIBLE && !!place && (
-        <StrongEditorialSection title={t('strongDetail.entity.location')} separated>
-          <VStack className="overflow-hidden border-continuous bg-light-grey rounded-[18px] p-[16px] gap-[8px]">
-            <HStack className="overflow-hidden border-continuous items-center gap-[10px]">
-              <Box
-                className="overflow-hidden border-continuous rounded-[21px] bg-light-primary items-center justify-center"
-                style={{ width: 42, height: 42 }}
-              >
-                <FeatherIcon name="map-pin" color="primary" size={20} />
-              </Box>
-              <VStack className="overflow-hidden border-continuous flex-[1] gap-[2px]">
-                <Text className="font-bold text-[17px]">{place.name || entity.name}</Text>
-                {!!place.area && <Text className="text-tertiary">{place.area}</Text>}
-              </VStack>
-            </HStack>
-            {place.latitude != null && place.longitude != null && (
-              <Text className="text-tertiary text-[12px]">
-                {place.latitude}, {place.longitude}
-              </Text>
-            )}
-            <HStack className="overflow-hidden border-continuous gap-[10px] flex-wrap">
-              {!!place.palopenmapsUrl && (
-                <TouchableBox
-                  className="overflow-hidden border-continuous"
-                  onPress={() => Linking.openURL(place.palopenmapsUrl!)}
-                >
-                  <Text className="text-primary font-bold text-[13px]">
-                    {t('strongDetail.entity.bibleMap')}
-                  </Text>
-                </TouchableBox>
-              )}
-              {!!place.googleMapUrl && (
-                <TouchableBox
-                  className="overflow-hidden border-continuous"
-                  onPress={() => Linking.openURL(place.googleMapUrl!)}
-                >
-                  <Text className="text-primary font-bold text-[13px]">Google Maps</Text>
-                </TouchableBox>
-              )}
-            </HStack>
-          </VStack>
-        </StrongEditorialSection>
+      {entity.category === 'place' && !!place && onOpenMap && (
+        <StudySection title={t('strongDetail.entity.location')}>
+          <StrongEntityPlaceMap entity={entity} onOpenMap={onOpenMap} />
+        </StudySection>
       )}
 
       {graph.length > 0 && (
-        <StrongEditorialSection title={t('strongDetail.entity.relationships')} separated>
+        <StudySection title={t('strongDetail.entity.relationships')} surface="none">
           <StrongEntityRelationGraph
             languageOverride={language}
             entity={entity}
@@ -135,22 +150,23 @@ const StrongEntityPage = ({
             onOpenProfile={onOpenEntityProfile}
             onOpenEntity={onOpenEntityRelation}
           />
-        </StrongEditorialSection>
+        </StudySection>
       )}
 
       {remaining.length > 0 && (
-        <StrongEditorialSection
+        <StudySection
           title={
             graph.length > 0
               ? t('strongDetail.entity.allRelationships')
               : t('strongDetail.entity.relationships')
           }
-          separated
+          surface="none"
         >
           <StrongEntityRelationList relations={remaining} onOpenEntity={onOpenEntityRelation} />
-        </StrongEditorialSection>
+        </StudySection>
       )}
 
+<<<<<<< CYBERJUDAH
       {usesCyberJudahEditorial() && entity.category === 'person' && (
         <CyberJudahPersonSections
           uniqueName={entity.uniqueName}
@@ -158,6 +174,13 @@ const StrongEntityPage = ({
           onOpenEntityProfile={onOpenEntityProfile}
         />
       )}
+=======
+      <StudyLinksSections
+        kind="entity"
+        subjectKey={entity.uniqueName}
+        language={language ?? (i18n.language === 'fr' ? 'fr' : 'en')}
+      />
+>>>>>>> BIBLESTRONG-28
     </ScrollView>
   )
 }
