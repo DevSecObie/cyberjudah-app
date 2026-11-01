@@ -13,7 +13,6 @@ import reducer, {
   fetchPlan,
   startPlan,
   setPlanReminder,
-  updatePlans,
 } from '../plan'
 import { RECEIVE_LIVE_UPDATES, IMPORT_DATA, USER_LOGOUT } from '../user'
 import type { Plan, OngoingPlan, OnlinePlan, Section, ReadingSlice } from '~common/types'

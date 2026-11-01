@@ -1,4 +1,4 @@
-import { getStrongEntityAvatarKey } from './strongEntityPresentation'
+import { getStrongEntityAvatarKey, type StrongEntityAvatarKey } from './strongEntityPresentation'
 import { CYBERJUDAH_PORTRAITS } from './cyberJudahPortraits'
 import { ISRAELITE_GROUPS } from './israeliteGroups'
 import { JUDAH_PEOPLE } from './judahPeople'
@@ -196,7 +196,7 @@ export const getStrongEntityAvatarSource = (category: string, type: string, uniq
     (getStrongEntityAvatarKey(category, type) === 'male' ||
       getStrongEntityAvatarKey(category, type) === 'female') &&
     personAvatar(uniqueName, getStrongEntityAvatarKey(category, type) as 'male' | 'female')) ||
-  ENTITY_AVATAR_IMAGES[getStrongEntityAvatarKey(category, type)]
+  ENTITY_PLACEHOLDER_IMAGES[getStrongEntityAvatarKey(category, type)][0]
 
 /**
  * Bible Strong 28's name for an entity's picture when it has no painted portrait. CyberJudah

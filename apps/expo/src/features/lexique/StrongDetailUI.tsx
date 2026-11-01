@@ -1,3 +1,5 @@
+import PageContent from '~common/ui/PageContent'
+import type { LayoutChangeEvent } from 'react-native'
 import { getReadingTypography, type ReadingTypography } from '~common/readingHtml'
 import { useReferencePreview } from '~features/bibleReferencePreview/state'
 
@@ -40,6 +42,56 @@ import { useEntityPortraitCatalog } from './entityPortraitManifest'
 import { getEntityPortraitText } from './entityPortraits'
 import { withoutRepeatedSummary } from './strongEntityArticle'
 import { isStrongOriginalUnnamed } from './strongOriginalPresentation'
+
+export const StrongEyebrow = ({ children }: { children: React.ReactNode }) => (
+  <Text className="text-primary text-[11px] font-bold uppercase">{children}</Text>
+)
+
+/** A titled section of an entity page (CyberJudah's person sections use it). */
+export const StrongEditorialSection = ({
+  title,
+  children,
+  onLayout,
+  separated = false,
+  subtitle,
+  expanded,
+  onToggle,
+}: {
+  title: string
+  children: React.ReactNode
+  onLayout?: (event: LayoutChangeEvent) => void
+  subtitle?: string
+  separated?: boolean
+  expanded?: boolean
+  onToggle?: () => void
+}) => (
+  <VStack
+    className="border-continuous overflow-hidden mt-[28px] border-border gap-[12px]"
+    onLayout={onLayout}
+    style={{ paddingTop: separated ? 24 : 0, borderTopWidth: separated ? 1 : 0 }}
+  >
+    <PageContent className="gap-[12px]" style={{ maxWidth: 600 }}>
+      {onToggle ? (
+        <TouchableBox
+          accessibilityRole="button"
+          accessibilityLabel={title}
+          accessibilityState={{ expanded: Boolean(expanded) }}
+          onPress={onToggle}
+          activeOpacity={0.7}
+          className="flex-row items-center justify-between gap-3 py-2"
+        >
+          <StrongEyebrow>{title}</StrongEyebrow>
+          <FeatherIcon name={expanded ? 'chevron-up' : 'chevron-down'} color="primary" size={18} />
+        </TouchableBox>
+      ) : (
+        <StrongEyebrow>{title}</StrongEyebrow>
+      )}
+      {subtitle ? <Text className="text-tertiary text-[12px]">{subtitle}</Text> : null}
+      {(!onToggle || expanded) && children}
+    </PageContent>
+  </VStack>
+)
+
 export const StrongLexicalRelationRow = ({
   relation,
   readingTypography,

@@ -62,7 +62,7 @@ const PassageMediaPlayerScreen = () => {
     requestedLanguage === 'fr' || requestedLanguage === 'en' ? requestedLanguage : preferredLanguage
   const { width: windowWidth } = useWindowDimensions()
   const [playerError, setPlayerError] = useState<string>()
-  const classPlayerRef = useRef<WebView>(null)
+  const classPlayerRef = useRef<{ injectJavaScript: (script: string) => void } | null>(null)
   const [dockedClass, setDockedClass] = useAtom(dockedClassAtom)
   const pathname = usePathname()
   const routeParams = useGlobalSearchParams()
@@ -188,7 +188,7 @@ const PassageMediaPlayerScreen = () => {
                         </Box>
                       ) : (
                         <WebView
-                          ref={classPlayerRef}
+                          ref={classPlayerRef as never}
                           source={{ uri: getPassageMediaEmbedUrl(item.providerId, playerStart) }}
                           injectedJavaScript={CLASS_TIME_SCRIPT}
                           onMessage={event => {

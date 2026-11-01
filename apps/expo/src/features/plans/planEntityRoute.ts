@@ -53,9 +53,9 @@ export const getPlanEntityRoute = ({
     case 'Text':
       if (slice.notePath)
         return { pathname: '/(explore)/published-note', params: { path: slice.notePath } }
-      return { pathname: '/plan-entity', params: { planId, readingSliceId, entitySliceId } }
+      return { pathname: '/plan-entity', params: location }
     case 'Quiz':
-      return { pathname: '/plan-quiz', params: { planId, readingSliceId, entitySliceId } }
+      return { pathname: '/plan-quiz', params: location }
     case 'Image':
     case 'Video':
       return { pathname: '/plan-entity', params: location }

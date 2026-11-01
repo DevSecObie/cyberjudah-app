@@ -1,4 +1,3 @@
-import type { BibleColumnTextModes } from '~helpers/bibleColumnTextModes'
 import type { SearchFilters } from './searchFilters'
 import { produce } from 'immer'
 import { useAtomValue, useSetAtom } from 'jotai/react'

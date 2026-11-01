@@ -531,7 +531,6 @@ const EntityGraphNode = ({
   seed,
   category,
   type,
-  uniqueName,
   center = false,
   avatarProgress,
   avatarRole,
@@ -540,7 +539,6 @@ const EntityGraphNode = ({
   seed: string
   category?: string
   type?: string
-  uniqueName?: string
   center?: boolean
   avatarProgress?: SharedValue<number>
   avatarRole?: AvatarRole
@@ -582,14 +580,12 @@ const EntityGraphNode = ({
         avatarStyle,
       ]}
     >
-      <Image
-        source={getStrongEntityAvatarSource(category ?? 'other', type ?? 'Other', uniqueName)}
-        // Round, as Bible Strong's avatars are: a person's own portrait is a square picture.
-        style={{
-          width: center ? 76 : 54,
-          height: center ? 76 : 54,
-          borderRadius: center ? 38 : 27,
-        }}
+      <StrongEntityAvatar
+        uniqueName={uniqueName}
+        seed={seed}
+        category={category ?? 'other'}
+        type={type ?? 'Other'}
+        size={center ? CENTER_AVATAR_SIZE : SATELLITE_AVATAR_SIZE}
       />
     </AnimatedBox>
   )
@@ -600,7 +596,6 @@ const GraphSatelliteContent = ({
   name,
   category,
   type,
-  uniqueName,
   label,
   relation,
   back,
@@ -614,7 +609,6 @@ const GraphSatelliteContent = ({
   name: string
   category?: string
   type?: string
-  uniqueName?: string
   label: string
   relation: string
   back: boolean
@@ -653,7 +647,6 @@ const GraphSatelliteContent = ({
           seed={name}
           category={category}
           type={type}
-          uniqueName={uniqueName}
           avatarProgress={avatarProgress}
           avatarRole={avatarRole}
         />
@@ -1101,7 +1094,6 @@ const GraphCenterNode = ({
               seed={entity.name}
               category={entity.category}
               type={entity.type}
-              uniqueName={entity.uniqueName}
               center
               avatarProgress={exitRole ? exit?.progress : undefined}
               avatarRole={exitRole}
@@ -1186,7 +1178,6 @@ const GraphRelationNodeView = ({
           name={relation.targetName}
           category={relation.targetCategory}
           type={relation.targetType}
-          uniqueName={relation.targetUniqueName}
           label={t(characterRelationLabelKey(relation), {
             defaultValue: relation.relation,
           })}
@@ -1248,7 +1239,6 @@ const GraphPreviousNode = ({
           name={entity.name}
           category={entity.category}
           type={entity.type}
-          uniqueName={entity.uniqueName}
           label={label}
           relation={relation?.relation ?? ''}
           back

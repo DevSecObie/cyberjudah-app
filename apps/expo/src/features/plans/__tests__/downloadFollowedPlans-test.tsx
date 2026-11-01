@@ -2,6 +2,10 @@ import React from 'react'
 import { act, create } from 'react-test-renderer'
 import { useDownloadFollowedPlans } from '../plan.hooks'
 
+// The bundled journeys' pictures (CyberJudah) load through expo-asset, which jest cannot import.
+jest.mock('expo-asset', () => ({ Asset: { fromModule: () => ({ uri: '' }) } }))
+jest.mock('~assets/images/new-tab/bible-reader.webp', () => 1)
+
 const mockState = {
   plan: {
     myPlans: [{ id: 'downloaded' }],

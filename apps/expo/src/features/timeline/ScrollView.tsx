@@ -1,4 +1,4 @@
-import React, { memo, ReactNode, useEffect, useEffectEvent, useState } from 'react'
+import React, { memo, ReactNode, useEffect, useEffectEvent, useRef, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {

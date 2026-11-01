@@ -2553,6 +2553,7 @@ __metadata:
     "@lottiefiles/dotlottie-react": "npm:^0.13.5"
     "@native-html/render": "npm:^1.0.3"
     "@notifee/react-native": "npm:^7.8.2"
+    "@openuidev/react-lang": "npm:1.0.2"
     "@radix-ui/react-dialog": "npm:^1.1.23"
     "@react-aria/i18n": "npm:^3.13.1"
     "@react-aria/ssr": "npm:^3.10.1"
@@ -2603,6 +2604,7 @@ __metadata:
     deprecated-react-native-prop-types: "npm:^4.0.0"
     dotenv-cli: "npm:^11.0.0"
     effect: "npm:3.22.1"
+    entities: "npm:^6.0.1"
     eslint: "npm:^9"
     eslint-config-expo: "npm:~58.0.4"
     eslint-config-prettier: "npm:^9"
@@ -2652,10 +2654,12 @@ __metadata:
     lottie-react-native: "npm:~7.5.0"
     lucide-react: "npm:^1.47.0"
     lunr-languages: "npm:^1.9.0"
+    marked: "npm:^17.0.6"
     metro: "patch:metro@npm%3A0.87.1#~/.yarn/patches/metro-npm-0.87.1-df856b146b.patch"
     metro-cache: "npm:0.87.1"
     motion: "npm:^13.0.0"
     open-ota: "npm:0.3.0"
+    pdf-lib: "npm:^1.17.1"
     postinstall-postinstall: "npm:^2.1.0"
     pressto: "npm:^0.6.0"
     prettier: "npm:^3.8.1"
@@ -2675,6 +2679,8 @@ __metadata:
     react-native-keyboard-controller: "npm:1.22.7"
     react-native-mmkv: "npm:4.3.2"
     react-native-nitro-modules: "npm:^0.37.1"
+    react-native-purchases: "npm:10.16.0"
+    react-native-purchases-ui: "npm:10.16.0"
     react-native-reanimated: "npm:4.7.0"
     react-native-reanimated-carousel: "npm:^5.2.0"
     react-native-reanimated-dnd: "patch:react-native-reanimated-dnd@npm%3A2.0.0#~/.yarn/patches/react-native-reanimated-dnd-npm-2.0.0-b5a7ddfd0c.patch"
@@ -2717,6 +2723,7 @@ __metadata:
     uniwind: "patch:uniwind@npm%3A1.12.2#~/.yarn/patches/uniwind-npm-1.12.2-145fff90e1.patch"
     vaul: "npm:^1.1.2"
     vite: "npm:^8.0.13"
+    zod: "npm:4.3.6"
   languageName: unknown
   linkType: soft
 
@@ -2839,7 +2846,6 @@ __metadata:
   resolution: "@bible-strong/site@workspace:apps/site"
   dependencies:
     "@bible-strong/bible-reference-parser": "workspace:*"
-    "@bible-strong/biblical-map": "workspace:*"
     "@bible-strong/resource-catalog": "workspace:*"
     "@bible-strong/resource-domain": "workspace:*"
     "@bible-strong/share-card-service": "workspace:*"
@@ -8889,6 +8895,69 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@openuidev/devtools@npm:^0.3.1":
+  version: 0.3.1
+  resolution: "@openuidev/devtools@npm:0.3.1"
+  dependencies:
+    lucide-react: "npm:^0.575.0"
+  peerDependencies:
+    "@openuidev/observability": ">=0.0.4 <0.1.0"
+    "@openuidev/react-lang": ">=1.0.0 <2.0.0"
+    react: ^18.3.1 || ^19.0.0
+    react-dom: ^18.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    "@openuidev/react-lang":
+      optional: true
+  checksum: 10c0/0dd8e8b2736f7e51f22eeaebacd0ef1d10ca72f91d1a321f4b13c66f677a8adbe7a62e97bac6b689e2def685ec50afb17b0f7ee700a46a06e3a8e3baef08d663
+  languageName: node
+  linkType: hard
+
+"@openuidev/lang-core@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@openuidev/lang-core@npm:1.0.2"
+  dependencies:
+    ci-info: "npm:^4.4.0"
+  peerDependencies:
+    "@modelcontextprotocol/sdk": ">=1.0.0"
+    zod: ^3.25.0 || ^4.0.0
+  peerDependenciesMeta:
+    "@modelcontextprotocol/sdk":
+      optional: true
+  checksum: 10c0/10f1f108970476abe9b19137b08725584eefd5c99f29a152709234059d0358c47a8af31faebd6b2558f6cef326ef84b372c679a00e18502eb4e8c19af12c9ea0
+  languageName: node
+  linkType: hard
+
+"@openuidev/observability@npm:^0.0.4":
+  version: 0.0.4
+  resolution: "@openuidev/observability@npm:0.0.4"
+  checksum: 10c0/3043f3661170c5d1fbb7bcf7a704bac71c2ded0a11ac9ea9f636151be8ffa953740a7c08600768efdd1cef1fa777836914e447c4731108df795a92769cb7626f
+  languageName: node
+  linkType: hard
+
+"@openuidev/react-lang@npm:1.0.2":
+  version: 1.0.2
+  resolution: "@openuidev/react-lang@npm:1.0.2"
+  dependencies:
+    "@openuidev/devtools": "npm:^0.3.1"
+    "@openuidev/lang-core": "npm:^1.0.2"
+    "@openuidev/observability": "npm:^0.0.4"
+  peerDependencies:
+    "@modelcontextprotocol/sdk": ">=1.0.0"
+    react: "*"
+    react-dom: "*"
+    react-native: "*"
+    zod: ^3.25.0 || ^4.0.0
+  peerDependenciesMeta:
+    "@modelcontextprotocol/sdk":
+      optional: true
+    react-dom:
+      optional: true
+    react-native:
+      optional: true
+  checksum: 10c0/a1dda17d2261e997557d5ef47cf1eea5750f989381094c25544c1321e212f3c5dca2194b7479bd8a3b24feef5e5512075e48bb7658c9172b669aa94583626d32
+  languageName: node
+  linkType: hard
+
 "@oxc-project/types@npm:0.141.0":
   version: 0.141.0
   resolution: "@oxc-project/types@npm:0.141.0"
@@ -9048,6 +9117,24 @@ __metadata:
     "@parcel/watcher-win32-x64":
       optional: true
   checksum: 10c0/0d6799bdf7d59a1ab5e4a79859035f387a66078586d9543eef0b9bd01c9d61cebe3b64eb96f0bd1f8bf50f07ed7266a1628604b66dc63025a3cee19be2e60d65
+  languageName: node
+  linkType: hard
+
+"@pdf-lib/standard-fonts@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@pdf-lib/standard-fonts@npm:1.0.0"
+  dependencies:
+    pako: "npm:^1.0.6"
+  checksum: 10c0/c683adfb764cd235a8370a0c1d5a8d7e90e3499ad33cdecfb92e4d48b0d36cfd038e3a875ebd0937a5646ee1578d793ab98f9c374be360c9a05d2699c1caedf4
+  languageName: node
+  linkType: hard
+
+"@pdf-lib/upng@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@pdf-lib/upng@npm:1.0.1"
+  dependencies:
+    pako: "npm:^1.0.10"
+  checksum: 10c0/9c300c513c1089e561c0cccac01f396a24efb9b0e9c922a39248cb09dfced70c05b9facdfce11a7f22cbedb4129593630a18111b90a57ef34ea4c3df98f2ac1d
   languageName: node
   linkType: hard
 
@@ -11824,6 +11911,29 @@ __metadata:
   version: 2.6.2
   resolution: "@resvg/resvg-wasm@npm:2.6.2"
   checksum: 10c0/74eb061c53510dad516e42375d1802a5b70ff531abd3c858921178add5acd136382a2f0afc1bd83fa72ec2c2c9bd40a636000572a152b53a9b04e9c131ba0223
+  languageName: node
+  linkType: hard
+
+"@revenuecat/purchases-js-hybrid-mappings@npm:19.17.0":
+  version: 19.17.0
+  resolution: "@revenuecat/purchases-js-hybrid-mappings@npm:19.17.0"
+  dependencies:
+    "@revenuecat/purchases-js": "npm:1.73.1"
+  checksum: 10c0/be41945bc3d651715e1293e2da283cd9d9cf3ec7c35737aef90e8c5956d61303af01cff9fbdbed7501c1428a902c40e7f35c0fac00c2c7b90d773a9d9dece4a8
+  languageName: node
+  linkType: hard
+
+"@revenuecat/purchases-js@npm:1.73.1":
+  version: 1.73.1
+  resolution: "@revenuecat/purchases-js@npm:1.73.1"
+  checksum: 10c0/7cc7ebdb3e9db9c7092565fa433e8301d0cfe920ca74d68ab06174457d7d8a1eb93860b6750cec1cadfc5cc9052b94cd220cf3747b99c5ba9ac9f978a3443a61
+  languageName: node
+  linkType: hard
+
+"@revenuecat/purchases-typescript-internal@npm:19.17.0":
+  version: 19.17.0
+  resolution: "@revenuecat/purchases-typescript-internal@npm:19.17.0"
+  checksum: 10c0/4a5fae2dad0dbd59864a1fbba39b92c2c40abd7c56bc076c295e83f7460194aeea146cbc87504d8778f3556aef6358daa257e794221a5bbf471af671a5a968cb
   languageName: node
   linkType: hard
 
@@ -17362,7 +17472,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ci-info@npm:^4.2.0":
+"ci-info@npm:^4.2.0, ci-info@npm:^4.4.0":
   version: 4.4.0
   resolution: "ci-info@npm:4.4.0"
   checksum: 10c0/44156201545b8dde01aa8a09ee2fe9fc7a73b1bef9adbd4606c9f61c8caeeb73fb7a575c88b0443f7b4edb5ee45debaa59ed54ba5f99698339393ca01349eb3a
@@ -18908,7 +19018,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"entities@npm:^6.0.0, entities@npm:~6.0.1":
+"entities@npm:^6.0.0, entities@npm:^6.0.1, entities@npm:~6.0.1":
   version: 6.0.1
   resolution: "entities@npm:6.0.1"
   checksum: 10c0/ed836ddac5acb34341094eb495185d527bd70e8632b6c0d59548cbfa23defdbae70b96f9a405c82904efa421230b5b3fd2283752447d737beffd3f3e6ee74414
@@ -25635,6 +25745,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lucide-react@npm:^0.575.0":
+  version: 0.575.0
+  resolution: "lucide-react@npm:0.575.0"
+  peerDependencies:
+    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/4f42e81c88f60c8f904b178c0b28e8ac9a99da8ef24eba5f26ed97b63124304a847baea2f71125629a272df58dbb61cd799ff6a7e4878e5a4c28d8a699b84730
+  languageName: node
+  linkType: hard
+
 "lucide-react@npm:^1.22.0":
   version: 1.34.0
   resolution: "lucide-react@npm:1.34.0"
@@ -25739,7 +25858,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:^17.0.1":
+"marked@npm:^17.0.1, marked@npm:^17.0.6":
   version: 17.0.6
   resolution: "marked@npm:17.0.6"
   bin:
@@ -28206,7 +28325,7 @@ multer@emadalam/multer:
   languageName: node
   linkType: hard
 
-"pako@npm:~1.0.2":
+"pako@npm:^1.0.10, pako@npm:^1.0.11, pako@npm:^1.0.6, pako@npm:~1.0.2":
   version: 1.0.11
   resolution: "pako@npm:1.0.11"
   checksum: 10c0/86dd99d8b34c3930345b8bbeb5e1cd8a05f608eeb40967b293f72fe469d0e9c88b783a8777e4cc7dc7c91ce54c5e93d88ff4b4f060e6ff18408fd21030d9ffbe
@@ -28486,6 +28605,18 @@ multer@emadalam/multer:
   version: 2.0.1
   resolution: "pathval@npm:2.0.1"
   checksum: 10c0/460f4709479fbf2c45903a65655fc8f0a5f6d808f989173aeef5fdea4ff4f303dc13f7870303999add60ec49d4c14733895c0a869392e9866f1091fa64fd7581
+  languageName: node
+  linkType: hard
+
+"pdf-lib@npm:^1.17.1":
+  version: 1.17.1
+  resolution: "pdf-lib@npm:1.17.1"
+  dependencies:
+    "@pdf-lib/standard-fonts": "npm:^1.0.0"
+    "@pdf-lib/upng": "npm:^1.0.1"
+    pako: "npm:^1.0.11"
+    tslib: "npm:^1.11.1"
+  checksum: 10c0/a9489a402880dacd1389a3e14ff8f6139d58e3bc82f26b0fcbd0798b841aee6ccb7fcfab0992b574e57b40404ced0330a7170b3c6467363461a9df5d9daec489
   languageName: node
   linkType: hard
 
@@ -29005,6 +29136,25 @@ multer@emadalam/multer:
   languageName: node
   linkType: hard
 
+"protobufjs@npm:7.6.6":
+  version: 7.6.6
+  resolution: "protobufjs@npm:7.6.6"
+  dependencies:
+    "@protobufjs/aspromise": "npm:^1.1.2"
+    "@protobufjs/base64": "npm:^1.1.2"
+    "@protobufjs/codegen": "npm:^2.0.5"
+    "@protobufjs/eventemitter": "npm:^1.1.1"
+    "@protobufjs/fetch": "npm:^1.1.1"
+    "@protobufjs/float": "npm:^1.0.2"
+    "@protobufjs/path": "npm:^1.1.2"
+    "@protobufjs/pool": "npm:^1.1.0"
+    "@protobufjs/utf8": "npm:^1.1.1"
+    "@types/node": "npm:>=13.7.0"
+    long: "npm:^5.3.2"
+  checksum: 10c0/6c0dc6d4a2801825e39417bc116297d5261c0cf28892a5e28adafc13432331c0cb75603bbe50ad6f2715f3b0a9ce2896591ad6b51fdc8eae2d05b9ac2e4a8ec1
+  languageName: node
+  linkType: hard
+
 "protobufjs@npm:^6.11.3":
   version: 6.11.6
   resolution: "protobufjs@npm:6.11.6"
@@ -29045,26 +29195,6 @@ multer@emadalam/multer:
     "@types/node": "npm:>=13.7.0"
     long: "npm:^5.3.2"
   checksum: 10c0/863eaca9c6f45bfcfb8787c545f53e9c6696507e328e3981b4643c12d35df7f2826021c10e3fd30bef342c13a8e9d306547bac9c0849ee3bf50f770a12f01dc5
-  languageName: node
-  linkType: hard
-
-"protobufjs@npm:^7.2.5":
-  version: 7.5.4
-  resolution: "protobufjs@npm:7.5.4"
-  dependencies:
-    "@protobufjs/aspromise": "npm:^1.1.2"
-    "@protobufjs/base64": "npm:^1.1.2"
-    "@protobufjs/codegen": "npm:^2.0.4"
-    "@protobufjs/eventemitter": "npm:^1.1.0"
-    "@protobufjs/fetch": "npm:^1.1.0"
-    "@protobufjs/float": "npm:^1.0.2"
-    "@protobufjs/inquire": "npm:^1.1.0"
-    "@protobufjs/path": "npm:^1.1.2"
-    "@protobufjs/pool": "npm:^1.1.0"
-    "@protobufjs/utf8": "npm:^1.1.0"
-    "@types/node": "npm:>=13.7.0"
-    long: "npm:^5.0.0"
-  checksum: 10c0/913b676109ffb3c05d3d31e03a684e569be91f3bba8613da4a683d69d9dba948daa2afd7d2e7944d1aa6c417890c35d9d9a8883c1160affafb0f9670d59ef722
   languageName: node
   linkType: hard
 
@@ -29788,6 +29918,40 @@ multer@emadalam/multer:
     react: "*"
     react-native: "*"
   checksum: 10c0/5178f2ee891cb746b084fdf382b6020e366d8e4a81922a3f1d60a453d34fca6ebb1b00c4c28785c36385bc182ab76a30cba70441c39abbc25d3ad54db612e46e
+  languageName: node
+  linkType: hard
+
+"react-native-purchases-ui@npm:10.16.0":
+  version: 10.16.0
+  resolution: "react-native-purchases-ui@npm:10.16.0"
+  dependencies:
+    "@revenuecat/purchases-typescript-internal": "npm:19.17.0"
+  peerDependencies:
+    react: "*"
+    react-native: ">= 0.73.0"
+    react-native-purchases: 10.16.0
+    react-native-web: "*"
+  peerDependenciesMeta:
+    react-native-web:
+      optional: true
+  checksum: 10c0/07eeed5a98ac96435fa2c1d496158177a804902de28463ebfe4b79958b6f77efd5746eb5bb50ddbbee0d885ec025838152dc1c86f728ecef6c52b2c975840f82
+  languageName: node
+  linkType: hard
+
+"react-native-purchases@npm:10.16.0":
+  version: 10.16.0
+  resolution: "react-native-purchases@npm:10.16.0"
+  dependencies:
+    "@revenuecat/purchases-js-hybrid-mappings": "npm:19.17.0"
+    "@revenuecat/purchases-typescript-internal": "npm:19.17.0"
+  peerDependencies:
+    react: ">= 16.6.3"
+    react-native: ">= 0.73.0"
+    react-native-web: "*"
+  peerDependenciesMeta:
+    react-native-web:
+      optional: true
+  checksum: 10c0/c0aa5a1a0865dca552feb847a43ce55e4c36788d708704718be0145c73b3cb5e0a4da16fab1dbca3dabae074386521e9db09ad09a959c5903da3c83ea211a681
   languageName: node
   linkType: hard
 
@@ -31987,10 +32151,10 @@ multer@emadalam/multer:
   languageName: node
   linkType: hard
 
-"shell-quote@npm:^1.6.1, shell-quote@npm:^1.7.3":
-  version: 1.8.3
-  resolution: "shell-quote@npm:1.8.3"
-  checksum: 10c0/bee87c34e1e986cfb4c30846b8e6327d18874f10b535699866f368ade11ea4ee45433d97bf5eada22c4320c27df79c3a6a7eb1bf3ecfc47f2c997d9e5e2672fd
+"shell-quote@npm:1.12.0":
+  version: 1.12.0
+  resolution: "shell-quote@npm:1.12.0"
+  checksum: 10c0/1605a4ed6a758bf13de7cb8197a4184d8015f7a4dbdcd6cd4a717d5b30b3ae7666300cc4ae7f3155cf80ace9739e9e82061ee5aa1a648f53f5fab31a220816d0
   languageName: node
   linkType: hard
 
@@ -33028,7 +33192,7 @@ multer@emadalam/multer:
   languageName: node
   linkType: hard
 
-"tar@npm:^7.4.3":
+"tar@npm:7.5.22":
   version: 7.5.22
   resolution: "tar@npm:7.5.22"
   dependencies:
@@ -33038,19 +33202,6 @@ multer@emadalam/multer:
     minizlib: "npm:^3.1.0"
     yallist: "npm:^5.0.0"
   checksum: 10c0/1311f6be85a8157ac4c9147bae43e13923d2a1aae15e4aa1bd5239e4e03d2cf53cfe103dde7f35832fbb4c938b042856bc8e9a0afd29abd05e2d1608788c4fea
-  languageName: node
-  linkType: hard
-
-"tar@npm:^7.5.2":
-  version: 7.5.2
-  resolution: "tar@npm:7.5.2"
-  dependencies:
-    "@isaacs/fs-minipass": "npm:^4.0.0"
-    chownr: "npm:^3.0.0"
-    minipass: "npm:^7.1.2"
-    minizlib: "npm:^3.1.0"
-    yallist: "npm:^5.0.0"
-  checksum: 10c0/a7d8b801139b52f93a7e34830db0de54c5aa45487c7cb551f6f3d44a112c67f1cb8ffdae856b05fd4f17b1749911f1c26f1e3a23bbe0279e17fd96077f13f467
   languageName: node
   linkType: hard
 
@@ -33474,7 +33625,7 @@ multer@emadalam/multer:
   languageName: node
   linkType: hard
 
-"tslib@npm:^1.13.0, tslib@npm:^1.8.1":
+"tslib@npm:^1.11.1, tslib@npm:^1.13.0, tslib@npm:^1.8.1":
   version: 1.14.1
   resolution: "tslib@npm:1.14.1"
   checksum: 10c0/69ae09c49eea644bc5ebe1bca4fa4cc2c82b7b3e02f43b84bd891504edf66dbc6b2ec0eef31a957042de2269139e4acff911e6d186a258fb14069cd7f6febce2
@@ -35184,14 +35335,14 @@ multer@emadalam/multer:
   languageName: node
   linkType: hard
 
-"websocket-driver@npm:>=0.5.1":
-  version: 0.7.4
-  resolution: "websocket-driver@npm:0.7.4"
+"websocket-driver@npm:0.7.5":
+  version: 0.7.5
+  resolution: "websocket-driver@npm:0.7.5"
   dependencies:
     http-parser-js: "npm:>=0.5.1"
     safe-buffer: "npm:>=5.1.0"
     websocket-extensions: "npm:>=0.1.1"
-  checksum: 10c0/5f09547912b27bdc57bac17b7b6527d8993aa4ac8a2d10588bb74aebaf785fdcf64fea034aae0c359b7adff2044dd66f3d03866e4685571f81b13e548f9021f1
+  checksum: 10c0/843a3c9f529ce07f2721829f70f62986247525ab22625e857b69da13dc90967bacfe57b85e196801b565cd797e309ddd5b06fa8435732e34e8a8ab6201d7abed
   languageName: node
   linkType: hard
 
@@ -36003,6 +36154,13 @@ multer@emadalam/multer:
   peerDependencies:
     zod: ^3.25.0 || ^4.0.0
   checksum: 10c0/0ccfec48c46de1be440b719cd02044d4abb89ed0e14c13e637cd55bf29102f67ccdba373f25def0fc7130e5f15025be4d557a7edcc95d5a3811599aade689e1b
+  languageName: node
+  linkType: hard
+
+"zod@npm:4.3.6":
+  version: 4.3.6
+  resolution: "zod@npm:4.3.6"
+  checksum: 10c0/860d25a81ab41d33aa25f8d0d07b091a04acb426e605f396227a796e9e800c44723ed96d0f53a512b57be3d1520f45bf69c0cb3b378a232a00787a2609625307
   languageName: node
   linkType: hard
 

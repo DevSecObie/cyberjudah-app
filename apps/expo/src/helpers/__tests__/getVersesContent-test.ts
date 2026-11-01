@@ -48,7 +48,7 @@ describe('getVersesContent', () => {
       loadVerseTexts: async () => ({ '1-1-1': '' }),
     })
 
-    expect(content).toBe('Impossible de charger ce verset.')
+    expect(content).toBe('Could not load this verse.')
     expect(mockCaptureError).toHaveBeenCalledTimes(1)
   })
 })

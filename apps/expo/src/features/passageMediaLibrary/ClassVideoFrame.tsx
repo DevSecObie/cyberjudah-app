@@ -21,13 +21,14 @@ type Props = {
 /** CyberJudah's hosted video page: YouTube refuses embeds from an inline page on the phone. */
 const ClassVideoFrame = forwardRef<ClassVideoFrameHandle, Props>(
   ({ uri, onTime, onState }, ref) => {
-    const view = useRef<WebView>(null)
+    const view = useRef<{ injectJavaScript: (script: string) => void } | null>(null)
     useImperativeHandle(ref, () => ({
       command: command => view.current?.injectJavaScript(classCommandScript(command)),
     }))
     return (
       <WebView
-        ref={view}
+        // react-native-webview 14 types its ref by props; only injectJavaScript is used.
+        ref={view as never}
         source={{ uri }}
         style={{ flex: 1, backgroundColor: '#000' }}
         allowsInlineMediaPlayback
