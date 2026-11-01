@@ -13,7 +13,8 @@ import type { RootState } from '~redux/modules/reducer'
 import { VersionCode } from '~state/tabs'
 import { useTheme } from '~themes/ThemeProvider'
 import { resolveUniverseColors } from '~themes/universeColors'
-import type { HistoryItem } from './historyModel'
+import type { HistoryCyberJudahItem, HistoryItem } from './historyModel'
+import { useRouter } from 'expo-router'
 
 const entryKinds = {
   verse: 'passages',
@@ -27,6 +28,7 @@ const entryKinds = {
   timeline: 'timeline',
   commentary: 'commentary',
   'commentary-resource': 'commentary',
+  cyberjudah: 'classes',
 } as const satisfies Record<HistoryItem['type'], SearchItemType>
 
 /**
@@ -121,7 +123,20 @@ export const useHistoryEntryText = (item: HistoryItem): { title: string; subtitl
     case 'commentary-resource':
       // The passage tells apart a chapter and its sections, which share the work's title.
       return { title: item.passage, subtitle: item.title }
+    case 'cyberjudah':
+      return { title: item.title, subtitle: item.subtitle ?? CYBERJUDAH_KIND_LABELS[item.kind] }
   }
+}
+
+const CYBERJUDAH_KIND_LABELS: Record<HistoryCyberJudahItem['kind'], string> = {
+  class: 'Class',
+  note: '4 Chapters a Day',
+  case: 'Case study',
+  precept: 'Precept',
+  topic: 'Topic',
+  doctrine: 'False doctrine',
+  law: 'Handbook of the Law',
+  person: 'People',
 }
 
 type HistoryEntryLinkProps = Pick<
@@ -137,6 +152,7 @@ type HistoryEntryLinkProps = Pick<
 }
 
 export const HistoryEntryLink = ({ item, ...props }: HistoryEntryLinkProps) => {
+  const router = useRouter()
   switch (item.type) {
     case 'verse': {
       const bookNumber = Number(item.book)
@@ -225,6 +241,13 @@ export const HistoryEntryLink = ({ item, ...props }: HistoryEntryLinkProps) => {
           {...props}
           route="CommentaryChapter"
           params={{ projectionId: item.projectionId, book: item.book, chapter: item.chapter }}
+        />
+      )
+    case 'cyberjudah':
+      return (
+        <Link
+          {...props}
+          onPress={() => router.push({ pathname: item.pathname, params: item.params } as never)}
         />
       )
   }

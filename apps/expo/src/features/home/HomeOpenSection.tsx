@@ -1,3 +1,4 @@
+import type React from 'react'
 import { useTranslation } from 'react-i18next'
 import HorizontalControlScrollView from '~common/HorizontalControlScrollView'
 import Link from '~common/Link'
@@ -8,6 +9,10 @@ import { useLaunchSearch } from '~features/app-switcher/commandPalette/useLaunch
 import TabIcon from '~features/app-switcher/utils/getIconByTabType'
 import { useOpenInNewTab } from '~features/app-switcher/utils/useOpenInNewTab'
 import type { TabItem } from '~state/tabs'
+import { useRouter } from 'expo-router'
+import { FeatherIcon } from '~common/ui/Icon'
+import { assistantAccessible } from '~features/study-assistant/assistantConfig'
+import useLogin from '~helpers/useLogin'
 import { HomeGrid, useHomeLayout } from './homeLayout'
 
 /** Every tab type of the new tab, the most used first so a phone shows them without scrolling. */
@@ -97,6 +102,87 @@ const HomeOpenSection = () => {
       contentContainerStyle={{ paddingHorizontal: 20, gap: TILE_GAP }}
     >
       {shortcuts}
+    </HorizontalControlScrollView>
+  )
+}
+
+/** CyberJudah's own content, a second row of « Explorer »: each opens its page in the app. */
+const CYBERJUDAH_SHORTCUTS: {
+  key: string
+  label: string
+  icon: React.ComponentProps<typeof FeatherIcon>['name']
+  pathname: string
+}[] = [
+  { key: 'ask', label: 'Ask', icon: 'message-circle', pathname: '/study-assistant' },
+  { key: 'classes', label: 'Classes', icon: 'play-circle', pathname: '/(library)/passage-media' },
+  { key: 'cases', label: 'Case Studies', icon: 'briefcase', pathname: '/(library)/case-studies' },
+  { key: 'precepts', label: 'Precepts', icon: 'layers', pathname: '/(library)/precepts' },
+  { key: 'law', label: 'The Law', icon: 'book', pathname: '/(library)/law' },
+  { key: 'notes', label: '4 Chapters', icon: 'file-text', pathname: '/(library)/study-notes' },
+  {
+    key: 'encyclopedia',
+    label: 'Encyclopedia',
+    icon: 'bookmark',
+    pathname: '/(library)/encyclopedia',
+  },
+  { key: 'topics', label: 'Topics', icon: 'tag', pathname: '/(library)/topics' },
+  {
+    key: 'doctrines',
+    label: 'Doctrines',
+    icon: 'alert-triangle',
+    pathname: '/(library)/false-doctrines',
+  },
+  { key: 'glossary', label: 'Glossary', icon: 'list', pathname: '/(library)/glossary' },
+]
+
+export const CyberJudahExploreSection = () => {
+  const { content, wide } = useHomeLayout()
+  const router = useRouter()
+  const { user } = useLogin()
+  // Ask needs an account, as in the menu.
+  const items = CYBERJUDAH_SHORTCUTS.filter(
+    item => item.key !== 'ask' || assistantAccessible(user?.id)
+  )
+  const tiles = items.map(item => (
+    <TouchableBox
+      key={item.key}
+      testID={`home-cyberjudah-${item.key}`}
+      accessibilityRole="button"
+      accessibilityLabel={item.label}
+      activeOpacity={0.7}
+      onPress={() => router.push(item.pathname as never)}
+      className={`${wide ? 'w-full' : 'w-[72px]'} items-center gap-[7px]`}
+    >
+      <Card className="w-[60px] h-[60px] items-center justify-center">
+        <FeatherIcon name={item.icon} size={24} color="primary" />
+      </Card>
+      <Text className="text-[12px] leading-[16px]" numberOfLines={1}>
+        {item.label}
+      </Text>
+    </TouchableBox>
+  ))
+
+  if (wide) {
+    const singleRow = content >= items.length * SINGLE_ROW_CELL
+    return (
+      <HomeGrid
+        columns={singleRow ? items.length : Math.ceil(items.length / 2)}
+        columnGap={singleRow ? 0 : TILE_GAP}
+        rowGap={16}
+      >
+        {tiles}
+      </HomeGrid>
+    )
+  }
+
+  return (
+    <HorizontalControlScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={{ overflow: 'visible' }}
+      contentContainerStyle={{ paddingHorizontal: 20, gap: TILE_GAP }}
+    >
+      {tiles}
     </HorizontalControlScrollView>
   )
 }

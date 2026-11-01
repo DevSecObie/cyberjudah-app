@@ -1,4 +1,5 @@
 import { resolveFontFamily } from '~themes/styleValues'
+import { useRecordHistory } from '~features/history/useRecordHistory'
 import { openInApp } from '~common/inAppBrowser'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { useGlobalSearchParams, useLocalSearchParams, usePathname, useRouter } from 'expo-router'
@@ -128,6 +129,19 @@ const PassageMediaPlayerScreen = () => {
     })
   }
 
+  // Reopened from Pick up and History, like Bible Strong's own pages.
+  useRecordHistory(
+    workId && item?.title
+      ? {
+          type: 'cyberjudah',
+          kind: 'class',
+          title: item.title,
+          subtitle: item.subtitle,
+          pathname: '/(explore)/passage-media-player',
+          params: { workId },
+        }
+      : null
+  )
   return (
     <FormSheetScreen isFormSheet={IS_FORM_SHEET}>
       <Box className="overflow-hidden border-continuous flex-[1] bg-reverse">

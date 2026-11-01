@@ -100,8 +100,32 @@ export type HistoryCommentaryResourceItem = BaseHistoryItem & {
   passage: string
 }
 
+/** The kinds of CyberJudah content a reader opens: each has its own page in the app. */
+export const CYBERJUDAH_HISTORY_KINDS = [
+  'class',
+  'note',
+  'case',
+  'precept',
+  'topic',
+  'doctrine',
+  'law',
+  'person',
+] as const
+export type CyberJudahHistoryKind = (typeof CYBERJUDAH_HISTORY_KINDS)[number]
+
+/** CyberJudah's own content (a class, a note, a case study…), reopened by the route it was read at. */
+export type HistoryCyberJudahItem = BaseHistoryItem & {
+  type: 'cyberjudah'
+  kind: CyberJudahHistoryKind
+  title: string
+  subtitle?: string
+  pathname: string
+  params?: Record<string, string>
+}
+
 export type HistoryItem =
   | HistoryStrongItem
+  | HistoryCyberJudahItem
   | HistoryVerseItem
   | HistoryWordItem
   | HistoryNaveItem
@@ -147,6 +171,7 @@ export const HISTORY_FILTERS = [
   'study',
   'note',
   'plan',
+  'cyberjudah',
 ] as const
 export type HistoryFilter = (typeof HISTORY_FILTERS)[number]
 
@@ -163,6 +188,7 @@ const filterTypes: Record<Exclude<HistoryFilter, 'all'>, HistoryItem['type'][]> 
   study: ['study'],
   note: ['note'],
   plan: ['plan', 'meditation'],
+  cyberjudah: ['cyberjudah'],
 }
 
 export const matchesHistoryFilter = (item: HistoryItem, filter: HistoryFilter): boolean =>
@@ -202,6 +228,8 @@ export const getHistoryItemKey = (item: HistoryItem | HistoryItemInput): string 
       return `commentary:${item.verse}`
     case 'commentary-resource':
       return `commentary-resource:${item.projectionId}:${item.book}:${item.chapter}:${item.sectionId ?? ''}`
+    case 'cyberjudah':
+      return `cyberjudah:${item.pathname}:${JSON.stringify(item.params ?? {})}`
   }
 }
 
@@ -340,6 +368,29 @@ const normalizeHistoryItem = (value: unknown, index = 0): HistoryItem | null => 
         sectionId: optionalString(value.sectionId),
         title,
         passage,
+        date,
+      })
+    }
+    case 'cyberjudah': {
+      const kind = CYBERJUDAH_HISTORY_KINDS.find(candidate => candidate === value.kind)
+      const title = optionalString(value.title)
+      const pathname = optionalString(value.pathname)
+      // Only the app's own pages: a stored entry never names a web address.
+      if (!kind || !title || !pathname || !pathname.startsWith('/')) return null
+      const params = isRecord(value.params)
+        ? Object.fromEntries(
+            Object.entries(value.params).filter(
+              (entry): entry is [string, string] => typeof entry[1] === 'string'
+            )
+          )
+        : undefined
+      return metadata({
+        type: 'cyberjudah',
+        kind,
+        title,
+        subtitle: optionalString(value.subtitle),
+        pathname,
+        params,
         date,
       })
     }

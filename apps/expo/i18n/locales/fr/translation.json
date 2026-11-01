@@ -2894,5 +2894,6 @@
   "onboarding.abel.sceneThree.hint": "Touchez H1892 pour continuer",
   "onboarding.abel.sceneFour.hint": "Touchez « Ajouter une note » pour continuer",
   "onboarding.abel.sceneFive.hint": "Touchez « Ajouter le tag Abel » pour continuer",
-  "onboarding.abel.sceneSix.hint": "Fermez les relations pour continuer"
+  "onboarding.abel.sceneSix.hint": "Fermez les relations pour continuer",
+  "history.filters.cyberjudah": "CyberJudah"
 }

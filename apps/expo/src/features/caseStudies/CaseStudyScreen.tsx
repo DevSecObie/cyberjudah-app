@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useRecordHistory } from '~features/history/useRecordHistory'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useState, type ReactNode } from 'react'
 import { ScrollView } from 'react-native'
@@ -218,6 +219,18 @@ const CaseStudyScreen = () => {
       />
     ))
 
+  // Reopened from Pick up and History, like Bible Strong's own pages.
+  useRecordHistory(
+    study.data?.name
+      ? {
+          type: 'cyberjudah',
+          kind: 'case',
+          title: study.data.name,
+          pathname: '/(explore)/case-study',
+          params: { slug },
+        }
+      : null
+  )
   return (
     <SafeAreaBox className="overflow-hidden border-continuous bg-reverse">
       <Header hasBackButton background title={k?.name ?? 'Case study'} />

@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useRecordHistory } from '~features/history/useRecordHistory'
 import { useLocalSearchParams } from 'expo-router'
 import { useState } from 'react'
 import { ScrollView } from 'react-native'
@@ -67,6 +68,18 @@ const TopicScreen = () => {
   const notes = data?.items.filter(item => item.kind !== 'case') ?? []
   const cases = data?.items.filter(item => item.kind === 'case') ?? []
 
+  // Reopened from Pick up and History, like Bible Strong's own pages.
+  useRecordHistory(
+    topic.data?.label
+      ? {
+          type: 'cyberjudah',
+          kind: 'topic',
+          title: topic.data.label,
+          pathname: '/(explore)/topic',
+          params: { slug },
+        }
+      : null
+  )
   return (
     <SafeAreaBox className="overflow-hidden border-continuous bg-reverse">
       <Header hasBackButton title={data?.label ?? 'Topic'} />

@@ -18,7 +18,7 @@ import HomeExploreGrid from './HomeExploreGrid'
 import HomeFooter from './HomeFooter'
 import HomeGoFurther from './HomeGoFurther'
 import HomeHeader from './HomeHeader'
-import HomeOpenSection, { NewTabLink } from './HomeOpenSection'
+import HomeOpenSection, { CyberJudahExploreSection, NewTabLink } from './HomeOpenSection'
 import HomeResumeSection from './HomeResumeSection'
 import HomeSectionTitle from './HomeSectionTitle'
 import HomeSubsectionTitle from './HomeSubsectionTitle'
@@ -99,6 +99,12 @@ export const Home = ({ closeHome, inWorkspace = false }: HomeProps) => {
             <HomeResumeSection />
             <HomeSectionTitle title={t('home.explore')} action={<NewTabLink />} />
             <HomeOpenSection />
+            {cyberJudah && (
+              <>
+                <Box className="h-[16px]" />
+                <CyberJudahExploreSection />
+              </>
+            )}
             {!cyberJudah && (
               <>
                 <Box className="h-[16px]" />
