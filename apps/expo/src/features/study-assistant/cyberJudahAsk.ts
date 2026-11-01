@@ -157,6 +157,8 @@ async function performAsk(
     consent: string[]
     model?: string
     account?: string
+    /** The passage the reader opened Ask from (askReading). */
+    reading?: string
   },
   signal: AbortSignal,
   event: ((value: CyberJudahEvent) => void) | undefined,
@@ -181,6 +183,7 @@ async function performAsk(
       consent: input.consent,
       ui: 'study-v1',
       ...(input.model ? { model: input.model } : {}),
+      ...(input.reading ? { reading: input.reading.slice(0, 40) } : {}),
       ...(event ? { stream: true } : {}),
     }),
     signal,

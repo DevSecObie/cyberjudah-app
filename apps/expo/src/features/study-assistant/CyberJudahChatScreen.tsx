@@ -18,7 +18,7 @@ import * as Haptics from 'expo-haptics'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
-import { useRouter } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { selectUserLoginInfo } from '~redux/selectors/user'
 import { storage } from '~helpers/storage'
@@ -273,6 +273,15 @@ function AccountChat({ account }: { account: string }) {
   const [chat, setChat] = useState<Chat>(newChat)
   const [history, setHistory] = useState<ChatSummary[]>([])
   const [question, setQuestion] = useState('')
+  // Opened from the Bible reader: the passage Ask starts from, until the reader clears it.
+  const params = useLocalSearchParams<{ reading?: string }>()
+  const [reading, setReading] = useState(
+    typeof params.reading === 'string' ? params.reading.slice(0, 40) : ''
+  )
+  useEffect(() => {
+    if (typeof params.reading === 'string' && params.reading)
+      setReading(params.reading.slice(0, 40))
+  }, [params.reading])
   const [pending, setPending] = useState<ChatTurn | null>(null)
   const [busy, setBusy] = useState(false)
   const [status, setStatus] = useState('')
@@ -408,6 +417,7 @@ function AccountChat({ account }: { account: string }) {
           history: chatHistory(base),
           consent: agreedProviders(),
           ...(model ? { model } : {}),
+          ...(reading ? { reading } : {}),
           account,
         },
         controller.signal,
@@ -920,6 +930,28 @@ function AccountChat({ account }: { account: string }) {
               shadowOffset: { width: 0, height: 0 },
             }}
           >
+            {!!reading && (
+              <HStack className="items-center gap-[6px] px-2 pt-2">
+                <FeatherIcon name="book-open" size={13} style={{ color: p.accent }} />
+                <Text className="flex-1" numberOfLines={1} style={{ color: p.text3, fontSize: 13 }}>
+                  {t('askChat.readingFrom', {
+                    defaultValue: 'Asking about {{reading}}',
+                    reading,
+                  })}
+                </Text>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('askChat.clearReading', {
+                    defaultValue: 'Stop asking about {{reading}}',
+                    reading,
+                  })}
+                  onPress={() => setReading('')}
+                  hitSlop={12}
+                >
+                  <FeatherIcon name="x" size={14} style={{ color: p.text3 }} />
+                </Pressable>
+              </HStack>
+            )}
             <TextInput
               ref={input}
               multiline
