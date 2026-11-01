@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
-import { Linking } from 'react-native'
+import { useOpenSiteLink } from '~features/publishedNotes/siteLinks'
 import Box, { HStack, TouchableBox, VStack } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
@@ -146,6 +146,7 @@ export default function CyberJudahPersonSections({
   onOpenEntityProfile: (entityKey: string) => void
 }) {
   const router = useRouter()
+  const { open: openSiteLink } = useOpenSiteLink()
   const [taughtShown, setTaughtShown] = useState(TAUGHT_FIRST)
   const [classesShown, setClassesShown] = useState(CLASSES_FIRST)
   const person = useQuery({
@@ -164,12 +165,12 @@ export default function CyberJudahPersonSections({
     const osis = cyberJudahSiteLinkToOsis(verseSiteUrl(path))
     if (osis) onOpenBibleReference(osis)
   }
-  // A class in the library opens in its player; any other note opens on the website.
+  // A class in the library opens in its player; any other note opens in the app's own pages.
   const openClass = (notesPath: string) => {
     const item = readCachedClassLibrary()?.find(entry => entry.notesPath === notesPath)
     if (item)
       router.push({ pathname: '/(explore)/passage-media-player', params: { workId: item.workId } })
-    else void Linking.openURL(`https://cyberjudah.io${notesPath}`)
+    else openSiteLink(notesPath)
   }
 
   return (

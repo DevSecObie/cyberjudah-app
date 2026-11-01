@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useState, type ReactNode } from 'react'
-import { Linking, ScrollView } from 'react-native'
+import { ScrollView } from 'react-native'
+import { useOpenSiteLink } from '~features/publishedNotes/siteLinks'
 import Header from '~common/Header'
 import Loading from '~common/Loading'
 import Box, { HStack, SafeAreaBox, TouchableBox, VStack } from '~common/ui/Box'
@@ -156,7 +157,9 @@ const CaseStudyScreen = () => {
     networkMode: 'always',
     retry: 1,
   })
-  const site = (path: string) => void Linking.openURL(`https://cyberjudah.io${path}`)
+  // Our notes, topics, precepts and classes open in the app's own pages, never in Safari.
+  const { open: openSiteLink } = useOpenSiteLink()
+  const site = (path: string) => openSiteLink(path)
   const openOsis = (osis: string) => {
     const route = getCommentaryBibleViewRoute(osis)
     if (route) router.push(route)
