@@ -596,16 +596,16 @@ const DownloadsScreen = () => {
           ListHeaderComponent={
             <>
               <StorageSummaryCard />
-              {/* CyberJudah keeps its own portraits; it offers the class index instead. */}
-              {usesCyberJudahEditorial() ? (
-                <ClassIndexDownloadCard />
-              ) : (
+              {/* CyberJudah keeps its own portraits, so Bible Strong's portrait pack is left out. */}
+              {usesCyberJudahEditorial() ? null : (
                 <EntityPortraitPackCard downloadsDisabled={!isConnected} />
               )}
               <AvailableUpdatesWidget
                 count={itemsToUpdate.length}
                 onPress={() => updatesRef.current?.present()}
               />
+              {/* The classes, as the first section of the list, in the same card as the rest. */}
+              {usesCyberJudahEditorial() ? <ClassIndexDownloadCard /> : null}
             </>
           }
           renderSectionHeader={({ section }) => {
