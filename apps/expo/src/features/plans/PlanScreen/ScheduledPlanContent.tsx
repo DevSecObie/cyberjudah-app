@@ -1,14 +1,11 @@
 import { Image } from 'expo-image'
-<<<<<<< CYBERJUDAH
 import {
   useGlobalSearchParams,
   useLocalSearchParams,
   useNavigation,
   usePathname,
+  useRouter,
 } from 'expo-router'
-=======
-import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
->>>>>>> BIBLESTRONG-28
 import { useEffect, useRef, useState } from 'react'
 import { Platform, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
@@ -47,12 +44,17 @@ import {
 import { getDoneDays, getPlanJourney } from '../planSchedule'
 import { getDayMinutes, useElementSizes } from '../planReadingTime'
 import { getPlanEntityRoute } from '../planEntityRoute'
-<<<<<<< CYBERJUDAH
+import { getEntitySliceTitle, getReadingSliceLabel } from '../entitySliceTitle'
+import PlanStreak from '../PlanStreak'
+import PlanCalendar from './PlanCalendar'
+import PlanDayStrip, { formatPlanDate } from './PlanDayStrip'
+import PlanElementRow from './PlanElementRow'
+import PlanProgressCard from './PlanProgressCard'
+import PlanUpNext from './PlanUpNext'
 import { useSetAtom } from 'jotai'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import { dockedClassAtom, youtubeIdOf } from '~features/passageMediaLibrary/dockedClassPlayerStore'
 import { resumeClassAt } from '~features/passageMediaLibrary/classVideoPosition'
-import { getEntitySliceTitle } from '../entitySliceTitle'
 import {
   chaptersReadingKey,
   entityReadingKey,
@@ -77,15 +79,6 @@ const getFinishKey = (
   if (slice.type === 'Quiz') return entityReadingKey(planId, readingSliceId, entitySliceId)
   return undefined
 }
-=======
-import { getEntitySliceTitle, getReadingSliceLabel } from '../entitySliceTitle'
-import PlanStreak from '../PlanStreak'
-import PlanCalendar from './PlanCalendar'
-import PlanDayStrip, { formatPlanDate } from './PlanDayStrip'
-import PlanElementRow from './PlanElementRow'
-import PlanProgressCard from './PlanProgressCard'
-import PlanUpNext from './PlanUpNext'
->>>>>>> BIBLESTRONG-28
 
 interface Props {
   plan: ComputedPlan
@@ -93,16 +86,6 @@ interface Props {
   initialReadingSliceId?: string
 }
 
-<<<<<<< CYBERJUDAH
-const ENTITY_ICONS = {
-  Chapter: 'book-open',
-  Verse: 'book-open',
-  Video: 'play-circle',
-  Image: 'image',
-  Text: 'file-text',
-  Quiz: 'help-circle',
-} as const
-=======
 /** From this width the day and what goes with it sit side by side. */
 const WIDE = 800
 const SIDE_WIDTH = 300
@@ -113,7 +96,6 @@ const ELEMENT_INSET = 50
 
 const shorten = (text: string, length = 32) =>
   text.length > length ? `${text.slice(0, length - 1).trimEnd()}…` : text
->>>>>>> BIBLESTRONG-28
 
 const ScheduledPlanContent = ({ plan, initialReadingSliceId }: Props) => {
   const { t, i18n } = useTranslation()
@@ -154,28 +136,31 @@ const ScheduledPlanContent = ({ plan, initialReadingSliceId }: Props) => {
   const sizes = useElementSizes(reading)
   const minutes = getDayMinutes(sizes)
   const cover = useFireStorage(plan.image)
-<<<<<<< CYBERJUDAH
-  const formattedDate = (value: string) => {
-    const current = new Date(`${value}T12:00:00`)
-    const month = current.toLocaleDateString(i18n.language, { month: 'short' })
-    return `${month}\n${current.getDate()}`
-  }
+  const calendarSheet = useRef<SheetRef>(null)
   // A note, the chapters and the quiz are ticked when they are finished: the note read to its
-  // last block, the last chapter read to its end, every question answered. Anything else is
-  // ticked once its page covers the plan, so a day completed that way is celebrated on the way
-  // back, not while leaving.
+  // last block, the last chapter read to its end, every question answered (CyberJudah). Anything
+  // else is ticked once its page covers the plan, so that a day completed this way is celebrated
+  // on the way back, not while leaving. A sheet leaves the plan in view while it rises, so the
+  // tick waits for it to settle.
   const navigation = useNavigation()
   const openedEntity = useRef<{
     location: Parameters<typeof markEntitySliceAsRead>[0]
     finishKey?: string
   } | null>(null)
   useEffect(() => {
+    const pending = new Map<
+      ReturnType<typeof setTimeout>,
+      Parameters<typeof markEntitySliceAsRead>[0]
+    >()
     const removeBlur = navigation.addListener('blur', () => {
       const opened = openedEntity.current
-      if (opened && !opened.finishKey) {
+      if (!opened || opened.finishKey) return
+      openedEntity.current = null
+      const timer = setTimeout(() => {
+        pending.delete(timer)
         dispatch(markEntitySliceAsRead(opened.location))
-        openedEntity.current = null
-      }
+      }, 500)
+      pending.set(timer, opened.location)
     })
     // Heard as soon as it happens, even while the plan is under the page that finished it.
     const removeFinished = onFinishedReading(key => {
@@ -188,37 +173,12 @@ const ScheduledPlanContent = ({ plan, initialReadingSliceId }: Props) => {
     return () => {
       removeBlur()
       removeFinished()
-=======
-  const calendarSheet = useRef<SheetRef>(null)
-  // Opening is reading. The element is ticked once its page covers the plan, so that a day
-  // completed this way is celebrated on the way back, not while leaving. A sheet leaves the
-  // plan in view while it rises, so the tick waits for it to settle.
-  const navigation = useNavigation()
-  const openedEntity = useRef<Parameters<typeof markEntitySliceAsRead>[0] | null>(null)
-  useEffect(() => {
-    const pending = new Map<
-      ReturnType<typeof setTimeout>,
-      Parameters<typeof markEntitySliceAsRead>[0]
-    >()
-    const unsubscribe = navigation.addListener('blur', () => {
-      const location = openedEntity.current
-      if (!location) return
-      openedEntity.current = null
-      const timer = setTimeout(() => {
-        pending.delete(timer)
-        dispatch(markEntitySliceAsRead(location))
-      }, 500)
-      pending.set(timer, location)
-    })
-    return () => {
-      unsubscribe()
       // Leaving the plan for good must not lose an element that was opened.
       pending.forEach((location, timer) => {
         clearTimeout(timer)
         dispatch(markEntitySliceAsRead(location))
       })
       pending.clear()
->>>>>>> BIBLESTRONG-28
     }
   }, [navigation, dispatch])
   const openEntity = (day: ComputedReadingSlice, slice: EntitySlice, index: number) => {

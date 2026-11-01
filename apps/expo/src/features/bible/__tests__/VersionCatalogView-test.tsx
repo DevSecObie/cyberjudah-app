@@ -230,11 +230,7 @@ describe('VersionCatalogList', () => {
     const standalone = createRenderer()
     const standaloneList = standalone.root.findByType('SectionList' as never)
     expect(standaloneList.props.style).toBeUndefined()
-<<<<<<< CYBERJUDAH
-    expect(standaloneList.props.initialNumToRender).toBe(12)
-=======
     expect(standaloneList.props.initialNumToRender).toBe(itemCount)
->>>>>>> BIBLESTRONG-28
     act(() => {
       panel.unmount()
       standalone.unmount()

@@ -1699,7 +1699,7 @@ const LoadedBibleContent = ({
                 }
               >
                 {isHebreu && (
-                  <RightDirection settings={settings}>Sens de la lecture ←</RightDirection>
+                  <RightDirection settings={settings}>Reading direction ←</RightDirection>
                 )}
                 {/* Introduction media sit above the columns, at the original scroll origin */}
                 <EntityChipsDOM
@@ -1757,40 +1757,6 @@ const LoadedBibleContent = ({
                     versesWithNonHighlightTags={versesWithNonHighlightTags}
                     columnCount={isParallelVerse ? parallelVersionTitles.length : 1}
                     columnWidth={parallelColumnWidth}
-<<<<<<< CYBERJUDAH
-                  >
-                    <VersionTitle
-                      data-version-title={i}
-                      onClick={() => navigateToVersion(p.id, i)}
-                      style={{ paddingLeft: '5px' }}
-                      settings={settings}
-                    >
-                      {p.id}
-                      {p.error && (
-                        <VersionErrorIndicator settings={settings}>⚠</VersionErrorIndicator>
-                      )}
-                      <ChevronDownIcon style={{ marginLeft: 4 }} />
-                    </VersionTitle>
-                  </VersionTitleColumn>
-                ))}
-              </VersionsContainer>
-            </HeaderScrollWrapper>
-          )}
-          <HorizontalScrollWrapper
-            ref={contentScrollRef}
-            columnCount={
-              isParallelVerse && parallelDisplayMode === 'horizontal'
-                ? parallelVersionTitles.length
-                : 1
-            }
-          >
-            {isHebreu && <RightDirection settings={settings}>Reading direction ←</RightDirection>}
-            {!isContextFocused && (
-              <PassageMediaThumbnails
-                items={passageMedia.introduction}
-                gallerySections={passageMediaGallerySections}
-                placement="introduction"
-=======
                     parallelDisplayMode={parallelDisplayMode}
                     columnTextModeControls={columnTextModeControls}
                     redWordsByVersion={redWordsByVersion}
@@ -1814,7 +1780,6 @@ const LoadedBibleContent = ({
                 translations={focusStudyTranslations}
                 entities={chapterEntities}
                 portraits={chapterEntityPortraits}
->>>>>>> BIBLESTRONG-28
                 settings={settings}
                 onAction={focusAction => {
                   void dispatch({ type: FOCUS_STUDY_ACTION, payload: focusAction })
@@ -1871,64 +1836,16 @@ const LoadedBibleContent = ({
               settings={settings}
               $position={returnToSelectedVersePosition}
               onClick={() => scrollSelectedVerseToMiddle()}
-              aria-label="Retourner au verset sélectionné"
+              aria-label="Back to the selected verse"
             >
               <Feather
                 name={returnToSelectedVersePosition === 'top' ? 'chevron-up' : 'chevron-down'}
                 size={24}
                 color={settings.colors[settings.theme].primary}
               />
-<<<<<<< CYBERJUDAH
-            </m.div>
-          </HorizontalScrollWrapper>
-          <ChapterEntities
-            entities={chapterEntities}
-            loaded={chapterEntitiesLoaded}
-            availabilityStatus={chapterEntityModuleStatus}
-            downloadState={chapterEntityDownloadState}
-            settings={settings}
-            translations={chapterEntityTranslations}
-            chapterResources={
-              !isContextFocused && passageMediaGalleryItems.length ? (
-                <PassageMediaThumbnails
-                  items={passageMediaGalleryItems}
-                  gallerySections={passageMediaGallerySections}
-                  placement="chapter-resources"
-                  settings={settings}
-                  isDisabled={annotationMode}
-                  blockMargin={0}
-                />
-              ) : null
-            }
-            onOpenEntity={uniqueName => {
-              void dispatch({ type: NAVIGATE_TO_BIBLICAL_ENTITY, payload: uniqueName })
-            }}
-            onDownload={() => {
-              void dispatch({ type: DOWNLOAD_CHAPTER_ENTITIES })
-            }}
-            onDismiss={() => {
-              void dispatch({ type: DISMISS_CONTEXTUAL_INFORMATION })
-            }}
-          />
-          <ReturnToSelectedVerseButton
-            type="button"
-            settings={settings}
-            $position={returnToSelectedVersePosition}
-            onClick={() => scrollSelectedVerseToMiddle()}
-            aria-label="Back to the selected verse"
-          >
-            <Feather
-              name={returnToSelectedVersePosition === 'top' ? 'chevron-up' : 'chevron-down'}
-              size={24}
-              color={settings.colors[settings.theme].primary}
-            />
-          </ReturnToSelectedVerseButton>
-        </Container>
-=======
             </ReturnToSelectedVerseButton>
           </Container>
         </div>
->>>>>>> BIBLESTRONG-28
         <svg
           style={{
             visibility: 'hidden',

@@ -13,17 +13,14 @@ import Card from '~common/ui/Card'
 import { StrongEntityRelationList, StrongEntitySummaryCard } from './StrongDetailUI'
 import { STUDY_COLUMN_MAX_WIDTH, StudyCardBody, StudySection } from '~common/ui/StudySection'
 import { StrongEntityRelationGraph } from './StrongEntityRelationGraph'
-<<<<<<< CYBERJUDAH
 import CyberJudahPersonSections from './CyberJudahPersonSections'
 import { loadCyberJudahPerson } from './cyberJudahPerson'
 import { useQuery } from '@tanstack/react-query'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
-=======
 import StudyLinksSections from '~features/studyLinks/StudyLinksSections'
 import StrongEntityPortraitHeader from './StrongEntityPortraitHeader'
 import StrongEntityPlaceMap from './biblicalMap/StrongEntityPlaceMap'
 import { useEntityPortraitCatalog } from './entityPortraitManifest'
->>>>>>> BIBLESTRONG-28
 import { splitStrongEntityRelations } from './strongEntityPresentation'
 import type { StrongReadingTypography } from './strongEditorialHtmlStyles'
 type Props = {
@@ -50,8 +47,9 @@ const StrongEntityPage = ({
   onOpenEntityRelation,
   onOpenMap,
 }: Props) => {
-<<<<<<< CYBERJUDAH
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const bottomInset = usePageBottomInset()
+  const catalog = useEntityPortraitCatalog()
   // CyberJudah's People data names the person's tribe, shown at the top as in Telegram.
   const cyberJudahPerson = useQuery({
     queryKey: ['cyberjudah-person', entity?.uniqueName],
@@ -62,11 +60,6 @@ const StrongEntityPage = ({
     retry: 1,
   })
   const tribe = (cyberJudahPerson.data as { tribe?: string } | undefined)?.tribe || undefined
-=======
-  const { t, i18n } = useTranslation()
-  const bottomInset = usePageBottomInset()
-  const catalog = useEntityPortraitCatalog()
->>>>>>> BIBLESTRONG-28
   if (loading) return <Loading message={t('Chargement...')} />
   if (!entity) {
     return <Empty message={t('strongDetail.entity.unavailable')} />
@@ -90,16 +83,6 @@ const StrongEntityPage = ({
         },
       ]}
     >
-<<<<<<< CYBERJUDAH
-      <StrongEntitySummaryCard
-        entity={entity}
-        eyebrowDetail={tribe}
-        expanded
-        readingTypography={readingTypography}
-        onOpenBibleReference={onOpenBibleReference}
-        onOpenStrong={onOpenStrong}
-      />
-=======
       {catalog && portrait && (
         <StrongEntityPortraitHeader
           entity={entity}
@@ -125,6 +108,7 @@ const StrongEntityPage = ({
           <StudyCardBody>
             <StrongEntitySummaryCard
               entity={entity}
+              eyebrowDetail={tribe}
               expanded
               readingTypography={readingTypography}
               onOpenBibleReference={onOpenBibleReference}
@@ -133,7 +117,6 @@ const StrongEntityPage = ({
           </StudyCardBody>
         </Card>
       )}
->>>>>>> BIBLESTRONG-28
 
       {entity.category === 'place' && !!place && onOpenMap && (
         <StudySection title={t('strongDetail.entity.location')}>
@@ -166,7 +149,6 @@ const StrongEntityPage = ({
         </StudySection>
       )}
 
-<<<<<<< CYBERJUDAH
       {usesCyberJudahEditorial() && entity.category === 'person' && (
         <CyberJudahPersonSections
           uniqueName={entity.uniqueName}
@@ -174,13 +156,11 @@ const StrongEntityPage = ({
           onOpenEntityProfile={onOpenEntityProfile}
         />
       )}
-=======
       <StudyLinksSections
         kind="entity"
         subjectKey={entity.uniqueName}
         language={language ?? (i18n.language === 'fr' ? 'fr' : 'en')}
       />
->>>>>>> BIBLESTRONG-28
     </ScrollView>
   )
 }

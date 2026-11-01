@@ -13,9 +13,10 @@ jest.mock('~helpers/databases', () => ({
   getDictionaryDirectoryDbPath: () => '/documents/dictionary-directory.sqlite',
   getStudyLinksDbPath: () => '/documents/study-links.sqlite',
 }))
-<<<<<<< CYBERJUDAH
 const mockCatalogIds = { withoutDirectory: false }
+let mockStudyLinksPublished = false
 jest.mock('~helpers/mobileResourceCatalog', () => ({
+  hasMobileResourceCatalogEntry: () => mockStudyLinksPublished,
   getMobileResourceCatalogEntry: (id: string) => {
     if (id === 'dictionary-directory' && mockCatalogIds.withoutDirectory)
       throw new Error(`MOBILE_RESOURCE_CATALOG_ENTRY_MISSING:${id}`)
@@ -28,19 +29,6 @@ jest.mock('~helpers/mobileResourceCatalog', () => ({
       archiveBytes: 100,
     }
   },
-=======
-let mockStudyLinksPublished = false
-jest.mock('~helpers/mobileResourceCatalog', () => ({
-  hasMobileResourceCatalogEntry: () => mockStudyLinksPublished,
-  getMobileResourceCatalogEntry: (id: string) => ({
-    id,
-    url: `https://example.test/${id}.zip`,
-    entry: id === 'dictionary-directory' ? 'dictionary-directory.sqlite' : 'dictionnaire.sqlite',
-    entries: {},
-    archiveSha256: 'a'.repeat(64),
-    archiveBytes: 100,
-  }),
->>>>>>> BIBLESTRONG-28
 }))
 jest.mock('~helpers/strongBiblePublications', () => ({
   getStrongBiblePublication: jest.fn(),
@@ -98,7 +86,6 @@ describe('dictionary download plan', () => {
     ).toEqual(['dictionary:bost:BOST:fr'])
   })
 
-<<<<<<< CYBERJUDAH
   it('installs the dictionary on its own when the catalog has no shared Directory', () => {
     mockCatalogIds.withoutDirectory = true
     try {
@@ -113,7 +100,8 @@ describe('dictionary download plan', () => {
     } finally {
       mockCatalogIds.withoutDirectory = false
     }
-=======
+  })
+
   it('brings the study links along, with nothing waiting for them', () => {
     mockStudyLinksPublished = true
     const plan = createDictionaryDownloadPlan(
@@ -123,6 +111,5 @@ describe('dictionary download plan', () => {
     mockStudyLinksPublished = false
     expect(plan.map(item => item.id)).toEqual(['dictionary:bost:BOST:fr', 'study-links'])
     expect(plan[1]).not.toHaveProperty('dependsOnId')
->>>>>>> BIBLESTRONG-28
   })
 })

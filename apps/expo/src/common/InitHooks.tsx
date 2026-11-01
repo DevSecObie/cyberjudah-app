@@ -182,10 +182,7 @@ const InitHooks = (_props: InitHooksProps) => {
         ...Icon.Feather.font,
         ...Icon.Ionicons.font,
         'Literata Book': require('~assets/fonts/LiterataBook-Regular.otf'),
-<<<<<<< CYBERJUDAH
         'eina-03-bold': require('~assets/fonts/Inter-Bold.ttf'),
-=======
->>>>>>> BIBLESTRONG-28
         FiraCode: require('~assets/fonts/FiraCode-Regular.otf'),
       }).catch(err => {
         console.error('Failed to load fonts:', err)

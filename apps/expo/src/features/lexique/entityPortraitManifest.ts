@@ -1,6 +1,7 @@
 import { getDefaultStore, useAtomValue } from 'jotai'
 import { useEffect, useMemo } from 'react'
 
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import { entityPortraitCatalogAtom } from './entityPortraitCatalogAtom'
 import { syncEntityPortraitPack } from './entityPortraitPack'
 import {
@@ -18,7 +19,8 @@ const FETCH_TIMEOUT = 10_000
 let refreshAttempted = false
 
 const refreshEntityPortraitCatalog = async () => {
-  if (refreshAttempted) return
+  // CyberJudah draws its own figures; Bible Strong's painted portraits are never fetched.
+  if (refreshAttempted || usesCyberJudahEditorial()) return
   refreshAttempted = true
   await fetchEntityPortraitCatalog()
   // The offline pack follows the catalog and resumes a download cut short.
@@ -50,7 +52,7 @@ export const useEntityPortraitCatalog = (): EntityPortraitCatalog | undefined =>
   useEffect(() => {
     refreshEntityPortraitCatalog()
   }, [])
-  return state?.catalog
+  return usesCyberJudahEditorial() ? undefined : state?.catalog
 }
 
 const NO_PORTRAITS: EntityPortraitHashes = {}

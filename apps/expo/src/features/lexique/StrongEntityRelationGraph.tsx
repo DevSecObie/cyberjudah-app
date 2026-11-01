@@ -582,7 +582,6 @@ const EntityGraphNode = ({
         avatarStyle,
       ]}
     >
-<<<<<<< CYBERJUDAH
       <Image
         source={getStrongEntityAvatarSource(category ?? 'other', type ?? 'Other', uniqueName)}
         // Round, as Bible Strong's avatars are: a person's own portrait is a square picture.
@@ -591,14 +590,6 @@ const EntityGraphNode = ({
           height: center ? 76 : 54,
           borderRadius: center ? 38 : 27,
         }}
-=======
-      <StrongEntityAvatar
-        uniqueName={uniqueName}
-        seed={seed}
-        category={category ?? 'other'}
-        type={type ?? 'Other'}
-        size={center ? CENTER_AVATAR_SIZE : SATELLITE_AVATAR_SIZE}
->>>>>>> BIBLESTRONG-28
       />
     </AnimatedBox>
   )

@@ -2,18 +2,19 @@ import { chaptersReadingKey, finishReading } from '~features/plans/finishedReadi
 import { getPassageContextHeaderHeight } from '../passagePreviewPresentation'
 import type { PlanDayStepView } from './PlanDayStepCard'
 import type { LabeledCommentaryChip } from './InlineCommentaryChips'
-<<<<<<< CYBERJUDAH
-import { OPEN_INLINE_COMMENTARY, OPEN_VERSE_PRECEPTS, OPEN_VERSE_TAG } from './dispatch'
+import {
+  FOCUS_STUDY_ACTION,
+  OPEN_INLINE_COMMENTARY,
+  OPEN_VERSE_PRECEPTS,
+  OPEN_VERSE_TAG,
+} from './dispatch'
 import { verseTagRoute } from '~features/versePrecepts/verseTags'
-=======
-import { FOCUS_STUDY_ACTION, OPEN_INLINE_COMMENTARY } from './dispatch'
 import {
   isFocusStudyAction,
   type FocusStudyAction,
   type FocusStudyTranslations,
   type FocusVerseStudy,
 } from '../focusStudy/focusVerseStudyTypes'
->>>>>>> BIBLESTRONG-28
 import { useResourcesLanguageValue } from '~state/resourcesLanguage'
 import { previewHistoryAtom } from '~features/bibleReferencePreview/state'
 import { createReaderPreview } from '~features/bibleReferencePreview/readerPreview'
@@ -673,10 +674,7 @@ export const BibleDOMWrapper = ({
     },
     // Keeps {{name}} for the web view, which puts each entity's name in it.
     openEntity: t('bible.chapterEntities.open', { interpolation: { skipOnVariables: true } }),
-<<<<<<< CYBERJUDAH
-=======
     openMap: t('bible.chapterEntities.openMap'),
->>>>>>> BIBLESTRONG-28
     empty: t('bible.chapterEntities.empty'),
     downloadTitle: t('strongLexicon.biblicalEntities'),
     downloadDescription: t('strongLexicon.biblicalEntitiesDescription'),

@@ -206,11 +206,9 @@ const FullAppRuntime = ({ theme }: FullAppRuntimeProps) => {
                         />
                       </Stack>
                     </WorkspaceLayout>
-<<<<<<< CYBERJUDAH
                     <DockedClassPlayer />
-=======
-                    <AssistantLauncher />
->>>>>>> BIBLESTRONG-28
+                    {/* Bible Strong's own assistant stays off; CyberJudah has Ask. */}
+                    {!usesCyberJudahEditorial() && <AssistantLauncher />}
                     <ThemedToaster />
                     <AutomaticUpdates />
                     <DeferredModals />

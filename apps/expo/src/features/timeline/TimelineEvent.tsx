@@ -143,7 +143,6 @@ const TimelineEvent = ({
         <Box className="border-continuous overflow-hidden border-b-[1px] border-border" />
         <Text className="text-[10px] text-center">{label}</Text>
       </AnimatedBox>
-<<<<<<< CYBERJUDAH
       {image ? (
         <Box
           className="overflow-hidden border-continuous ml-auto rounded-tr-[10px] rounded-br-[10px]"
@@ -157,16 +156,6 @@ const TimelineEvent = ({
           />
         </Box>
       ) : null}
-=======
-      <Box className="overflow-hidden border-continuous ml-auto" style={{ width: imageSize }}>
-        <Image
-          style={{ width: imageSize, height: '100%' }}
-          source={{
-            uri: image,
-          }}
-        />
-      </Box>
->>>>>>> BIBLESTRONG-28
     </LinkBox>
   )
 }

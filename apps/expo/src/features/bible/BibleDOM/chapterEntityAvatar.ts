@@ -1,9 +1,4 @@
-<<<<<<< CYBERJUDAH
 import { getStrongEntityAvatarSource } from '~features/lexique/strongEntityAvatars'
-=======
-import type { EntityPortraitSources } from '~features/lexique/entityPortraits'
-import { getStrongEntityPlaceholderSource } from '~features/lexique/strongEntityAvatars'
->>>>>>> BIBLESTRONG-28
 import type { StrongEntityPresentationKind } from '~features/lexique/strongEntityPresentation'
 import type { StrongLexiconChapterEntity } from '~features/resources/strongLexiconAccess'
 import type { SyntheticEvent } from 'react'
@@ -17,11 +12,7 @@ const getChapterEntityPlaceholderUri = (entity: StrongLexiconChapterEntity) => {
   const presentationKind: StrongEntityPresentationKind =
     entity.category === 'supernatural' ? 'other' : entity.category
   return resolveRasterAssetUri(
-<<<<<<< CYBERJUDAH
     getStrongEntityAvatarSource(presentationKind, entity.type, entity.uniqueName)
-=======
-    getStrongEntityPlaceholderSource(presentationKind, entity.type, entity.uniqueName)
->>>>>>> BIBLESTRONG-28
   )
 }
 

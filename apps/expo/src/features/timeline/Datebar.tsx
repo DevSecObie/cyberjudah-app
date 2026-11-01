@@ -41,19 +41,10 @@ const Datebar = ({
         {
           paddingLeft: offset,
           width: width,
-<<<<<<< CYBERJUDAH
-          bottom: bottomBarHeight,
-          shadowColor: 'rgb(89,131,240)',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 7,
-          elevation: 1,
-=======
           bottom: useSafeAreaInsets().bottom,
           // The bar spans the whole period (up to ~14,000pt): Android, which never drew its
           // shadow, is spared a blurred layer of that size.
           ...(Platform.OS !== 'android' && floatingShadow),
->>>>>>> BIBLESTRONG-28
           overflow: 'visible',
         },
         useAnimatedStyle(() => ({

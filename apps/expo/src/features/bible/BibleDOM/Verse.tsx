@@ -778,7 +778,6 @@ const Verse = ({
               {verse.Verset}{' '}
             </NumberText>
           )}
-<<<<<<< CYBERJUDAH
           {!!preceptChips?.length && !isSelectionMode && (
             <CanonicalNoteButton
               settings={settings}
@@ -805,35 +804,7 @@ const Verse = ({
             />
           )}
 
-          {bookmark && !isSelectionMode && (
-            <BookmarkIcon
-              settings={settings}
-              color={bookmark.color}
-              onClick={openBookmarkModal}
-              isDisabled={annotationMode}
-            />
-          )}
-          {relationCount &&
-            (settings.relationsDisplay || 'inline') !== 'inline' &&
-            !isSelectionMode && (
-              <RelationsCount
-                settings={settings}
-                onClick={navigateToVerseStudyRelations}
-                count={relationCount}
-                isDisabled={annotationMode}
-              />
-            )}
-          {taggedItemsCount > 0 && settings.tagsDisplay !== 'inline' && !isSelectionMode && (
-            <TagsIndicator
-              count={taggedItemsCount}
-              settings={settings}
-              onClick={navigateToVerseTags}
-              isDisabled={annotationMode}
-            />
-          )}
-=======
           {!isParallelCell && <VerseMarkers {...verseContent} />}
->>>>>>> BIBLESTRONG-28
 
           <VerseText
             key={[
@@ -885,18 +856,6 @@ const Verse = ({
           </VerseText>
           {!isParallelCell && <VersePassageMedia {...verseContent} />}
         </ContainerText>
-<<<<<<< CYBERJUDAH
-        {otherVersionAnnotations && otherVersionAnnotations.length > 0 && !isSelectionMode && (
-          <VersionAnnotationIndicator
-            versions={otherVersionAnnotations}
-            settings={settings}
-            onClick={openCrossVersionModal}
-            isDisabled={annotationMode}
-          />
-        )}
-        {tag && settings.tagsDisplay === 'inline' && (
-          <VerseTags settings={settings} tag={tag} isDisabled={annotationMode} />
-        )}
         {!!cyberJudahTags?.length && !isSelectionMode && (
           <CyberJudahVerseTags
             tags={cyberJudahTags}
@@ -904,20 +863,7 @@ const Verse = ({
             isDisabled={annotationMode}
           />
         )}
-        {relationItems &&
-          (settings.relationsDisplay || 'inline') === 'inline' &&
-          !isSelectionMode && (
-            <RelationsText
-              isParallel={isParallel}
-              settings={settings}
-              onClick={navigateToRelationItem}
-              relationItems={relationItems}
-              isDisabled={annotationMode}
-            />
-          )}
-=======
         {!isParallelCell && <VerseEndContent {...verseContent} />}
->>>>>>> BIBLESTRONG-28
       </Wrapper>
     </>
   )

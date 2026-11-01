@@ -279,11 +279,7 @@ export const completeStrongLexiconDownloadPlan = (
   for (const lexiconModule of items) {
     if (
       lexiconModule.type !== 'strong-lexicon-module' ||
-<<<<<<< CYBERJUDAH
-      !requiresStrongLexiconCore(lexiconModule.strongLexiconModuleId)
-=======
       isStandaloneStrongModule(lexiconModule.strongLexiconModuleId)
->>>>>>> BIBLESTRONG-28
     ) {
       continue
     }
@@ -420,7 +416,6 @@ export function createDictionaryDirectoryDownloadItem(): DownloadItem {
   }
 }
 
-<<<<<<< CYBERJUDAH
 const hasDictionaryDirectoryInCatalog = () => {
   try {
     getMobileResourceCatalogEntry('dictionary-directory')
@@ -430,7 +425,6 @@ const hasDictionaryDirectoryInCatalog = () => {
   }
 }
 
-=======
 export function createStudyLinksDownloadItem(): DownloadItem {
   const catalogArtifact = getMobileResourceCatalogEntry('study-links')
   return {
@@ -452,19 +446,13 @@ export function createStudyLinksDownloadItem(): DownloadItem {
 const studyLinksCompanion = (): DownloadItem[] =>
   hasMobileResourceCatalogEntry('study-links') ? [createStudyLinksDownloadItem()] : []
 
->>>>>>> BIBLESTRONG-28
 export const createDictionaryDownloadPlan = (
   identity: Extract<OfflineCopyIdentity, { kind: 'dictionary' }>,
   isDirectoryAvailable = false
 ): DownloadItem[] => {
-<<<<<<< CYBERJUDAH
   // A catalog without the shared index (CyberJudah's) installs the dictionary on its own.
   if (isDirectoryAvailable || !hasDictionaryDirectoryInCatalog())
-    return [createDictionaryDownloadItem(identity)]
-=======
-  if (isDirectoryAvailable)
     return [createDictionaryDownloadItem(identity), ...studyLinksCompanion()]
->>>>>>> BIBLESTRONG-28
   const directory = createDictionaryDirectoryDownloadItem()
   return [
     directory,

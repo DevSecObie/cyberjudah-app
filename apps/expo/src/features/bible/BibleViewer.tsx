@@ -904,7 +904,11 @@ const BibleViewer = ({
   const [displayedBook, setDisplayedBook] = useState(book.Numero)
   const [displayedChapter, setDisplayedChapter] = useState(chapter)
   const [displayedVersion, setDisplayedVersion] = useState(version)
-<<<<<<< CYBERJUDAH
+  // Every version on screen, the main one first: personal data is read for all of them.
+  const displayedVersions = useStableList([
+    displayedVersion,
+    ...displayedParallelVerses.map(parallel => parallel.id),
+  ])
   // The classes' pictures after the verses they taught, as in the Telegram app.
   const classMediaQuery = useQuery({
     queryKey: ['cyberjudah-chapter-classes', displayedBook, displayedChapter],
@@ -912,16 +916,6 @@ const BibleViewer = ({
     select: data =>
       toClassPassageMedia(data, {
         bookName: bookNameOf(displayedBook),
-=======
-  // Every version on screen, the main one first: personal data is read for all of them.
-  const displayedVersions = useStableList([
-    displayedVersion,
-    ...displayedParallelVerses.map(parallel => parallel.id),
-  ])
-  const passageMedia = contextualInformationDisplay
-    ? getPassageMediaForChapter({
-        book: displayedBook,
->>>>>>> BIBLESTRONG-28
         chapter: displayedChapter,
         sectionTitles: {
           taught: t('bible.passageMedia.sections.taughtFrom', {
@@ -2139,6 +2133,15 @@ const BibleViewer = ({
           verseKey={verseTagsModalKey}
           version={displayedVersions}
         />
+        <VersePreceptsSheet
+          sheetRef={versePreceptsModal.getRef()}
+          bookNumber={book.Numero}
+          bookName={book.Nom}
+          chapter={chapter}
+          verse={preceptOpen?.verse ?? null}
+          precepts={preceptQuery.data ?? []}
+          onReferencePress={handleCanonicalBibleReferencePress}
+        />
         <CanonicalBibleNoteSheet
           sheetRef={canonicalBibleNoteModal.getRef()}
           note={canonicalBibleNote}
@@ -2156,108 +2159,7 @@ const BibleViewer = ({
           onDismissStart={startClosingStrongSelection}
           onClose={closeStrongSelection}
         />
-<<<<<<< CYBERJUDAH
-      )}
-      <CreateEntityRelationModal
-        ref={createRelationModal.getRef()}
-        sourceEndpoint={createRelationSourceEndpoint}
-        onCreated={handleRelationCreatedFromSelection}
-      />
-      <ResourcesModal
-        resourceModalRef={resourceModal.getRef()}
-        bibleAtom={bibleAtom}
-        resourceType={resourceType}
-        onChangeResourceType={onChangeResourceType}
-        isSelectionMode={isSelectionMode}
-        selectedVersion={resourceModalSelection?.selectedVersion}
-        selectedVerses={resourceModalSelection?.selectedVerses}
-        onChangeVerse={changeResourceModalVerse}
-      />
-      <BibleParamsModal modalRef={bibleParamsModal.getRef()} />
-      <AddToStudyModal
-        sheetRef={addToStudyModal.getRef()}
-        onSelectStudy={handleSelectStudy}
-        reference={selectedVersesReference}
-      />
-      <VerseFormatSheet
-        sheetRef={verseFormatModal.getRef()}
-        onSelectFormat={handleSelectFormat}
-        reference={pendingVerseData?.verseData.title || selectedVersesReference}
-      />
-      <BookmarkModal
-        sheetRef={bookmarkModalRef}
-        onClose={() => {
-          setSelectedVerseForBookmark(null)
-          setEditingBookmark(null)
-        }}
-        book={selectedVerseForBookmark?.book ?? editingBookmark?.book}
-        chapter={selectedVerseForBookmark?.chapter ?? editingBookmark?.chapter}
-        verse={selectedVerseForBookmark?.verse ?? editingBookmark?.verse}
-        version={version}
-        existingBookmark={editingBookmark || undefined}
-      />
-      <AnnotationToolbar
-        ref={annotationToolbar.getRef()}
-        hasSelection={annotationMode.hasSelection}
-        selection={annotationMode.selection}
-        onApplyAnnotation={handleApplyAnnotation}
-        onClearSelection={annotationMode.clearSelection}
-        onEraseAnnotations={handleEraseAnnotations}
-        onClose={handleExitAnnotationMode}
-        selectedAnnotation={annotationMode.selectedAnnotation}
-        onChangeAnnotationColor={annotationMode.changeAnnotationColor}
-        onChangeAnnotationType={annotationMode.changeAnnotationType}
-        onDeleteAnnotation={handleDeleteAnnotation}
-        onClearAnnotationSelection={annotationMode.clearAnnotationSelection}
-        onNotePress={handleAnnotationNotePress}
-        onTagsPress={handleAnnotationTagsPress}
-        onRelationsPress={handleAnnotationRelationsPress}
-        tagsCount={Object.keys(annotationMode.selectedAnnotation?.tags || {}).length}
-        relationsCount={annotationRelationCount}
-        isEnabled={annotationMode.enabled && !hidePersonalBibleData}
-      />
-      <CrossVersionAnnotationsModal
-        sheetRef={crossVersionModal.getRef()}
-        verseKey={crossVersionModalData?.verseKey ?? null}
-        versions={crossVersionModalData?.versions ?? []}
-        onSwitchVersion={handleCrossVersionSwitchVersion}
-        onOpenInNewTab={handleCrossVersionOpenInNewTab}
-        onClose={() => setCrossVersionModalData(null)}
-      />
-      <VerseTagsModal
-        ref={verseTagsModal.getRef()}
-        verseKey={verseTagsModalKey}
-        version={displayedVersion}
-      />
-      <VersePreceptsSheet
-        sheetRef={versePreceptsModal.getRef()}
-        bookNumber={book.Numero}
-        bookName={book.Nom}
-        chapter={chapter}
-        verse={preceptOpen?.verse ?? null}
-        precepts={preceptQuery.data ?? []}
-        onReferencePress={handleCanonicalBibleReferencePress}
-      />
-      <CanonicalBibleNoteSheet
-        sheetRef={canonicalBibleNoteModal.getRef()}
-        note={canonicalBibleNote}
-        onReferencePress={handleCanonicalBibleReferencePress}
-      />
-      <StrongSelectionSheet
-        sheetRef={strongSelectionModalRef}
-        version={strongSelectionData?.version}
-        book={strongSelectionData?.book}
-        chapter={strongSelectionData?.chapter}
-        verse={strongSelectionData?.verse}
-        word={strongSelectionData?.word}
-        identities={strongSelectionData?.identities ?? []}
-        morphologies={strongSelectionData?.morphologies ?? []}
-        onDismissStart={startClosingStrongSelection}
-        onClose={closeStrongSelection}
-      />
-=======
       </RightInsetCleared>
->>>>>>> BIBLESTRONG-28
     </BibleViewport>
   )
 }

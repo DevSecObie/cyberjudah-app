@@ -19,14 +19,11 @@ import { endpointIdentity, type RelationEndpoint } from '~features/studyRelation
 import { createNoteEndpoint } from '~features/studyRelations/endpoints'
 import { useOpenEntityRelations } from '~features/studyRelations/useOpenEntityRelations'
 import BibleNoteItem from '../bible/BibleNoteItem'
-<<<<<<< CYBERJUDAH
 import { ActivityIndicator } from 'react-native'
 import Link from '~common/Link'
 import { FeatherIcon } from '~common/ui/Icon'
 import { useExportPersonalNotes } from '~features/notesExport/useExportPersonalNotes'
 import NotesSettingsModal from './NotesSettingsModal'
-=======
->>>>>>> BIBLESTRONG-28
 import { useEntityListQueryFilters } from '~common/EntityListQueryFilters'
 import { queryEntityList, type EntityListSort } from '~features/entityListQuery/entityListQuery'
 import {

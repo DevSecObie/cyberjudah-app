@@ -65,52 +65,6 @@ export default function CommentarySectionCard({
           }}
         />
       )}
-<<<<<<< CYBERJUDAH
-      <Box
-        className="bg-reverse rounded-[20px] px-[18px] py-[18px]"
-        style={{
-          shadowColor: 'rgb(89,131,240)',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 7,
-          elevation: 1,
-        }}
-      >
-        {!preview && (
-          <CommentaryEntryNavigation
-            hasPrevious={!!onPrevious}
-            hasNext={!!onNext}
-            onPrevious={() => onPrevious?.()}
-            onNext={() => onNext?.()}
-            reference={
-              start === 0
-                ? t('commentaries.resource.introduction')
-                : `${t(getBook(book)?.Nom ?? String(book))} ${chapter}:${start}${end !== start ? `–${end}` : ''}`
-            }
-            referenceDisabled={start === 0}
-            onReferencePress={() => {
-              const route = getCommentaryPassageBibleViewRoute({
-                book,
-                chapter,
-                startVerse: start,
-                endVerse: end,
-              })
-              if (route) pushRouteOnce(route)
-            }}
-          />
-        )}
-        <Box className={preview ? undefined : 'mt-[14px]'}>
-          <SwitchableHTMLView
-            value={section.content}
-            onLinkPress={href => {
-              const osis = commentaryHrefToOsis(href)
-              const route = osis ? getCommentaryBibleViewRoute(osis) : undefined
-              if (route) pushRouteOnce(route)
-              else if (/^https?:\/\//iu.test(href)) void Linking.openURL(href)
-            }}
-          />
-        </Box>
-=======
       <Box className={preview ? undefined : 'mt-[14px]'}>
         <SwitchableHTMLView
           value={section.content}
@@ -121,7 +75,6 @@ export default function CommentarySectionCard({
             else if (/^https?:\/\//iu.test(href)) void Linking.openURL(href)
           }}
         />
->>>>>>> BIBLESTRONG-28
       </Box>
     </>
   )

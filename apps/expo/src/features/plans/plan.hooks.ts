@@ -137,20 +137,13 @@ export const useDownloadPlans = () => {
   const dispatch = useDispatch<AppDispatch>()
   const ongoingPlans = useSelector((state: RootState) => state.plan.ongoingPlans, shallowEqual)
 
-<<<<<<< CYBERJUDAH
-  React.useEffect(() => {
-    if (usesCyberJudahEditorial()) return
-    ;(async () => {
-      const planNeedsToBeDownloaded = ongoingPlans.filter(
-        plan => !myPlans.find(myPlan => myPlan.id === plan.id)
-      )
-=======
   // Plans are read once, when the screen mounts.
   const downloadMissingPlans = React.useEffectEvent(async () => {
+    // CyberJudah's journeys ship with the app; there is no plan server to download from.
+    if (usesCyberJudahEditorial()) return
     const planNeedsToBeDownloaded = ongoingPlans.filter(
       plan => !myPlans.find(myPlan => myPlan.id === plan.id)
     )
->>>>>>> BIBLESTRONG-28
 
     let err
     ;[err] = await to(
@@ -200,7 +193,7 @@ export const useDownloadFollowedPlans = () => {
   )
 
   React.useEffect(() => {
-    if (!missingIds) return
+    if (!missingIds || usesCyberJudahEditorial()) return
     for (const id of missingIds.split(',')) {
       if (requestedFollowedPlans.has(id)) continue
       requestedFollowedPlans.add(id)

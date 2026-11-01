@@ -1,8 +1,5 @@
-<<<<<<< CYBERJUDAH
 import i18n from '~i18n'
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
-=======
->>>>>>> BIBLESTRONG-28
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { TouchableOpacity, View, type ViewProps } from 'react-native'

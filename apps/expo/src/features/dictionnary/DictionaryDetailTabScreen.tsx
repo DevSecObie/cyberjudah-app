@@ -5,12 +5,8 @@ import HorizontalControlScrollView from '~common/HorizontalControlScrollView'
 import { goBackOrHome } from '~navigation/goBackOrHome'
 import { twMerge } from '~common/ui/classNames'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
-<<<<<<< CYBERJUDAH
-import React, { useEffect, useRef } from 'react'
-import { Linking } from 'react-native'
-=======
 import React, { useEffect, useEffectEvent, useRef } from 'react'
->>>>>>> BIBLESTRONG-28
+import { Linking } from 'react-native'
 import { useQuery } from '@tanstack/react-query'
 import { MenuView, type MenuAction } from '~common/ui/MenuView'
 import { useSelector } from 'react-redux'

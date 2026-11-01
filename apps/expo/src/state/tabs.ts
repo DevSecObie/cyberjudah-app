@@ -55,15 +55,12 @@ export type TabBase = {
   title: string
   isRemovable: boolean
   hasBackButton?: boolean
-<<<<<<< CYBERJUDAH
-  base64Preview?: string
   /** Retained when upgrading from the previous CyberJudah testing build. */
-=======
+  base64Preview?: string
   /**
    * Screenshot shown in the switcher: a JPEG file on native, a data URI held for the session
    * on the web. It never leaves the device (see `withoutTabPreview`).
    */
->>>>>>> BIBLESTRONG-28
   previewUri?: string
 }
 
@@ -101,10 +98,7 @@ export interface BibleTab extends TabBase {
     selectedChapter: number
     selectedVerse: number
     parallelVersions: VersionCode[]
-<<<<<<< CYBERJUDAH
-=======
     /** Parallel reading: the Strong and interlinear modes of each parallel version, by position. */
->>>>>>> BIBLESTRONG-28
     parallelTextModes?: BibleColumnTextModes[]
     temp: {
       selectedBook: Book
@@ -112,10 +106,7 @@ export interface BibleTab extends TabBase {
       selectedVerse: number
     }
     selectedVerses: SelectedVerses
-<<<<<<< CYBERJUDAH
-=======
     /** Parallel reading: the version the verses were selected in. Absent: the main version. */
->>>>>>> BIBLESTRONG-28
     selectedVersesVersion?: VersionCode
     selectionMode: 'grid' | 'list'
     focusVerses?: (string | number)[]

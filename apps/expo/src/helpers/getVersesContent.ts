@@ -61,19 +61,6 @@ export default async ({
     })
   }
 
-<<<<<<< CYBERJUDAH
-      versesContent += `${quoteStartContent}${verseNumberContent}${text}${quoteEndContent}${inlineVerseContent} `
-    } catch (e) {
-      if (version !== 'POV') {
-        appLogger.captureError('database', 'verse_content.missing', e, {
-          versionId: version,
-          failedIndex: index,
-          selectedVerseCount: selectedVerses.length,
-          loadedVerseCount: Object.keys(versesMap).length,
-        })
-      }
-      versesContent = 'Could not load this verse.'
-=======
   if (loadedVerses.length === 0) {
     if (version !== 'POV') {
       appLogger.captureError('database', 'verse_content.missing', new Error('Verse not found'), {
@@ -81,9 +68,8 @@ export default async ({
         missingVerses,
         selectedVerseCount: selectedVerses.length,
       })
->>>>>>> BIBLESTRONG-28
     }
-    versesContent = 'Impossible de charger ce verset.'
+    versesContent = 'Could not load this verse.'
   }
 
   loadedVerses.forEach((key, index) => {

@@ -273,11 +273,9 @@
   "bible.passageMedia.sections.introduction": "Introduction",
   "bible.passageMedia.sections.passages": "Scriptures",
   "bible.passageMedia.sections.chapterResources": "Chapter resources",
-<<<<<<< CYBERJUDAH
   "bible.passageMedia.sections.taughtFrom": "Taught from {{reference}}",
   "bible.passageMedia.sections.readInClass": "Read in class",
   "bible.passageMedia.showAll": "Show all",
-=======
   "bible.focusStudy.title": "Around {{reference}}",
   "bible.focusStudy.versions": "In other versions",
   "bible.focusStudy.chooseVersions": "Choose the versions you compare",
@@ -295,7 +293,6 @@
   "bible.focusStudy.dictionary": "In the dictionaries",
   "bible.focusStudy.entities": "People and places",
   "bible.focusStudy.studyVerse": "Studied verse",
->>>>>>> BIBLESTRONG-28
   "bible.chapterEntities.title": "In this chapter",
   "bible.chapterEntities.people": "People",
   "bible.chapterEntities.places": "Places",
@@ -313,12 +310,8 @@
   "bible.chapterEntities.dismissMessage": "You can re-enable it at any time from the Bible settings.",
   "bible.chapterEntities.dismissConfirm": "Hide",
   "tab.readWholeChapter": "Read whole chapter",
-<<<<<<< CYBERJUDAH
   "tab.closeContext": "Back to scripture",
-=======
-  "tab.closeContext": "Back to passage",
   "tab.plan": "Plan",
->>>>>>> BIBLESTRONG-28
   "Éditer les tags": "Edit tags",
   "Éditer les relations": "Edit relations",
   "passageExport.menuAction": "Export…",
@@ -2752,7 +2745,6 @@
   "contact.copied": "Message and email address copied",
   "contact.copyFailed": "Unable to copy the message.",
   "contact.copyEmail": "Copy message and email address",
-<<<<<<< CYBERJUDAH
   "passageMediaLibrary.search": "Search",
   "passageMediaLibrary.collection": "Collection",
   "passageMediaLibrary.everyCollection": "Every collection",
@@ -2847,8 +2839,7 @@
   "Affichage": "Display",
   "Ressources": "Resources",
   "Aucun verset sélectionné": "No verse selected",
-  "Retour": "Back"
-=======
+  "Retour": "Back",
   "readingPlans.daysProgress_plural": "{{count}} days of {{total}}",
   "readingPlans.streak": "{{count}}-day streak",
   "readingPlans.streak_plural": "{{count}}-day streak",
@@ -2878,5 +2869,4 @@
   "Sélectionnez des mots pour voir leur hébreu ou leur grec.": "Select words to see their Hebrew or Greek.",
   "Les mots de la {{version}} ne sont pas reliés aux numéros Strong.": "The words of the {{version}} are not linked to Strong's numbers.",
   "Aucun mot hébreu ou grec dans la sélection.": "No Hebrew or Greek word in the selection."
->>>>>>> BIBLESTRONG-28
 }

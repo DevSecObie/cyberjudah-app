@@ -117,13 +117,8 @@ const NewTabItem = ({
       activeOpacity={0.7}
       className={
         hero
-<<<<<<< CYBERJUDAH
-          ? 'relative overflow-visible border-continuous flex-row items-center bg-reverse shadow-[0_2px_7px_rgba(89,131,240,0.1)] rounded-[18px] px-[24px] py-[24px]'
-          : 'border-continuous flex-row items-center bg-reverse shadow-[0_2px_7px_rgba(89,131,240,0.1)] rounded-[18px] px-[18px] py-[18px] min-h-[92px] gap-[14px]'
-=======
-          ? 'relative overflow-hidden border-continuous flex-row items-center bg-surface rounded-[24px] px-[24px] py-[24px]'
+          ? 'relative overflow-visible border-continuous flex-row items-center bg-surface rounded-[24px] px-[24px] py-[24px]'
           : 'overflow-hidden border-continuous flex-row items-center bg-surface rounded-[16px] px-[18px] py-[18px] min-h-[92px] gap-[14px]'
->>>>>>> BIBLESTRONG-28
       }
       style={
         hero

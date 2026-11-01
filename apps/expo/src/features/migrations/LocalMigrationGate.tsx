@@ -370,11 +370,7 @@ const LocalMigrationGate = ({
           flexGrow: 1,
           paddingHorizontal: 24,
           paddingTop: 32,
-<<<<<<< CYBERJUDAH
-          paddingBottom: 32,
-=======
           paddingBottom: 32 + bottomInset,
->>>>>>> BIBLESTRONG-28
         }}
         bounces={false}
       >

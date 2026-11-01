@@ -32,21 +32,8 @@ const ProfileActions = () => {
   }
 
   return (
-<<<<<<< CYBERJUDAH
-    <Box className="overflow-hidden border-continuous">
-      {showConnectedAccounts && <ConnectedAccounts />}
-      <SectionCard>
-        <SectionCardHeader>
-          <FeatherIcon name="settings" size={16} color="grey" />
-          <Text
-            className="ml-[8px] text-[12px] text-grey font-bold"
-            style={{ textTransform: 'uppercase' }}
-          >
-            {t('profile.accountSettings')}
-          </Text>
-        </SectionCardHeader>
-=======
     <Box>
+      {showConnectedAccounts && <ConnectedAccounts />}
       {(isEmailProvider || Platform.OS !== 'web') && (
         <ListSection title={t('profile.accountSettings')}>
           {isEmailProvider && (
@@ -65,7 +52,6 @@ const ProfileActions = () => {
           )}
         </ListSection>
       )}
->>>>>>> BIBLESTRONG-28
 
       <ListSection>
         <ListRow

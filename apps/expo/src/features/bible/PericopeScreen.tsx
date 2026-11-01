@@ -255,11 +255,7 @@ const PericopeScreen = ({ isFormSheet = false }: PericopeScreenProps) => {
             </Box>
           </ScrollView>
         )}
-<<<<<<< CYBERJUDAH
-        {/* The iOS sheet reaches the bottom edge; outside it, Container already pads the inset. */}
-=======
         {/* The iOS sheet reaches the bottom edge; outside it, the page reserves the inset. */}
->>>>>>> BIBLESTRONG-28
         <Box
           className="overflow-hidden border-continuous bg-reverse flex-row px-[20px] py-[10px] justify-between"
           style={isFormSheet ? { paddingBottom: Math.max(insets.bottom, 10) } : undefined}

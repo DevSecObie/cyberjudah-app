@@ -1,13 +1,8 @@
-<<<<<<< CYBERJUDAH
 import { getStrongEntityAvatarKey } from './strongEntityPresentation'
 import { CYBERJUDAH_PORTRAITS } from './cyberJudahPortraits'
 import { ISRAELITE_GROUPS } from './israeliteGroups'
 import { JUDAH_PEOPLE } from './judahPeople'
 import { PEOPLE_NATIONS, type PeopleNation } from './peopleNations'
-=======
-import { getEntityPlaceholderIndex } from './entityPortraits'
-import { getStrongEntityAvatarKey, type StrongEntityAvatarKey } from './strongEntityPresentation'
->>>>>>> BIBLESTRONG-28
 
 // Grey clay figures for the entities without a portrait (ADR-0089): five for people and groups, so that
 // neighbours in a chapter differ, one for the other avatar keys.
@@ -43,7 +38,6 @@ export const ENTITY_PLACEHOLDER_IMAGES = {
   star: [require('~assets/images/entity-avatars/star-1.webp')],
 } satisfies Record<StrongEntityAvatarKey, unknown[]>
 
-<<<<<<< CYBERJUDAH
 // Groups in clay: Israel's own (the tribes, their families, the Levites, the Jews) for Israel, and
 // each other people's own nation. The same group always gets the same one.
 const ISRAEL_GROUPS = [
@@ -203,10 +197,10 @@ export const getStrongEntityAvatarSource = (category: string, type: string, uniq
       getStrongEntityAvatarKey(category, type) === 'female') &&
     personAvatar(uniqueName, getStrongEntityAvatarKey(category, type) as 'male' | 'female')) ||
   ENTITY_AVATAR_IMAGES[getStrongEntityAvatarKey(category, type)]
-=======
-/** The placeholder of an entity, the same wherever it is drawn. `seed` is its unique name. */
-export const getStrongEntityPlaceholderSource = (category: string, type: string, seed: string) => {
-  const images = ENTITY_PLACEHOLDER_IMAGES[getStrongEntityAvatarKey(category, type)]
-  return images[getEntityPlaceholderIndex(seed, images.length)]
-}
->>>>>>> BIBLESTRONG-28
+
+/**
+ * Bible Strong 28's name for an entity's picture when it has no painted portrait. CyberJudah
+ * shows its own figures (ours above) for every entity, so the two names give the same picture.
+ */
+export const getStrongEntityPlaceholderSource = (category: string, type: string, seed: string) =>
+  getStrongEntityAvatarSource(category, type, seed)

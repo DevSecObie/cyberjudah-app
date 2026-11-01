@@ -114,10 +114,7 @@ const preparePlaygroundFonts = async () => {
     await Font.loadAsync({
       ...Icon.Feather.font,
       'Literata Book': require('~assets/fonts/LiterataBook-Regular.otf'),
-<<<<<<< CYBERJUDAH
       'eina-03-bold': require('~assets/fonts/Inter-Bold.ttf'),
-=======
->>>>>>> BIBLESTRONG-28
     })
   } catch (error) {
     appLogger.warn('startup', 'playground.fonts.failed', { error })

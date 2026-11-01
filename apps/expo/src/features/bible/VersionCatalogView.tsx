@@ -373,20 +373,10 @@ export const VersionCatalogList = ({
   }, [scrollToTopKey])
 
   React.useEffect(() => {
-<<<<<<< CYBERJUDAH
-    if (!isRevealPending() || !revealVersionId || listHeightRef.current <= 0) return
-
-    const frame = scheduleCatalogVersionReveal(
-      listRef.current,
-      sections,
-      revealVersionId,
-      markRevealed
-=======
     if (
       !revealVersionId ||
       revealedRequestKeyRef.current === revealRequestKey ||
       listHeightRef.current <= 0
->>>>>>> BIBLESTRONG-28
     )
       return
 
@@ -397,10 +387,6 @@ export const VersionCatalogList = ({
     return () => {
       if (frame !== null) cancelAnimationFrame(frame)
     }
-<<<<<<< CYBERJUDAH
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-=======
->>>>>>> BIBLESTRONG-28
   }, [revealRequestKey, revealRetry, revealVersionId, sections])
 
   function revealSelectedVersion() {
@@ -421,17 +407,6 @@ export const VersionCatalogList = ({
       stickySectionHeadersEnabled
       sections={sections}
       keyExtractor={item => item.id}
-<<<<<<< CYBERJUDAH
-      // About a screen of rows: the sheet waits for them before it opens
-      initialNumToRender={isWebPanel ? 8 : 12}
-      maxToRenderPerBatch={isWebPanel ? 8 : undefined}
-      windowSize={isWebPanel ? 3 : undefined}
-      getItemLayout={(_, index) => ({
-        index,
-        length: ESTIMATED_CATALOG_ROW_HEIGHT,
-        offset: ESTIMATED_CATALOG_ROW_HEIGHT * index,
-      })}
-=======
       // Native: about a screen of rows, which the sheet waits for before it opens
       initialNumToRender={isWeb ? Math.max(itemCount, 12) : 12}
       getItemLayout={
@@ -443,7 +418,6 @@ export const VersionCatalogList = ({
               offset: ESTIMATED_CATALOG_ROW_HEIGHT * index,
             })
       }
->>>>>>> BIBLESTRONG-28
       onLayout={event => {
         listHeightRef.current = event.nativeEvent.layout.height
         revealSelectedVersion()

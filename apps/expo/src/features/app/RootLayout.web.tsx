@@ -16,11 +16,7 @@ import ErrorBoundary from '~common/ErrorBoundary'
 import FullAppRuntime from '~features/app/FullAppRuntime'
 import { ResourceAccessProvider } from '~features/resources/resourceAccess'
 import { configureQueryManagers, queryClient } from '~helpers/queryClient'
-<<<<<<< CYBERJUDAH
-=======
-import { initializeResourceAppCheck } from '~helpers/resourceAppCheck'
 import { filterSentryEvent } from '~helpers/sentryEventFilter'
->>>>>>> BIBLESTRONG-28
 import useCurrentThemeSelector from '~helpers/useCurrentThemeSelector'
 import type { RootState } from '~redux/modules/reducer'
 import { persistor, startPersistence, store } from '~redux/store'

@@ -117,23 +117,6 @@ const AnnotationItem = ({ item, onSettingsPress }: AnnotationItemProps) => {
                 </Text>
               </HStack>
 
-<<<<<<< CYBERJUDAH
-            <Chip>{item.version}</Chip>
-          </HStack>
-          <DateText style={{ fontSize: 10 }}>
-            {t('Il y a {{formattedDate}}', { formattedDate })}
-          </DateText>
-        </Box>
-        <Paragraph className="mb-[15px]" scale={-2}>
-          {`...${item.text}...`}
-        </Paragraph>
-      </TouchableOpacity>
-      {item.tags && Object.keys(item.tags).length > 0 && (
-        <EntityChipList tags={item.tags as TagsObj} />
-      )}
-      {onSettingsPress && <HighlightOptions annotationId={item.id} color={item.color} />}
-    </AnnotationContainer>
-=======
               <Chip className="rounded-full px-[7px]">{item.version}</Chip>
             </HStack>
             <DateText style={{ fontSize: 10 }}>
@@ -151,7 +134,6 @@ const AnnotationItem = ({ item, onSettingsPress }: AnnotationItemProps) => {
       </AnnotationContainer>
       <Border className="ml-[20px]" />
     </>
->>>>>>> BIBLESTRONG-28
   )
 }
 

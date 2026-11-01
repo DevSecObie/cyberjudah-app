@@ -19,13 +19,8 @@ import LexiqueIcon from '~common/LexiqueIcon'
 import Link, { LinkProps } from '~common/Link'
 import NaveIcon from '~common/NaveIcon'
 import { type SheetRef } from '~common/sheet'
-<<<<<<< CYBERJUDAH
-import Box, { SafeAreaBox } from '~common/ui/Box'
-import CardLinkItem from '~common/ui/CardLinkItem'
-import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
-=======
 import Box, { SafeAreaBox, usePageBottomInset } from '~common/ui/Box'
->>>>>>> BIBLESTRONG-28
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import { FeatherIcon, MaterialIcon } from '~common/ui/Icon'
 import ListSection, { ListRow } from '~common/ui/ListSection'
 import ScrollView from '~common/ui/ScrollView'
@@ -198,77 +193,18 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
           )}
         </ListSection>
 
-<<<<<<< CYBERJUDAH
-        <SectionCard>
-          <SectionCardHeader>
-            <FeatherIcon name="book" size={16} color="grey" />
-            <Text className="ml-[8px] text-[12px] text-grey" style={{ textTransform: 'uppercase' }}>
-              {t('settings.resources')}
-            </Text>
-          </SectionCardHeader>
+        <ListSection title={t('settings.resources')}>
           {assistantAccessible(user?.id) && (
-            <CardLinkItem
+            <ListRow
               onPress={() => {
                 closeMenu()
                 router.push('/study-assistant')
               }}
-            >
-              <IconCircle bg="rgba(89, 131, 240, 0.1)">
-                <FeatherIcon name="message-circle" size={20} color="primary" />
-              </IconCircle>
-              <Text className="flex-[1] text-[15px]">
-                {t(isCyberJudah ? 'assistant.cyberjudah.title' : 'assistant.title')}
-              </Text>
-              <FeatherIcon name="chevron-right" size={20} color="grey" />
-            </CardLinkItem>
+              icon={<FeatherIcon name="message-circle" size={18} color="primary" />}
+              iconTint="primary"
+              label={t(isCyberJudah ? 'assistant.cyberjudah.title' : 'assistant.title')}
+            />
           )}
-          <CardLinkItem route="History">
-            <IconCircle bg="rgba(107, 114, 128, 0.1)">
-              <FeatherIcon name="clock" size={20} color="grey" />
-            </IconCircle>
-            <Text className="flex-[1] text-[15px]">{t('history.title')}</Text>
-            <FeatherIcon name="chevron-right" size={20} color="grey" />
-          </CardLinkItem>
-          <CardLinkItem route="Lexique">
-            <IconCircle bg={resolveUniverseColors(theme.colors, 'strong').background}>
-              <LexiqueIcon size={20} />
-            </IconCircle>
-            <Text
-              className="flex-[1] text-[15px]"
-              style={{ color: resolveUniverseColors(theme.colors, 'strong').foreground }}
-            >
-              {t('Lexique')}
-            </Text>
-            <FeatherIcon name="chevron-right" size={20} color="grey" />
-          </CardLinkItem>
-          <CardLinkItem route="Dictionnaire">
-            <IconCircle bg={resolveUniverseColors(theme.colors, 'dictionary').background}>
-              <DictionnaryIcon size={20} />
-            </IconCircle>
-            <Text
-              className="flex-[1] text-[15px]"
-              style={{ color: resolveUniverseColors(theme.colors, 'dictionary').foreground }}
-            >
-              {t('Dictionnaire')}
-            </Text>
-            <FeatherIcon name="chevron-right" size={20} color="grey" />
-          </CardLinkItem>
-          <CardLinkItem route="Nave">
-            <IconCircle bg={resolveUniverseColors(theme.colors, 'nave').background}>
-              <NaveIcon size={20} />
-            </IconCircle>
-            <Text
-              className="flex-[1] text-[15px]"
-              style={{ color: resolveUniverseColors(theme.colors, 'nave').foreground }}
-            >
-              {t('Bible Thématique Nave')}
-            </Text>
-            <FeatherIcon name="chevron-right" size={20} color="grey" />
-          </CardLinkItem>
-          <CardLinkItem route="CommentaryLibrary">
-            <IconCircle bg={resolveUniverseColors(theme.colors, 'commentary').background}>
-=======
-        <ListSection title={t('settings.resources')}>
           <ListRow
             route="History"
             icon={<FeatherIcon name="clock" size={18} color="grey" />}
@@ -295,96 +231,61 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
           <ListRow
             route="CommentaryLibrary"
             icon={
->>>>>>> BIBLESTRONG-28
               <Image
                 source={require('~assets/images/tab-icons/comment.svg')}
                 style={{ width: 18, height: 18 }}
                 tintColor={resolveUniverseColors(theme.colors, 'commentary').foreground}
                 contentFit="contain"
               />
-<<<<<<< CYBERJUDAH
-            </IconCircle>
-            <Text
-              className="flex-[1] text-[15px]"
-              style={{ color: resolveUniverseColors(theme.colors, 'commentary').foreground }}
-            >
-              {t('Commentaires')}
-            </Text>
-            <FeatherIcon name="chevron-right" size={20} color="grey" />
-          </CardLinkItem>
-          {usesCyberJudahEditorial() && (
-            <>
-              <CardLinkItem onPress={() => router.push('/(library)/precepts')}>
-                <IconCircle bg={resolveUniverseColors(theme.colors, 'nave').background}>
-                  <FeatherIcon name="layers" size={20} color="grey" />
-                </IconCircle>
-                <Text className="flex-[1] text-[15px]">Precepts</Text>
-                <FeatherIcon name="chevron-right" size={20} color="grey" />
-              </CardLinkItem>
-              <CardLinkItem onPress={() => router.push('/(library)/law')}>
-                <IconCircle bg={resolveUniverseColors(theme.colors, 'nave').background}>
-                  <MaterialCommunityIcons name="scale-balance" size={20} color="grey" />
-                </IconCircle>
-                <Text className="flex-[1] text-[15px]">Handbook of the Law</Text>
-                <FeatherIcon name="chevron-right" size={20} color="grey" />
-              </CardLinkItem>
-              <CardLinkItem onPress={() => router.push('/(library)/study-notes')}>
-                <IconCircle bg={resolveUniverseColors(theme.colors, 'nave').background}>
-                  <FeatherIcon name="file-text" size={20} color="grey" />
-                </IconCircle>
-                <Text className="flex-[1] text-[15px]">4 Chapters a Day</Text>
-                <FeatherIcon name="chevron-right" size={20} color="grey" />
-              </CardLinkItem>
-              <CardLinkItem onPress={() => router.push('/(library)/encyclopedia')}>
-                <IconCircle bg={resolveUniverseColors(theme.colors, 'nave').background}>
-                  <FeatherIcon name="book" size={20} color="grey" />
-                </IconCircle>
-                <Text className="flex-[1] text-[15px]">Encyclopedia</Text>
-                <FeatherIcon name="chevron-right" size={20} color="grey" />
-              </CardLinkItem>
-              <CardLinkItem onPress={() => router.push('/(library)/topics')}>
-                <IconCircle bg={resolveUniverseColors(theme.colors, 'nave').background}>
-                  <FeatherIcon name="tag" size={20} color="grey" />
-                </IconCircle>
-                <Text className="flex-[1] text-[15px]">Topics</Text>
-                <FeatherIcon name="chevron-right" size={20} color="grey" />
-              </CardLinkItem>
-              <CardLinkItem onPress={() => router.push('/(library)/false-doctrines')}>
-                <IconCircle bg={resolveUniverseColors(theme.colors, 'nave').background}>
-                  <FeatherIcon name="alert-triangle" size={20} color="grey" />
-                </IconCircle>
-                <Text className="flex-[1] text-[15px]">False Doctrines</Text>
-                <FeatherIcon name="chevron-right" size={20} color="grey" />
-              </CardLinkItem>
-              <CardLinkItem onPress={() => router.push('/(library)/glossary')}>
-                <IconCircle bg={resolveUniverseColors(theme.colors, 'nave').background}>
-                  <FeatherIcon name="list" size={20} color="grey" />
-                </IconCircle>
-                <Text className="flex-[1] text-[15px]">Glossary</Text>
-                <FeatherIcon name="chevron-right" size={20} color="grey" />
-              </CardLinkItem>
-            </>
-          )}
-          <CardLinkItem route="Plans" isLast>
-            <IconCircle bg="rgba(107, 114, 128, 0.1)">
-              <MaterialIcon name="playlist-add-check" size={20} color="grey" />
-            </IconCircle>
-            <Text className="flex-[1] text-[15px]">{t('Plans')}</Text>
-            <FeatherIcon name="chevron-right" size={20} color="grey" />
-          </CardLinkItem>
-        </SectionCard>
-=======
             }
             iconBg={universeBg('commentary')}
             label={t('Commentaires')}
           />
+          {usesCyberJudahEditorial() && (
+            <>
+              <ListRow
+                onPress={() => router.push('/(library)/precepts')}
+                icon={<FeatherIcon name="layers" size={18} color="grey" />}
+                label="Precepts"
+              />
+              <ListRow
+                onPress={() => router.push('/(library)/law')}
+                icon={<MaterialCommunityIcons name="scale-balance" size={18} color="grey" />}
+                label="Handbook of the Law"
+              />
+              <ListRow
+                onPress={() => router.push('/(library)/study-notes')}
+                icon={<FeatherIcon name="file-text" size={18} color="grey" />}
+                label="4 Chapters a Day"
+              />
+              <ListRow
+                onPress={() => router.push('/(library)/encyclopedia')}
+                icon={<FeatherIcon name="book" size={18} color="grey" />}
+                label="Encyclopedia"
+              />
+              <ListRow
+                onPress={() => router.push('/(library)/topics')}
+                icon={<FeatherIcon name="tag" size={18} color="grey" />}
+                label="Topics"
+              />
+              <ListRow
+                onPress={() => router.push('/(library)/false-doctrines')}
+                icon={<FeatherIcon name="alert-triangle" size={18} color="grey" />}
+                label="False Doctrines"
+              />
+              <ListRow
+                onPress={() => router.push('/(library)/glossary')}
+                icon={<FeatherIcon name="list" size={18} color="grey" />}
+                label="Glossary"
+              />
+            </>
+          )}
           <ListRow
             route="Plans"
             icon={<MaterialIcon name="playlist-add-check" size={18} color="grey" />}
             label={t('Plans')}
           />
         </ListSection>
->>>>>>> BIBLESTRONG-28
 
         <ListSection title={t('settings.settings')}>
           <ListRow
@@ -434,88 +335,6 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
           )}
         </ListSection>
 
-<<<<<<< CYBERJUDAH
-        <SectionCard>
-          <SectionCardHeader>
-            <FeatherIcon name="help-circle" size={16} color="grey" />
-            <Text
-              className="ml-[8px] text-[12px] text-grey font-bold"
-              style={{ textTransform: 'uppercase' }}
-            >
-              {t('settings.help')}
-            </Text>
-          </SectionCardHeader>
-          <CardLinkItem onPress={() => openChangelogModal(true)}>
-            <IconCircle bg="rgba(147, 51, 234, 0.1)">
-              <FeatherIcon name="terminal" size={20} color="quint" />
-            </IconCircle>
-            <Text className="flex-[1] text-[15px]">{t('Changelog')}</Text>
-            <FeatherIcon name="chevron-right" size={20} color="grey" />
-          </CardLinkItem>
-          <CardLinkItem route="FAQ">
-            <IconCircle bg="rgba(147, 51, 234, 0.1)">
-              <FeatherIcon name="help-circle" size={20} color="quint" />
-            </IconCircle>
-            <Text className="flex-[1] text-[15px]">{t('Foire aux questions')}</Text>
-            <FeatherIcon name="chevron-right" size={20} color="grey" />
-          </CardLinkItem>
-          <CardLinkItem
-            href={isCyberJudah ? 'https://github.com/DevSecObie/cyberjudah-app/issues' : undefined}
-            onPress={isCyberJudah ? undefined : () => contactDeveloperRef.current?.present()}
-            isLast
-          >
-            <IconCircle bg="rgba(147, 51, 234, 0.1)">
-              <FeatherIcon name="send" size={20} color="quint" />
-            </IconCircle>
-            <Text className="flex-[1] text-[15px]">{t('Contacter le développeur')}</Text>
-            <FeatherIcon name="chevron-right" size={20} color="grey" />
-          </CardLinkItem>
-        </SectionCard>
-
-        <SectionCard>
-          <SectionCardHeader>
-            <FeatherIcon name="globe" size={16} color="grey" />
-            <Text
-              className="ml-[8px] text-[12px] text-grey font-bold"
-              style={{ textTransform: 'uppercase' }}
-            >
-              {t('settings.community')}
-            </Text>
-          </SectionCardHeader>
-          {!isCyberJudah && (
-            <CardLinkItem href="https://www.facebook.com/fr.bible.strong">
-              <IconCircle bg="rgba(59, 89, 152, 0.1)">
-                <FeatherIcon name="facebook" size={20} color="primary" />
-              </IconCircle>
-              <Text className="flex-[1] text-[15px]">{t('Nous suivre sur facebook')}</Text>
-              <FeatherIcon name="chevron-right" size={20} color="grey" />
-            </CardLinkItem>
-          )}
-          {!isCyberJudah && (
-            <CardLinkItem
-              href={
-                Platform.OS === 'ios'
-                  ? 'https://apps.apple.com/fr/app/bible-strong/id1454738221?mt=8'
-                  : 'https://play.google.com/store/apps/details?id=com.smontlouis.biblestrong'
-              }
-            >
-              <IconCircle bg="rgba(251, 191, 36, 0.1)">
-                <FeatherIcon name="star" size={20} color="secondary" />
-              </IconCircle>
-              <Text className="flex-[1] text-[15px]">{t("Noter l'application")}</Text>
-              <FeatherIcon name="chevron-right" size={20} color="grey" />
-            </CardLinkItem>
-          )}
-          <CardLinkItem share={shareMessage()}>
-            <IconCircle bg="rgba(16, 185, 129, 0.1)">
-              <FeatherIcon name="share-2" size={20} color="success" />
-            </IconCircle>
-            <Text className="flex-[1] text-[15px]">{t("Partager l'application")}</Text>
-            <FeatherIcon name="chevron-right" size={20} color="grey" />
-          </CardLinkItem>
-          {!isCyberJudah && !appleIsReviewing && (
-            <CardLinkItem
-=======
         <ListSection title={t('settings.help')}>
           <ListRow
             onPress={() => openChangelogModal(true)}
@@ -530,7 +349,8 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
             label={t('Foire aux questions')}
           />
           <ListRow
-            onPress={() => contactDeveloperRef.current?.present()}
+            href={isCyberJudah ? 'https://github.com/DevSecObie/cyberjudah-app/issues' : undefined}
+            onPress={isCyberJudah ? undefined : () => contactDeveloperRef.current?.present()}
             icon={<FeatherIcon name="send" size={18} color="quint" />}
             iconTint="quint"
             label={t('Contacter le développeur')}
@@ -538,12 +358,15 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
         </ListSection>
 
         <ListSection title={t('settings.community')}>
+          {!isCyberJudah && (
           <ListRow
             href="https://www.facebook.com/fr.bible.strong"
             icon={<FeatherIcon name="facebook" size={18} color="primary" />}
             iconTint="primary"
             label={t('Nous suivre sur facebook')}
           />
+          )}
+          {!isCyberJudah && (
           <ListRow
             href={
               Platform.OS === 'ios'
@@ -554,15 +377,15 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
             iconTint="secondary"
             label={t("Noter l'application")}
           />
+          )}
           <ListRow
             share={shareMessage()}
             icon={<FeatherIcon name="share-2" size={18} color="success" />}
             iconTint="success"
             label={t("Partager l'application")}
           />
-          {!appleIsReviewing && (
+          {!isCyberJudah && !appleIsReviewing && (
             <ListRow
->>>>>>> BIBLESTRONG-28
               href={
                 lang === 'fr' ? 'https://bible-strong.app/fr/give' : 'https://bible-strong.app/give'
               }
@@ -571,30 +394,16 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
               label={t('Contribuer')}
             />
           )}
-<<<<<<< CYBERJUDAH
-          <CardLinkItem
+          <ListRow
             href={
               isCyberJudah
                 ? 'https://github.com/DevSecObie/cyberjudah-app'
                 : 'https://github.com/smontlouis/bible-strong'
             }
-            isLast
-          >
-            <IconCircle bg="rgba(107, 114, 128, 0.1)">
-              <FeatherIcon name="github" size={20} color="grey" />
-            </IconCircle>
-            <Text className="flex-[1] text-[15px]">Github</Text>
-            <FeatherIcon name="chevron-right" size={20} color="grey" />
-          </CardLinkItem>
-        </SectionCard>
-=======
-          <ListRow
-            href="https://github.com/smontlouis/bible-strong"
             icon={<FeatherIcon name="github" size={18} color="grey" />}
             label="Github"
           />
         </ListSection>
->>>>>>> BIBLESTRONG-28
 
         {isLogged && (
           <ListSection>

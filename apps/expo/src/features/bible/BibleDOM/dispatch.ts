@@ -91,10 +91,7 @@ export const isPersonalBibleDataAction = (actionType: string): boolean =>
   PERSONAL_BIBLE_DATA_ACTIONS.has(actionType)
 
 export const OPEN_INLINE_COMMENTARY = 'OPEN_INLINE_COMMENTARY'
-<<<<<<< CYBERJUDAH
 export const OPEN_VERSE_PRECEPTS = 'OPEN_VERSE_PRECEPTS'
 export const OPEN_VERSE_TAG = 'OPEN_VERSE_TAG'
-=======
 /** A tap in the study under a verse in focus (ADR-0088). */
 export const FOCUS_STUDY_ACTION = 'FOCUS_STUDY_ACTION'
->>>>>>> BIBLESTRONG-28

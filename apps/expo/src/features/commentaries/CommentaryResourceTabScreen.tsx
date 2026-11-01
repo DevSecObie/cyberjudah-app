@@ -119,12 +119,8 @@ const CommentaryResourceTabScreen = ({
     ? query.data?.sections.find(candidate => candidate.id === tab.data.sectionId)
     : undefined
   useAssistantResourceContext(`tab:${tab.id}`, commentaryContext(tab.data, titleSection))
-<<<<<<< CYBERJUDAH
-  const titleBookLabel = parsed ? (t(getBook(parsed.book)?.Nom ?? String(parsed.book))) : undefined
-=======
   useRecordHistory(getCommentaryResourceHistoryEntry(parsed, tab.data.sectionId, titleSection))
   const titleBookLabel = parsed ? getCommentaryBookLabel(parsed.book) : undefined
->>>>>>> BIBLESTRONG-28
   const desiredTabTitle =
     parsed && titleBookLabel
       ? formatCommentaryResourceTabTitle({
@@ -203,11 +199,7 @@ const CommentaryResourceTabScreen = ({
     sectionIndex !== undefined && sectionIndex >= 0
       ? query.data?.sections[sectionIndex + 1]
       : undefined
-<<<<<<< CYBERJUDAH
-  const bookLabel = t(getBook(book)?.Nom ?? String(book))
-=======
   const bookLabel = getCommentaryBookLabel(book)
->>>>>>> BIBLESTRONG-28
   const passage = section
     ? `${bookLabel} ${chapter}:${formatRange(section.rangeStartVerse, section.rangeEndVerse)}`
     : undefined

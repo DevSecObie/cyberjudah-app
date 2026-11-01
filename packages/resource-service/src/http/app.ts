@@ -60,6 +60,13 @@ import {
   type DictionaryRepositoryService,
 } from '../domain/dictionary'
 import {
+  ActiveStudyLinksPublicationUnavailable,
+  readStudyLinksOf,
+  StudyLinksRepository,
+  StudyLinksRepositoryFailure,
+  type StudyLinksRepositoryService,
+} from '../domain/studyLinks'
+import {
   ActiveStrongBiblePublicationUnavailable,
   readStrongBibleChapter,
   readStrongBibleCounts,
@@ -88,6 +95,8 @@ import {
   browseStrongLexicon,
   readRandomStrongLexiconEntry,
   readStrongLexiconChapterEntities,
+  readStrongLexiconEntities,
+  readStrongLexiconEntityPassages,
   readStrongLexiconEntry,
   readStrongLexiconEntryCards,
   readStrongLexiconEntity,
@@ -170,6 +179,8 @@ const toHttpProblem = (
     | ActiveDictionaryPublicationUnavailable
     | DictionaryEntryNotFound
     | DictionaryRepositoryFailure
+    | ActiveStudyLinksPublicationUnavailable
+    | StudyLinksRepositoryFailure
     | UnsupportedStrongBibleVersion
     | ActiveStrongBiblePublicationUnavailable
     | StrongBibleChapterNotFound
@@ -223,6 +234,7 @@ const toHttpProblem = (
     case 'BibleSearchRepositoryFailure':
     case 'NaveRepositoryFailure':
     case 'DictionaryRepositoryFailure':
+    case 'StudyLinksRepositoryFailure':
     case 'StrongBibleRepositoryFailure':
     case 'InterlinearBibleRepositoryFailure':
     case 'StrongLexiconRepositoryFailure':
@@ -295,6 +307,13 @@ const toHttpProblem = (
         ...problemFields(requestId, 'This dictionary entry does not exist.'),
         status: 404,
         code: 'DICTIONARY_ENTRY_NOT_FOUND',
+      })
+    case 'ActiveStudyLinksPublicationUnavailable':
+      return new ResourceUnavailableProblem({
+        ...problemFields(requestId, 'The study links are temporarily unavailable.'),
+        status: 503,
+        code: 'STUDY_LINKS_PUBLICATION_INACTIVE',
+        retryAfterSeconds: 30,
       })
     case 'ActiveDictionaryPublicationUnavailable':
       return new ResourceUnavailableProblem({
@@ -1033,6 +1052,28 @@ const StrongLexiconApiLive = HttpApiBuilder.group(ResourceApi, 'strongLexicon', 
         ['strong-lexicon', 'entity', path.uniqueName, urlParams.language]
       )
     })
+    .handle('listStrongLexiconEntities', ({ urlParams, request }) => {
+      const requestId = requestIdFrom(request.headers['x-request-id'])
+      return serveRevisionedResponse(
+        readStrongLexiconEntities({ language: urlParams.language }).pipe(
+          Effect.mapError(cause => toHttpProblem(cause, requestId))
+        ),
+        requestId,
+        request.headers['if-none-match'],
+        ['strong-lexicon', 'entities', urlParams.language]
+      )
+    })
+    .handle('getStrongLexiconEntityPassages', ({ path, request }) => {
+      const requestId = requestIdFrom(request.headers['x-request-id'])
+      return serveRevisionedResponse(
+        readStrongLexiconEntityPassages({ uniqueName: path.uniqueName }).pipe(
+          Effect.mapError(cause => toHttpProblem(cause, requestId))
+        ),
+        requestId,
+        request.headers['if-none-match'],
+        ['strong-lexicon', 'entity-passages', path.uniqueName]
+      )
+    })
     .handle('getStrongLexiconChapterEntities', ({ path, urlParams, request }) => {
       const requestId = requestIdFrom(request.headers['x-request-id'])
       return serveRevisionedResponse(
@@ -1165,6 +1206,20 @@ const TimelineApiLive = HttpApiBuilder.group(ResourceApi, 'timelines', handlers 
     })
 )
 
+const StudyLinksApiLive = HttpApiBuilder.group(ResourceApi, 'studyLinks', handlers =>
+  handlers.handle('readStudyLinks', ({ path, urlParams, request }) => {
+    const requestId = requestIdFrom(request.headers['x-request-id'])
+    return readStudyLinksOf({
+      kind: path.kind,
+      key: path.key,
+      language: urlParams.language,
+    }).pipe(
+      Effect.tap(() => addResponseHeaders({ 'x-request-id': requestId })),
+      Effect.mapError(cause => toHttpProblem(cause, requestId))
+    )
+  })
+)
+
 export const ResourceApiLive = HttpApiBuilder.api(ResourceApi).pipe(
   Layer.provide(SystemApiLive),
   Layer.provide(SearchAnalyticsApiLive),
@@ -1175,7 +1230,8 @@ export const ResourceApiLive = HttpApiBuilder.api(ResourceApi).pipe(
   Layer.provide(InterlinearBibleApiLive),
   Layer.provide(StrongLexiconApiLive),
   Layer.provide(SupplementaryApiLive),
-  Layer.provide(TimelineApiLive)
+  Layer.provide(TimelineApiLive),
+  Layer.provide(StudyLinksApiLive)
 )
 
 const unavailableRepository: BibleChapterRepositoryService = {
@@ -1206,6 +1262,10 @@ const unavailableNaveRepository: NaveRepositoryService = {
   findVerseTopics: input =>
     Effect.fail(new ActiveNavePublicationUnavailable({ language: input.language })),
   findRandomTopic: language => Effect.fail(new ActiveNavePublicationUnavailable({ language })),
+}
+
+const unavailableStudyLinksRepository: StudyLinksRepositoryService = {
+  findLinks: () => Effect.fail(new ActiveStudyLinksPublicationUnavailable()),
 }
 
 const unavailableDictionaryRepository: DictionaryRepositoryService = {
@@ -1285,6 +1345,10 @@ const unavailableStrongLexiconRepository: StrongLexiconRepositoryService = {
     Effect.fail(new ActiveStrongLexiconPublicationUnavailable({ moduleId: 'entities' })),
   findChapterEntities: () =>
     Effect.fail(new ActiveStrongLexiconPublicationUnavailable({ moduleId: 'entities' })),
+  findEntities: () =>
+    Effect.fail(new ActiveStrongLexiconPublicationUnavailable({ moduleId: 'entities' })),
+  findEntityPassages: () =>
+    Effect.fail(new ActiveStrongLexiconPublicationUnavailable({ moduleId: 'entities' })),
 }
 
 const unavailableSupplementaryRepository: SupplementaryRepositoryService = {
@@ -1341,7 +1405,8 @@ export const provideResourceRepositories = (
   supplementaryRepository: SupplementaryRepositoryService = unavailableSupplementaryRepository,
   timelineRepository: TimelineRepositoryService = unavailableTimelineRepository,
   bibleSearchRepository: BibleSearchRepositoryService = unavailableBibleSearchRepository,
-  searchAnalyticsSink: SearchAnalyticsSinkService = noOpSearchAnalyticsSink
+  searchAnalyticsSink: SearchAnalyticsSinkService = noOpSearchAnalyticsSink,
+  studyLinksRepository: StudyLinksRepositoryService = unavailableStudyLinksRepository
 ) =>
   ResourceApiLive.pipe(
     Layer.provide(
@@ -1355,6 +1420,7 @@ export const provideResourceRepositories = (
         Layer.succeed(StrongLexiconRepository, strongLexiconRepository),
         Layer.succeed(SupplementaryRepository, supplementaryRepository),
         Layer.succeed(TimelineRepository, timelineRepository),
+        Layer.succeed(StudyLinksRepository, studyLinksRepository),
         Layer.succeed(SearchAnalyticsSink, searchAnalyticsSink)
       )
     )
@@ -1378,7 +1444,8 @@ export const makeResourceWebHandler = (
         overrides.supplementary ?? unavailableSupplementaryRepository,
         overrides.timeline ?? unavailableTimelineRepository,
         overrides.bibleSearch ?? unavailableBibleSearchRepository,
-        overrides.searchAnalytics ?? noOpSearchAnalyticsSink
+        overrides.searchAnalytics ?? noOpSearchAnalyticsSink,
+        overrides.studyLinks ?? unavailableStudyLinksRepository
       ),
       HttpServer.layerContext
     )
@@ -1425,6 +1492,7 @@ export type ResourceRepositoryOverrides = {
   supplementary?: SupplementaryRepositoryService
   timeline?: TimelineRepositoryService
   searchAnalytics?: SearchAnalyticsSinkService
+  studyLinks?: StudyLinksRepositoryService
 }
 
 export type ResourceWebHandlerOptions = {
@@ -1459,6 +1527,7 @@ export const makeResourceRequestServices = (
       overrides.supplementary ?? unavailableSupplementaryRepository
     ),
     Context.add(TimelineRepository, overrides.timeline ?? unavailableTimelineRepository),
+    Context.add(StudyLinksRepository, overrides.studyLinks ?? unavailableStudyLinksRepository),
     Context.add(SearchAnalyticsSink, overrides.searchAnalytics ?? noOpSearchAnalyticsSink)
   )
 

@@ -10,10 +10,7 @@ import { createAuthSessionRecovery } from '~helpers/authSessionRecovery'
 import { runAllCleanups } from '~helpers/cleanupRegistry'
 import { clearAccountCacheAfterLogout } from '~helpers/clearAccountCacheAfterLogout'
 import { getCurrentAuthUser } from '~helpers/firebaseAuthRuntime'
-<<<<<<< CYBERJUDAH
 import { notifyAccountConnectionsChanged } from '~helpers/accountConnections'
-=======
->>>>>>> BIBLESTRONG-28
 import { firestoreSyncOutbox } from '~helpers/firestoreSyncOutbox'
 import i18n from '~i18n'
 import * as UserActions from '~redux/modules/user'

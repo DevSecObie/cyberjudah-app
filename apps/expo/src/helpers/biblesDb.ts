@@ -446,11 +446,7 @@ async function ensureBibleSearchIndex(database: SQLite.SQLiteDatabase): Promise<
     ftsColumns.some(column => column.name === 'stemmed_text')
 
   if (requiresRebuild) {
-<<<<<<< CYBERJUDAH
     await withBiblesTransaction(database, async txn => {
-=======
-    await database.withExclusiveTransactionAsync(async txn => {
->>>>>>> BIBLESTRONG-28
       await txn.execAsync(`
         DROP TABLE IF EXISTS verses_fts_vocab;
         DROP TABLE IF EXISTS verses_fts;
@@ -868,11 +864,7 @@ export function insertBibleVersion(
     withWriteLock(async () => {
       const d = await getDb()
 
-<<<<<<< CYBERJUDAH
       await withBiblesTransaction(d, async txn => {
-=======
-      await d.withExclusiveTransactionAsync(async txn => {
->>>>>>> BIBLESTRONG-28
         await txn.execAsync(`PRAGMA busy_timeout = ${WRITE_LOCK_TIMEOUT_MS}`)
         // Delete existing data for this version first (re-download case)
         await deleteVersionFromSearchIndex(txn, version)
@@ -1073,11 +1065,7 @@ export function removeBibleVersion(version: string): Promise<void> {
     withWriteLock(async () => {
       const d = await getDb()
 
-<<<<<<< CYBERJUDAH
       await withBiblesTransaction(d, async txn => {
-=======
-      await d.withExclusiveTransactionAsync(async txn => {
->>>>>>> BIBLESTRONG-28
         await txn.execAsync(`PRAGMA busy_timeout = ${WRITE_LOCK_TIMEOUT_MS}`)
         await deleteVersionFromSearchIndex(txn, version)
         await txn.runAsync('DELETE FROM verses WHERE version = ?', [version])

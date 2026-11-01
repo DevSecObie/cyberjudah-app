@@ -104,7 +104,6 @@ import {
   getSearchAnalyticsInputKind,
 } from './searchAnalyticsModel'
 import { createSearchExperienceController } from './searchExperience'
-<<<<<<< CYBERJUDAH
 import { useRouter } from 'expo-router'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import { findClasses, findClassesOnDevice } from '~features/passageMediaLibrary/classSearch'
@@ -118,9 +117,7 @@ import {
   loadClassLibrary,
   readCachedClassLibrary,
 } from '~features/passageMediaLibrary/cyberJudahClasses'
-=======
 import { useWorkspaceHeaderInset } from '~features/app-switcher/workspaceHeaderInset'
->>>>>>> BIBLESTRONG-28
 type Props = {
   searchValue: string
   setSearchValue: (value: string) => void
@@ -162,11 +159,8 @@ const SQLiteSearchScreen = ({
   const { t, i18n } = useTranslation()
   const theme = useTheme()
   const keyboardFooterBottom = useKeyboardFooterBottom(SEARCH_ALPHABET_FOOTER_HEIGHT)
-<<<<<<< CYBERJUDAH
   const router = useRouter()
-=======
   const bottomInset = usePageBottomInset()
->>>>>>> BIBLESTRONG-28
   const openCatalogTab = useOpenInNewTab()
   const openStudyObject = useOpenStudyObject()
   const resources = useResourceAccess()

@@ -31,11 +31,6 @@ import type {
 } from '~features/resources/strongLexiconAccess'
 import { linkifyStrongEditorialBibleReferences } from './strongEditorialHtml'
 import { getScaledStrongTextStyle, type StrongReadingTypography } from './strongEditorialHtmlStyles'
-<<<<<<< CYBERJUDAH
-import { isStrongEditorialPreviewOverflowing } from './strongDetailPreview'
-import { getStrongEntityAvatarSource } from './strongEntityAvatars'
-import { withoutRepeatedSummary } from './strongEntityArticle'
-=======
 import {
   getStrongEditorialPreviewHtml,
   isStrongEditorialPreviewOverflowing,
@@ -43,7 +38,7 @@ import {
 import StrongEntityAvatar from './StrongEntityAvatar'
 import { useEntityPortraitCatalog } from './entityPortraitManifest'
 import { getEntityPortraitText } from './entityPortraits'
->>>>>>> BIBLESTRONG-28
+import { withoutRepeatedSummary } from './strongEntityArticle'
 import { isStrongOriginalUnnamed } from './strongOriginalPresentation'
 export const StrongLexicalRelationRow = ({
   relation,
@@ -301,6 +296,7 @@ export const StrongEntitySummaryCard = ({
   plain = false,
   compact = false,
   showsKind = true,
+  eyebrowDetail,
   featured = false,
   hidesHeader = false,
   language,
@@ -309,15 +305,14 @@ export const StrongEntitySummaryCard = ({
   readingTypography,
   onOpenBibleReference,
   onOpenStrong,
-  eyebrowDetail,
 }: {
   entity: StrongLexiconEntity
-  /** Shown after the kind of entity, such as the person's tribe ("Tribe of Levi"). */
-  eyebrowDetail?: string
   expanded?: boolean
   plain?: boolean
   compact?: boolean
   showsKind?: boolean
+  /** Shown after the kind of entity, such as the person's tribe ("Tribe of Levi"). */
+  eyebrowDetail?: string
   featured?: boolean
   hidesHeader?: boolean
   /** The language of the portrait's title and roles; the app's by default. */
@@ -329,17 +324,12 @@ export const StrongEntitySummaryCard = ({
   onOpenBibleReference: (osis: string) => void
   onOpenStrong: (stepCode: string) => void
 }) => {
-<<<<<<< CYBERJUDAH
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const catalog = useEntityPortraitCatalog()
   const detailedDescription = withoutRepeatedSummary(
     entity.articleHtml || entity.summaryHtml,
     entity.shortDescription
   )
-  const presentation = entityCardPresentation(compact)
-=======
-  const { t, i18n } = useTranslation()
-  const catalog = useEntityPortraitCatalog()
-  const detailedDescription = entity.articleHtml || entity.summaryHtml
   const portrait = featured ? catalog?.entities[entity.uniqueName] : undefined
   const textLanguage = language ?? i18n.language
   const presentation = portrait
@@ -348,7 +338,6 @@ export const StrongEntitySummaryCard = ({
   const roles = (portrait?.roles ?? []).flatMap(role =>
     catalog?.roles[role] ? [getEntityPortraitText(catalog.roles[role], textLanguage)] : []
   )
->>>>>>> BIBLESTRONG-28
   const resolvedEditorialTypography = resolveEntityEditorialTypography(
     readingTypography,
     editorialTypography
@@ -378,7 +367,9 @@ export const StrongEntitySummaryCard = ({
             ) : (
               showsKind && (
                 <Text className="text-[13px] text-grey">
-                  {getEntityLabel(entity.category, entity.type, t)}
+                  {[getEntityLabel(entity.category, entity.type, t), eyebrowDetail]
+                    .filter(Boolean)
+                    .join(' · ')}
                 </Text>
               )
             )}
@@ -405,47 +396,6 @@ export const StrongEntitySummaryCard = ({
           </VStack>
         </HStack>
       )}
-<<<<<<< CYBERJUDAH
-      style={{ padding: expanded || plain ? 0 : 18 }}
-    >
-      <HStack className="overflow-hidden border-continuous gap-[12px] items-center">
-        <Image
-          source={getStrongEntityAvatarSource(entity.category, entity.type, entity.uniqueName)}
-          style={{
-            width: presentation.avatarSize,
-            height: presentation.avatarSize,
-            borderRadius: presentation.avatarSize / 2,
-          }}
-          contentFit="contain"
-        />
-        <VStack className="overflow-hidden border-continuous flex-[1] gap-[3px]">
-          <StrongEyebrow>
-            {[getEntityLabel(entity.category, entity.type, t), eyebrowDetail]
-              .filter(Boolean)
-              .join(' · ')}
-          </StrongEyebrow>
-          <Text className={presentation.nameClassName}>{entity.name}</Text>
-          {!plain && (
-            <HStack className="overflow-hidden border-continuous gap-[6px] flex-wrap">
-              {entity.strongCodes.map(code => (
-                <TouchableBox
-                  className="overflow-hidden border-continuous bg-light-grey rounded-[10px] px-[7px] py-[3px] flex-row items-center gap-[2px]"
-                  key={code}
-                  onPress={() => onOpenStrong(code)}
-                  activeOpacity={0.7}
-                  accessibilityRole="link"
-                  accessibilityLabel={code}
-                >
-                  <Text className="text-tertiary text-[11px] font-bold">{code}</Text>
-                  <FeatherIcon name="chevron-right" color="tertiary" size={10} />
-                </TouchableBox>
-              ))}
-            </HStack>
-          )}
-        </VStack>
-      </HStack>
-=======
->>>>>>> BIBLESTRONG-28
       {!!entity.shortDescription && previewLines ? (
         <StrongEditorialPreview
           value={entity.shortDescription}

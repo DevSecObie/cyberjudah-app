@@ -121,20 +121,15 @@
     "rn-fetch-blob@npm:^0.12.0": "patch:rn-fetch-blob@npm%3A0.12.0#~/.yarn/patches/rn-fetch-blob-npm-0.12.0-cf02e3c544.patch",
     "@react-native-masked-view/masked-view@npm:^0.3.2": "patch:@react-native-masked-view/masked-view@npm%3A0.3.2#~/.yarn/patches/@react-native-masked-view-masked-view-npm-0.3.2-7e49df0087.patch",
     "vaul@npm:^1.1.2": "patch:vaul@npm%3A1.1.2#~/.yarn/patches/vaul-npm-1.1.2-7a571c1ad6.patch",
-<<<<<<< CYBERJUDAH
-    "metro": "patch:metro@npm%3A0.84.5#~/.yarn/patches/metro-npm-0.84.5-9aabe2ab0f.patch",
-    "metro-runtime": "patch:metro-runtime@npm%3A0.84.5#~/.yarn/patches/metro-runtime-npm-0.84.5-e3e8c081e8.patch",
+    "metro": "patch:metro@npm%3A0.87.1#~/.yarn/patches/metro-npm-0.87.1-df856b146b.patch",
+    "metro-runtime": "patch:metro-runtime@npm%3A0.87.1#~/.yarn/patches/metro-runtime-npm-0.87.1-3b7e80ac3a.patch",
     "shell-quote": "1.12.0",
     "tar": "7.5.22",
     "websocket-driver": "0.7.5",
-    "protobufjs@npm:^7.2.5": "7.6.6"
-=======
-    "metro": "patch:metro@npm%3A0.87.1#~/.yarn/patches/metro-npm-0.87.1-df856b146b.patch",
-    "metro-runtime": "patch:metro-runtime@npm%3A0.87.1#~/.yarn/patches/metro-runtime-npm-0.87.1-3b7e80ac3a.patch",
+    "protobufjs@npm:^7.2.5": "7.6.6",
     "@effect/platform-node@4.0.0-rc.112/@effect/platform-node-shared": "4.0.0-rc.112",
     "@expo/cli@npm:^58.1.11": "patch:@expo/cli@npm%3A58.1.11#~/.yarn/patches/@expo-cli-npm-58.1.11-9bf913ac4e.patch",
     "expo-font@npm:~58.0.8": "patch:expo-font@npm%3A58.0.8#~/.yarn/patches/expo-font-npm-58.0.8-76500d8bdc.patch",
     "react-native-screens@npm:^4.30.0 || ^5.0.0-alpha.3": "patch:react-native-screens@npm%3A4.30.0#~/.yarn/patches/react-native-screens-npm-4.30.0-e2241f2fe4.patch"
->>>>>>> BIBLESTRONG-28
   }
 }

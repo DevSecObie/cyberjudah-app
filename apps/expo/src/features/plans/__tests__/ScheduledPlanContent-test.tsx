@@ -13,14 +13,10 @@ const mockSetParams = jest.fn()
 let mockParams: Record<string, string> = {}
 let mockLeave = () => {}
 jest.mock('expo-router', () => ({
-<<<<<<< CYBERJUDAH
-  useLocalSearchParams: () => ({}),
+  useLocalSearchParams: () => mockParams,
   useGlobalSearchParams: () => ({}),
   usePathname: () => '/plan',
-=======
-  useLocalSearchParams: () => mockParams,
   useRouter: () => ({ setParams: mockSetParams }),
->>>>>>> BIBLESTRONG-28
   useNavigation: () => ({
     addListener: (_event: string, listener: () => void) => {
       mockLeave = listener

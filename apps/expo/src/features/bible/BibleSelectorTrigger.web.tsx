@@ -244,29 +244,6 @@ export function useBookPanelScreens({
           <BookSelectorParams includeLayout={false} includeVerses={forceVerses === undefined} />
         ),
         headerContent: <PanelSearch value={query} onChange={setQuery} />,
-<<<<<<< CYBERJUDAH
-        content: nav => (
-          <>
-            {[...books]
-              .sort((a, b) => (sort === 'alphabetical' ? t(a.Nom).localeCompare(t(b.Nom)) : 0))
-              .filter(item => t(item.Nom).toLocaleLowerCase().includes(query.toLocaleLowerCase()))
-              .map(item => (
-                <PanelAction
-                  key={item.Numero}
-                  label={t(item.Nom)}
-                  nested
-                  onPress={() => {
-                    setBook(item)
-                    nav.open('chapters')
-                  }}
-                />
-              ))}
-          </>
-        ),
-      },
-      chapters: {
-        title: t(book.Nom),
-=======
         content: nav => {
           const listed = [...books]
             .sort((a, b) => (sort === 'alphabetical' ? nameOf(a).localeCompare(nameOf(b)) : 0))
@@ -306,7 +283,6 @@ export function useBookPanelScreens({
       },
       chapters: {
         title: nameOf(book),
->>>>>>> BIBLESTRONG-28
         content: nav => (
           <Box
             testID="bible-selector-number-grid"
@@ -349,11 +325,7 @@ export function useBookPanelScreens({
         ),
       },
       verses: {
-<<<<<<< CYBERJUDAH
-        title: t(book.Nom) + ' ' + chapter,
-=======
         title: nameOf(book) + ' ' + chapter,
->>>>>>> BIBLESTRONG-28
         content: nav => (
           <Box
             testID="bible-selector-number-grid"

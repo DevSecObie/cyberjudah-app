@@ -1,6 +1,4 @@
-<<<<<<< CYBERJUDAH
 import cyberJudahTimeline from '~assets/cyberjudah/timeline-publication.json'
-=======
 import { isStudyLinksInstalled, localStudyLinksAccess } from './studyLinksLocal'
 import {
   createHttpStudyLinksAccess,
@@ -8,7 +6,6 @@ import {
   type StudyLinksAccess,
   unavailableStudyLinksAccess,
 } from './studyLinksAccess'
->>>>>>> BIBLESTRONG-28
 import { createLayeredStrongLexiconAccess } from './layeredStrongLexiconAccess'
 import { createLocalStrongLexiconAccess } from './strongLexiconAccess'
 import { localCommentaryReading } from './commentaryReadingLocal'

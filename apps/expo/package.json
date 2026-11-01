@@ -131,33 +131,7 @@
     "debounce": "^1.2.0",
     "deprecated-react-native-prop-types": "^4.0.0",
     "effect": "3.22.1",
-<<<<<<< CYBERJUDAH
     "entities": "^6.0.1",
-    "expo": "patch:expo@npm%3A57.0.26#~/.yarn/patches/expo-npm-57.0.26-ca881e2652.patch",
-    "expo-application": "~57.0.3",
-    "expo-asset": "~57.0.18",
-    "expo-audio": "~57.0.5",
-    "expo-build-properties": "~57.0.22",
-    "expo-constants": "~57.0.20",
-    "expo-dev-client": "~57.0.19",
-    "expo-device": "~57.0.2",
-    "expo-document-picker": "~57.0.3",
-    "expo-file-system": "~57.0.7",
-    "expo-font": "~57.0.4",
-    "expo-haptics": "~57.0.3",
-    "expo-image": "~57.0.5",
-    "expo-keep-awake": "~57.0.2",
-    "expo-linear-gradient": "~57.0.2",
-    "expo-linking": "~57.0.11",
-    "expo-router": "~57.0.24",
-    "expo-sharing": "~57.0.22",
-    "expo-speech": "~57.0.3",
-    "expo-splash-screen": "~57.0.9",
-    "expo-sqlite": "~57.0.3",
-    "expo-store-review": "~57.0.3",
-    "expo-system-ui": "~57.0.4",
-    "expo-updates": "~57.0.24",
-=======
     "expo": "patch:expo@npm%3A58.0.14#~/.yarn/patches/expo-npm-58.0.14-6039ef82aa.patch",
     "expo-application": "~58.1.2",
     "expo-asset": "~58.0.16",
@@ -182,7 +156,6 @@
     "expo-store-review": "~58.0.2",
     "expo-system-ui": "~58.0.6",
     "expo-updates": "~58.0.17",
->>>>>>> BIBLESTRONG-28
     "firebase": "12.6.0",
     "firestore-size": "^2.0.7",
     "fuse.js": "^7.3.0",
@@ -198,12 +171,8 @@
     "lottie-react-native": "~7.5.0",
     "lucide-react": "^1.47.0",
     "lunr-languages": "^1.9.0",
-<<<<<<< CYBERJUDAH
     "marked": "^17.0.6",
-    "metro": "patch:metro@npm%3A0.84.5#~/.yarn/patches/metro-npm-0.84.5-9aabe2ab0f.patch",
-=======
     "metro": "patch:metro@npm%3A0.87.1#~/.yarn/patches/metro-npm-0.87.1-df856b146b.patch",
->>>>>>> BIBLESTRONG-28
     "motion": "^13.0.0",
     "pdf-lib": "^1.17.1",
     "postinstall-postinstall": "^2.1.0",
@@ -216,21 +185,6 @@
     "react-blurhash": "^0.3.0",
     "react-dom": "19.3.0",
     "react-i18next": "11.18.6",
-<<<<<<< CYBERJUDAH
-    "react-native": "patch:react-native@npm%3A0.86.3#~/.yarn/patches/react-native-npm-0.86.3-a26c4d71a9.patch",
-    "react-native-ease": "^0.4.0",
-    "react-native-edge-to-edge": "^1.4.3",
-    "react-native-enriched-markdown": "1.0.2",
-    "react-native-gesture-handler": "~2.32.0",
-    "react-native-keyboard-controller": "1.21.9",
-    "react-native-mmkv": "4.1.0",
-    "react-native-nitro-modules": "^0.31.10",
-    "react-native-purchases": "10.16.0",
-    "react-native-purchases-ui": "10.16.0",
-    "react-native-reanimated": "4.5.5",
-    "react-native-reanimated-carousel": "^5.0.0-beta.3",
-    "react-native-reanimated-dnd": "2.0.0",
-=======
     "react-native": "0.88.0",
     "react-native-ease": "^0.4.0",
     "react-native-edge-to-edge": "^1.4.3",
@@ -239,10 +193,11 @@
     "react-native-keyboard-controller": "1.22.7",
     "react-native-mmkv": "4.3.2",
     "react-native-nitro-modules": "^0.37.1",
+    "react-native-purchases": "10.16.0",
+    "react-native-purchases-ui": "10.16.0",
     "react-native-reanimated": "4.7.0",
     "react-native-reanimated-carousel": "^5.2.0",
     "react-native-reanimated-dnd": "patch:react-native-reanimated-dnd@npm%3A2.0.0#~/.yarn/patches/react-native-reanimated-dnd-npm-2.0.0-b5a7ddfd0c.patch",
->>>>>>> BIBLESTRONG-28
     "react-native-root-siblings": "5.0.1",
     "react-native-safe-area-context": "~5.10.1",
     "react-native-screens": "patch:react-native-screens@npm%3A4.30.0#~/.yarn/patches/react-native-screens-npm-4.30.0-e2241f2fe4.patch",
@@ -276,13 +231,9 @@
     "tailwindcss": "^4.3.3",
     "trunc-html": "^1.1.2",
     "tw-shimmer": "^0.4.13",
-<<<<<<< CYBERJUDAH
-    "uniwind": "^1.12.0",
-    "zod": "4.3.6"
-=======
     "uniwind": "patch:uniwind@npm%3A1.12.2#~/.yarn/patches/uniwind-npm-1.12.2-145fff90e1.patch",
-    "vaul": "^1.1.2"
->>>>>>> BIBLESTRONG-28
+    "vaul": "^1.1.2",
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",

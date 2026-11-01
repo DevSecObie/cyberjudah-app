@@ -90,11 +90,7 @@ export default function InlineCommentaryReader({
     query.data && entry && request
       ? getCommentaryShare({
           entry,
-<<<<<<< CYBERJUDAH
-          passage: `${t(getBook(request.book)?.Nom ?? String(request.book))} ${request.chapter}:${
-=======
           passage: `${getCommentaryBookLabel(request.book)} ${request.chapter}:${
->>>>>>> BIBLESTRONG-28
             query.data.section.rangeStartVerse
           }${
             query.data.section.rangeEndVerse !== query.data.section.rangeStartVerse

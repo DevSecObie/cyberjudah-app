@@ -55,8 +55,6 @@ const VersionSelectorSheet = ({ sheetRef }: VersionSelectorSheetProps) => {
     }
   }
 
-<<<<<<< CYBERJUDAH
-=======
   const setSelectedVersionInInterlinear = actions?.setSelectedVersionInInterlinear
   // The reader offers the interlinear only to its main version, read without parallel columns
   const canOpenInterlinear =
@@ -73,7 +71,6 @@ const VersionSelectorSheet = ({ sheetRef }: VersionSelectorSheetProps) => {
     }))
   }
 
->>>>>>> BIBLESTRONG-28
   // Defined once: a new function per row would render every row again
   const openOfflineDetails = (version: Version & { displayName?: string }) => {
     setOfflineDetailsVersion(version)
@@ -126,10 +123,7 @@ const VersionSelectorSheet = ({ sheetRef }: VersionSelectorSheetProps) => {
               version={item}
               isSelected={item.id === selectedVersion}
               showStrongIndex
-<<<<<<< CYBERJUDAH
-=======
               onOpenInterlinear={canOpenInterlinear ? handleInterlinearSelect : undefined}
->>>>>>> BIBLESTRONG-28
               onOpenOfflineDetails={openOfflineDetails}
             />
           )}

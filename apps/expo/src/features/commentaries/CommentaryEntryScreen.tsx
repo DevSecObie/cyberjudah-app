@@ -122,11 +122,7 @@ const CommentaryEntryScreen = ({
   const sectionIndex = orderedSections.findIndex(candidate => candidate.id === params.sectionId)
   const previousSection = sectionIndex > 0 ? orderedSections[sectionIndex - 1] : undefined
   const nextSection = sectionIndex >= 0 ? orderedSections[sectionIndex + 1] : undefined
-<<<<<<< CYBERJUDAH
-  const bookLabel = t(getBook(book)?.Nom ?? String(book))
-=======
   const bookLabel = getCommentaryBookLabel(book)
->>>>>>> BIBLESTRONG-28
   const passage = section
     ? `${bookLabel} ${chapter}:${section.rangeStartVerse}${
         section.rangeEndVerse !== section.rangeStartVerse ? `–${section.rangeEndVerse}` : ''

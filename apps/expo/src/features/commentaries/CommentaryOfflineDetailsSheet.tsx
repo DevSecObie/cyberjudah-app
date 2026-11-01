@@ -1,10 +1,6 @@
 import { useConfirmDialog } from '~common/ConfirmDialog/useConfirmDialog'
-<<<<<<< CYBERJUDAH
-import type { CommentaryCatalogEntry } from '~helpers/commentaryCatalog'
-import { useTheme } from '~themes/ThemeProvider'
-=======
 import type { CommentaryCatalogEntry } from '@bible-strong/resource-catalog/commentaries'
->>>>>>> BIBLESTRONG-28
+import { useTheme } from '~themes/ThemeProvider'
 import React from 'react'
 import { StyleSheet } from 'react-native'
 

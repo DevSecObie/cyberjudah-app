@@ -168,11 +168,7 @@ const CommentaryChapterScreen = ({
   }
 
   const { entry, projection, book, chapter } = parsed
-<<<<<<< CYBERJUDAH
-  const bookLabel = t(getBook(book)?.Nom ?? String(book))
-=======
   const bookLabel = getCommentaryBookLabel(book)
->>>>>>> BIBLESTRONG-28
   const visibleSections = getCommentarySectionsForVerse(query.data?.sections ?? [], focusVerse)
   const chapterContextKey = `${projection.projectionId}:${book}:${chapter}:${focusVerse ?? 'all'}`
   const chapterContextExpanded = expandedChapterContextKey === chapterContextKey

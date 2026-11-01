@@ -1,12 +1,9 @@
-<<<<<<< CYBERJUDAH
 import cyberJudahTimeline from '~assets/cyberjudah/timeline-publication.json'
-=======
 import {
   createHttpStudyLinksAccess,
   type StudyLinksAccess,
   unavailableStudyLinksAccess,
 } from './studyLinksAccess'
->>>>>>> BIBLESTRONG-28
 import { createLayeredStrongLexiconAccess } from './layeredStrongLexiconAccess'
 import {
   createCommentaryReadingAccess,

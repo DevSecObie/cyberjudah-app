@@ -4,12 +4,8 @@ import {
   COMMENTARY_CATALOG,
   type CommentaryCatalogEntry,
   type CommentaryLanguage,
-<<<<<<< CYBERJUDAH
-} from '~helpers/commentaryCatalog'
-=======
 } from '@bible-strong/resource-catalog/commentaries'
 import { colorWithOpacity } from '~themes/colorValues'
->>>>>>> BIBLESTRONG-28
 import { useTheme } from '~themes/ThemeProvider'
 import React from 'react'
 import { Platform, SectionList, TouchableOpacity } from 'react-native'

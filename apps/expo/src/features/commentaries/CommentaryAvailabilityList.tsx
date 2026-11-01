@@ -43,21 +43,6 @@ const CommentaryAvailabilityList = ({ items, headerTitle, onManage, onOpen }: Pr
         <CommentaryManageButton onPress={onManage} />
       </Box>
 
-<<<<<<< CYBERJUDAH
-      {items.map(item => {
-        const hasError = item.state === 'unavailable'
-        const preview = item.comment?.content
-          ? item.comment.content
-          : item.state === 'chapter'
-            ? t('commentaries.availability.chapterPreview')
-            : item.state === 'unavailable'
-              ? item.unavailableCause === 'offline-copy-required'
-                ? t('commentaries.availability.offlineCopyRequiredPreview')
-                : item.unavailableCause === 'invalid-offline-copy'
-                  ? t('downloads.invalidCopy')
-                  : t('commentaries.availability.errorPreview')
-              : t('commentaries.availability.noContentPreview')
-=======
       <Card className="mx-[20px] mt-[6px]">
         {items.map((item, index) => {
           const hasError = item.state === 'unavailable'
@@ -72,7 +57,6 @@ const CommentaryAvailabilityList = ({ items, headerTitle, onManage, onOpen }: Pr
                     ? t('downloads.invalidCopy')
                     : t('commentaries.availability.errorPreview')
                 : t('commentaries.availability.noContentPreview')
->>>>>>> BIBLESTRONG-28
 
           return (
             <TouchableBox

@@ -143,17 +143,9 @@ const ReadingPlansScreen = ({ filters }: { filters: ReadingPlanFilters }) => {
   const ongoing = useSelector((state: RootState) => state.plan.ongoingPlans)
   const status = useSelector((state: RootState) => state.plan.onlineStatus)
   const plans = [
-<<<<<<< CYBERJUDAH
     ...(usesCyberJudahEditorial() ? [] : online),
     ...local.filter(plan => usesCyberJudahEditorial() || !online.some(item => item.id === plan.id)),
   ].filter(plan => canShowReadingPlan(plan.id) && getEditorialKind(plan) === 'reading-plan')
-  const isActive = (id: string) => hasPlanParticipation(ongoing.find(item => item.id === id))
-  const active = plans.filter(plan => isActive(plan.id))
-  const discoverable = filterReadingPlans(plans, filters)
-=======
-    ...online,
-    ...local.filter(plan => !online.some(item => item.id === plan.id)),
-  ].filter(plan => getEditorialKind(plan) === 'reading-plan')
   const participation = (id: string) => ongoing.find(item => item.id === id)
   /** A followed plan is done when its participation says so or every day of it is read. */
   const isFinished = (plan: OnlinePlan) => {
@@ -170,7 +162,6 @@ const ReadingPlansScreen = ({ filters }: { filters: ReadingPlanFilters }) => {
     plans.filter(plan => !followed.includes(plan)),
     filters
   )
->>>>>>> BIBLESTRONG-28
   useEffect(() => {
     dispatch(fetchPlans({ reuseRecent: true }))
   }, [dispatch])

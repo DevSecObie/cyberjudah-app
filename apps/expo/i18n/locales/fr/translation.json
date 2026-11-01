@@ -274,11 +274,9 @@
   "bible.passageMedia.sections.introduction": "Introduction",
   "bible.passageMedia.sections.passages": "Passages bibliques",
   "bible.passageMedia.sections.chapterResources": "Ressources du chapitre",
-<<<<<<< CYBERJUDAH
   "bible.passageMedia.sections.taughtFrom": "Enseigné dans {{reference}}",
   "bible.passageMedia.sections.readInClass": "Lu en classe",
   "bible.passageMedia.showAll": "Tout afficher",
-=======
   "bible.focusStudy.title": "Autour de {{reference}}",
   "bible.focusStudy.versions": "Dans d’autres versions",
   "bible.focusStudy.chooseVersions": "Choisir vos versions à comparer",
@@ -296,7 +294,6 @@
   "bible.focusStudy.dictionary": "Dans les dictionnaires",
   "bible.focusStudy.entities": "Personnages et lieux",
   "bible.focusStudy.studyVerse": "Verset étudié",
->>>>>>> BIBLESTRONG-28
   "bible.chapterEntities.title": "Dans ce chapitre",
   "bible.chapterEntities.people": "Personnages",
   "bible.chapterEntities.places": "Lieux",
@@ -2772,7 +2769,6 @@
   "contact.copied": "Message et adresse copiés",
   "contact.copyFailed": "Impossible de copier le message.",
   "contact.copyEmail": "Copier le message et l’adresse",
-<<<<<<< CYBERJUDAH
   "passageMediaLibrary.search": "Rechercher",
   "passageMediaLibrary.collection": "Collection",
   "passageMediaLibrary.everyCollection": "Toutes les collections",
@@ -2863,8 +2859,7 @@
   "askStudy.open.notes": "Mes notes",
   "askStudy.open.studies": "Mes études",
   "askStudy.open.bookmarks": "Favoris",
-  "askStudy.open.highlights": "Surlignages"
-=======
+  "askStudy.open.highlights": "Surlignages",
   "readingPlans.daysProgress_plural": "{{count}} jours sur {{total}}",
   "readingPlans.streak": "{{count}} jour d’affilée",
   "readingPlans.streak_plural": "{{count}} jours d’affilée",
@@ -2894,5 +2889,4 @@
   "Sélectionnez des mots pour voir leur hébreu ou leur grec.": "Sélectionnez des mots pour voir leur hébreu ou leur grec.",
   "Les mots de la {{version}} ne sont pas reliés aux numéros Strong.": "Les mots de la {{version}} ne sont pas reliés aux numéros Strong.",
   "Aucun mot hébreu ou grec dans la sélection.": "Aucun mot hébreu ou grec dans la sélection."
->>>>>>> BIBLESTRONG-28
 }

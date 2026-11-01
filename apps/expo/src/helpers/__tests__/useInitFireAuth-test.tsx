@@ -195,11 +195,7 @@ describe('useInitFireAuth account-entry orchestration', () => {
     const onLogout = mockInit.mock.calls[0][2] as () => Promise<void>
     const onSignedOut = mockInit.mock.calls[0][6] as () => void
 
-<<<<<<< CYBERJUDAH
     return { getState: () => state!, onLogin, onUserChange, onLogout, onSignedOut }
-=======
-    return { getState: () => state!, onLogin, onLogout, onSignedOut }
->>>>>>> BIBLESTRONG-28
   }
 
   it('refreshes the visible profile after same-account reauthentication', async () => {

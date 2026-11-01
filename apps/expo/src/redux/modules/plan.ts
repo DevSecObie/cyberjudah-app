@@ -42,13 +42,6 @@ const docsArr = async (collectionName: string) => {
   return snapshot.docs.map((x: QueryDocumentSnapshot) => x.data())
 }
 
-<<<<<<< CYBERJUDAH
-export const fetchPlans = createAsyncThunk('plan/fetchPlans', async () => {
-  if (usesCyberJudahEditorial()) return [] as OnlinePlan[]
-  const results = (await docsArr('plans')) as OnlinePlan[]
-  return results
-})
-=======
 // The catalog changes rarely and each read loads the whole collection: a screen that shows it
 // reuses a catalog read in the last hours, or one still loading. A refresh or a retry reads it.
 export const PLAN_CATALOG_MAX_AGE_MS = 6 * 60 * 60 * 1000
@@ -57,6 +50,8 @@ let planCatalogReadAt: number | undefined
 export const fetchPlans = createAsyncThunk(
   'plan/fetchPlans',
   async (_options: { reuseRecent?: boolean } | void) => {
+    // CyberJudah's journeys ship with the app; Bible Strong's plan catalog is never read.
+    if (usesCyberJudahEditorial()) return [] as OnlinePlan[]
     const results = (await docsArr('plans')) as OnlinePlan[]
     planCatalogReadAt = Date.now()
     return results
@@ -75,7 +70,6 @@ export const fetchPlans = createAsyncThunk(
     },
   }
 )
->>>>>>> BIBLESTRONG-28
 
 export const fetchPlan = createAsyncThunk(
   'plan/fetchPlan',

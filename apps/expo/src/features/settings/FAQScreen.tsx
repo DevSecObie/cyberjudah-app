@@ -24,12 +24,8 @@ const FAQScreen = () => {
   const [expandedId, setExpandedId] = useState<string | null>('availability')
   const [contentWidth, setContentWidth] = useState(0)
   const wide = contentWidth >= 900
-<<<<<<< CYBERJUDAH
-  const titleStyle = { fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }
-  const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
-=======
   const titleStyle = titleFontStyle(stylingTheme)
->>>>>>> BIBLESTRONG-28
+  const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
   const entries = [
     {
       id: 'availability',

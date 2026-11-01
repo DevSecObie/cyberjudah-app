@@ -596,11 +596,12 @@ const DownloadsScreen = () => {
           ListHeaderComponent={
             <>
               <StorageSummaryCard />
-<<<<<<< CYBERJUDAH
-              {usesCyberJudahEditorial() && <ClassIndexDownloadCard />}
-=======
-              <EntityPortraitPackCard downloadsDisabled={!isConnected} />
->>>>>>> BIBLESTRONG-28
+              {/* CyberJudah keeps its own portraits; it offers the class index instead. */}
+              {usesCyberJudahEditorial() ? (
+                <ClassIndexDownloadCard />
+              ) : (
+                <EntityPortraitPackCard downloadsDisabled={!isConnected} />
+              )}
               <AvailableUpdatesWidget
                 count={itemsToUpdate.length}
                 onPress={() => updatesRef.current?.present()}

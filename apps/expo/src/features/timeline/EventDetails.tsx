@@ -39,26 +39,14 @@ const Description = ({ description, article }: Partial<TimelineEventDetail>) => 
   const { t } = useTranslation()
   if (!description && !article) return null
   return (
-<<<<<<< CYBERJUDAH
-    <Box className="overflow-hidden border-continuous px-[20px]">
-      <Paragraph className="mb-[10px]" fontFamily="title">
-        Description
-      </Paragraph>
-      <Paragraph className="font-bold" scale={-1}>
-        {description}
-      </Paragraph>
-      {!!article && <TimelineArticle article={article} />}
-    </Box>
-=======
     <StudySection title={t('timeline.event.description')}>
       {!!description && (
         <Paragraph className="font-semibold" scale={-1}>
           {description}
         </Paragraph>
       )}
-      {!!article && <Paragraph scale={-1}>{article}</Paragraph>}
+      {!!article && <TimelineArticle article={article} />}
     </StudySection>
->>>>>>> BIBLESTRONG-28
   )
 }
 
