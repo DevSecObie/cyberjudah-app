@@ -15,7 +15,6 @@ import { LinkBox, type LinkProps } from '~common/Link'
 import Box, { HStack } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
-import { useComputedPlanItems } from '~features/plans/plan.hooks'
 import ProfileStats from '~features/profile/components/ProfileStats'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import useLanguage from '~helpers/useLanguage'
@@ -163,13 +162,9 @@ export default function DesktopHome() {
   useFonts({ 'Literata Book': require('~assets/fonts/LiterataBook-Regular.otf') })
   const { t } = useTranslation()
   const lang = useLanguage()
-  const plans = useComputedPlanItems()
   const pushRoute = usePushRouteOnce()
   const openCommandPalette = useSetAtom(commandPaletteOpenAtom)
   const setCommandReturnFocus = useSetAtom(commandPaletteReturnFocusAtom)
-  const bibleProjectPlan = plans.find(
-    plan => plan.id === (lang === 'fr' ? 'bible-project-plan' : 'bible-project-plan-en')
-  )
 
   return (
     <div className="bs-home-container">
@@ -212,16 +207,6 @@ export default function DesktopHome() {
                     title={t('passageMediaLibrary.title')}
                     source={require('~assets/images/home/courses-videos.webp')}
                     onPress={() => pushRoute({ pathname: '/(library)/passage-media' })}
-                  />
-                  <LearningCard
-                    title={t('home.learning.bibleProjectPlan')}
-                    source={require('~assets/images/home/bible-project-plan.jpg')}
-                    route={bibleProjectPlan ? 'Plan' : 'Plans'}
-                    params={
-                      bibleProjectPlan
-                        ? { planId: bibleProjectPlan.id, plan: bibleProjectPlan }
-                        : undefined
-                    }
                   />
                   <LearningCard
                     title={t('home.desktop.timeline')}
