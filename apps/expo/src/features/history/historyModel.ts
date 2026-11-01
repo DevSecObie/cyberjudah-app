@@ -110,6 +110,7 @@ export const CYBERJUDAH_HISTORY_KINDS = [
   'doctrine',
   'law',
   'person',
+  'book',
 ] as const
 export type CyberJudahHistoryKind = (typeof CYBERJUDAH_HISTORY_KINDS)[number]
 

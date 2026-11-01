@@ -132,6 +132,7 @@ const CYBERJUDAH_SHORTCUTS: {
     icon: 'alert-triangle',
     pathname: '/(library)/false-doctrines',
   },
+  { key: 'books', label: 'Books', icon: 'book-open', pathname: '/(library)/books' },
   { key: 'glossary', label: 'Glossary', icon: 'list', pathname: '/(library)/glossary' },
 ]
 

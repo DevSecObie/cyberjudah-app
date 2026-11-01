@@ -137,6 +137,7 @@ const CYBERJUDAH_KIND_LABELS: Record<HistoryCyberJudahItem['kind'], string> = {
   doctrine: 'False doctrine',
   law: 'Handbook of the Law',
   person: 'People',
+  book: 'Books',
 }
 
 type HistoryEntryLinkProps = Pick<

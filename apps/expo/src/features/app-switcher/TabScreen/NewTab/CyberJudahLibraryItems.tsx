@@ -71,6 +71,13 @@ export const CYBERJUDAH_LIBRARY: LibraryEntry[] = [
     pathname: '/(library)/false-doctrines',
   },
   {
+    key: 'books',
+    title: 'Books',
+    description: 'The books the classes read from',
+    icon: 'book-open',
+    pathname: '/(library)/books',
+  },
+  {
     key: 'glossary',
     title: 'Glossary',
     description: 'Words the classes use',
