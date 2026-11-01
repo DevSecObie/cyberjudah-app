@@ -5,6 +5,7 @@ import { Image } from 'expo-image'
 import Box, { HStack } from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import { hp } from '~helpers/utils'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 type Props = {
   isOnline: boolean
   onExamplePress: (value: string) => void
@@ -18,10 +19,26 @@ const ExampleChip = ({ label, onPress }: { label: string; onPress: () => void })
   </TouchableOpacity>
 )
 
+// One chip per search mode, drawn from what the classes teach. Each one was checked
+// against our KJV text and Strong's data so it always returns results.
+const CYBERJUDAH_OFFLINE_EXAMPLES = [
+  'Deuteronomy 28:68', // reference
+  '"Jacob have I loved"', // exact words (Romans 9:13)
+  'Edom', // word
+  'G2474', // Strong's Greek: Israel
+  'H3063', // Strong's Hebrew: Judah
+]
+const CYBERJUDAH_ONLINE_EXAMPLES = [
+  'Ἰσραήλ', // Greek lemma of G2474
+  'יְהוּדָה', // Hebrew lemma of H3063
+  'Yisrâʼêl', // transliteration of H3478
+  'scattered among the heathen', // free words
+]
+
 const SearchEmptyState = ({ isOnline, onExamplePress }: Props) => {
   const { t } = useTranslation()
   const theme = useTheme()
-  const examples = [
+  const bibleStrongExamples = [
     t('search.empty.verses.examples').split('|')[0],
     `"${t('search.empty.verse_words.examples').split('|')[0]}"`,
     t('search.empty.words.examples').split('|')[0],
@@ -31,6 +48,9 @@ const SearchEmptyState = ({ isOnline, onExamplePress }: Props) => {
       ? ['ἀγάπη', 'אֱלֹהִים', 'agapē', ...t('search.empty.semantic.examples').split('|')]
       : []),
   ]
+  const examples = usesCyberJudahEditorial()
+    ? [...CYBERJUDAH_OFFLINE_EXAMPLES, ...(isOnline ? CYBERJUDAH_ONLINE_EXAMPLES : [])]
+    : bibleStrongExamples
 
   return (
     <Box

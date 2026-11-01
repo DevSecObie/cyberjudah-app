@@ -47,6 +47,16 @@ type AbelOnboardingProps = {
   onComplete: () => void
 }
 
+// What each scene waits for, said under its phrase.
+const SCENE_HINT_KEYS: Record<string, string | undefined> = {
+  'scene-one': 'onboarding.abel.sceneOne.hint',
+  'scene-two': 'onboarding.abel.sceneTwo.hint',
+  'scene-three': 'onboarding.abel.sceneThree.hint',
+  'scene-four': 'onboarding.abel.sceneFour.hint',
+  'scene-five': 'onboarding.abel.sceneFive.hint',
+  'scene-six': 'onboarding.abel.sceneSix.hint',
+}
+
 const OCCURRENCE_FILTER_ORDER: OccurrenceFilterId[] = ['vanity', 'idol', 'breath']
 const SCENE_ONE_PROMPT_KEYS: Record<HighlightColor, string> = {
   color1: 'onboarding.abel.sceneOne.phrase',
@@ -565,6 +575,12 @@ const AbelOnboarding = ({ completionMode = 'handoff', onComplete }: AbelOnboardi
               >
                 {t(promptKey)}
               </Text>
+              {SCENE_HINT_KEYS[currentScene.id] && (
+                // Each scene waits for a tap on what it shows; say so, or the screen looks stuck.
+                <Text className="text-center text-grey text-[14px] mt-[8px]">
+                  {t(SCENE_HINT_KEYS[currentScene.id]!)}
+                </Text>
+              )}
             </AnimatedBox>
           )}
         </Box>

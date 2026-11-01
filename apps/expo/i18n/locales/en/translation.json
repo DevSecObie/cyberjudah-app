@@ -2868,5 +2868,11 @@
   "Sélectionnez des mots": "Select words",
   "Sélectionnez des mots pour voir leur hébreu ou leur grec.": "Select words to see their Hebrew or Greek.",
   "Les mots de la {{version}} ne sont pas reliés aux numéros Strong.": "The words of the {{version}} are not linked to Strong's numbers.",
-  "Aucun mot hébreu ou grec dans la sélection.": "No Hebrew or Greek word in the selection."
+  "Aucun mot hébreu ou grec dans la sélection.": "No Hebrew or Greek word in the selection.",
+  "onboarding.abel.sceneTwo.hint": "Tap Lexicon to continue",
+  "onboarding.abel.sceneOne.hint": "Tap the verse to continue",
+  "onboarding.abel.sceneThree.hint": "Tap H1892 to continue",
+  "onboarding.abel.sceneFour.hint": "Tap “Add a note” to continue",
+  "onboarding.abel.sceneFive.hint": "Tap “Add the Abel tag” to continue",
+  "onboarding.abel.sceneSix.hint": "Close the relations to continue"
 }

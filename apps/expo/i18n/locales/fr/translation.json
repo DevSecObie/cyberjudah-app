@@ -2888,5 +2888,11 @@
   "Sélectionnez des mots": "Sélectionnez des mots",
   "Sélectionnez des mots pour voir leur hébreu ou leur grec.": "Sélectionnez des mots pour voir leur hébreu ou leur grec.",
   "Les mots de la {{version}} ne sont pas reliés aux numéros Strong.": "Les mots de la {{version}} ne sont pas reliés aux numéros Strong.",
-  "Aucun mot hébreu ou grec dans la sélection.": "Aucun mot hébreu ou grec dans la sélection."
+  "Aucun mot hébreu ou grec dans la sélection.": "Aucun mot hébreu ou grec dans la sélection.",
+  "onboarding.abel.sceneTwo.hint": "Touchez Lexique pour continuer",
+  "onboarding.abel.sceneOne.hint": "Touchez le verset pour continuer",
+  "onboarding.abel.sceneThree.hint": "Touchez H1892 pour continuer",
+  "onboarding.abel.sceneFour.hint": "Touchez « Ajouter une note » pour continuer",
+  "onboarding.abel.sceneFive.hint": "Touchez « Ajouter le tag Abel » pour continuer",
+  "onboarding.abel.sceneSix.hint": "Fermez les relations pour continuer"
 }
