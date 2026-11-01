@@ -273,17 +273,19 @@ describe('notes HTML', () => {
 })
 
 describe('featuredSabbathClass', () => {
-  const cls = (title: string, date: string, series = 'Sabbath classes') =>
-    ({ title, date, series }) as unknown as Parameters<typeof featuredSabbathClass>[0][number]
+  const cls = (title: string, date: string, broadcastAt?: string, series = 'Sabbath classes') =>
+    ({ title, date, broadcastAt, series }) as unknown as Parameters<
+      typeof featuredSabbathClass
+    >[0][number]
 
-  it('features the last class taught on the latest Sabbath', () => {
+  it('features the class that went live last, as the Telegram app does', () => {
     const classes = [
-      cls('Morning', '2026-10-31'),
-      cls('Second', '2026-10-31'),
-      cls('Last', '2026-10-31'),
-      cls('Older', '2026-10-24'),
-      cls('Weekday', '2026-11-01', 'Weekday classes'),
+      cls('Morning', '2026-10-31', '2026-10-31T14:00:00Z'),
+      cls('Evening', '2026-10-31', '2026-10-31T22:00:00Z'),
+      cls('Afternoon', '2026-10-31', '2026-10-31T18:00:00Z'),
+      cls('Older', '2026-10-24', '2026-10-24T22:00:00Z'),
+      cls('Captain', '2026-11-01', undefined, 'Captains'),
     ]
-    expect(featuredSabbathClass(classes)?.title).toBe('Last')
+    expect(featuredSabbathClass(classes)?.title).toBe('Evening')
   })
 })
