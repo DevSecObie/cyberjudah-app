@@ -19,13 +19,11 @@ import NaveOfTheDay from './NaveOfTheDay'
 import PlanHome from './PlanHome'
 import MeditationsHome from './MeditationsHome'
 import StrongOfTheDay from './StrongOfTheDay'
-import TheBibleProject from './TheBibleProjectPlan'
 import TimelineWidget, { TIMELINE_ART_OVERFLOW } from './TimelineWidget'
 import UserWidget, { LoginPrompt } from './UserWidget'
 import WordOfTheDay from './WordOfTheDay'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useTranslation } from 'react-i18next'
-import TryAudibibleWidget from './TryAudibibleWidget'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { Events } from './Events'
@@ -70,7 +68,6 @@ export const Home = ({ closeHome, inWorkspace = false }: HomeProps) => {
             className="border-continuous h-[174px] gap-[12px] items-stretch overflow-visible"
             style={{ marginTop: 12 + TIMELINE_ART_OVERFLOW }}
           >
-            {!cyberJudah && <TheBibleProject />}
             <TimelineWidget />
             {cyberJudah && <CaseStudiesWidget />}
           </HStack>
@@ -111,7 +108,6 @@ export const Home = ({ closeHome, inWorkspace = false }: HomeProps) => {
         <VStack className="overflow-hidden border-continuous gap-[10px]">
           <Box className="px-[20px] pt-[20px]">{!cyberJudah && <MeditationsHome />}</Box>
           <PlanHome />
-          {!cyberJudah && <TryAudibibleWidget />}
         </VStack>
 
         <Box className="overflow-hidden border-continuous bg-light-grey px-[20px]">
