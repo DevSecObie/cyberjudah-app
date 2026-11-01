@@ -75,3 +75,57 @@ test('the original production document is untouched by staging writes', async ()
   assert.equal((await getDoc(doc(owner, 'users/alice'))).data().displayName, 'Original')
   await assertFails(getDoc(doc(db('bob'), 'users/alice')))
 })
+test('the server-owned subscription cannot be set or changed by the account owner', async () => {
+  const owner = db('alice')
+  for (const root of ['users', 'staging_users']) {
+    const path = `${root}/alice`
+    await assertFails(setDoc(doc(owner, path), { subscription: 'premium' }))
+    await assertSucceeds(setDoc(doc(owner, path), { displayName: 'Reader' }))
+    await assertFails(updateDoc(doc(owner, path), { subscription: 'premium' }))
+    await env.withSecurityRulesDisabled(ctx =>
+      setDoc(doc(ctx.firestore(), path), { displayName: 'Reader', subscription: 'server' })
+    )
+    await assertSucceeds(updateDoc(doc(owner, path), { displayName: 'Renamed' }))
+    await assertFails(updateDoc(doc(owner, path), { subscription: 'premium' }))
+    await assertSucceeds(deleteDoc(doc(owner, path)))
+  }
+})
+test("a study's revision history is as private as the study", async () => {
+  const owner = db('alice'),
+    path = 'studies/private'
+  await assertSucceeds(setDoc(doc(owner, path), { user: { id: 'alice' }, title: 'fixture' }))
+  await assertSucceeds(setDoc(doc(owner, path + '/revisions/one'), { text: 'previous' }))
+  await assertSucceeds(getDoc(doc(owner, path + '/revisions/one')))
+  for (const uid of ['bob', null]) {
+    await assertFails(getDoc(doc(db(uid), path + '/revisions/one')))
+    await assertFails(setDoc(doc(db(uid), path + '/revisions/two'), { text: 'planted' }))
+  }
+  await assertSucceeds(deleteDoc(doc(owner, path + '/revisions/one')))
+})
+test('Delete account can remove everything the owner keeps, and nothing of anyone else', async () => {
+  for (const [users, studies, status] of [
+    ['users', 'studies', 'users-status'],
+    ['staging_users', 'staging_studies', 'staging_users-status'],
+  ]) {
+    await env.withSecurityRulesDisabled(async ctx => {
+      const admin = ctx.firestore()
+      await setDoc(doc(admin, `${users}/alice`), { displayName: 'Reader', subscription: 'server' })
+      await setDoc(doc(admin, `${users}/alice/notes/n1`), { text: 'fixture' })
+      await setDoc(doc(admin, `${status}/alice`), { lastSeen: 1 })
+      await setDoc(doc(admin, `${studies}/mine`), { user: { id: 'alice' } })
+      // A revision written without its own user field, as older clients did.
+      await setDoc(doc(admin, `${studies}/mine/revisions/r1`), { text: 'previous' })
+      await setDoc(doc(admin, `${studies}/theirs`), { user: { id: 'bob' } })
+    })
+    const alice = db('alice')
+    await assertFails(deleteDoc(doc(alice, `${studies}/theirs`)))
+    for (const path of [
+      `${users}/alice/notes/n1`,
+      `${studies}/mine/revisions/r1`,
+      `${studies}/mine`,
+      `${status}/alice`,
+      `${users}/alice`,
+    ])
+      await assertSucceeds(deleteDoc(doc(alice, path)))
+  }
+})
