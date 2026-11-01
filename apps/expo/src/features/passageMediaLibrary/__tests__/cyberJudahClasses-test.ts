@@ -10,6 +10,7 @@ jest.mock('~helpers/storage', () => ({
 
 import {
   classNotesToBlocks,
+  featuredSabbathClass,
   filterClassLibrary,
   getCachedClassById,
   liveClassBanner,
@@ -268,5 +269,21 @@ describe('notes HTML', () => {
         y: 100,
       },
     ])
+  })
+})
+
+describe('featuredSabbathClass', () => {
+  const cls = (title: string, date: string, series = 'Sabbath classes') =>
+    ({ title, date, series }) as unknown as Parameters<typeof featuredSabbathClass>[0][number]
+
+  it('features the last class taught on the latest Sabbath', () => {
+    const classes = [
+      cls('Morning', '2026-10-31'),
+      cls('Second', '2026-10-31'),
+      cls('Last', '2026-10-31'),
+      cls('Older', '2026-10-24'),
+      cls('Weekday', '2026-11-01', 'Weekday classes'),
+    ]
+    expect(featuredSabbathClass(classes)?.title).toBe('Last')
   })
 })

@@ -751,3 +751,13 @@ export const loadClassNoteBlocks = async (
 
 export const getCachedClassById = (workId: string): CyberJudahClass | null =>
   readCachedClassLibrary()?.find(item => item.workId === workId) ?? null
+
+/**
+ * The class to feature: the last one taught on the latest Sabbath. The list keeps a day's
+ * classes in broadcast order (first class first), so the latest day's last entry is the newest.
+ */
+export const featuredSabbathClass = (classes: CyberJudahClass[]): CyberJudahClass | undefined => {
+  const sabbath = classes.filter(item => item.series === 'Sabbath classes')
+  const latest = sabbath.reduce((day, item) => (item.date > day ? item.date : day), '')
+  return sabbath.filter(item => item.date === latest).at(-1)
+}

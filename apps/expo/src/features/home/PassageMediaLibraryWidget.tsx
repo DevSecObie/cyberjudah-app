@@ -11,6 +11,7 @@ import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import {
   loadClassLibrary,
   readCachedClassLibrary,
+  featuredSabbathClass,
 } from '~features/passageMediaLibrary/cyberJudahClasses'
 import LiveClassBanner from '~features/passageMediaLibrary/LiveClassBanner'
 /** How far the lion rises above the card, inside the space above it. */
@@ -33,9 +34,7 @@ const PassageMediaLibraryWidget = () => {
     networkMode: 'always',
     retry: 1,
   })
-  const latest = cyberJudah
-    ? classLibrary.data?.find(item => item.series === 'Sabbath classes')
-    : undefined
+  const latest = cyberJudah ? featuredSabbathClass(classLibrary.data ?? []) : undefined
 
   return (
     <Box className="overflow-hidden border-continuous bg-light-grey pt-[20px]">
