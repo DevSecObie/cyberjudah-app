@@ -1,4 +1,4 @@
-import { classMomentOf, firstClassMomentIn } from '../CommentaryClassVideo'
+import { classMomentOf, firstClassMomentIn } from '../commentaryClassMoment'
 
 describe('commentary class moments', () => {
   it('reads the class video and second from an entry timestamp', () => {
