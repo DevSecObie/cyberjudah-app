@@ -14,6 +14,7 @@ function mockHost(name: string) {
 }
 jest.mock('~common/ui/Box', () => ({ __esModule: true, default: mockHost('Box') }))
 jest.mock('../AskSourceCards', () => ({ __esModule: true, default: mockHost('SourceCards') }))
+jest.mock('../AskPreceptChains', () => ({ __esModule: true, default: mockHost('PreceptChains') }))
 jest.mock('../AskVerseComparison', () => ({
   __esModule: true,
   default: mockHost('VerseComparison'),

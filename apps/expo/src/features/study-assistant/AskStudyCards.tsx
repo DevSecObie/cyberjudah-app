@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import Box from '~common/ui/Box'
 import { useDefaultBibleVersion } from '~state/useDefaultBibleVersion'
 import AskSourceCards from './AskSourceCards'
+import AskPreceptChains from './AskPreceptChains'
 import AskVerseComparison from './AskVerseComparison'
 import {
   askStudyCardsData,
@@ -113,5 +114,10 @@ export default function AskStudyCards({ turn, streaming }: { turn: ChatTurn; str
     version,
     i18n.language.startsWith('fr') ? 'fr' : 'en'
   )
-  return <RenderCards key={`${turn.id}:${version}`} data={data} />
+  return (
+    <>
+      <RenderCards key={`${turn.id}:${version}`} data={data} />
+      <AskPreceptChains sources={turn.sources} />
+    </>
+  )
 }
