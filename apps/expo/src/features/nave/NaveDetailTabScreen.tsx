@@ -93,7 +93,7 @@ const NaveDetailScreen = ({ naveAtom, isFormSheet = false }: NaveDetailScreenPro
     if (isInTab) {
       setNaveTab(
         produce(draft => {
-          draft.title = 'Thèmes Nave'
+          draft.title = t('Thèmes Nave')
           draft.data = {}
         })
       )

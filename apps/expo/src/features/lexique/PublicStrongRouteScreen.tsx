@@ -1,4 +1,5 @@
 import { Redirect, type Href, useLocalSearchParams } from 'expo-router'
+import i18n from '~i18n'
 
 import ResourceUnavailableView from '~features/resources/ResourceUnavailableView'
 import { IS_FORM_SHEET } from '~helpers/constants'
@@ -38,7 +39,7 @@ export const PublicStrongEntryRouteScreen = ({ page }: { page: PublicStrongEntry
   if (!identity) {
     return (
       <ResourceUnavailableView
-        title="Entrée Strong introuvable"
+        title={i18n.t('Entrée Strong introuvable')}
         failure={{ cause: 'not-found', recoveries: [] }}
       />
     )
@@ -72,7 +73,7 @@ export const PublicStrongEntityRouteScreen = () => {
   if (!uniqueName) {
     return (
       <ResourceUnavailableView
-        title="Entité biblique introuvable"
+        title={i18n.t('Entité biblique introuvable')}
         failure={{ cause: 'not-found', recoveries: [] }}
       />
     )

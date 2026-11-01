@@ -1663,7 +1663,7 @@
   "conflict.studiesAdded": "Studies",
   "conflict.highlightModified": "{{highlight}} updated",
   "conflict.tagModified": "Tag \"{{tag}}\" updated",
-  "conflict.noteModified": "Note pour \"{{note}}\" updated",
+  "conflict.noteModified": "Note for \"{{note}}\" updated",
   "conflict.studyModified": "Study \"{{study}}\" updated",
   "conflict.highlightsModified": "Highlight updated",
   "conflict.tagsModified": "Tags",
@@ -2048,7 +2048,7 @@
   "Gloses françaises": "French glosses",
   "Gloses anglaises": "English glosses",
   "Cet index doit être téléchargé séparément.": "This index must be downloaded separately.",
-  "downloads.strongAttribution": "Numéros Strong affectés en 2026 par “Concordances et Traductions de la Bible” (concordance.bible).",
+  "downloads.strongAttribution": "Strong numbers assigned in 2026 by “Concordances et Traductions de la Bible” (concordance.bible).",
   "Les ressources manquantes pour « {{mode}} » représentent environ {{size}} Mo. Voulez-vous les télécharger ?": "The missing resources for “{{mode}}” require approximately {{size}} MB. Would you like to download them?",
   "strongDetail.entity.personalRelationships": "Personal relationships",
   "strongDetail.entity.graphPage": "Group {{current}} of {{count}}",
@@ -2875,5 +2875,9 @@
   "onboarding.abel.sceneFour.hint": "Tap “Add a note” to continue",
   "onboarding.abel.sceneFive.hint": "Tap “Add the Abel tag” to continue",
   "onboarding.abel.sceneSix.hint": "Close the relations to continue",
-  "history.filters.cyberjudah": "CyberJudah"
+  "history.filters.cyberjudah": "CyberJudah",
+  "Désélectionner": "Deselect",
+  "Entrée Strong introuvable": "Strong's entry not found",
+  "Entité biblique introuvable": "Bible person or place not found",
+  "Soutenir le développeur": "Support the developer"
 }

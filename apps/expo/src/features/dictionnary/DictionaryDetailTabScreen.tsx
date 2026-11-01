@@ -226,7 +226,7 @@ const DictionnaryDetailScreen = ({
     if (isInTab) {
       setDictionaryTab(
         produce(draft => {
-          draft.title = 'Dictionnaire'
+          draft.title = t('Dictionnaire')
           draft.data.word = undefined
         })
       )

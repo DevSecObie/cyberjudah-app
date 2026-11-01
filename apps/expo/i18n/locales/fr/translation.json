@@ -2895,5 +2895,9 @@
   "onboarding.abel.sceneFour.hint": "Touchez « Ajouter une note » pour continuer",
   "onboarding.abel.sceneFive.hint": "Touchez « Ajouter le tag Abel » pour continuer",
   "onboarding.abel.sceneSix.hint": "Fermez les relations pour continuer",
-  "history.filters.cyberjudah": "CyberJudah"
+  "history.filters.cyberjudah": "CyberJudah",
+  "Désélectionner": "Désélectionner",
+  "Entrée Strong introuvable": "Entrée Strong introuvable",
+  "Entité biblique introuvable": "Entité biblique introuvable",
+  "Soutenir le développeur": "Soutenir le développeur"
 }

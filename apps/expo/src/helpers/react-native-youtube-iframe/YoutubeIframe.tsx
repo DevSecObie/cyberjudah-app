@@ -1,3 +1,4 @@
+import i18n from '~i18n'
 import React, {
   useRef,
   useEffect,
@@ -75,7 +76,7 @@ const YoutubeIframe = (
     onChangeState = _event => {},
     onPlaybackQualityChange = _quality => {},
     onPlaybackRateChange = _playbackRate => {},
-    placeholder = 'Chargement...',
+    placeholder = i18n.t('Chargement...'),
   }: YoutubeIframeProps,
   ref: React.Ref<YoutubeIframeRef>
 ) => {

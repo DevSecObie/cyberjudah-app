@@ -14,6 +14,7 @@ import { storage } from '~helpers/storage'
 import { getBibleVersionCanonId, versions } from '~helpers/bibleVersions'
 import { getDefaultBibleVersion } from '~helpers/languageUtils'
 import i18n, { getLanguage } from '~i18n'
+import { getReadingBookName } from '~helpers/readingLanguage'
 import { clampTabIndex, updateTabGroupActiveIndex, updateTabGroupTabs } from './tabWorkspace'
 import type { BibleVersionCoverage } from '~helpers/biblesDb'
 import {
@@ -314,7 +315,10 @@ export const DEFAULT_GROUP_ID = 'default-group'
 export const getDefaultBibleTab = (version?: VersionCode): BibleTab => ({
   id: `bible-${generateUUID()}`,
   isRemovable: true,
-  title: 'Genèse 1:1',
+  title: `${getReadingBookName(
+    { Nom: 'Genèse' },
+    version || getDefaultBibleVersion(getLanguage())
+  )} 1:1`,
   type: 'bible',
   data: {
     selectedVersion: version || getDefaultBibleVersion(getLanguage()),

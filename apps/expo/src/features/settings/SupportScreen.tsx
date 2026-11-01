@@ -1,4 +1,5 @@
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
+import i18n from '~i18n'
 import { openInApp } from '~common/inAppBrowser'
 import { titleFontStyle } from '~themes/styleValues'
 
@@ -16,7 +17,7 @@ const SupportScreen = () => {
 
   return (
     <Container className="bg-canvas">
-      <Header hasBackButton title="Soutenir le développeur" />
+      <Header hasBackButton title={i18n.t('Soutenir le développeur')} />
       <ScrollView backgroundColor="canvas">
         <Box className="px-[24px]">
           <Text className="text-[28px] mb-[16px]" style={titleFontStyle(stylingTheme)}>
