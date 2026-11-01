@@ -31,6 +31,11 @@ import {
   type CommentaryScreenRouteParams,
 } from './commentaryResourceParams'
 import CommentaryEntryNavigation from './CommentaryEntryNavigation'
+import CommentaryClassVideo, {
+  type CommentaryClassVideoHandle,
+  classMomentOf,
+  firstClassMomentIn,
+} from './CommentaryClassVideo'
 import { groupCommentarySectionsForVerse } from './commentaryResourceNavigation'
 import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
 const CommentaryEntryScreen = ({
@@ -54,6 +59,7 @@ const CommentaryEntryScreen = ({
   const { t } = useTranslation()
   const canGoBackInStack = useCanGoBackInStack()
   const scrollRef = React.useRef<React.ComponentRef<typeof ScrollView>>(null)
+  const classVideoRef = React.useRef<CommentaryClassVideoHandle>(null)
   const query = useQuery({
     queryKey: [
       'commentary-resource-chapter',
@@ -108,6 +114,8 @@ const CommentaryEntryScreen = ({
   const previousSection = sectionIndex > 0 ? orderedSections[sectionIndex - 1] : undefined
   const nextSection = sectionIndex >= 0 ? orderedSections[sectionIndex + 1] : undefined
   const bookLabel = t(getBook(book)?.Nom ?? String(book))
+  // The class this entry was taken from, embedded under it at the moment it was taught.
+  const classMoment = section ? firstClassMomentIn(section.content) : undefined
   const passage = section
     ? `${bookLabel} ${chapter}:${section.rangeStartVerse}${
         section.rangeEndVerse !== section.rangeStartVerse ? `–${section.rangeEndVerse}` : ''
@@ -231,12 +239,25 @@ const CommentaryEntryScreen = ({
                   selectable
                   value={section.content}
                   onLinkPress={href => {
+                    // The entry's timestamp plays the class below, from that moment.
+                    const moment = classMomentOf(href)
+                    if (moment && classMoment) {
+                      classVideoRef.current?.playAt(moment)
+                      return
+                    }
                     const osis = commentaryHrefToOsis(href)
                     const route = osis ? getCommentaryBibleViewRoute(osis) : undefined
                     if (route) pushRouteOnce(route)
                     else if (/^https?:\/\//iu.test(href)) void Linking.openURL(href)
                   }}
                 />
+                {classMoment ? (
+                  <CommentaryClassVideo
+                    key={section.id}
+                    ref={classVideoRef}
+                    moment={classMoment}
+                  />
+                ) : null}
               </Box>
             </Box>
           </ScrollView>
