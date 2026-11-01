@@ -7,6 +7,8 @@ const APP_VERSION = isCyberJudah ? '28.2.0' : '27.2.0'
 // ship in a new major or minor version, which creates a new runtime.
 const [majorVersion, minorVersion] = APP_VERSION.split('.')
 const RUNTIME_VERSION = `${majorVersion}.${minorVersion}`
+// CyberJudah's own Expo project (free tier), used only for over-the-air updates.
+const CYBERJUDAH_EAS_PROJECT_ID = 'ee1c2f69-3a80-46c5-b67d-7f4a75def656'
 
 // The families of public pages a link opens in the application.
 const PUBLIC_RESOURCE_PATHS = [
@@ -69,7 +71,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       process.env.BUNDLE_IDENTIFIER ??
       (isCyberJudah ? 'io.cyberjudah.app.dev' : 'com.smontlouis.biblestrong.dev'),
     appleTeamId: isCyberJudah ? process.env.CYBERJUDAH_APPLE_TEAM_ID : undefined,
-    buildNumber: isCyberJudah ? '309' : '297',
+    buildNumber: isCyberJudah ? '310' : '297',
     googleServicesFile:
       process.env.IOS_GOOGLE_SERVICES_FILE ??
       (isCyberJudah
@@ -197,20 +199,35 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     resourceApiUrl: process.env.EXPO_PUBLIC_RESOURCE_API_URL,
     resourceArtifactBaseUrl: process.env.EXPO_PUBLIC_RESOURCE_ARTIFACT_BASE_URL,
     eas: {
-      projectId: isCyberJudah ? undefined : 'fdf72b90-346b-11e9-ad9a-255491359311',
+      projectId: isCyberJudah ? CYBERJUDAH_EAS_PROJECT_ID : 'fdf72b90-346b-11e9-ad9a-255491359311',
     },
     ethern: {
       projectId: isCyberJudah ? undefined : 'ccb42b86-1286-4ca0-99bd-929b7ce418c1',
     },
   },
-  updates: {
-    enabled: !isCyberJudah,
-    url: isCyberJudah ? undefined : 'https://u.expo.dev/fdf72b90-346b-11e9-ad9a-255491359311',
-    checkAutomatically: 'NEVER',
-    requestHeaders: {
-      'expo-channel-name': process.env.EAS_BUILD_CHANNEL,
-    },
-  },
+  // CyberJudah's testers get JS-only fixes over the air: downloaded in the background at launch
+  // and applied on the next launch. Every update must be signed with the private key that pairs
+  // with certs/certificate.pem; that key never enters this repository.
+  updates: isCyberJudah
+    ? {
+        enabled: true,
+        url: `https://u.expo.dev/${CYBERJUDAH_EAS_PROJECT_ID}`,
+        checkAutomatically: 'ON_LOAD',
+        fallbackToCacheTimeout: 0,
+        codeSigningCertificate: './certs/certificate.pem',
+        codeSigningMetadata: { keyid: 'main', alg: 'rsa-v1_5-sha256' },
+        requestHeaders: {
+          'expo-channel-name': process.env.EAS_BUILD_CHANNEL || 'staging',
+        },
+      }
+    : {
+        enabled: true,
+        url: 'https://u.expo.dev/fdf72b90-346b-11e9-ad9a-255491359311',
+        checkAutomatically: 'NEVER',
+        requestHeaders: {
+          'expo-channel-name': process.env.EAS_BUILD_CHANNEL,
+        },
+      },
   experiments: {
     reactCompiler: true,
   },
