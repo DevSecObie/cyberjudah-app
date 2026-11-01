@@ -12,7 +12,11 @@ import { VerseIds } from '~common/types'
 import BibleCompareVerseItem from '~features/bible/BibleCompareVerseItem'
 import BibleVerseDetailFooter from '~features/bible/BibleVerseDetailFooter'
 import { versions } from '~helpers/bibleVersions'
-import { getMaxChapterVerseCount } from '~helpers/bibleCoverage'
+import {
+  getChapterFirstVerse,
+  getChapterLastVerse,
+  getMaxChapterVerseCount,
+} from '~helpers/bibleCoverage'
 import { selectCompareVersions } from '~redux/selectors/user'
 import { localQueryOptions } from '~helpers/queryOptions'
 import { useSheet } from '~helpers/useSheet'
@@ -42,10 +46,16 @@ const CompareCard = ({
     queryKey: ['resource-compare-prev-next', selectedVerseKeys[0], versionsToCompare],
     queryFn: async () => {
       const [livre, chapitre, verse] = selectedVerseKeys[0].split('-')
-      const versesInCurrentChapter =
-        (await getMaxChapterVerseCount(versionsToCompare, Number(livre), Number(chapitre))) ||
-        countLsgChapters[`${livre}-${chapitre}`]
-      return { verseNumber: verse, versesInCurrentChapter }
+      const verseCount = await getMaxChapterVerseCount(
+        versionsToCompare,
+        Number(livre),
+        Number(chapitre)
+      )
+      const versesInCurrentChapter = verseCount
+        ? getChapterLastVerse(Number(livre), Number(chapitre), verseCount)
+        : countLsgChapters[`${livre}-${chapitre}`]
+      const firstVerseInCurrentChapter = getChapterFirstVerse(Number(livre), Number(chapitre))
+      return { verseNumber: verse, versesInCurrentChapter, firstVerseInCurrentChapter }
     },
     enabled: selectedVerseKeys.length === 1 && versionsToCompare.length > 0,
     ...localQueryOptions,
@@ -70,7 +80,7 @@ const CompareCard = ({
       <Empty
         iconElement={
           <Box
-            className="overflow-hidden border-continuous rounded-full bg-light-grey items-center justify-center"
+            className="overflow-hidden border-continuous rounded-[32px] bg-light-grey items-center justify-center"
             style={{ width: 64, height: 64 }}
           >
             <FeatherIcon name="columns" size={28} color="primary" />
@@ -118,6 +128,7 @@ const CompareCard = ({
             goToNextVerse={() => goToVerse(+1)}
             goToPrevVerse={() => goToVerse(-1)}
             versesInCurrentChapter={prevNextItems.versesInCurrentChapter}
+            firstVerseInCurrentChapter={prevNextItems.firstVerseInCurrentChapter}
           />
         )}
         <Box

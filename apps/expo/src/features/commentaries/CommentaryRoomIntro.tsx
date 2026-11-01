@@ -2,10 +2,8 @@ import { twMerge } from '~common/ui/classNames'
 
 import type { CommentaryCatalogEntry } from '~helpers/commentaryCatalog'
 import React from 'react'
-import { StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import Box, { TouchableBox } from '~common/ui/Box'
-import Card from '~common/ui/Card'
 import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
 import type { ResourceLanguage } from '~helpers/databaseTypes'
@@ -17,12 +15,12 @@ const CommentaryTag = ({ label, emphasized = false }: { label: string; emphasize
       className={twMerge(
         'overflow-hidden border-continuous',
         twMerge(
-          emphasized ? 'bg-light-primary' : 'bg-canvas',
-          'overflow-hidden border-continuous px-[10px] py-[6px] rounded-full'
+          emphasized ? 'bg-light-primary' : 'bg-light-grey',
+          'overflow-hidden border-continuous px-[10px] py-[6px] rounded-[14px]'
         )
       )}
     >
-      <Text className={twMerge(emphasized ? 'text-link' : 'text-default', 'text-[12px]')}>
+      <Text className={twMerge(emphasized ? 'text-primary' : 'text-default', 'text-[12px]')}>
         {label}
       </Text>
     </Box>
@@ -46,10 +44,10 @@ const CommentaryIdentity = ({
       size={56}
     />
     <Box className="overflow-hidden border-continuous flex-[1] gap-[3px]">
-      <Text className="text-[19px] leading-[23px] font-semibold" numberOfLines={2}>
+      <Text className="text-[19px] leading-[23px] font-bold" numberOfLines={2}>
         {entry.title}
       </Text>
-      <Text className="text-grey text-[13px]" numberOfLines={1}>
+      <Text className="text-tertiary text-[13px]" numberOfLines={1}>
         {entry.author}
       </Text>
     </Box>
@@ -76,7 +74,7 @@ const CommentaryRoomIntro = ({
   if (compact) {
     return (
       <TouchableBox
-        className="border-continuous overflow-hidden bg-surface rounded-[16px] px-[18px] py-[17px] mb-[16px]"
+        className="border-continuous overflow-hidden bg-reverse rounded-[22px] border-[1px] border-border px-[18px] py-[17px] mb-[16px]"
         activeOpacity={0.62}
         onPress={onPress}
         disabled={!onPress}
@@ -91,13 +89,10 @@ const CommentaryRoomIntro = ({
   }
 
   return (
-    <Card className="px-[18px] py-[17px] mb-[16px]">
+    <Box className="border-continuous overflow-hidden bg-reverse rounded-[22px] border-[1px] border-border px-[18px] py-[17px] mb-[16px]">
       <CommentaryIdentity entry={entry} language={language} />
 
-      <Box
-        className="border-continuous overflow-hidden mt-[16px] pt-[16px] border-separator"
-        style={{ borderTopWidth: StyleSheet.hairlineWidth }}
-      >
+      <Box className="border-continuous overflow-hidden mt-[16px] pt-[16px] border-t-[1px] border-border">
         {description ? (
           <Text className="text-[15px] leading-[22px] text-default">{description}</Text>
         ) : null}
@@ -114,13 +109,10 @@ const CommentaryRoomIntro = ({
         </Box>
       </Box>
 
-      <Box
-        className="border-continuous overflow-hidden mt-[16px] pt-[14px] border-separator"
-        style={{ borderTopWidth: StyleSheet.hairlineWidth }}
-      >
+      <Box className="border-continuous overflow-hidden mt-[16px] pt-[14px] border-t-[1px] border-border">
         <Text className="text-tertiary text-[12px] leading-[17px]">{rights}</Text>
       </Box>
-    </Card>
+    </Box>
   )
 }
 

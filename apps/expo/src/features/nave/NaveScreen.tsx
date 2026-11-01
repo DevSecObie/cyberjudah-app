@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo } from 'react'
 
 import { atom } from 'jotai/vanilla'
 import { useTranslation } from 'react-i18next'
@@ -18,15 +18,18 @@ const NaveScreen = ({
   newTabId,
 }: NaveScreenProps) => {
   const { t } = useTranslation()
-  const [onTheFlyAtom] = useState(() =>
-    atom<NaveTab>({
-      id: `nave-${generateUUID()}`,
-      title: t('Thèmes Nave'),
-      isRemovable: true,
-      hasBackButton: true,
-      type: 'nave',
-      data: {},
-    })
+  const onTheFlyAtom = useMemo(
+    () =>
+      atom<NaveTab>({
+        id: `nave-${generateUUID()}`,
+        title: t('Thèmes Nave'),
+        isRemovable: true,
+        hasBackButton: true,
+        type: 'nave',
+        data: {},
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   )
 
   return (

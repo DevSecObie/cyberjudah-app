@@ -900,4 +900,4 @@ export const getRelationDisplayModel = (
 }
 
 export const getBookName = (bookNumber: number): string =>
-  getBook(bookNumber)?.Nom || i18n.t('Livre {{bookNumber}}', { bookNumber })
+  (getBook(bookNumber) ? i18n.t(getBook(bookNumber)!.Nom) : null) || i18n.t('Livre {{bookNumber}}', { bookNumber })

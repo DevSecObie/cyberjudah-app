@@ -21,7 +21,6 @@ import VerseImageModal from './VerseImageModal'
 import { useImageUrls } from './useImageUrls'
 import { useVerseOfTheDay } from './useVerseOfTheDay'
 import { resolveFontFamily } from '~themes/styleValues'
-import { useTheme } from '~themes/ThemeProvider'
 import { selectFontFamily } from '~redux/selectors/user'
 export const VERSE_CARD_HEIGHT = 280
 
@@ -51,7 +50,6 @@ const dayToAgo = (day: number, t: TFunction<'translation'>) => {
 }
 
 const SkeletonLines = () => {
-  const theme = useTheme()
   const [pulse, setPulse] = useState(false)
 
   useEffect(() => {
@@ -72,7 +70,7 @@ const SkeletonLines = () => {
         style={{
           height: 12,
           borderRadius: 4,
-          backgroundColor: theme.colors.border,
+          backgroundColor: '#E0E0E0',
           width: '80%',
           marginTop: 5,
         }}
@@ -81,7 +79,7 @@ const SkeletonLines = () => {
         style={{
           height: 12,
           borderRadius: 4,
-          backgroundColor: theme.colors.border,
+          backgroundColor: '#E0E0E0',
           width: '100%',
           marginTop: 8,
         }}
@@ -90,7 +88,7 @@ const SkeletonLines = () => {
         style={{
           height: 12,
           borderRadius: 4,
-          backgroundColor: theme.colors.border,
+          backgroundColor: '#E0E0E0',
           width: '30%',
           marginTop: 8,
         }}
@@ -127,23 +125,29 @@ const StandaloneVerseOfTheDay = ({
   const notificationModalRef = React.useRef<SheetRef>(null)
   const cardClassName = desktop
     ? 'flex-1 p-[24px] pb-[12px]'
-    : 'overflow-hidden border-continuous px-[20px] rounded-[24px] bg-surface py-[20px]'
+    : 'overflow-hidden border-continuous px-[20px] rounded-[30px] bg-reverse py-[20px]'
   const cardStyle = desktop ? style : { height: VERSE_CARD_HEIGHT }
-  // The day navigation of the wide Web home wraps below the label when the card is narrow.
   const dayHeader = (
     <Box
-      className={`flex-row items-center justify-between gap-[12px] ${desktop ? 'flex-wrap' : ''}`}
+      dataSet={desktop ? { 'home-verse-header': '' } : undefined}
+      className="flex-row items-center justify-between gap-[12px]"
     >
-      <Text className="text-grey text-[12px] font-medium uppercase tracking-[1.5px]">
-        {addDay === 0 ? t('dailyReading.title') : ago}
+      <Text
+        className={
+          desktop
+            ? 'text-primary font-bold text-[12px] uppercase tracking-[1.5px]'
+            : 'text-grey font-bold text-[14px]'
+        }
+      >
+        {ago}
       </Text>
       {navigation}
       <Link
+        size={44}
         onPress={() => router.push('/daily-reading')}
         accessibilityLabel={t('dailyReading.change')}
-        className="min-h-[44px] justify-center"
       >
-        <Text className="text-link font-bold text-[13px]">{t('dailyReading.changeShort')}</Text>
+        <FeatherIcon name="sliders" size={18} color="grey" />
       </Link>
     </Box>
   )
@@ -164,7 +168,7 @@ const StandaloneVerseOfTheDay = ({
     return (
       <Box className={cardClassName} style={cardStyle}>
         {dayHeader}
-        <Empty message="Impossible de charger le verset du jour..." />
+        <Empty message={t('Impossible de charger le verset du jour...')} />
         {desktop && <Box className="mt-auto pt-[12px] items-start">{footer}</Box>}
       </Box>
     )

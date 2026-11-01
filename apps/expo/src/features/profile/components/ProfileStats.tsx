@@ -1,5 +1,4 @@
 import * as Icon from '~common/ui/classNameIcons'
-import { titleFontStyle } from '~themes/styleValues'
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
@@ -9,32 +8,18 @@ import { twMerge } from '~common/ui/classNames'
 
 import type { Theme as AppTheme } from '~themes'
 import { useTheme } from '~themes/ThemeProvider'
-import { resolveUniverseColors } from '~themes/universeColors'
-import { type PersonalContent, personalContentIcons } from '~common/personalContent'
 
 import Link from '~common/Link'
 import Box, { HStack, VStack } from '~common/ui/Box'
-import Card from '~common/ui/Card'
-import { ListSectionTitle } from '~common/ui/ListSection'
 import Text from '~common/ui/Text'
 import { toast } from '~helpers/toast'
 import useLogin from '~helpers/useLogin'
 import { RootState } from '~redux/modules/reducer'
-import { useHomeLayout } from '~features/home/homeLayout'
 
-/** Home content width from which the six cards fit on a single row. */
-const HOME_SINGLE_ROW_CONTENT = 680
-
-/**
- * Six cards, each with its colored icon above the count, on two rows of three. `home`: no outer
- * inset (aligned with the home section titles) and, when the home is wide enough, a single row of
- * six. Otherwise (profile): a titled group.
- */
-const ProfileStats = ({ home = false }: { home?: boolean }) => {
+const ProfileStats = ({ desktop = false }: { desktop?: boolean }) => {
   const { t } = useTranslation()
   const theme = useTheme()
   const { isLogged } = useLogin()
-  const singleRow = useHomeLayout().content >= HOME_SINGLE_ROW_CONTENT && home
 
   const highlights = useSelector(
     (state: RootState) =>
@@ -53,10 +38,17 @@ const ProfileStats = ({ home = false }: { home?: boolean }) => {
     Boolean(sync?.isLoading) && collections.some(collection => !sync?.loaded?.[collection])
 
   return (
-    <Box className={home ? '' : 'mx-[20px] mb-[22px]'}>
-      {!home && <ListSectionTitle>{t('profile.stats')}</ListSectionTitle>}
+    <Box
+      className={
+        desktop
+          ? ''
+          : 'overflow-hidden border-continuous bg-light-grey rounded-[30px] py-[20px] mx-[20px]'
+      }
+    >
       <VStack
-        className={twMerge('overflow-hidden border-continuous gap-[10px]', home && 'px-[20px]')}
+        className={
+          desktop ? 'gap-[12px]' : 'overflow-hidden border-continuous gap-[10px] px-[20px]'
+        }
       >
         {sync?.isLoading && (
           <HStack className="overflow-hidden border-continuous items-center gap-[8px]">
@@ -64,42 +56,42 @@ const ProfileStats = ({ home = false }: { home?: boolean }) => {
             <Text className="text-[12px] text-grey">{t('profileStats.syncingData')}</Text>
           </HStack>
         )}
-        <Box className={singleRow ? 'flex-row gap-[10px]' : 'gap-[10px]'}>
+        <Box
+          dataSet={desktop ? { 'home-stats-grid': '' } : undefined}
+          style={desktop ? { backgroundColor: theme.colors.border } : undefined}
+          className={desktop ? 'flex-row gap-[12px]' : 'gap-[10px]'}
+        >
           <HStack
-            className={twMerge(
-              'overflow-hidden border-continuous gap-[10px]',
-              singleRow && 'flex-1'
-            )}
+            dataSet={desktop ? { 'home-stats-group': '' } : undefined}
+            className={
+              desktop ? 'flex-1 gap-[12px]' : 'overflow-hidden border-continuous gap-[10px]'
+            }
           >
-            <StatCard route="Highlights">
+            <StatCard flat={desktop} route="Highlights">
               <StatValue
-                content="highlights"
+                icon="edit-3"
                 count={highlights}
                 isLoading={isSyncing(['highlights', 'wordAnnotations'])}
               />
-              <Text className="text-[12px] text-grey" numberOfLines={1}>
+              <Text className="text-[11px] text-grey" numberOfLines={1}>
                 {isSyncing(['highlights', 'wordAnnotations']) && highlights === 0
                   ? t('profileStats.syncing')
                   : t('surbrillance', { count: highlights })}
               </Text>
             </StatCard>
 
-            <StatCard route="Bookmarks">
-              <StatValue
-                content="bookmarks"
-                count={bookmarks}
-                isLoading={isSyncing(['bookmarks'])}
-              />
-              <Text className="text-[12px] text-grey" numberOfLines={1}>
+            <StatCard flat={desktop} route="Bookmarks">
+              <StatValue icon="bookmark" count={bookmarks} isLoading={isSyncing(['bookmarks'])} />
+              <Text className="text-[11px] text-grey" numberOfLines={1}>
                 {isSyncing(['bookmarks']) && bookmarks === 0
                   ? t('profileStats.syncing')
                   : t('marque-page', { count: bookmarks })}
               </Text>
             </StatCard>
 
-            <StatCard route="BibleVerseNotes">
-              <StatValue content="notes" count={notes} isLoading={isSyncing(['notes'])} />
-              <Text className="text-[12px] text-grey" numberOfLines={1}>
+            <StatCard flat={desktop} route="BibleVerseNotes">
+              <StatValue icon="file-text" count={notes} isLoading={isSyncing(['notes'])} />
+              <Text className="text-[11px] text-grey" numberOfLines={1}>
                 {isSyncing(['notes']) && notes === 0
                   ? t('profileStats.syncing')
                   : t('note', { count: notes })}
@@ -108,12 +100,13 @@ const ProfileStats = ({ home = false }: { home?: boolean }) => {
           </HStack>
 
           <HStack
-            className={twMerge(
-              'overflow-hidden border-continuous gap-[10px]',
-              singleRow && 'flex-1'
-            )}
+            dataSet={desktop ? { 'home-stats-group': '' } : undefined}
+            className={
+              desktop ? 'flex-1 gap-[12px]' : 'overflow-hidden border-continuous gap-[10px]'
+            }
           >
             <StatCard
+              flat={desktop}
               {...(isLogged
                 ? { route: 'Studies' as const }
                 : { onPress: () => toast.info(t('study.loginRequired')) })}
@@ -126,26 +119,26 @@ const ProfileStats = ({ home = false }: { home?: boolean }) => {
                   <Icon.Feather name="lock" size={12} color={theme.colors.grey} />
                 </Box>
               )}
-              <StatValue content="study" count={studies} isLoading={isSyncing(['studies'])} />
-              <Text className="text-[12px] text-grey" numberOfLines={1}>
+              <StatValue icon="feather" count={studies} isLoading={isSyncing(['studies'])} />
+              <Text className="text-[11px] text-grey" numberOfLines={1}>
                 {isSyncing(['studies']) && studies === 0
                   ? t('profileStats.syncing')
                   : t('étude', { count: studies })}
               </Text>
             </StatCard>
 
-            <StatCard route="BibleVerseLinks">
-              <StatValue content="links" count={links} isLoading={isSyncing(['links'])} />
-              <Text className="text-[12px] text-grey" numberOfLines={1}>
+            <StatCard flat={desktop} route="BibleVerseLinks">
+              <StatValue icon="link" count={links} isLoading={isSyncing(['links'])} />
+              <Text className="text-[11px] text-grey" numberOfLines={1}>
                 {isSyncing(['links']) && links === 0
                   ? t('profileStats.syncing')
                   : t('lien', { count: links })}
               </Text>
             </StatCard>
 
-            <StatCard route="Tags">
-              <StatValue content="tags" count={tags} isLoading={isSyncing(['tags'])} />
-              <Text className="text-[12px] text-grey" numberOfLines={1}>
+            <StatCard flat={desktop} route="Tags">
+              <StatValue icon="tag" count={tags} isLoading={isSyncing(['tags'])} />
+              <Text className="text-[11px] text-grey" numberOfLines={1}>
                 {isSyncing(['tags']) && tags === 0
                   ? t('profileStats.syncing')
                   : t('étiquette', { count: tags })}
@@ -159,43 +152,78 @@ const ProfileStats = ({ home = false }: { home?: boolean }) => {
 }
 
 const StatValue = ({
-  content,
+  icon,
   count,
   isLoading,
 }: {
-  content: PersonalContent
+  icon: React.ComponentProps<typeof Icon.Feather>['name']
   count: number
   isLoading: boolean
 }) => {
   const theme = useTheme()
-  const color = resolveUniverseColors(theme.colors, content).foreground
+  const showLoader = isLoading && count === 0
 
   return (
-    <VStack className="items-start gap-[8px]">
-      <Icon.Feather name={personalContentIcons[content]} size={20} color={color} />
-      {isLoading && count === 0 ? (
+    <HStack className="overflow-hidden border-continuous items-center gap-[8px]">
+      <ChipIcon name={icon} size={18} />
+      {showLoader ? (
         <ActivityIndicator size="small" color={theme.colors.primary} />
       ) : (
-        <Text className="text-[22px] leading-[26px]" style={titleFontStyle(theme)}>
-          {count}
-        </Text>
+        <Text className="font-bold text-[18px]">{count}</Text>
       )}
-    </VStack>
+    </HStack>
   )
 }
 
 const StatCard = (
   componentProps: Omit<UIComponentProps<typeof Link>, 'theme'> & {
+    flat?: boolean
+    theme?: AppTheme
+    className?: string
+  }
+) => {
+  const { theme: _themeOverride, className, flat = false, ...props } = componentProps
+
+  const resolvedClassName = twMerge(
+    flat
+      ? 'flex-1 bg-reverse p-[12px]'
+      : 'flex-[1] bg-reverse rounded-[12px] p-[12px] elevation-[1]',
+    className
+  )
+  return (
+    <Link
+      {...props}
+      className={resolvedClassName}
+      style={
+        [
+          !flat && {
+            shadowColor: 'rgb(89,131,240)',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.08,
+            shadowRadius: 6,
+          },
+          props.style,
+        ] as UIComponentProps<typeof Link>['style']
+      }
+    />
+  )
+}
+
+const ChipIcon = (
+  componentProps: Omit<UIComponentProps<typeof Icon.Feather>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
 ) => {
   const { theme: _themeOverride, className, ...props } = componentProps
 
+  const resolvedClassName = twMerge('text-grey', className)
   return (
-    <Card className="flex-[1]">
-      <Link {...props} className={twMerge('flex-[1] px-[12px] py-[14px] gap-[8px]', className)} />
-    </Card>
+    <Icon.Feather
+      {...props}
+      className={resolvedClassName}
+      style={[props.style] as UIComponentProps<typeof Icon.Feather>['style']}
+    />
   )
 }
 

@@ -38,7 +38,6 @@ import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
 import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
 import type { VersionCode } from '~state/tabs'
 import { useDefaultBibleVersion } from '../../state/useDefaultBibleVersion'
-import { getReadingBookName, translateForReading } from '~helpers/readingLanguage'
 import PericopeHeader from './PericopeHeader'
 
 type PericopeVerse = {
@@ -50,10 +49,6 @@ type PericopeVerse = {
 }
 type PericopeChapter = Record<string, PericopeVerse>
 type PericopeBook = Record<string, PericopeChapter>
-
-/** « CHAPITRE » is stored in capitals for the reading languages; the list sets it in sentence case. */
-const toSentenceCase = (value: string) =>
-  value.charAt(0).toLocaleUpperCase() + value.slice(1).toLocaleLowerCase()
 
 const PericopeHeading = (
   componentProps: Omit<UIComponentProps<typeof Paragraph>, keyof { size: number } | 'theme'> &
@@ -168,7 +163,7 @@ const PericopeScreen = ({ isFormSheet = false }: PericopeScreenProps) => {
   )
 
   return (
-    <FormSheetScreen isFormSheet={isFormSheet} reserveBottom>
+    <FormSheetScreen isFormSheet={isFormSheet}>
       <Box className="overflow-hidden border-continuous flex-[1] bg-reverse">
         <PericopeHeader hasBackButton={hasBackButton} title={`${t('Péricopes')} ${version}`} />
         {availabilityQuery.isPending ||
@@ -208,9 +203,7 @@ const PericopeScreen = ({ isFormSheet = false }: PericopeScreenProps) => {
         ) : (
           <ScrollView>
             <Box className="overflow-hidden border-continuous p-[20px]">
-              <Text className="text-[30px] font-bold mb-[40px]">
-                {getReadingBookName(book, version)}
-              </Text>
+              <Text className="text-[30px] font-bold mb-[40px]">{t(book.Nom)}</Text>
               {!Object.keys(pericopeBook).length ? (
                 <Empty
                   message={t('Aucun péricope pour ce Livre, essayez avec une autre version.')}
@@ -219,8 +212,8 @@ const PericopeScreen = ({ isFormSheet = false }: PericopeScreenProps) => {
                 Object.entries(pericopeBook).map(([chapterKey, chapterObject]) => (
                   <Fragment key={chapterKey}>
                     {!!Object.keys(chapterObject).length && (
-                      <Text className="text-grey text-[13px] mb-[10px]" accessibilityRole="header">
-                        {toSentenceCase(translateForReading('CHAPITRE', version))} {chapterKey}
+                      <Text className="text-tertiary text-[12px] mb-[10px]">
+                        {t('CHAPITRE')} {chapterKey}
                       </Text>
                     )}
                     {Object.entries(chapterObject).map(([verseKey, verseObject]) => {
@@ -255,7 +248,7 @@ const PericopeScreen = ({ isFormSheet = false }: PericopeScreenProps) => {
             </Box>
           </ScrollView>
         )}
-        {/* The iOS sheet reaches the bottom edge; outside it, the page reserves the inset. */}
+        {/* The iOS sheet reaches the bottom edge; outside it, Container already pads the inset. */}
         <Box
           className="overflow-hidden border-continuous bg-reverse flex-row px-[20px] py-[10px] justify-between"
           style={isFormSheet ? { paddingBottom: Math.max(insets.bottom, 10) } : undefined}

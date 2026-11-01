@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { ScrollView } from 'react-native'
 import Empty from '~common/Empty'
 import Header from '~common/Header'
-import Box, { TouchableBox, usePageBottomInset } from '~common/ui/Box'
+import Box, { TouchableBox } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import { useSheet } from '~helpers/useSheet'
 import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
@@ -26,7 +26,6 @@ const EntityRelationsScreen = () => {
   const hasBackButton = isFormSheet ? canGoBackInStack : true
   const isSingleVerseEndpoint = endpoint?.type === 'verse' && endpoint.verseKeys.length === 1
   const endpointLabel = endpoint ? getEndpointFallbackLabel(endpoint) : ''
-  const bottomInset = usePageBottomInset()
 
   return (
     <FormSheetScreen isFormSheet={isFormSheet}>
@@ -37,7 +36,7 @@ const EntityRelationsScreen = () => {
         rightComponent={
           endpoint ? (
             <TouchableBox
-              className="overflow-hidden border-continuous mr-[15px] rounded-full bg-primary w-[28px] h-[28px] items-center justify-center"
+              className="overflow-hidden border-continuous mr-[15px] rounded-[18px] bg-primary w-[28px] h-[28px] items-center justify-center"
               onPress={() => createRelationModal.open()}
             >
               <FeatherIcon name="plus" size={16} color="reverse" />
@@ -45,7 +44,7 @@ const EntityRelationsScreen = () => {
           ) : undefined
         }
       />
-      <ScrollView contentContainerStyle={[pageContentStyle, { paddingBottom: 16 + bottomInset }]}>
+      <ScrollView contentContainerStyle={pageContentStyle}>
         {endpoint ? (
           <StudyRelationList
             endpoint={endpoint}

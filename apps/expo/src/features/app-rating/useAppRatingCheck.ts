@@ -1,5 +1,6 @@
-import { useEffect, useEffectEvent, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useAppRating } from './useAppRating'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 
 /**
  * Hook to track app opens and check for engagement-based rating triggers.
@@ -10,18 +11,17 @@ export function useAppRatingCheck() {
   const { trackAppOpen, shouldShowRatingPrompt } = useAppRating()
   const hasTracked = useRef(false)
 
-  const trackFirstOpen = useEffectEvent(() => {
+  useEffect(() => {
     if (!hasTracked.current) {
       hasTracked.current = true
       trackAppOpen()
     }
-  })
-
-  useEffect(() => {
-    trackFirstOpen()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return {
-    shouldShowEngagementRating: () => shouldShowRatingPrompt('engagement_milestone'),
+    // The prompt rates Bible Strong's store listing; CyberJudah has no listing of its own yet.
+    shouldShowEngagementRating: () =>
+      !usesCyberJudahEditorial() && shouldShowRatingPrompt('engagement_milestone'),
   }
 }

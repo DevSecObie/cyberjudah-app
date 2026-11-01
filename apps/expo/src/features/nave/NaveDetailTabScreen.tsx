@@ -1,8 +1,7 @@
 import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
-import { titleFontStyle } from '~themes/styleValues'
 import { naveContext } from '~features/study-assistant/resourceContext'
 import { goBackOrHome } from '~navigation/goBackOrHome'
-import React, { useCallback, useEffect, useEffectEvent } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { MenuView, type MenuAction } from '~common/ui/MenuView'
 import { useSelector } from 'react-redux'
@@ -15,16 +14,10 @@ import { useTranslation } from 'react-i18next'
 import Header from '~common/Header'
 import Loading from '~common/Loading'
 import Empty from '~common/Empty'
-import SwitchableHTMLView from '~common/SwitchableHTMLView'
-import NaveIcon from '~common/NaveIcon'
+import HTMLViewContent from '~common/HTMLViewContent'
 import { toast } from '~helpers/toast'
 import EntityChipList from '~common/EntityChipList'
-import Box, { HStack, VStack } from '~common/ui/Box'
-import IconTile from '~common/ui/IconTile'
-import Text from '~common/ui/Text'
-import { STUDY_COLUMN_MAX_WIDTH, StudySection } from '~common/ui/StudySection'
-import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
-import { resolveUniverseColors } from '~themes/universeColors'
+import Box from '~common/ui/Box'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
 import { FeatherIcon } from '~common/ui/Icon'
 import { useOpenInNewTab } from '~features/app-switcher/utils/useOpenInNewTab'
@@ -132,7 +125,6 @@ const NaveDetailScreen = ({ naveAtom, isFormSheet = false }: NaveDetailScreenPro
     })
   )
   const { t } = useTranslation()
-  const stylingTheme = useStylingTheme()
   const setUnifiedTagsModal = useSetAtom(unifiedTagsModalAtom)
   const selectNaveTags = makeNaveTagsSelector()
   const tags = useSelector((state: RootState) => selectNaveTags(state, name_lower ?? ''))
@@ -147,16 +139,16 @@ const NaveDetailScreen = ({ naveAtom, isFormSheet = false }: NaveDetailScreenPro
       : null
   const relationCount = useRelationCount(naveEndpoint)
 
-  const setTitle = useEffectEvent((title: string) =>
+  const setTitle = (title: string) =>
     setNaveTab(
       produce(draft => {
         draft.title = title
       })
     )
-  )
 
   useEffect(() => {
     setTitle(naveItem?.name || name || '')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [naveItem?.name, name])
 
   useEffect(() => {
@@ -188,7 +180,7 @@ const NaveDetailScreen = ({ naveAtom, isFormSheet = false }: NaveDetailScreenPro
         })
       } catch (e) {
         console.log('[Nave] Error loading verse:', e)
-        toast.error('Impossible de charger ce verset.')
+        toast.error('Could not load this verse.')
       }
     }
 
@@ -241,29 +233,19 @@ const NaveDetailScreen = ({ naveAtom, isFormSheet = false }: NaveDetailScreenPro
     )
   }
 
-  // A form sheet has no container of its own: the box inside carries the ground there.
-  const screen = (content: React.ReactNode) => (
-    <FormSheetScreen className="bg-canvas" isFormSheet={isFormSheet}>
-      <Box className="overflow-hidden border-continuous flex-[1] bg-canvas">{content}</Box>
-    </FormSheetScreen>
-  )
-  const backHeader = (
-    <Header hasBackButton={hasBackButton} onCustomBackPress={goBack} title={t('Thématique Nave')} />
-  )
-
   if (naveQuery.isPending) {
-    return screen(
-      <>
-        {backHeader}
+    return (
+      <FormSheetScreen isFormSheet={isFormSheet}>
+        <Header hasBackButton={hasBackButton} onCustomBackPress={goBack} title="Thèmes Nave" />
         <Loading message={t('Chargement...')} />
-      </>
+      </FormSheetScreen>
     )
   }
 
   if (naveAvailabilityQuery.isError || naveQuery.isError) {
-    return screen(
-      <>
-        {backHeader}
+    return (
+      <FormSheetScreen isFormSheet={isFormSheet}>
+        <Header hasBackButton={hasBackButton} onCustomBackPress={goBack} title="Thèmes Nave" />
         <ResourceUnavailableView
           identity={{ kind: 'database', databaseId: 'NAVE', language: naveResourceLanguage }}
           title={t('resource.nave.temporarilyUnavailable')}
@@ -274,29 +256,28 @@ const NaveDetailScreen = ({ naveAtom, isFormSheet = false }: NaveDetailScreenPro
             void naveQuery.refetch()
           }}
         />
-      </>
+      </FormSheetScreen>
     )
   }
 
   if (!naveItem) {
-    return screen(
-      <>
-        {backHeader}
+    return (
+      <FormSheetScreen isFormSheet={isFormSheet}>
+        <Header hasBackButton={hasBackButton} onCustomBackPress={goBack} title="Thèmes Nave" />
         <Empty
           icon={require('~assets/images/empty-state-icons/inbox.svg')}
           message={t('Impossible de charger la nave...')}
         />
-      </>
+      </FormSheetScreen>
     )
   }
 
-  const naveUniverse = resolveUniverseColors(stylingTheme.colors, 'nave')
-
-  return screen(
-    <>
+  return (
+    <FormSheetScreen isFormSheet={isFormSheet}>
       <Header
         hasBackButton={hasBackButton}
-        title={t('Thématique Nave')}
+        title={naveItem.name || name || ''}
+        subTitle={naveItem?.normalizedName}
         rightComponent={
           <MenuView
             tabActions
@@ -354,40 +335,26 @@ const NaveDetailScreen = ({ naveAtom, isFormSheet = false }: NaveDetailScreenPro
           </MenuView>
         }
       />
-      <ScrollView
-        backgroundColor="canvas"
-        contentContainerStyle={{ maxWidth: STUDY_COLUMN_MAX_WIDTH + 40, paddingHorizontal: 20 }}
-      >
-        <VStack className="gap-[10px] pt-[2px] pb-[4px]">
-          {(tags || relationCount > 0) && (
+      <ScrollView contentContainerStyle={{ maxWidth: 600 }}>
+        {(tags || relationCount > 0) && (
+          <Box className="overflow-hidden border-continuous mt-[0px] px-[20px]">
             <EntityChipList
               tags={tags}
               relationCount={relationCount}
               onRelationPress={() => naveEndpoint && openEntityRelations(naveEndpoint)}
             />
-          )}
-          <HStack className="items-center gap-[10px]">
-            <IconTile bg={naveUniverse.background}>
-              <NaveIcon size={18} color={naveUniverse.foreground} />
-            </IconTile>
-            <Text className="text-[15px] text-grey">{t('nave.topic.kind')}</Text>
-          </HStack>
-          <Text className="text-[34px] leading-[42px]" style={titleFontStyle(stylingTheme)}>
-            {naveItem.name || name}
-          </Text>
-        </VStack>
-        {naveItem.description ? (
-          <StudySection title={t('Références')}>
-            <SwitchableHTMLView
-              selectable
-              previewSource={{ kind: 'nave', language: naveResourceLanguage }}
-              value={naveItem.description}
-              onLinkClicked={openLink}
-            />
-          </StudySection>
-        ) : null}
+          </Box>
+        )}
+        {naveItem?.description && (
+          <HTMLViewContent
+            selectable
+            previewSource={{ kind: 'nave', language: naveResourceLanguage }}
+            html={naveItem.description}
+            onLinkClicked={openLink}
+          />
+        )}
       </ScrollView>
-    </>
+    </FormSheetScreen>
   )
 }
 

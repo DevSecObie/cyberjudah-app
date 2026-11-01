@@ -9,7 +9,7 @@ import {
 } from 'react'
 import { Popover } from '@heroui/react/popover'
 import { useTheme } from '~themes/ThemeProvider'
-import { webFontFamily, webTitleFontStyle } from '~helpers/webFontFamily'
+import { webFontFamily } from '~helpers/webFontFamily'
 import { webThemeVariables } from '~themes/webThemeVariables'
 import type { SheetProps, SheetRef } from '~common/sheet'
 import '~common/FiltersHeader.web.css'
@@ -65,10 +65,6 @@ export default function StrongSelectionContainer({
     presentAt: present,
     resizeTo: () => {},
     dismiss: close,
-    dismissThen: action => {
-      close()
-      action()
-    },
     close,
     forceClose: close,
   }))
@@ -101,7 +97,9 @@ export default function StrongSelectionContainer({
       >
         <Popover.Dialog>
           <div className="bs-filter-heading">
-            <Popover.Heading style={webTitleFontStyle(theme)}>{title}</Popover.Heading>
+            <Popover.Heading style={{ fontFamily: webFontFamily(theme.fontFamily.title) }}>
+              {title}
+            </Popover.Heading>
           </div>
           <div className="bs-filter-options">{children}</div>
         </Popover.Dialog>

@@ -4,7 +4,7 @@ import {
   getFadePosition,
   getFocusVerseNumbers,
   getParallelVerseModeProps,
-  getParallelChapterRows,
+  getParallelVerseRows,
   getScrollTargetVerse,
   getTaggedVersesByLastVerse,
   getVersesWithWordAnnotations,
@@ -181,120 +181,28 @@ describe('verseRenderingModel', () => {
     ).toBe(true)
   })
 
-  const chapter = (numbers: number[], prefix: string) =>
-    numbers.map(Verset => ({ Livre: 44, Chapitre: 8, Verset, Texte: `${prefix} ${Verset}` }))
-
-  const rowNumbers = (rows: ReturnType<typeof getParallelChapterRows>) =>
-    rows.map(row => row.rows.map(r => (r.isMissing ? null : Number(r.verse.Verset))))
-
-  it('aligns parallel rows by verse number when a parallel version omits a verse', () => {
-    const rows = getParallelChapterRows(
-      chapter([36, 37, 38, 39, 40], 'NEG79'),
-      [{ id: 'ESV', verses: chapter([36, 38, 39, 40], 'ESV') }],
-      'NEG79'
-    )
-
-    expect(rows.map(row => row.verse.Verset)).toEqual([36, 37, 38, 39, 40])
-    expect(rowNumbers(rows)).toEqual([
-      [36, 36],
-      [37, null],
-      [38, 38],
-      [39, 39],
-      [40, 40],
-    ])
-    expect(rows[1].rows[1]).toEqual({
-      version: 'ESV',
-      verse: { Livre: 44, Chapitre: 8, Verset: 37, Texte: '' },
-      error: undefined,
-      interlinearMode: undefined,
-      isMissing: true,
-    })
-  })
-
-  it('marks the cells of a version still loading instead of calling its verses missing', () => {
-    const rows = getParallelChapterRows(
-      chapter([1, 2], 'NKJV'),
-      [{ id: 'NET', verses: [], isLoading: true }],
-      'NKJV'
-    )
-
-    expect(rows.map(row => row.verse.Verset)).toEqual([1, 2])
-    expect(rows[1].rows[1]).toEqual({
-      version: 'NET',
-      verse: { Livre: 44, Chapitre: 8, Verset: 2, Texte: '' },
-      error: undefined,
-      interlinearMode: undefined,
-      isLoading: true,
-    })
-  })
-
-  it('keeps a row for a verse the primary version omits', () => {
-    const rows = getParallelChapterRows(
-      chapter([36, 38, 39, 40], 'ESV'),
-      [{ id: 'NEG79', verses: chapter([36, 37, 38, 39, 40], 'NEG79') }],
-      'ESV'
-    )
-
-    expect(rows.map(row => row.verse)).toContainEqual({
-      Livre: 44,
-      Chapitre: 8,
-      Verset: 37,
-      Texte: '',
-    })
-    expect(rowNumbers(rows)).toEqual([
-      [36, 36],
-      [null, 37],
-      [38, 38],
-      [39, 39],
-      [40, 40],
-    ])
-    expect(rows[4].rows[1].verse.Texte).toBe('NEG79 40')
-  })
-
-  it('merges omissions from several versions in verse order', () => {
-    const rows = getParallelChapterRows(
-      chapter([1, 2, 4], 'A'),
+  it('creates placeholder parallel rows for missing verses', () => {
+    const rows = getParallelVerseRows(
+      0,
       [
-        { id: 'B', verses: chapter([1, 3, 4], 'B') },
-        { id: 'C', verses: chapter([2, 3, 4, 5], 'C') },
+        {
+          id: 'KJV',
+          verses: [],
+        },
       ],
-      'A'
-    )
-
-    expect(rowNumbers(rows)).toEqual([
-      [1, 1, null],
-      [2, null, 2],
-      [null, 3, 3],
-      [4, 4, 4],
-      [null, null, 5],
-    ])
-  })
-
-  it('keeps the error of a parallel version that failed to load', () => {
-    const rows = getParallelChapterRows(
-      [verse],
-      [{ id: 'KJV', verses: [], error: 'NOT_FOUND' as never }],
+      verse,
       'LSG'
     )
 
     expect(rows).toEqual([
-      {
-        verse,
-        rows: [
-          { version: 'LSG', verse },
-          {
-            version: 'KJV',
-            verse: { Livre: 1, Chapitre: 1, Verset: 2, Texte: '' },
-            error: 'NOT_FOUND',
-          },
-        ],
-      },
+      { version: 'LSG', verse },
+      { version: 'KJV', verse: { ...verse, Texte: '' }, error: undefined },
     ])
   })
 
   it('preserves the resolved presentation mode of each parallel row', () => {
-    const rows = getParallelChapterRows(
-      [verse],
+    const rows = getParallelVerseRows(
+      0,
       [
         {
           id: 'BHG',
@@ -302,10 +210,11 @@ describe('verseRenderingModel', () => {
           interlinearMode: 'strong',
         },
       ],
+      verse,
       'LSG'
     )
 
-    expect(rows[0].rows[1]).toEqual({
+    expect(rows[1]).toEqual({
       version: 'BHG',
       verse,
       error: undefined,
@@ -314,9 +223,9 @@ describe('verseRenderingModel', () => {
   })
 
   it('resolves the primary presentation in the shared parallel row model', () => {
-    const rows = getParallelChapterRows([verse], [], 'BHG', 'interlinear')
+    const rows = getParallelVerseRows(0, [], verse, 'BHG', 'interlinear')
 
-    expect(rows[0].rows[0]).toEqual({
+    expect(rows[0]).toEqual({
       version: 'BHG',
       verse,
       interlinearMode: 'interlinear',

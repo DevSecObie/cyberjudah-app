@@ -23,24 +23,14 @@ export default function WidgetFrame({
   const [open, setOpen] = useState(false)
   const { t } = useTranslation(),
     { colors, fontFamily } = useTheme()
-  const palette = {
+  const style = {
     fontFamily: resolveFontFamily(fontFamily.text),
     '--sw-ink': colors.default,
     '--sw-muted': colors.grey,
-    '--sw-line': colors.separator,
-    '--sw-accent': colors.link,
-  }
-  // In the thread a widget is set off by its light grey fill, its inner panels are white;
-  // expanded, it is a raised dialog whose panels are grey.
-  const style = {
-    ...palette,
-    '--sw-surface': colors.lightGrey,
-    '--sw-soft': colors.reverse,
-  } as CSSProperties
-  const dialogStyle = {
-    ...palette,
-    '--sw-surface': colors.surfaceRaised,
+    '--sw-surface': colors.reverse,
     '--sw-soft': colors.lightGrey,
+    '--sw-line': colors.border,
+    '--sw-accent': colors.primary,
   } as CSSProperties
   return (
     <section className="bs-study-widget" style={style}>
@@ -65,7 +55,7 @@ export default function WidgetFrame({
               <Dialog.Overlay className="bs-widget-overlay" />
               <Dialog.Content
                 className="bs-widget-dialog"
-                style={dialogStyle}
+                style={style}
                 aria-describedby={undefined}
               >
                 <header>

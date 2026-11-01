@@ -22,7 +22,9 @@ import {
   type StrongIdentity,
   type StrongIdentityKind,
 } from '~helpers/strongIdentities'
+import cyberJudahEntityBookCodes from '~assets/cyberjudah/entity-book-codes.json'
 import type { StrongLexiconModuleId } from '~helpers/strongLexiconPublications'
+import { requiresStrongLexiconCore } from '~helpers/strongLexiconCore'
 import {
   withOptionalStrongLexiconDatabase,
   withStrongLexiconDatabase,
@@ -43,7 +45,6 @@ import {
 import { resolveHybridResourceSource } from './hybridResourcePolicy'
 import { ResourceAccessError, resourceAccessErrorFromHttpResponse } from './resourceAccessError'
 import { normalizeBibleSearchText } from '~helpers/bibleSearchInput'
-import { canonicalListParameter } from '~helpers/canonicalListParameter'
 
 export type {
   StrongLexiconChapterEntity,
@@ -551,7 +552,13 @@ const TIPNR_BOOK_CODES = [
   'Rev',
 ] as const
 
-export const getTipnrBookCode = (book: number): string | undefined => TIPNR_BOOK_CODES[book - 1]
+// CyberJudah's People module also names people in the Apocrypha (books 67 to 81).
+const ENTITY_BOOK_CODES: readonly string[] =
+  process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+    ? cyberJudahEntityBookCodes
+    : TIPNR_BOOK_CODES
+
+export const getTipnrBookCode = (book: number): string | undefined => ENTITY_BOOK_CODES[book - 1]
 
 type ChapterEntityRow = {
   uniqueName: string
@@ -583,11 +590,11 @@ const toChapterEntity = (
 })
 
 const loadEntityStrongCodeMap = async (
-  database: SQLiteDatabase,
+  database: SQLiteDatabase | null,
   uStrongValues: string[]
 ): Promise<Map<string, string[]>> => {
   const uniqueValues = [...new Set(uStrongValues.filter(Boolean))]
-  if (!uniqueValues.length) return new Map()
+  if (!database || !uniqueValues.length) return new Map()
   const placeholders = uniqueValues.map(() => '?').join(', ')
   const rows = await database.getAllAsync<{ uStrong: string; code: string }>(
     `SELECT DISTINCT e.uStrong, i.stepCode AS code
@@ -611,7 +618,7 @@ const loadEntityStrongCodeMap = async (
 
 const hydrateEntity = async (
   database: SQLiteDatabase,
-  core: SQLiteDatabase,
+  core: SQLiteDatabase | null,
   entity: EntityRow,
   language: ResourceLanguage
 ): Promise<StrongLexiconEntity> => {
@@ -972,7 +979,12 @@ export const createLocalStrongLexiconAccess = (
     async loadEntity(uniqueName, language) {
       const availability = await getRegisteredStrongLexiconAvailability('entities')
       if (availability.status !== 'available') return undefined
-      return withStrongLexiconDatabase(coreModule(language), core =>
+      // A People module built without Strong entries opens without the lexicon core.
+      const withCore = <T>(operation: (core: SQLiteDatabase | null) => Promise<T>) =>
+        requiresStrongLexiconCore('entities')
+          ? withStrongLexiconDatabase(coreModule(language), operation)
+          : operation(null)
+      return withCore(core =>
         withOptionalStrongLexiconDatabase('entities', async database => {
           const row = await database.getFirstAsync<EntityRow>(
             `SELECT e.*,
@@ -1210,8 +1222,6 @@ type HttpStrongLexiconAccessOptions = {
   baseUrl: string
   fetcher?: typeof fetch
   isOnline: () => Promise<boolean>
-  /** Explains a request that failed without a response; defaults to the online gate. */
-  isOfflineFailure?: () => Promise<boolean>
   timeoutMs?: number
 }
 
@@ -1234,7 +1244,6 @@ export const createHttpStrongLexiconAccess = ({
   baseUrl,
   fetcher = fetch,
   isOnline,
-  isOfflineFailure = async () => !(await isOnline()),
   timeoutMs = 10_000,
   level = 'detailed',
 }: HttpStrongLexiconAccessOptions): StrongLexiconAccess => {
@@ -1272,7 +1281,7 @@ export const createHttpStrongLexiconAccess = ({
       if (signal?.aborted) throw error
       if (error instanceof ResourceAccessError) throw error
       throw new ResourceAccessError(
-        (await isOfflineFailure()) ? 'NETWORK_OFFLINE' : 'TEMPORARY_UNAVAILABLE'
+        (await isOnline()) ? 'TEMPORARY_UNAVAILABLE' : 'NETWORK_OFFLINE'
       )
     } finally {
       clearTimeout(timeout)
@@ -1360,10 +1369,9 @@ export const createHttpStrongLexiconAccess = ({
       }))
       const params = new URLSearchParams({
         language,
-        // Cards are matched back to each identity below: the list is sent as a set.
-        identities: canonicalListParameter(
-          normalizedIdentities.map(identity => `${identity.kind}:${identity.code}`)
-        ).join(','),
+        identities: normalizedIdentities
+          .map(identity => `${identity.kind}:${identity.code}`)
+          .join(','),
       })
       const response = await get(
         `/v1/strong-lexicon/entries/batch?${params}`,
@@ -1397,21 +1405,12 @@ export const createHttpStrongLexiconAccess = ({
       }))
     },
     async loadMorphologies(codes, language) {
-      // The server ignores blank codes and answers each code once, under the code requested.
-      const requestedCodes = codes.map(code => code.trim()).filter(Boolean)
-      if (!requestedCodes.length) return []
+      if (!codes.length) return []
       const response = await get(
-        `/v1/strong-lexicon/morphologies?${languageQuery(language)}&codes=${encodeURIComponent(canonicalListParameter(requestedCodes).join(','))}`,
+        `/v1/strong-lexicon/morphologies?${languageQuery(language)}&codes=${encodeURIComponent(codes.join(','))}`,
         StrongLexiconMorphologyResponseDto
       )
-      // Back in the order and with the repetitions of the request.
-      const morphologiesByCode = new Map(
-        response.morphologies.map(morphology => [morphology.code, morphology])
-      )
-      return requestedCodes.flatMap(code => {
-        const morphology = morphologiesByCode.get(code)
-        return morphology ? [morphology] : []
-      })
+      return [...response.morphologies]
     },
     async loadEntity(uniqueName, language) {
       try {
@@ -1429,11 +1428,7 @@ export const createHttpStrongLexiconAccess = ({
       const bookCode = getTipnrBookCode(book)
       if (!bookCode) return []
       const query = new URLSearchParams({ language })
-      // The server reads the codes as a set.
-      const requestedCodes = canonicalListParameter(
-        strongCodes.map(code => code.trim()).filter(Boolean)
-      )
-      if (requestedCodes.length) query.set('strongCodes', requestedCodes.join(','))
+      if (strongCodes.length) query.set('strongCodes', strongCodes.join(','))
       const response = await get(
         `/v1/strong-lexicon/entities/chapters/${bookCode}/${chapter}?${query}`,
         StrongLexiconChapterEntitiesResponseDto

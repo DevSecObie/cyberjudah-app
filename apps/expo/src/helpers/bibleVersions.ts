@@ -5,6 +5,7 @@ import { zeroFill } from './zeroFill'
 import type { BibleCanonId } from './bibleBookCatalog'
 import type { StrongBibleDatasetId } from './strongBiblePublications'
 import { createOfflineCopyId } from './offlineCopyId'
+import apocryphaRecordings from '~assets/cyberjudah/apocrypha-recordings.json'
 
 export type BibleVersificationId =
   | 'bible-strong-default'
@@ -120,8 +121,6 @@ export interface Version {
   versificationId?: BibleVersificationId
   strongDatasetId?: StrongBibleDatasetId
   hidden?: boolean
-  /** Other words the version list finds it by, such as the name of a version it replaces. */
-  searchKeywords?: string[]
 }
 
 const getLsgAudioUrl = (bookNum: number, chapterNum: number) => {
@@ -150,6 +149,21 @@ const getBibleStudyToolsAudioUrl = (version: string, bookNum: number, chapterNum
 
 const getWordPocketKjvAudioUrl = (bookNum: number, chapterNum: number) => {
   return `https://www.wordpocket.org/bibles/app/audio/1/${bookNum}/${chapterNum}.mp3`
+}
+
+type ApocryphaRecording = { slug: string; reader: string; chapters: number[] }
+const apocryphaRecordingBooks: Record<string, ApocryphaRecording | undefined> =
+  apocryphaRecordings.books
+
+/**
+ * wordpocket only has the 66 books. The Apocrypha (books 67 to 81) plays CyberJudah's own
+ * LibriVox recordings; a chapter with no recording yet has no URL, so the reader voice reads it.
+ */
+const getCyberJudahKjvAudioUrl = (bookNum: number, chapterNum: number) => {
+  if (bookNum <= 66) return getWordPocketKjvAudioUrl(bookNum, chapterNum)
+  const recording = apocryphaRecordingBooks[bookNum]
+  if (!recording?.chapters.includes(chapterNum)) return ''
+  return `${apocryphaRecordings.origin}/recordings/${recording.reader}/${recording.slug}/${chapterNum}.m4a`
 }
 
 const upstreamVersions: Record<string, Version> = {
@@ -215,17 +229,6 @@ const upstreamVersions: Record<string, Version> = {
     type: 'other',
     language: 'he-grc',
     readingProfile: null,
-    // It replaces the French and English interlinear Bibles (INT, INT_EN)
-    searchKeywords: [
-      'interlinéaire',
-      'interlinear',
-      'INT',
-      'hébreu',
-      'hebrew',
-      'grec',
-      'greek',
-      'original',
-    ],
   },
   KJF: {
     id: 'KJF',
@@ -691,6 +694,7 @@ export const versions: Record<string, Version> =
           ...upstreamVersions.KJV,
           name: 'King James Version with Apocrypha',
           canonId: 'kjv-1611',
+          getAudioUrl: getCyberJudahKjvAudioUrl,
           hasRedWords: false,
           hasPericope: false,
         },

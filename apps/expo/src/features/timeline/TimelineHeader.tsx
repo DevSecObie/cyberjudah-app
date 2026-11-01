@@ -1,5 +1,5 @@
+import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
-import { titleFontStyle } from '~themes/styleValues'
 import * as Icon from '~common/ui/classNameIcons'
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -13,7 +13,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Back from '~common/Back'
 import Box, { TouchableBox } from '~common/ui/Box'
 import Text from '~common/ui/Text'
-import { useWorkspaceHeaderInset } from '~features/app-switcher/workspaceHeaderInset'
 import { getLegacyLocalizedField } from '~helpers/languageUtils'
 import {
   RESOURCE_SHARE_ICONS,
@@ -94,11 +93,9 @@ const TimelineHeader = ({
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const topInset = isFormSheet ? 0 : insets.top
-  // The header floats over the period's canvas, so it keeps its own look rather than the shared Header.
-  const workspaceHeaderInset = useWorkspaceHeaderInset()
 
   return (
-    <HeaderBox topInset={topInset} style={{ paddingLeft: workspaceHeaderInset }}>
+    <HeaderBox topInset={topInset}>
       <PageContent className="flex-[1] flex-row">
         <Box className="overflow-hidden border-continuous items-center justify-center">
           {hasBackButton && (
@@ -111,7 +108,7 @@ const TimelineHeader = ({
           <Text
             style={{
               fontSize: fontSize || 14,
-              ...titleFontStyle(stylingTheme),
+              fontFamily: resolveFontFamily(stylingTheme.fontFamily.title),
             }}
           >
             {getLegacyLocalizedField(lang, { fr: title, en: titleEn })}

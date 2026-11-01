@@ -50,7 +50,7 @@ const VerseAccordion = ({ noteVerses, version }: VerseAccordionProps) => {
   }
 
   return (
-    <Box className="border-continuous overflow-visible bg-opacity5 rounded-[12px]">
+    <Box className="border-continuous overflow-visible bg-opacity5 rounded-[14px]">
       <TouchableBox
         className="overflow-hidden border-continuous flex-row items-center py-[12px] px-[16px]"
         accessibilityLabel={reference}
@@ -60,7 +60,7 @@ const VerseAccordion = ({ noteVerses, version }: VerseAccordionProps) => {
       >
         <HStack className="items-center gap-[8px] flex-[1]">
           <FeatherIcon name="book-open" size={16} color={getUniverseColor('bible')} />
-          <Text className="text-[14px] text-link font-bold">{reference}</Text>
+          <Text className="text-[14px] text-primary font-bold">{reference}</Text>
         </HStack>
         <EaseView
           animate={{ rotate: isExpanded ? 180 : 0 }}

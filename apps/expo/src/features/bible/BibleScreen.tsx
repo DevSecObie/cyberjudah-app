@@ -1,5 +1,5 @@
 import { produce } from 'immer'
-import { useState } from 'react'
+import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Book } from '~assets/bible_versions/books-desc'
 import { getBook } from '~helpers/bibleBookCatalog'
@@ -8,7 +8,6 @@ import { useLocalSearchParams } from 'expo-router'
 import { atom } from 'jotai/vanilla'
 import {
   BibleContextDisplayMode,
-  type BiblePlanPassage,
   BibleTab,
   getDefaultBibleTab,
   VersionCode,
@@ -48,8 +47,6 @@ export type BibleRouteInput = {
   annotationId?: string
   /** Last chapter of a reading-plan passage starting at `chapter`; opens the reader in plan mode. */
   planEndChapter?: number
-  /** The element of a plan day the passage is. */
-  planEntity?: BiblePlanPassage['entity']
 }
 
 type BibleScreenContentProps = BibleRouteInput
@@ -71,7 +68,6 @@ const BibleScreenContent = ({
   interlinearLocale,
   annotationId,
   planEndChapter,
-  planEntity,
   routeNavigation,
 }: BibleScreenContentRouteProps) => {
   const initialValues = produce(getDefaultBibleTab(version as VersionCode), draft => {
@@ -96,12 +92,12 @@ const BibleScreenContent = ({
         book: draft.data.selectedBook.Numero,
         startChapter: chapter,
         endChapter: Math.max(chapter, planEndChapter),
-        ...(planEntity ? { entity: planEntity } : {}),
       }
   })
 
   // Always create an on-the-fly atom for this screen
-  const [bibleAtom] = useState(() => atom<BibleTab>(initialValues))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const bibleAtom = useMemo(() => atom<BibleTab>(initialValues), [])
 
   return (
     <BibleTabScreen
@@ -134,7 +130,6 @@ export const BibleRouteScreen = ({
     interlinearLocale,
     annotationId,
     planEndChapter,
-    planEntity,
   } = input
   const defaultVersion = useDefaultBibleVersion()
   const resources = useResourceAccess()
@@ -199,7 +194,6 @@ export const BibleRouteScreen = ({
     interlinearLocale,
     annotationId,
     planEndChapter,
-    planEntity,
   ])
 
   if (isResolvingVersion) return null
@@ -222,7 +216,6 @@ export const BibleRouteScreen = ({
       interlinearLocale={interlinearLocale}
       annotationId={annotationId}
       planEndChapter={planEndChapter}
-      planEntity={planEntity}
       routeNavigation={routeNavigation}
     />
   )
@@ -261,9 +254,6 @@ const BibleScreen = () => {
     strongMode?: StrongMode
     annotationId?: string
     planEndChapter?: string
-    planId?: string
-    readingSliceId?: string
-    entitySliceId?: string
   }>()
 
   // Parse params from URL strings
@@ -278,11 +268,6 @@ const BibleScreen = () => {
   const strongMode = params.strongMode
   const annotationId = params.annotationId
   const planEndChapter = params.planEndChapter ? Number(params.planEndChapter) : undefined
-  const { planId, readingSliceId, entitySliceId } = params
-  const planEntity =
-    planId && readingSliceId && entitySliceId
-      ? { planId, readingSliceId, entitySliceId }
-      : undefined
 
   return (
     <BibleRouteScreen
@@ -297,7 +282,6 @@ const BibleScreen = () => {
         strongMode,
         annotationId,
         planEndChapter,
-        planEntity,
       }}
     />
   )

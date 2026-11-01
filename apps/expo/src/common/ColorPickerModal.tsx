@@ -2,7 +2,8 @@ import { useAtomValue, useSetAtom } from 'jotai/react'
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Platform, TouchableOpacity, View } from 'react-native'
+import * as NativeUI from 'react-native'
+import { Platform, TouchableOpacity } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { twMerge } from '~common/ui/classNames'
@@ -18,7 +19,6 @@ import ColorEditModal from '~common/ColorEditModal'
 import HighlightTypeIndicator from '~common/HighlightTypeIndicator'
 import Box, { TouchableBox } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
-import IconTile from '~common/ui/IconTile'
 import Text from '~common/ui/Text'
 import { MAX_CUSTOM_COLORS } from '~helpers/constants'
 import { EMPTY_OBJECT } from '~helpers/emptyReferences'
@@ -45,7 +45,7 @@ import getTheme from '~themes/index'
 type ColorKey = keyof typeof defaultColors
 
 const ColorRow = (
-  componentProps: Omit<UIComponentProps<typeof View>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof NativeUI.View>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
@@ -57,10 +57,10 @@ const ColorRow = (
     className
   )
   return (
-    <View
+    <NativeUI.View
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof View>['style']}
+      style={[props.style] as UIComponentProps<typeof NativeUI.View>['style']}
     />
   )
 }
@@ -474,10 +474,10 @@ const ColorPickerModal = ({ inline = false }: { inline?: boolean }) => {
               {customHighlightColors.length < MAX_CUSTOM_COLORS && (
                 <TouchableOpacity accessibilityRole="button" onPress={openAddModal}>
                   <Box className="overflow-hidden border-continuous flex-row items-center p-[15px]">
-                    <IconTile tint="primary" className="mr-[10px]">
+                    <Box className="overflow-hidden border-continuous w-[30px] h-[30px] rounded-[10px] bg-light-primary mr-[10px] items-center justify-center">
                       <FeatherIcon name="plus" size={20} color="primary" />
-                    </IconTile>
-                    <Text className="font-bold text-link text-[14px]">
+                    </Box>
+                    <Text className="font-bold text-primary text-[14px]">
                       {t('Ajouter une couleur')}
                     </Text>
                   </Box>

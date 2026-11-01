@@ -1,31 +1,22 @@
 import { BookSelectorParams } from './BookSelectorSheet/BookSelectorParams'
 import FiltersHeader from '~common/FiltersHeader'
-import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAtomValue } from 'jotai'
 import { useQuery } from '@tanstack/react-query'
 import ContextualPanel from '~common/ContextualPanel'
 import PanelSearch from '~common/ContextualPanel/PanelSearch'
+import PanelAction from '~common/ContextualPanel/PanelAction'
 import Box, { TouchableBox } from '~common/ui/Box'
-import { twMerge } from '~common/ui/classNames'
-import { FeatherIcon } from '~common/ui/Icon'
-import { ListSeparator } from '~common/ui/ListSection'
 import Text from '~common/ui/Text'
-import { colorWithOpacity } from '~themes/colorValues'
-import { useTheme } from '~themes/ThemeProvider'
 import type { SheetRef } from '~common/sheet'
 import { getBooksForCanon, isBibleCanonId } from '~helpers/bibleBookCatalog'
 import { getBibleVersionCanonId, versions } from '~helpers/bibleVersions'
 import { getChapterVerseCountFromCoverage } from '~helpers/bibleCoverage'
-import { getReadingBookName } from '~helpers/readingLanguage'
 import { useResourceAccess } from '~features/resources/resourceAccess'
-import { resourceQueryKeys } from '~helpers/resourceQueryKeys'
-import { staticResourceQueryOptions } from '~helpers/queryOptions'
 import { useOpenInNewTab } from '~features/app-switcher/utils/useOpenInNewTab'
 import generateUUID from '~helpers/generateUUID'
 import { bookSelectorVersesAtom, bookSelectorSortAtom } from './BookSelectorSheet/atom'
-import { getTestamentGroups } from './BookSelectorSheet/bookListRows'
-import TestamentTitle from './BookSelectorSheet/TestamentTitle'
 import { useVersionCatalog, VersionCatalogList } from './VersionCatalogView'
 import VersionSelectorItem from './VersionSelectorItem'
 import BibleOfflineDetailsSheet from './VersionSelectorSheet/BibleOfflineDetailsSheet'
@@ -55,7 +46,6 @@ function VersionPanel({
         screens={{
           versions: {
             title: t('Version'),
-            flush: true,
             headerRight: (
               <FiltersHeader
                 buttonOnly
@@ -84,14 +74,6 @@ function VersionPanel({
                       actions.setSelectedVersion(version)
                       nav.close()
                     }}
-                    onOpenInterlinear={
-                      data.parallelVersions?.length
-                        ? undefined
-                        : version => {
-                            actions.setSelectedVersionInInterlinear(version)
-                            nav.close()
-                          }
-                    }
                     onOpenOfflineDetails={version => {
                       setDetails(version)
                       requestAnimationFrame(() => detailsRef.current?.present())
@@ -108,65 +90,6 @@ function VersionPanel({
     </>
   )
 }
-const BOOK_ROW_PADDING_LEFT = 20
-
-/** A book of the list: a row of a continuous list, split from the next by a hairline. */
-function BookRow({
-  label,
-  selected,
-  onPress,
-}: {
-  label: string
-  selected: boolean
-  onPress: () => void
-}) {
-  const theme = useTheme()
-  return (
-    <TouchableBox
-      className="w-full flex-row items-center gap-3 py-[12px] pr-[14px]"
-      style={{
-        paddingLeft: BOOK_ROW_PADDING_LEFT,
-        backgroundColor: selected ? colorWithOpacity(theme.colors.primary, 0.12) : undefined,
-      }}
-      accessibilityRole="button"
-      accessibilityState={{ selected }}
-      onPress={onPress}
-    >
-      <Text
-        className={twMerge(
-          'flex-1 text-[16px]',
-          selected ? 'text-link font-semibold' : 'text-default'
-        )}
-      >
-        {label}
-      </Text>
-      <FeatherIcon name="chevron-right" size={18} color="grey" />
-      <ListSeparator inset={BOOK_ROW_PADDING_LEFT} overlay />
-    </TouchableBox>
-  )
-}
-
-/**
- * Scrolls its content to the middle of the panel each time the panel screen holding it is shown:
- * a hidden screen has no size, so the size it takes when shown is the signal.
- */
-function RevealWhenShown({ children }: { children: ReactNode }) {
-  const ref = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    const element = ref.current
-    if (!element || typeof ResizeObserver === 'undefined') return
-    let shown = false
-    const observer = new ResizeObserver(() => {
-      const isShown = element.offsetHeight > 0
-      if (isShown && !shown) element.scrollIntoView({ block: 'center' })
-      shown = isShown
-    })
-    observer.observe(element)
-    return () => observer.disconnect()
-  }, [])
-  return <div ref={ref}>{children}</div>
-}
-
 export function useBookPanelScreens({
   data,
   actions,
@@ -183,7 +106,6 @@ export function useBookPanelScreens({
   ) => void
 }) {
   const { t } = useTranslation()
-  const theme = useTheme()
   const resources = useResourceAccess()
   const openTab = useOpenInNewTab()
   const verseMode = useAtomValue(bookSelectorVersesAtom)
@@ -193,11 +115,9 @@ export function useBookPanelScreens({
   const [book, setBook] = useState(data.selectedBook)
   const [chapter, setChapter] = useState(data.selectedChapter)
   const coverageQuery = useQuery({
-    // The same coverage as the other Bible selectors, read once for all of them.
-    queryKey: resourceQueryKeys.bibleCoverage(data.selectedVersion),
+    queryKey: ['selector-panel-coverage', data.selectedVersion],
     queryFn: () => resources.bibleContent.loadCoverage(data.selectedVersion),
     enabled: !coverage,
-    ...staticResourceQueryOptions,
   })
   const actualCoverage = coverage ?? coverageQuery.data
   const canon = actualCoverage?.canon?.id
@@ -205,8 +125,6 @@ export function useBookPanelScreens({
     canon && isBibleCanonId(canon) ? canon : getBibleVersionCanonId(data.selectedVersion),
     actualCoverage?.books
   )
-  // Book names speak the reading's language
-  const nameOf = (item: { Nom: string }) => getReadingBookName(item, data.selectedVersion)
   const chapters =
     actualCoverage?.chaptersByBook[book.Numero] ??
     Array.from({ length: book.Chapitres }, (_, i) => i + 1)
@@ -239,93 +157,64 @@ export function useBookPanelScreens({
     screens: {
       books: {
         title: t('Livres'),
-        flush: true,
         headerRight: (
           <BookSelectorParams includeLayout={false} includeVerses={forceVerses === undefined} />
         ),
         headerContent: <PanelSearch value={query} onChange={setQuery} />,
-        content: nav => {
-          const listed = [...books]
-            .sort((a, b) => (sort === 'alphabetical' ? nameOf(a).localeCompare(nameOf(b)) : 0))
-            .filter(item =>
-              [nameOf(item), item.Nom].some(name =>
-                name.toLocaleLowerCase().includes(query.toLocaleLowerCase())
-              )
-            )
-          return getTestamentGroups(listed, sort === 'alphabetical').map(group => (
-            <Fragment key={group.testament ?? 'all'}>
-              {/* Sticks over its books, as the version list keeps its groups' titles */}
-              {group.testament && (
-                <TestamentTitle testament={group.testament} className="sticky top-[0px] z-[1]" />
-              )}
-              {group.books.map(item => {
-                const action = (
-                  <BookRow
-                    key={item.Numero}
-                    label={nameOf(item)}
-                    selected={item.Numero === data.selectedBook.Numero}
-                    onPress={() => {
-                      setBook(item)
-                      nav.open('chapters')
-                    }}
-                  />
-                )
-                // The reading's book is where the list opens, back from its chapters
-                return item.Numero === data.selectedBook.Numero ? (
-                  <RevealWhenShown key={item.Numero}>{action}</RevealWhenShown>
-                ) : (
-                  action
-                )
-              })}
-            </Fragment>
-          ))
-        },
+        content: nav => (
+          <>
+            {[...books]
+              .sort((a, b) => (sort === 'alphabetical' ? t(a.Nom).localeCompare(t(b.Nom)) : 0))
+              .filter(item => t(item.Nom).toLocaleLowerCase().includes(query.toLocaleLowerCase()))
+              .map(item => (
+                <PanelAction
+                  key={item.Numero}
+                  label={t(item.Nom)}
+                  nested
+                  onPress={() => {
+                    setBook(item)
+                    nav.open('chapters')
+                  }}
+                />
+              ))}
+          </>
+        ),
       },
       chapters: {
-        title: nameOf(book),
+        title: t(book.Nom),
         content: nav => (
           <Box
             testID="bible-selector-number-grid"
             className="flex-row flex-wrap gap-[10px] p-[10px]"
           >
-            {chapters.map(value => {
-              const isCurrent =
-                book.Numero === data.selectedBook.Numero && value === data.selectedChapter
-              return (
-                <TouchableBox
-                  key={value}
-                  className="w-[48px] h-[48px] rounded-[8px] items-center justify-center"
-                  style={{
-                    backgroundColor: isCurrent
-                      ? colorWithOpacity(theme.colors.primary, 0.12)
-                      : theme.colors.opacity5,
-                  }}
-                  accessibilityRole="button"
-                  accessibilityLabel={t('Chapitre') + ' ' + value}
-                  accessibilityState={{ selected: isCurrent }}
-                  onPress={() => {
-                    if (withVerses) {
-                      setChapter(value)
-                      nav.open('verses')
-                    } else {
-                      select(value, 1)
-                      nav.close()
-                    }
-                  }}
-                  onLongPress={() => {
-                    longSelect(value, 1)
+            {chapters.map(value => (
+              <TouchableBox
+                key={value}
+                className="w-[48px] h-[48px] rounded-md bg-opacity5 items-center justify-center"
+                accessibilityRole="button"
+                accessibilityLabel={t('Chapitre') + ' ' + value}
+                onPress={() => {
+                  if (withVerses) {
+                    setChapter(value)
+                    nav.open('verses')
+                  } else {
+                    select(value, 1)
                     nav.close()
-                  }}
-                >
-                  <Text className={isCurrent ? 'text-link font-semibold' : undefined}>{value}</Text>
-                </TouchableBox>
-              )
-            })}
+                  }
+                }}
+                onLongPress={() => {
+                  longSelect(value, 1)
+                  nav.close()
+                }}
+              >
+                <Text>{value}</Text>
+              </TouchableBox>
+            ))}
           </Box>
         ),
       },
       verses: {
-        title: nameOf(book) + ' ' + chapter,
+        title: t(book.Nom) + ' ' + chapter,
         content: nav => (
           <Box
             testID="bible-selector-number-grid"
@@ -339,7 +228,7 @@ export function useBookPanelScreens({
             ).map(verse => (
               <TouchableBox
                 key={verse}
-                className="w-[40px] h-[40px] rounded-[8px] bg-opacity5 items-center justify-center"
+                className="w-[40px] h-[40px] rounded-md bg-opacity5 items-center justify-center"
                 accessibilityRole="button"
                 accessibilityLabel={t('Verset') + ' ' + verse}
                 onPress={() => {
@@ -373,11 +262,7 @@ function BookPanel({
     <ContextualPanel
       width={400}
       initialScreen="books"
-      // Opens on the reading's chapters, as the native selector opens on its book
-      initialStack={['books', 'chapters']}
       accessibilityLabel={accessibilityLabel || t('Livres')}
-      // On opening too: closing after a choice resets to the book read before it
-      onOpen={panel.reset}
       onClose={panel.reset}
       trigger={<Box className={className}>{children}</Box>}
       screens={panel.screens}

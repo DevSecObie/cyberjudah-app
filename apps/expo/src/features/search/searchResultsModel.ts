@@ -27,6 +27,8 @@ export type SearchSectionId =
   | 'dictionary'
   | 'nave'
   | 'passages'
+  | 'classes'
+  | 'saidInClass'
 
 export type SQLiteSearchResultSection = SearchResultSection<SearchSectionId> & {
   itemFilterType: SearchItemType
@@ -41,6 +43,7 @@ export type SearchFacet = {
 
 const searchFacetOrder: SearchItemType[] = [
   'passages',
+  'classes',
   'notes',
   'links',
   'studies',
@@ -62,6 +65,8 @@ type SearchLoadingState = {
   strong: boolean
   dictionary: boolean
   nave: boolean
+  classes?: boolean
+  saidInClass?: boolean
 }
 
 type SearchResultsModelInput = {
@@ -77,6 +82,10 @@ type SearchResultsModelInput = {
   strongResults: StrongLexiconSearchResult[]
   dictionaryResults: DictionarySearchRow[]
   naveResults: NaveSearchItemRow[]
+  /** CyberJudah's classes whose notes say the words. */
+  classResults?: SearchEntityResult[]
+  /** What was said in the recordings themselves: their transcripts, at the second. */
+  saidInClassResults?: SearchEntityResult[]
   passageResults: SearchResult[] | null
   semanticSearchError?: string | null
   totalPassageCount: number
@@ -152,6 +161,8 @@ export const getSearchResultsModel = ({
   strongResults,
   dictionaryResults,
   naveResults,
+  classResults = [],
+  saidInClassResults = [],
   passageResults,
   totalPassageCount,
   semanticSearchError,
@@ -205,6 +216,26 @@ export const getSearchResultsModel = ({
           }),
         ]
       : []),
+    ...(itemFilters.classes && (saidInClassResults.length || loading.saidInClass)
+      ? [
+          getSection({
+            id: 'saidInClass',
+            title: t('Said in Class'),
+            items: saidInClassResults,
+            itemFilterType: 'classes',
+          }),
+        ]
+      : []),
+    ...(itemFilters.classes && (classResults.length || loading.classes)
+      ? [
+          getSection({
+            id: 'classes',
+            title: t('Classes'),
+            items: classResults,
+            itemFilterType: 'classes',
+          }),
+        ]
+      : []),
     ...(noteItems.length
       ? [getSection({ id: 'notes', title: t('Notes'), items: noteItems, itemFilterType: 'notes' })]
       : []),
@@ -254,7 +285,8 @@ export const getSearchResultsModel = ({
     (browseItemType === 'studies' && loading.studies) ||
     (browseItemType === 'strong' && loading.strong) ||
     (browseItemType === 'dictionary' && loading.dictionary) ||
-    (browseItemType === 'nave' && loading.nave)
+    (browseItemType === 'nave' && loading.nave) ||
+    (browseItemType === 'classes' && Boolean(loading.classes))
   const isWaitingForDebounce =
     !browseItemType &&
     query.trim().length >= SEARCH_MIN_QUERY_LENGTH &&

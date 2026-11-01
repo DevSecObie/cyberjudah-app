@@ -1,26 +1,14 @@
 import { ExpoConfig, ConfigContext } from 'expo/config'
 
 const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
-
-const APP_VERSION = '28.0.1'
+// CyberJudah keeps its own TestFlight version while using Bible Strong's 27.2 mobile UI.
+const APP_VERSION = isCyberJudah ? '28.2.0' : '27.2.0'
 // Patch releases share a runtime and receive the same OTA updates. Any native change must
 // ship in a new major or minor version, which creates a new runtime.
 const [majorVersion, minorVersion] = APP_VERSION.split('.')
 const RUNTIME_VERSION = `${majorVersion}.${minorVersion}`
-
-// Icon fonts built into the Android app. Loaded at run time, a font file an update copied can
-// be empty on disk, and every icon of that family stays blank. Each family is named as
-// @expo/vector-icons checks it with Font.isLoaded, so the icons never load it again. The plugin
-// resolves the path as a module when it is not a file of the project.
-const vectorIconFont = (fontFamily: string, file: string) => ({
-  fontFamily,
-  fontDefinitions: [
-    {
-      path: `@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/${file}`,
-      weight: 400,
-    },
-  ],
-})
+// CyberJudah's own Expo project (free tier), used only for over-the-air updates.
+const CYBERJUDAH_EAS_PROJECT_ID = 'ee1c2f69-3a80-46c5-b67d-7f4a75def656'
 
 // The families of public pages a link opens in the application.
 const PUBLIC_RESOURCE_PATHS = [
@@ -51,11 +39,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   userInterfaceStyle: 'automatic',
 
   android: {
-    versionCode: 514,
+    versionCode: isCyberJudah ? 515 : 511,
     package: isCyberJudah ? 'io.cyberjudah.app' : 'com.smontlouis.biblestrong',
-    googleServicesFile: isCyberJudah
-      ? 'firebase/cyberjudah/google-services.json'
-      : (process.env.ANDROID_GOOGLE_SERVICES_FILE ?? 'firebase/dev/google-services.json'),
+    googleServicesFile:
+      process.env.ANDROID_GOOGLE_SERVICES_FILE ??
+      (isCyberJudah
+        ? 'firebase/cyberjudah/google-services.json'
+        : 'firebase/dev/google-services.json'),
     adaptiveIcon: {
       foregroundImage: './assets/images/foreground-image.png',
       backgroundImage: './assets/images/background-image.png',
@@ -77,26 +67,28 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
   },
   ios: {
-    ...(isCyberJudah && process.env.CYBERJUDAH_APPLE_TEAM_ID
-      ? { appleTeamId: process.env.CYBERJUDAH_APPLE_TEAM_ID }
-      : {}),
     bundleIdentifier:
       process.env.BUNDLE_IDENTIFIER ??
       (isCyberJudah ? 'io.cyberjudah.app.dev' : 'com.smontlouis.biblestrong.dev'),
-    buildNumber: '302',
-    googleServicesFile: isCyberJudah
-      ? './firebase/cyberjudah/GoogleService-Info.plist'
-      : (process.env.IOS_GOOGLE_SERVICES_FILE ?? './firebase/dev/GoogleService-Info.plist'),
+    appleTeamId: isCyberJudah ? process.env.CYBERJUDAH_APPLE_TEAM_ID : undefined,
+    buildNumber: isCyberJudah ? '310' : '297',
+    googleServicesFile:
+      process.env.IOS_GOOGLE_SERVICES_FILE ??
+      (isCyberJudah
+        ? './firebase/cyberjudah/GoogleService-Info.plist'
+        : './firebase/dev/GoogleService-Info.plist'),
     userInterfaceStyle: 'automatic',
     supportsTablet: true,
     infoPlist: {
       UIBackgroundModes: ['audio'],
       NSAppTransportSecurity: {
-        NSExceptionDomains: {
-          'timeline.biblehistory.com': {
-            NSExceptionAllowsInsecureHTTPLoads: true,
-          },
-        },
+        ...(isCyberJudah
+          ? {}
+          : {
+              NSExceptionDomains: {
+                'timeline.biblehistory.com': { NSExceptionAllowsInsecureHTTPLoads: true },
+              },
+            }),
       },
       ITSAppUsesNonExemptEncryption: false,
       CFBundleAllowMixedLocalizations: true,
@@ -117,6 +109,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     favicon: './assets/images/icon-2.png',
   },
   plugins: [
+    ...(isCyberJudah ? ['./plugins/withCyberJudahBilling.js'] : []),
     'expo-sharing',
     'expo-router',
     'expo-asset',
@@ -135,6 +128,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         ios: {
           deploymentTarget: '16.4',
+          // The scheduler lifetime patch must be compiled into RN, not bypassed by its prebuilt core.
+          ...(isCyberJudah ? { buildReactNativeFromSource: true } : {}),
           useFrameworks: 'static',
           forceStaticLinking: [
             'RNFBApp',
@@ -147,7 +142,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         },
         android: {
           targetSdkVersion: 36,
-          usesCleartextTraffic: true,
+          usesCleartextTraffic:
+            !isCyberJudah || process.env.EAS_BUILD_PROFILE?.startsWith('development') === true,
           extraMavenRepos: ['../../node_modules/@notifee/react-native/android/libs'],
         },
       },
@@ -155,13 +151,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-font',
       {
-        fonts: ['./src/assets/fonts/LiterataBook-Regular.otf'],
-        android: {
-          fonts: [
-            vectorIconFont('feather', 'Feather.ttf'),
-            vectorIconFont('ionicons', 'Ionicons.ttf'),
-          ],
-        },
+        fonts: ['./src/assets/fonts/LiterataBook-Regular.otf', './src/assets/fonts/Inter-Bold.ttf'],
       },
     ],
     [
@@ -191,12 +181,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       'expo-splash-screen',
       {
         image: './assets/images/splash.png',
-        imageWidth: 200,
+        imageWidth: 300,
         backgroundColor: '#ffffff',
         dark: {
           image: './assets/images/splash-dark.png',
-          imageWidth: 200,
-          backgroundColor: '#0F2132',
+          imageWidth: 300,
+          backgroundColor: '#05070f',
         },
       },
     ],
@@ -209,32 +199,35 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     resourceApiUrl: process.env.EXPO_PUBLIC_RESOURCE_API_URL,
     resourceArtifactBaseUrl: process.env.EXPO_PUBLIC_RESOURCE_ARTIFACT_BASE_URL,
     eas: {
-      projectId: isCyberJudah ? undefined : 'fdf72b90-346b-11e9-ad9a-255491359311',
+      projectId: isCyberJudah ? CYBERJUDAH_EAS_PROJECT_ID : 'fdf72b90-346b-11e9-ad9a-255491359311',
     },
     ethern: {
       projectId: isCyberJudah ? undefined : 'ccb42b86-1286-4ca0-99bd-929b7ce418c1',
     },
   },
-  // Our own update server (Open OTA on Cloudflare), see docs/adr/0085. The address, the channel
-  // and the certificate are native settings: changing any of them needs a new build.
-  updates: {
-    enabled: !isCyberJudah,
-    url: isCyberJudah ? undefined : 'https://updates.bible-strong.app/manifest',
-    checkAutomatically: 'NEVER',
-    // Only builds with a channel (staging, production) receive updates. A development client
-    // with the certificate would also demand a signed manifest from Metro.
-    ...(!isCyberJudah &&
-      process.env.EAS_BUILD_CHANNEL && {
+  // CyberJudah's testers get JS-only fixes over the air: downloaded in the background at launch
+  // and applied on the next launch. Every update must be signed with the private key that pairs
+  // with certs/certificate.pem; that key never enters this repository.
+  updates: isCyberJudah
+    ? {
+        enabled: true,
+        url: `https://u.expo.dev/${CYBERJUDAH_EAS_PROJECT_ID}`,
+        checkAutomatically: 'ON_LOAD',
+        fallbackToCacheTimeout: 0,
         codeSigningCertificate: './certs/certificate.pem',
-        codeSigningMetadata: {
-          keyid: 'main',
-          alg: 'rsa-v1_5-sha256',
+        codeSigningMetadata: { keyid: 'main', alg: 'rsa-v1_5-sha256' },
+        requestHeaders: {
+          'expo-channel-name': process.env.EAS_BUILD_CHANNEL || 'staging',
         },
-      }),
-    requestHeaders: {
-      'expo-channel-name': process.env.EAS_BUILD_CHANNEL,
-    },
-  },
+      }
+    : {
+        enabled: true,
+        url: 'https://u.expo.dev/fdf72b90-346b-11e9-ad9a-255491359311',
+        checkAutomatically: 'NEVER',
+        requestHeaders: {
+          'expo-channel-name': process.env.EAS_BUILD_CHANNEL,
+        },
+      },
   experiments: {
     reactCompiler: true,
   },

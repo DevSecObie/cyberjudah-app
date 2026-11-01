@@ -1,9 +1,8 @@
 import React from 'react'
 import { act, create, type ReactTestRenderer } from 'react-test-renderer'
-import PassageContextButton, { PlanPassageBanner } from '../PassageContextButton'
+import PassageContextButton from '../PassageContextButton'
 
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }))
-jest.mock('react-native', () => ({ StyleSheet: { hairlineWidth: 0.5 } }))
 jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 30, bottom: 20 }),
 }))
@@ -61,11 +60,11 @@ it('slides away with fullscreen and restores without changing the sheet header',
     mockFullScreen = true
     act(() => tree.update(render()))
     expect(header().pointerEvents).toBe('none')
-    expect(header().style.transform).toEqual([{ translateY: -86 }])
+    expect(header().style.transform).toEqual([{ translateY: -78 }])
     expect(header().style.opacity).toBe(0)
     act(() => tree.update(render(true)))
     expect(header().style.opacity).toBe(1)
-    expect(header().pointerEvents).toBe('box-none')
+    expect(header().pointerEvents).toBe('auto')
     mockFullScreen = false
     act(() => tree.update(render()))
     expect(header().style.transform).toEqual([{ translateY: 0 }])
@@ -102,62 +101,6 @@ it('keeps both directions available without clearing the passage selection', () 
     expect(onExit).not.toHaveBeenCalled()
     act(() => tree.root.findAllByType('Button' as React.ElementType)[1].props.onPress())
     expect(onExit).toHaveBeenCalledTimes(1)
-  } finally {
-    act(() => tree?.unmount())
-  }
-})
-
-it('names the plan passage and leaves plan mode from its cross', () => {
-  const onExit = jest.fn()
-  let tree!: ReactTestRenderer
-  try {
-    act(() => {
-      tree = create(
-        <PlanPassageBanner
-          reference="Genèse 1-3 · 2/3"
-          onExpand={() => {}}
-          onCollapse={() => {}}
-          onExit={onExit}
-        />
-      )
-    })
-    expect(JSON.stringify(tree.toJSON())).toContain(' — Genèse 1-3 · 2/3')
-    const buttons = tree.root.findAllByType('Button' as React.ElementType)
-    expect(buttons.map(button => button.props.accessibilityLabel)).toEqual([
-      'accessibility.exitPlanMode',
-    ])
-    act(() => buttons[0].props.onPress())
-    expect(onExit).toHaveBeenCalledTimes(1)
-  } finally {
-    act(() => tree?.unmount())
-  }
-})
-
-it('switches a plan passage of verses between the verses and the whole chapter', () => {
-  const onExpand = jest.fn()
-  const onCollapse = jest.fn()
-  const render = (focused: boolean) => (
-    <PlanPassageBanner
-      reference="1 Chroniques 1:1-4"
-      focused={focused}
-      onExpand={onExpand}
-      onCollapse={onCollapse}
-      onExit={() => {}}
-    />
-  )
-  let tree!: ReactTestRenderer
-  try {
-    act(() => {
-      tree = create(render(true))
-    })
-    const toggle = () => tree.root.findAllByType('Button' as React.ElementType)[0].props
-    expect(toggle().accessibilityLabel).toBe('tab.readWholeChapter')
-    act(() => toggle().onPress())
-    expect(onExpand).toHaveBeenCalledTimes(1)
-    act(() => tree.update(render(false)))
-    expect(toggle().accessibilityLabel).toBe('tab.closeContext')
-    act(() => toggle().onPress())
-    expect(onCollapse).toHaveBeenCalledTimes(1)
   } finally {
     act(() => tree?.unmount())
   }

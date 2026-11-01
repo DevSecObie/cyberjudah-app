@@ -14,8 +14,6 @@ export type CanonicalVersePresentationNode =
       kind: 'strong-reference'
       identities: StrongIdentity[]
       morphologies?: StrongSelectionMorphology[]
-      /** Strong transliteration mode: the original words, shown in place of the codes. */
-      transliterations?: string[]
       word: string
       isUntranslated?: boolean
     }
@@ -114,10 +112,6 @@ export const buildCanonicalVersePresentation = ({
       ) {
         strongReference.identities.push(identity)
       }
-    }
-    if (span.transliteration && !strongReference.transliterations?.includes(span.transliteration)) {
-      strongReference.transliterations ??= []
-      strongReference.transliterations.push(span.transliteration)
     }
     for (const morphology of span.morphologies ?? []) {
       const existing = strongReference.morphologies?.find(candidate =>

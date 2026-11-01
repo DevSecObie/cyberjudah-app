@@ -1,5 +1,3 @@
-import { PLAYER_ORIGIN } from './constants'
-
 export const PLAYER_FUNCTIONS = {
   durationScript: `
 window.ReactNativeWebView.postMessage(JSON.stringify({eventType: 'getDuration', data: player.getDuration()}));
@@ -75,7 +73,6 @@ export const MAIN_SCRIPT = (
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-    <meta name="referrer" content="strict-origin-when-cross-origin">
     <style>
       body {
         padding: 0;
@@ -129,10 +126,8 @@ export const MAIN_SCRIPT = (
             modestbranding: ${modestbranding ? 1 : 0},
             rel: ${rel ? 1 : 0},
             start: ${start},
-            listType: ${typeof playList === 'string' ? "'playlist'" : undefined},
-            list: ${typeof playList === 'string' ? `'${playList}'` : undefined},
-            origin: '${PLAYER_ORIGIN}',
-            widget_referrer: '${PLAYER_ORIGIN}',
+            listType:  '${typeof playList === 'string' ? 'playlist' : ''}',
+            list: '${typeof playList === 'string' ? playList : ''}',
           },
           events: {
             'onReady': onPlayerReady,

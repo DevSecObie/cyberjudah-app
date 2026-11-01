@@ -1,10 +1,10 @@
 import {
   getCommentaryInitials,
   getCommentaryAvatarColor,
+  getCommentaryHeadshot,
 } from '~features/commentaries/commentaryAvatarIdentity'
 import { formatCommentaryExcerpt } from '~features/commentaries/commentaryExcerpt'
 import type { InlineCommentaryChip } from '~features/commentaries/inlineCommentaryPlacement'
-import { radii } from '~common/ui/surfaces'
 import type { RootStyles } from './BibleDOMWrapper'
 import { useDispatch } from './DispatchProvider'
 import { OPEN_INLINE_COMMENTARY } from './dispatch'
@@ -32,7 +32,7 @@ export default function InlineCommentaryChips({
         flexDirection: 'column',
         gap: 14,
         padding: 14,
-        borderRadius: radii.card,
+        borderRadius: 18,
         background: colors.lightGrey,
         margin: '8px 0 14px',
         userSelect: 'none',
@@ -56,7 +56,7 @@ export default function InlineCommentaryChips({
           }
           style={{
             border: 0,
-            borderRadius: radii.tile,
+            borderRadius: 9,
             background: 'transparent',
             color: colors.tertiary,
             fontSize: 12,
@@ -89,7 +89,15 @@ export default function InlineCommentaryChips({
               lineHeight: 1,
             }}
           >
-            {getCommentaryInitials(chip.author ?? chip.label, chip.label)}
+            {getCommentaryHeadshot(chip.resourceId) ? (
+              <img
+                src={getCommentaryHeadshot(chip.resourceId)}
+                alt=""
+                style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+              />
+            ) : (
+              getCommentaryInitials(chip.author ?? chip.label, chip.label)
+            )}
           </span>
           <span style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, flex: 1 }}>
             <span style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
@@ -102,7 +110,7 @@ export default function InlineCommentaryChips({
                     fontSize: 11,
                     lineHeight: 1.4,
                     background: colors.lightPrimary,
-                    borderRadius: radii.tile,
+                    borderRadius: 7,
                     padding: '2px 6px',
                   }}
                 >

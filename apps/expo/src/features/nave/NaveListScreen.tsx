@@ -1,23 +1,28 @@
+import { resolveFontFamily } from '~themes/styleValues'
+import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { MenuView } from '~common/ui/MenuView'
 import sectionListGetItemLayout from 'react-native-section-list-get-item-layout'
 import SectionList from '~common/ui/SectionList'
 import Box from '~common/ui/Box'
+import { FeatherIcon } from '~common/ui/Icon'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
-import { ListSectionTitle } from '~common/ui/ListSection'
-import FiltersHeader from '~common/FiltersHeader'
+import Text from '~common/ui/Text'
+import Header from '~common/Header'
 import SearchInput from '~common/SearchInput'
 import Loading from '~common/Loading'
 import type { NaveTopicSummary } from '~features/resources/naveAccess'
 import { useResourceAccess } from '~features/resources/resourceAccess'
 import Empty from '~common/Empty'
 import AlphabetList from '~common/AlphabetList'
-import NaveItem, { NAVE_ITEM_HEIGHT } from './NaveItem'
+import SectionTitle from '~common/SectionTitle'
+import NaveItem from './NaveItem'
 import { useSearchValue, useInfiniteResultsByLetterOrSearch } from '../lexique/useUtilities'
 import { useTranslation } from 'react-i18next'
-import { getLanguage } from '~i18n'
 import { NaveTab } from '../../state/tabs'
 import { PrimitiveAtom } from 'jotai/vanilla'
+import { toast } from '~helpers/toast'
 import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
 import { useResolveNewTabSelection } from '~features/app-switcher/utils/useResolveNewTabSelection'
 import { useResourceLanguage } from 'src/state/resourcesLanguage'
@@ -35,12 +40,9 @@ type NaveSection = {
   data: NaveRow[]
 }
 
-/** A letter title: 16 above, an 18 line, 6 below. */
-const SECTION_HEADER_HEIGHT = 40
-
 const getNaveItemLayout = sectionListGetItemLayout({
-  getItemHeight: () => NAVE_ITEM_HEIGHT,
-  getSectionHeaderHeight: () => SECTION_HEADER_HEIGHT,
+  getItemHeight: () => 60,
+  getSectionHeaderHeight: () => 50,
   getSeparatorHeight: () => 0,
   getSectionFooterHeight: () => 0,
 }) as (data: NaveSection[], index: number) => { length: number; offset: number; index: number }
@@ -74,6 +76,8 @@ const NaveListScreen = ({
   newTabId,
   onNaveSelect,
 }: NaveListScreenProps) => {
+  const stylingTheme = useStylingTheme()
+
   const { t } = useTranslation()
   const resources = useResourceAccess()
   const isConnected = useConnection()
@@ -81,7 +85,6 @@ const NaveListScreen = ({
   const canGoBackInStack = useCanGoBackInStack()
   const showBackButton = isFormSheet ? canGoBackInStack : hasBackButton
   const [naveResourceLanguage, setNaveResourceLanguage] = useResourceLanguage('NAVE')
-  const appLanguage = getLanguage()
   const [letter, setLetter] = useState('a')
   const { searchValue, debouncedSearchValue, setSearchValue } = useSearchValue()
   const availabilityQuery = useQuery({
@@ -152,6 +155,12 @@ const NaveListScreen = ({
     onNaveSelect?.(nameLower, name)
   }
 
+  const toggleNaveLanguage = () => {
+    const nextLanguage = naveResourceLanguage === 'fr' ? 'en' : 'fr'
+    setNaveResourceLanguage(nextLanguage)
+    toast(t('menu.languageChanged', { language: nextLanguage === 'fr' ? 'Français' : 'English' }))
+  }
+
   if (availabilityQuery.isError || error) {
     return (
       <ResourceUnavailableScreen
@@ -175,30 +184,34 @@ const NaveListScreen = ({
   }
 
   return (
-    // The letter bar sits fixed under the list: while it shows, the page stays above the home
-    // indicator and the tab bar.
-    <FormSheetScreen isFormSheet={isFormSheet} reserveBottom={!searchValue}>
+    <FormSheetScreen isFormSheet={isFormSheet}>
       <Box className="overflow-hidden border-continuous flex-[1] bg-reverse">
-        <FiltersHeader
+        <Header
           hasBackButton={showBackButton}
           title={t('Thématique Nave')}
-          onReset={() => setNaveResourceLanguage(appLanguage)}
-          filters={[
-            {
-              key: 'language',
-              icon: 'globe',
-              label: t('menu.language'),
-              value: t(`versionCatalog.language.${naveResourceLanguage}`),
-              active: naveResourceLanguage !== appLanguage,
-              onPress: () => {},
-              options: (['fr', 'en'] as const).map(language => ({
-                key: language,
-                label: t(`versionCatalog.language.${language}`),
-                selected: naveResourceLanguage === language,
-                onSelect: () => setNaveResourceLanguage(language),
-              })),
-            },
-          ]}
+          rightComponent={
+            <Box className="overflow-hidden border-continuous flex-row items-center">
+              <MenuView
+                tabActions
+                actions={[
+                  {
+                    id: 'language',
+                    title: `${t('menu.language')}: ${
+                      naveResourceLanguage === 'fr' ? 'Français' : 'English'
+                    }`,
+                    image: 'globe',
+                  },
+                ]}
+                onPressAction={({ nativeEvent }) => {
+                  if (nativeEvent.event === 'language') toggleNaveLanguage()
+                }}
+              >
+                <Box className="overflow-hidden border-continuous flex-row items-center justify-center h-[54px] w-[54px]">
+                  <FeatherIcon name="more-vertical" size={18} />
+                </Box>
+              </MenuView>
+            </Box>
+          }
         >
           <Box className="overflow-hidden border-continuous pb-[10px] px-[20px]">
             <SearchInput
@@ -208,18 +221,17 @@ const NaveListScreen = ({
               onDelete={() => setSearchValue('')}
             />
           </Box>
-        </FiltersHeader>
-        <Box className="overflow-hidden border-continuous flex-[1]">
+        </Header>
+        <Box className="overflow-hidden border-continuous flex-[1] pt-[20px]">
           {isLoading ? (
             <Loading message={t('Chargement...')} />
           ) : sectionResults.length ? (
             <SectionList<NaveRow, NaveSection>
-              renderItem={({ item: { normalizedName, name }, index, section }) => (
+              renderItem={({ item: { normalizedName, name } }) => (
                 <NaveItem
                   name_lower={normalizedName}
                   name={name}
                   onSelect={isNewTabSelection || onNaveSelect ? selectNave : undefined}
-                  hasSeparator={index < section.data.length - 1}
                 />
               )}
               removeClippedSubviews
@@ -230,11 +242,17 @@ const NaveListScreen = ({
                 getNaveItemLayout((data || []) as NaveSection[], index)
               }
               renderSectionHeader={({ section: { title } }) => (
-                <Box className="bg-reverse" style={{ height: SECTION_HEADER_HEIGHT }}>
-                  <ListSectionTitle className="ml-[20px] mt-[16px] mb-[6px] leading-[18px]">
+                <SectionTitle color="quint">
+                  <Text
+                    className="font-bold text-[16px]"
+                    style={[
+                      { fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) },
+                      { color: 'white' },
+                    ]}
+                  >
                     {title.toUpperCase()}
-                  </ListSectionTitle>
-                </Box>
+                  </Text>
+                </SectionTitle>
               )}
               stickySectionHeadersEnabled
               sections={sectionResults}

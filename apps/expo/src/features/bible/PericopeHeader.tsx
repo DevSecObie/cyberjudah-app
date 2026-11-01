@@ -1,5 +1,5 @@
+import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
-import { titleFontStyle } from '~themes/styleValues'
 import * as Icon from '~common/ui/classNameIcons'
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import { twMerge } from '~common/ui/classNames'
@@ -10,7 +10,6 @@ import type { Theme as AppTheme } from '~themes'
 import Back from '~common/Back'
 import Box from '~common/ui/Box'
 import Text from '~common/ui/Text'
-import { useWorkspaceHeaderInset } from '~features/app-switcher/workspaceHeaderInset'
 
 const HeaderBox = (
   componentProps: Omit<UIComponentProps<typeof Box>, 'theme'> & {
@@ -55,10 +54,9 @@ interface PericopeHeaderProps {
 
 function PericopeHeader({ hasBackButton, title }: PericopeHeaderProps) {
   const stylingTheme = useStylingTheme()
-  const workspaceHeaderInset = useWorkspaceHeaderInset()
 
   return (
-    <HeaderBox className="overflow-visible" style={{ paddingLeft: workspaceHeaderInset }}>
+    <HeaderBox className="overflow-visible">
       <PageContent className="flex-[1] items-center flex-row">
         <Box className="overflow-hidden border-continuous justify-center">
           {hasBackButton && (
@@ -68,7 +66,10 @@ function PericopeHeader({ hasBackButton, title }: PericopeHeaderProps) {
           )}
         </Box>
         <Box className="overflow-hidden border-continuous items-center justify-center flex-[1]">
-          <Text className="text-[16px] ml-[10px] mr-[10px]" style={titleFontStyle(stylingTheme)}>
+          <Text
+            className="text-[16px] ml-[10px] mr-[10px]"
+            style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+          >
             {title}
           </Text>
         </Box>

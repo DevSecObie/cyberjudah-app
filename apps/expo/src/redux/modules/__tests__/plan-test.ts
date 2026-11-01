@@ -1,5 +1,5 @@
 // Mock react-native before other imports
-import { collection, doc, getDoc, getDocs } from '~helpers/firebase'
+import { getDoc, getDocs } from '~helpers/firebase'
 import reducer, {
   cacheImage,
   removePlan,
@@ -8,11 +8,11 @@ import reducer, {
   markAsRead,
   markEntitySliceAsRead,
   markEntitySliceAsUnread,
+  updatePlans,
   fetchPlans,
   fetchPlan,
   startPlan,
   setPlanReminder,
-  updatePlans,
 } from '../plan'
 import { RECEIVE_LIVE_UPDATES, IMPORT_DATA, USER_LOGOUT } from '../user'
 import type { Plan, OngoingPlan, OnlinePlan, Section, ReadingSlice } from '~common/types'
@@ -630,78 +630,4 @@ it('accepts a server-confirmed empty collection', async () => {
     .mockResolvedValue({ empty: true, docs: [], metadata: { fromCache: false } } as never)
   const result = await fetchPlan({ id: 'book', enroll: false })(jest.fn(), jest.fn(), undefined)
   expect(fetchPlan.fulfilled.match(result)).toBe(true)
-})
-
-it('reuses a recent plan catalog for screens, and reads it again on refresh or once it is old', async () => {
-  jest.mocked(getDocs).mockReset()
-  jest.mocked(getDocs).mockResolvedValue({ docs: [{ data: () => ({ id: 'plan-1' }) }] } as never)
-  let state = { plan: reducer(undefined, { type: '@@INIT' }) }
-  const getState = () => state
-  const dispatch = jest.fn((action: { type: string }) => {
-    state = { plan: reducer(state.plan, action) }
-    return action
-  })
-  const run = (options?: { reuseRecent?: boolean }) =>
-    fetchPlans(options)(dispatch as never, getState, undefined)
-  const skipped = (action: Awaited<ReturnType<typeof run>>) =>
-    fetchPlans.rejected.match(action) && action.meta.condition
-  const now = jest.spyOn(Date, 'now')
-  try {
-    now.mockReturnValue(1_000_000)
-    expect(fetchPlans.fulfilled.match(await run({ reuseRecent: true }))).toBe(true)
-    expect(getDocs).toHaveBeenCalledTimes(1)
-
-    // Another screen reuses it, also while a read is still running.
-    expect(skipped(await run({ reuseRecent: true }))).toBe(true)
-    const refresh = run()
-    expect(skipped(await run({ reuseRecent: true }))).toBe(true)
-    await refresh
-    expect(getDocs).toHaveBeenCalledTimes(2)
-
-    now.mockReturnValue(1_000_000 + 6 * 60 * 60 * 1000)
-    expect(fetchPlans.fulfilled.match(await run({ reuseRecent: true }))).toBe(true)
-    expect(getDocs).toHaveBeenCalledTimes(3)
-  } finally {
-    now.mockRestore()
-  }
-})
-
-it('checks only the followed plans at launch and downloads again those updated online', async () => {
-  jest.mocked(getDoc).mockReset()
-  jest.mocked(getDocs).mockReset()
-  jest.mocked(collection).mockClear()
-  jest.mocked(doc).mockImplementation(((_db: unknown, ...path: string[]) => ({
-    path: path.join('/'),
-  })) as never)
-  const onlineLastUpdates: Record<string, number> = { 'plan-1': 200, 'plan-2': 100 }
-  jest.mocked(getDoc).mockImplementation((async (reference: { path: string }) => {
-    const id = reference.path.split('/')[1]
-    return { data: () => ({ ...createPlan(id), lastUpdate: onlineLastUpdates[id] }) }
-  }) as never)
-  jest.mocked(getDocs).mockResolvedValue({
-    empty: false,
-    docs: [{ data: () => createSection('section-1') }],
-    metadata: { fromCache: false },
-  } as never)
-  const myPlans: Plan[] = [
-    { ...createPlan('plan-1'), lastUpdate: 100 },
-    { ...createPlan('plan-2'), lastUpdate: 100 },
-  ]
-  let state = { plan: { ...reducer(undefined, { type: '@@INIT' }), myPlans } }
-  const getState = () => state
-  const dispatch: jest.Mock = jest.fn((action: unknown) => {
-    if (typeof action === 'function') return action(dispatch, getState, undefined)
-    state = { plan: reducer(state.plan, action as { type: string }) }
-    return action
-  })
-
-  await updatePlans()(dispatch as never, getState, undefined)
-
-  // One read per followed plan, plus the download of the updated one: never the catalog.
-  expect(collection).not.toHaveBeenCalledWith(expect.anything(), 'plans')
-  expect(getDoc).toHaveBeenCalledTimes(3)
-  expect(getDocs).toHaveBeenCalledTimes(1)
-  expect(state.plan.myPlans.find(plan => plan.id === 'plan-1')?.lastUpdate).toBe(200)
-  expect(state.plan.myPlans.find(plan => plan.id === 'plan-2')?.lastUpdate).toBe(100)
-  expect(state.plan.onlinePlans).toEqual([])
 })

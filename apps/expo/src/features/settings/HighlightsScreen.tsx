@@ -11,7 +11,7 @@ import Empty from '~common/Empty'
 import FiltersHeader from '~common/FiltersHeader'
 import ColorFilterModal from '~common/ColorFilterModal'
 import TypeFilterModal from '~common/TypeFilterModal'
-import Box, { usePageBottomInset } from '~common/ui/Box'
+import Box from '~common/ui/Box'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
 import { type SheetRef } from '~common/sheet'
 import Sheet from '~common/ContextualPanel/ContextualSheet'
@@ -61,7 +61,6 @@ const HighlightsScreen = ({ isFormSheet = false }: HighlightsScreenProps) => {
   const dispatch = useDispatch()
   const canGoBackInStack = useCanGoBackInStack()
   const hasBackButton = isFormSheet ? canGoBackInStack : true
-  const bottomInset = usePageBottomInset()
   const highlightsObj = useSelector(selectHighlightsObj)
   const setUnifiedTagsModal = useSetAtom(unifiedTagsModalAtom)
   const setColorChangeModal = useSetAtom(colorChangeModalAtom)
@@ -394,14 +393,14 @@ const HighlightsScreen = ({ isFormSheet = false }: HighlightsScreenProps) => {
                   )
                   .map(book => ({
                     key: String(book.Numero),
-                    label: book.Nom,
+                    label: t(book.Nom),
                     selected: filters.book === book.Numero,
                     onSelect: () => setPersistedFilters(state => ({ ...state, book: book.Numero })),
                   })),
               ],
               icon: 'bookmark',
               label: t('Livre'),
-              value: books.find(book => book.Numero === filters.book)?.Nom || t('Tous'),
+              value: t(books.find(book => book.Numero === filters.book)?.Nom || 'Tous'),
               active: Boolean(filters.book),
               onPress: () => bookModalRef.current?.present(),
             },
@@ -468,7 +467,7 @@ const HighlightsScreen = ({ isFormSheet = false }: HighlightsScreenProps) => {
                   filters.testament === 'all' ||
                   isBookInTestament(book.Numero, filters.testament)
               )
-              .map(book => ({ value: String(book.Numero), label: book.Nom })),
+              .map(book => ({ value: String(book.Numero), label: t(book.Nom) })),
           ]}
           onSelect={book => {
             const number = Number(book) || undefined
@@ -521,7 +520,7 @@ const HighlightsScreen = ({ isFormSheet = false }: HighlightsScreenProps) => {
         {/* Content */}
         {unifiedItems.length ? (
           <FlatList
-            contentContainerStyle={[pageContentStyle, { paddingBottom: 16 + bottomInset }]}
+            contentContainerStyle={pageContentStyle}
             data={unifiedItems}
             keyExtractor={item =>
               item.type === 'highlight'

@@ -10,6 +10,7 @@ import type { SearchItemFilters, SearchItemType } from '~state/searchFilters'
 import SearchTypeIcon from './SearchTypeIcon'
 export const searchItemFilterOrder: SearchItemType[] = [
   'passages',
+  'classes',
   'notes',
   'links',
   'studies',
@@ -22,7 +23,7 @@ export const searchItemFilterOrder: SearchItemType[] = [
 ]
 
 export const relationSearchItemFilterOrder = searchItemFilterOrder.filter(
-  type => !['commentary', 'plan', 'timeline'].includes(type)
+  type => !['commentary', 'plan', 'timeline', 'classes'].includes(type)
 )
 
 export const allSearchItemFilters = searchItemFilterOrder.reduce(
@@ -43,6 +44,7 @@ export const searchItemFilterConfig: Record<
   commentary: { labelKey: 'tabs.commentary', color: getUniverseColor('commentary') },
   plan: { labelKey: 'Plans', color: getUniverseColor('plan') },
   timeline: { labelKey: 'tabs.timeline', color: getUniverseColor('timeline') },
+  classes: { labelKey: 'Classes', color: getUniverseColor('classes') },
   passages: { labelKey: 'Passages', color: getUniverseColor('passages') },
   notes: { labelKey: 'Notes', color: getUniverseColor('notes') },
   links: { labelKey: 'Liens', color: getUniverseColor('links') },
@@ -138,7 +140,7 @@ const SearchItemFilterBar = ({
 
             return (
               <TouchableBox
-                className="overflow-hidden border-continuous flex-row items-center justify-center gap-[6px] px-[10px] py-[6px] mr-[8px] rounded-full bg-light-grey"
+                className="overflow-hidden border-continuous flex-row items-center justify-center gap-[6px] px-[6px] py-[6px] mr-[8px] rounded-[8px] bg-light-grey"
                 key={type}
                 onPress={() => onToggle(type)}
                 style={{ opacity: isActive ? 1 : 0.6 }}

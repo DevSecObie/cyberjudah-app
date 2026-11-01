@@ -26,6 +26,15 @@ export type SearchEntityResult = {
   passageReason?: string
   referenceSegment?: BibleReferenceSegment
   matches?: readonly FuseResultMatch[]
+  /** A CyberJudah class to open in the player, and the moment to start at. */
+  classWorkId?: string
+  /** A recording to play by its video, for one the class library does not list. */
+  classVideo?: string
+  classStart?: number
+  /** What was said in class, each searched word wrapped in {{ }} to be highlighted. */
+  classExcerpt?: string
+  /** A picture to show beside the result, such as a class's thumbnail. */
+  thumbnailUrl?: string
 }
 
 export type SearchEntityResultWithEndpoint = SearchEntityResult & {

@@ -14,7 +14,7 @@ import Box from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import Paragraph from '~common/ui/Paragraph'
 import { createOfflineCopyDownloadItem } from '~helpers/downloadItemFactory'
-import { getChapterVerseCountFromCoverage } from '~helpers/bibleCoverage'
+import { getChapterFirstVerse, getChapterLastVerseFromCoverage } from '~helpers/bibleCoverage'
 import { localQueryOptions, staticResourceQueryOptions } from '~helpers/queryOptions'
 import { resourceQueryKeys } from '~helpers/resourceQueryKeys'
 import { useDefaultBibleVersion } from '~state/useDefaultBibleVersion'
@@ -97,7 +97,7 @@ export const useResourceVerseContext = (
     ...localQueryOptions,
   })
   const versesInCurrentChapter =
-    getChapterVerseCountFromCoverage(coverage, book, chapter) ||
+    getChapterLastVerseFromCoverage(coverage, book, chapter) ||
     countLsgChapters[`${book}-${chapter}`]
 
   return {
@@ -119,9 +119,9 @@ const VerseTextSkeleton = ({ accessibilityLabel }: { accessibilityLabel: string 
     accessibilityRole="progressbar"
     accessibilityLabel={accessibilityLabel}
   >
-    <Box className="overflow-hidden border-continuous h-[13px] w-[92%] rounded-[4px] bg-canvas" />
-    <Box className="overflow-hidden border-continuous h-[13px] w-[78%] rounded-[4px] bg-canvas" />
-    <Box className="overflow-hidden border-continuous h-[13px] w-[56%] rounded-[4px] bg-canvas" />
+    <Box className="overflow-hidden border-continuous h-[13px] w-[92%] rounded-[5px] bg-light-grey" />
+    <Box className="overflow-hidden border-continuous h-[13px] w-[78%] rounded-[5px] bg-light-grey" />
+    <Box className="overflow-hidden border-continuous h-[13px] w-[56%] rounded-[5px] bg-light-grey" />
   </Box>
 )
 
@@ -145,10 +145,10 @@ const ResourceVerseContext = ({
   const { t } = useTranslation()
   const reduceMotion = useReducedMotion()
   const verseNumber = verseText?.Verset ?? verse.split('-')[2]
+  const [verseBook, verseChapter] = verse.split('-').map(Number)
 
   return (
-    // A surface, so the verse stands out on the canvas below it in every theme.
-    <Box className="overflow-hidden border-continuous bg-surface pt-[10px] rounded-bl-[24px] rounded-br-[24px]">
+    <Box className="overflow-hidden border-continuous bg-reverse pt-[10px] rounded-bl-[30px] rounded-br-[30px]">
       <Animated.View layout={reduceMotion ? undefined : CONTENT_LAYOUT_TRANSITION}>
         <Animated.View
           key={verse}
@@ -210,6 +210,7 @@ const ResourceVerseContext = ({
         goToNextVerse={() => updateVerse(1)}
         goToPrevVerse={() => updateVerse(-1)}
         versesInCurrentChapter={versesInCurrentChapter}
+        firstVerseInCurrentChapter={getChapterFirstVerse(verseBook, verseChapter)}
       />
     </Box>
   )

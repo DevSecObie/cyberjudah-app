@@ -8,7 +8,7 @@ const theme = {
   },
   fontFamily: {
     text: Platform.OS === 'ios' ? 'System' : 'normal',
-    title: Platform.OS === 'ios' ? 'System' : 'normal',
+    title: 'eina-03-bold',
     titleItalic: Platform.OS === 'ios' ? 'System' : 'normal',
     paragraph: Platform.OS === 'ios' ? 'System' : 'normal',
   },

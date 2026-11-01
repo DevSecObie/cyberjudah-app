@@ -1,11 +1,8 @@
 module.exports = function (api) {
-  const isWeb = api.caller(caller => caller?.platform === 'web')
-  const isTest = api.env('test')
+  api.cache(true)
 
   const config = {
-    // The Worklets plugin is configured at the end of `plugins`: the preset must not add a
-    // second, unconfigured one.
-    presets: [['babel-preset-expo', { worklets: false, reanimated: false }]],
+    presets: ['babel-preset-expo'],
     plugins: [
       [
         'module-resolver',
@@ -26,16 +23,6 @@ module.exports = function (api) {
       ],
       // Automatically adds debug labels to Jotai atoms
       'jotai/babel/plugin-debug-label',
-      // Bundle Mode lets a worklet call an npm module off the JS thread: react-native-streamdown
-      // closes streamed Markdown with `remend` there, and the assistant's avatar samples its
-      // frames with `@bible-strong/avatar-core`. Native bundles only. Keep this plugin last.
-      [
-        'react-native-worklets/plugin',
-        {
-          bundleMode: !isWeb && !isTest,
-          importForwarding: { moduleNames: ['remend', '@bible-strong/avatar-core'] },
-        },
-      ],
     ],
     env: {
       test: {

@@ -22,10 +22,6 @@ export interface ActionItemProps {
   disabled?: boolean
   isActive?: boolean
   variant?: 'default' | 'emphasized'
-  /** Desktop selection menu: the key shown beside the action. */
-  shortcut?: string
-  /** Desktop selection menu: the action opens a screen of the menu. */
-  nested?: boolean
 }
 
 export interface VerseActiveStates {
@@ -52,6 +48,6 @@ export interface SelectedVersesModalProps {
   onSelectStudy?: (studyId: string, format: 'inline' | 'block') => Promise<void>
   onAddBookmark: () => void
   onPinVerses: () => void
-  onExportPassage: () => void
+  onEnterAnnotationMode?: () => void
   focusVerses?: (string | number)[]
 }

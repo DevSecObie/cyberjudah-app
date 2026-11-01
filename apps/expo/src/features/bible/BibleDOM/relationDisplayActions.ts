@@ -37,7 +37,7 @@ export const getRelationItemNavigationActions = (
             type: SHOW_TOAST,
             payload: {
               type: 'warning',
-              message: "Cette note n'existe plus. Vous pouvez supprimer la relation.",
+              message: 'This note no longer exists. You can remove the link.',
             },
           },
           {

@@ -1,4 +1,4 @@
-import { resolveFontFamily, titleFontStyle } from '~themes/styleValues'
+import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { Image } from 'expo-image'
 import { useTranslation } from 'react-i18next'
@@ -30,10 +30,18 @@ const PassageMediaLibraryCard = ({ item, episodeNumber, thumbnailWidth, onPress 
     >
       <Box
         className="border-continuous overflow-visible rounded-[12px]"
-        style={{ width: thumbnailWidth }}
+        style={{
+          width: thumbnailWidth,
+          shadowColor: 'rgb(89,131,240)',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 7,
+          elevation: 1,
+          overflow: 'visible',
+        }}
       >
         <Box
-          className="border-continuous overflow-visible rounded-[12px] bg-light-grey"
+          className="border-continuous overflow-visible rounded-[12px] border-[1px] border-border bg-light-grey"
           style={{ aspectRatio: 16 / 9 }}
         >
           <Image
@@ -48,22 +56,24 @@ const PassageMediaLibraryCard = ({ item, episodeNumber, thumbnailWidth, onPress 
         </Box>
       </Box>
       <VStack className="overflow-hidden border-continuous flex-[1] gap-[4px] py-[2px]">
-        <Text className="text-grey text-[13px] leading-[16px]">
-          {t('passageMediaLibrary.episode', { number: episodeNumber })}
+        <Text className="font-bold text-primary text-[12px] leading-[15px]">
+          {item.subtitle || t('passageMediaLibrary.episode', { number: episodeNumber })}
         </Text>
         <Text
           className="text-[16px] leading-[20px]"
           numberOfLines={2}
-          style={titleFontStyle(stylingTheme)}
+          style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
         >
           {item.title}
         </Text>
-        <Text
-          className="text-grey text-[12px] leading-[16px]"
-          style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.text) }}
-        >
-          {formatPassageMediaDuration(item.durationSeconds)}
-        </Text>
+        {item.durationSeconds > 0 && (
+          <Text
+            className="text-grey text-[12px] leading-[16px]"
+            style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.text) }}
+          >
+            {formatPassageMediaDuration(item.durationSeconds)}
+          </Text>
+        )}
       </VStack>
     </TouchableBox>
   )

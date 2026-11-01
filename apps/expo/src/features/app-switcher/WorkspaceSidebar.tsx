@@ -13,11 +13,12 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai/react'
 import { collapsedWorkspaceGroupsAtom } from '~state/workspacePreferences'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Image, Platform, ScrollView, StyleSheet } from 'react-native'
+import { Image, Platform, ScrollView } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import type { SheetRef } from '~common/sheet'
 import Box, { HStack, TouchableBox } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
+import NotificationDot from '~common/ui/NotificationDot'
 import Text from '~common/ui/Text'
 import SidebarHoverActions from '~common/ui/HoverActionsRow'
 import Color from 'color'
@@ -37,19 +38,11 @@ import GroupActionsPopover from '~features/app-switcher/BottomTabBar/GroupAction
 import ViewGroupsModal from './BottomTabBar/ViewGroupsModal'
 import TabIcon, { tabIconColorConfig } from './utils/getIconByTabType'
 import { useOpenInNewTab } from './utils/useOpenInNewTab'
-import { shortcutTitle } from '~features/keyboard-shortcuts/shortcutTitle'
-import { floatingShadow, radii } from '~common/ui/surfaces'
-import { useWorkspaceSidebarWidth, workspaceSidebarVariant } from './utils/useResponsiveWorkspace'
-
-const sidebarFrameClassName = {
-  inset: 'bg-canvas',
-  floating: 'bg-surface-raised',
-  sidebar: 'bg-canvas border-separator',
-}[workspaceSidebarVariant]
+import { useAvailableUpdatesIndicator } from '~features/resources/useAvailableUpdates'
+import { WORKSPACE_SIDEBAR_WIDTH } from './utils/useResponsiveWorkspace'
 interface WorkspaceSidebarProps {
+  onCollapse: () => void
   onSelectContent?: () => void
-  /** Runs when the sidebar opens a page of its own, such as one from the account menu. */
-  onNavigate?: () => void
   activePage?: 'home' | 'settings' | null
   isContentActive?: boolean
   openHome: () => void
@@ -57,23 +50,22 @@ interface WorkspaceSidebarProps {
 }
 
 const WorkspaceSidebar = ({
+  onCollapse,
   openHome,
   openMenu,
   activePage,
   isContentActive = true,
   onSelectContent,
-  onNavigate,
 }: WorkspaceSidebarProps) => {
   const stylingTheme = useStylingTheme()
 
   const { t } = useTranslation()
+  const { hasUnseenUpdates } = useAvailableUpdatesIndicator()
   const insets = useSafeAreaInsets()
-  const sidebarWidth = useWorkspaceSidebarWidth()
   const { colorScheme } = useCurrentThemeSelector()
   const rowHeight = Platform.OS === 'web' ? 32 : 44
   const labelStyle = { color: colorScheme === 'dark' ? '#e3e3e3' : '#3c4043' }
   const actionSize = Platform.OS === 'web' ? 28 : 44
-  const createHeight = Platform.OS === 'web' ? 36 : 44
   const groups = useAtomValue(tabGroupsAtom)
   const activeGroupId = useAtomValue(activeGroupIdAtom)
   const activeTabId = useAtomValue(activeTabIdAtom)
@@ -108,19 +100,13 @@ const WorkspaceSidebar = ({
     <SidebarDragProvider
       onExpandGroup={id => setCollapsedGroups(current => current.filter(groupId => groupId !== id))}
     >
-      {(previewGroups, foldGroups, scrollProps) => (
+      {(previewGroups, foldedGroupId) => (
         <Box
-          className={`flex-1 min-h-0 border-continuous overflow-hidden ${sidebarFrameClassName}`}
+          className="flex-1 min-h-0 border-continuous overflow-hidden bg-light-grey border-r-[1px] border-border"
           style={{
-            // The docked sidebar is set off from the page by a hairline.
-            borderRightWidth: workspaceSidebarVariant === 'sidebar' ? StyleSheet.hairlineWidth : 0,
             paddingTop: insets.top,
             paddingBottom: insets.bottom,
-            // Keep the rows clear of a landscape iPhone's camera.
-            paddingLeft: insets.left,
-            ...(workspaceSidebarVariant === 'floating'
-              ? { borderRadius: radii.control, ...floatingShadow }
-              : { width: sidebarWidth }),
+            width: WORKSPACE_SIDEBAR_WIDTH,
           }}
         >
           <HStack className="overflow-hidden border-continuous items-center pl-[20px] pr-[8px] py-[10px]">
@@ -137,12 +123,21 @@ const WorkspaceSidebar = ({
               />
               <Text className="flex-1 ml-[10px] font-bold text-[15px]">CyberJudah</Text>
             </TouchableBox>
+            <TouchableBox
+              className="overflow-hidden border-continuous items-center justify-center"
+              onPress={onCollapse}
+              accessibilityRole="button"
+              accessibilityLabel={t('workspace.hideSidebar')}
+              style={{ width: 40, height: 40 }}
+            >
+              <FeatherIcon name="sidebar" size={18} color="grey" />
+            </TouchableBox>
           </HStack>
-          {/* A desktop scrollbar would take its width from the right margin of the rows only. */}
           <ScrollView
-            {...scrollProps}
-            style={{ flex: 1 }}
-            showsVerticalScrollIndicator={Platform.OS !== 'web'}
+            style={{
+              flex: 1,
+              ...(Platform.OS === 'web' ? { scrollbarGutter: 'stable' } : {}),
+            }}
             contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 8, gap: 8 }}
           >
             {[
@@ -150,7 +145,8 @@ const WorkspaceSidebar = ({
               ...(previewGroups ?? groups).filter(group => !group.isDefault),
             ].map(group => {
               const collapsed =
-                !group.isDefault && (collapsedGroups.includes(group.id) || foldGroups)
+                !group.isDefault &&
+                (collapsedGroups.includes(group.id) || foldedGroupId === group.id)
               const groupColor = group.color || '#64748b'
               const groupBackground = resolveThemeColor(stylingTheme, groupColor)!
               const groupTextColor =
@@ -257,15 +253,18 @@ const WorkspaceSidebar = ({
                         {group.isDefault && (
                           <SidebarHoverActions showOnTouch={false}>
                             {showActions => (
-                              // The open page is filled with the surface; a hovered one is tinted.
                               <HStack
                                 className="border-continuous overflow-visible items-center rounded-[8px]"
                                 style={{
+                                  boxShadow:
+                                    activePage === 'home'
+                                      ? '0 2px 7px rgba(89, 131, 240, 0.1)'
+                                      : undefined,
                                   backgroundColor: colorWithOpacity(
                                     resolveThemeColor(
                                       stylingTheme,
                                       activePage === 'home'
-                                        ? 'surface'
+                                        ? 'reverse'
                                         : showActions
                                           ? 'default'
                                           : undefined
@@ -283,7 +282,7 @@ const WorkspaceSidebar = ({
                                   style={{ minHeight: rowHeight }}
                                 >
                                   <Box
-                                    className="w-[20px] h-[20px] rounded-[4px] items-center justify-center shrink-0"
+                                    className="w-[20px] h-[20px] rounded-[5px] items-center justify-center shrink-0"
                                     style={{
                                       backgroundColor: colorWithOpacity(labelStyle.color, 0.12),
                                     }}
@@ -321,10 +320,13 @@ const WorkspaceSidebar = ({
                                   <HStack
                                     className="border-continuous overflow-visible items-center rounded-[8px]"
                                     style={{
+                                      boxShadow: selected
+                                        ? '0 2px 7px rgba(89, 131, 240, 0.1)'
+                                        : undefined,
                                       backgroundColor: colorWithOpacity(
                                         resolveThemeColor(
                                           stylingTheme,
-                                          selected ? 'surface' : showActions ? 'default' : undefined
+                                          selected ? 'reverse' : showActions ? 'default' : undefined
                                         ),
                                         !selected && showActions ? 0.05 : undefined
                                       ),
@@ -339,7 +341,7 @@ const WorkspaceSidebar = ({
                                       style={{ minHeight: rowHeight }}
                                     >
                                       <Box
-                                        className="w-[20px] h-[20px] rounded-[4px] items-center justify-center shrink-0"
+                                        className="w-[20px] h-[20px] rounded-[5px] items-center justify-center shrink-0"
                                         style={{
                                           backgroundColor: resolveUniverseColors(
                                             stylingTheme.colors,
@@ -365,12 +367,6 @@ const WorkspaceSidebar = ({
                                           { opacity: selected || showActions ? 1 : 0 },
                                         ]}
                                         onPress={() => closeTab(group, tab.id)}
-                                        // The shortcut closes the active tab only.
-                                        ref={shortcutTitle(
-                                          'closeTab',
-                                          t('workspace.closeTab', { title: tab.title }),
-                                          selected
-                                        )}
                                         disabled={!selected && !showActions}
                                         accessibilityRole="button"
                                         accessibilityLabel={t('workspace.closeTab', {
@@ -404,47 +400,91 @@ const WorkspaceSidebar = ({
                 </SidebarDragGroup>
               )
             })}
-          </ScrollView>
-          <Box className="border-continuous overflow-hidden px-[12px] pt-[8px] pb-[8px] gap-[4px]">
-            <HStack
-              className="bg-surface rounded-full items-center overflow-hidden"
-              testID="workspace-create-actions"
-            >
+            {Platform.OS !== 'web' && groups.length < MAX_TAB_GROUPS && (
               <TouchableBox
-                className="flex-1 flex-row items-center justify-center gap-[6px] hover:bg-canvas"
-                style={{ minHeight: createHeight }}
-                onPress={addTab}
-                ref={shortcutTitle('newTab', t('tabs.new'))}
-                accessibilityRole="button"
-                accessibilityLabel={t('tabs.new')}
-              >
-                <FeatherIcon name="plus" size={16} color="grey" />
-                <Text className="text-[13px]" style={labelStyle}>
-                  {t('workspace.newTabShort')}
-                </Text>
-              </TouchableBox>
-              <Box className="w-px h-[20px] bg-separator" />
-              <TouchableBox
-                className="flex-1 flex-row items-center justify-center gap-[6px] hover:bg-canvas"
+                className="overflow-hidden border-continuous flex-row items-center px-[10px]"
                 onPress={() => createRef.current?.present()}
-                disabled={groups.length >= MAX_TAB_GROUPS}
                 accessibilityRole="button"
-                accessibilityLabel={t('tabs.newGroup')}
-                accessibilityState={{ disabled: groups.length >= MAX_TAB_GROUPS }}
-                style={{
-                  minHeight: createHeight,
-                  opacity: groups.length >= MAX_TAB_GROUPS ? 0.4 : 1,
-                }}
+                style={{ minHeight: rowHeight }}
               >
                 <FeatherIcon name="folder-plus" size={16} color="grey" />
-                <Text className="text-[13px]" style={labelStyle}>
-                  {t('workspace.newGroupShort')}
+                <Text className="ml-[10px] text-[13px] text-grey">{t('tabs.newGroup')}</Text>
+              </TouchableBox>
+            )}
+          </ScrollView>
+          <Box className="border-continuous overflow-hidden px-[12px] pt-[8px] pb-[8px] gap-[4px]">
+            {Platform.OS === 'web' ? (
+              <HStack
+                className="bg-reverse rounded-[14px] items-center overflow-hidden shadow-[0_2px_7px_rgba(89,131,240,0.1)]"
+                testID="workspace-create-actions"
+              >
+                <TouchableBox
+                  className="flex-1 flex-row items-center justify-center gap-[6px] min-h-[36px] hover:bg-light-grey"
+                  onPress={addTab}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('tabs.new')}
+                >
+                  <FeatherIcon name="plus" size={16} color="grey" />
+                  <Text className="text-[13px]" style={labelStyle}>
+                    {t('workspace.newTabShort')}
+                  </Text>
+                </TouchableBox>
+                <Box className="w-px h-[20px] bg-border" />
+                <TouchableBox
+                  className="flex-1 flex-row items-center justify-center gap-[6px] min-h-[36px] hover:bg-light-grey"
+                  onPress={() => createRef.current?.present()}
+                  disabled={groups.length >= MAX_TAB_GROUPS}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('tabs.newGroup')}
+                  accessibilityState={{ disabled: groups.length >= MAX_TAB_GROUPS }}
+                  style={{ opacity: groups.length >= MAX_TAB_GROUPS ? 0.4 : 1 }}
+                >
+                  <FeatherIcon name="folder-plus" size={16} color="grey" />
+                  <Text className="text-[13px]" style={labelStyle}>
+                    {t('workspace.newGroupShort')}
+                  </Text>
+                </TouchableBox>
+              </HStack>
+            ) : (
+              <TouchableBox
+                className="overflow-hidden border-continuous flex-row items-center justify-center rounded-[8px] bg-reverse"
+                onPress={addTab}
+                accessibilityRole="button"
+                style={{ minHeight: rowHeight }}
+              >
+                <FeatherIcon name="plus" size={17} color="primary" />
+                <Text className="ml-[8px] text-[13px]" style={labelStyle}>
+                  {t('tabs.new')}
                 </Text>
               </TouchableBox>
-            </HStack>
-            <Box className="mt-[4px]">
-              <SidebarAccountCard openSettings={openMenu} onNavigate={onNavigate} />
-            </Box>
+            )}
+            {Platform.OS === 'web' ? (
+              <Box className="mt-[4px]">
+                <SidebarAccountCard openSettings={openMenu} onSelectContent={onSelectContent} />
+              </Box>
+            ) : (
+              <TouchableBox
+                className="overflow-hidden border-continuous flex-row items-center px-[10px]"
+                onPress={openMenu}
+                accessibilityRole="button"
+                accessibilityLabel={
+                  hasUnseenUpdates ? t('accessibility.settingsWithUpdates') : t('settings.settings')
+                }
+                accessibilityState={{ selected: activePage === 'settings' }}
+                style={{
+                  minHeight: rowHeight,
+                  backgroundColor:
+                    activePage === 'settings' ? stylingTheme.colors.reverse : undefined,
+                  borderRadius: 8,
+                }}
+              >
+                <FeatherIcon name="settings" size={16} color="grey" />
+                <Text className="ml-[8px] text-[13px]" style={labelStyle}>
+                  {t('settings.settings')}
+                </Text>
+                {hasUnseenUpdates && <NotificationDot size={8} style={{ marginLeft: 6 }} />}
+              </TouchableBox>
+            )}
           </Box>
           <EditGroupModal
             sheetRef={editRef}

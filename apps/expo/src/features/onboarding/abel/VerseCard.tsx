@@ -1,5 +1,5 @@
+import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme, useTheme } from '~themes/ThemeProvider'
-import { titleFontStyle } from '~themes/styleValues'
 import { Image } from 'expo-image'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -155,12 +155,12 @@ const VerseCard = ({
             className="overflow-hidden border-continuous"
           >
             <AnimatedText
-              className="text-link"
+              className="text-primary"
               style={[
                 {
                   fontSize: s(31) || 16,
                   lineHeight: s(38),
-                  ...titleFontStyle(stylingTheme),
+                  fontFamily: resolveFontFamily(stylingTheme.fontFamily.title),
                 },
                 [{ fontFamily: 'Literata Book' }, dimmedTextStyle],
               ]}
@@ -270,14 +270,14 @@ const VerseCard = ({
             <Image
               source={
                 resourceIllustration === 'dictionary'
-                  ? require('../../../assets/images/onboarding/dictionary-proposal-2.png')
+                  ? require('../../../assets/images/home/illustrations/dictionary-universe-v3.webp')
                   : resourceIllustration === 'comparisons'
-                    ? require('../../../assets/images/onboarding/comparisons-proposal-3.png')
+                    ? require('../../../assets/images/home/illustrations/comparisons-universe.webp')
                     : resourceIllustration === 'references'
-                      ? require('../../../assets/images/onboarding/references-proposal-2.png')
+                      ? require('../../../assets/images/home/bible-timeline.webp')
                       : resourceIllustration === 'themes'
-                        ? require('../../../assets/images/onboarding/themes-proposal-3.png')
-                        : require('../../../assets/images/onboarding/comments-theologians.png')
+                        ? require('../../../assets/images/new-tab/library-reader.webp')
+                        : require('../../../assets/images/home/illustrations/online-library.webp')
               }
               contentFit="contain"
               style={{ width: '100%', height: '100%' }}

@@ -2,7 +2,6 @@ export const workspacePagePath = { home: '/home', settings: '/more' } as const
 const settingsPaths = new Set([
   '/more',
   '/theme',
-  '/keyboard-shortcuts',
   '/resource-language',
   '/bible-defaults',
   '/bible-share-options',

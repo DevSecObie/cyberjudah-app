@@ -31,13 +31,13 @@ const TabPreviewCarousel = () => {
 
   return (
     <AnimatedBox
-      className="border-continuous overflow-visible flex-row absolute top-[0px] left-[0px] bg-canvas"
+      className="border-continuous overflow-visible flex-row absolute top-[0px] left-[0px] bg-light-grey"
       style={styles}
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
     >
       <Box
-        className="overflow-hidden border-continuous absolute inset-[-300px] bg-canvas"
+        className="overflow-hidden border-continuous absolute inset-[-300px] bg-light-grey"
         pointerEvents="none"
       />
       {deferredTabsAtoms.map((tabAtom, i) => (

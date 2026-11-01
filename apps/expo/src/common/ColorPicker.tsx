@@ -7,7 +7,6 @@ import RNColorPicker, {
   ColorFormatsObject,
 } from 'reanimated-color-picker'
 import Color from 'color'
-import { radii } from '~common/ui/surfaces'
 
 // Normalize color to hex format (handles rgb, hsl with decimals, hex, etc.)
 const normalizeColor = (colorValue: string): string => {
@@ -79,7 +78,7 @@ const styles = StyleSheet.create({
   swatch: {
     width: 30,
     height: 30,
-    borderRadius: radii.tile,
+    borderRadius: 10,
     marginBottom: 0,
     marginTop: 0,
   },

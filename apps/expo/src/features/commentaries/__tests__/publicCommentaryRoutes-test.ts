@@ -63,7 +63,7 @@ describe('CyberJudah commentary canon', () => {
         const routes =
           require('../publicCommentaryRoutes') as typeof import('../publicCommentaryRoutes')
         for (const book of [80, 81]) {
-          const route = { resourceId: 'cyberjudah', language: 'en' as const, book, chapter: 1 }
+          const route = { resourceId: 'bishop-kani', language: 'en' as const, book, chapter: 1 }
           const path = routes.buildPublicCommentaryPath(route)
           const [, , language, resource, osis, chapter] = path.split('/')
           expect(

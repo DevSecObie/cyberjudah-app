@@ -53,7 +53,7 @@ function Content({
         colors={{
           background: theme.colors.reverse,
           text: theme.colors.default,
-          link: theme.colors.link,
+          link: theme.colors.primary,
           emphasis: theme.colors.quart,
         }}
         onSizeChange={async value => {
@@ -89,7 +89,7 @@ function Content({
         colors={{
           background: theme.colors.reverse,
           text: theme.colors.default,
-          link: theme.colors.link,
+          link: theme.colors.primary,
           emphasis: theme.colors.quart,
         }}
         onLinkClicked={payload => onLink(payload.href)}

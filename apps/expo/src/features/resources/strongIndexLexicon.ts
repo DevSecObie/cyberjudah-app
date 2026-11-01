@@ -1,6 +1,7 @@
 import { getSimpleStrongModuleId } from '@bible-strong/resource-domain/strong-lexicon'
 
 import type { ResourceLanguage } from '~helpers/databaseTypes'
+import { MOBILE_RESOURCE_CATALOG } from '~helpers/mobileResourceCatalog'
 import { createOfflineCopyId } from '~helpers/offlineCopyId'
 import type { StrongLexiconModuleId } from '~helpers/strongLexiconPublications'
 import type { OfflineResourceRegistrySnapshot } from './resourceAvailability'
@@ -17,5 +18,13 @@ export const getStrongIndexLexiconModuleId = (
     registry.resources.get(createOfflineCopyId({ kind: 'strong-lexicon-module', moduleId }))
       ?.availability.status === 'available'
   const simpleModuleId = getSimpleStrongModuleId(language)
-  return isInstalled(simpleModuleId) || isInstalled('core') ? undefined : simpleModuleId
+  // A catalog that publishes no simple lexicon (CyberJudah's) has none to pair with the index:
+  // the Strong index still downloads, and Strong entries are read online.
+  const isPublished =
+    !!MOBILE_RESOURCE_CATALOG.resources[
+      createOfflineCopyId({ kind: 'strong-lexicon-module', moduleId: simpleModuleId })
+    ]
+  return !isPublished || isInstalled(simpleModuleId) || isInstalled('core')
+    ? undefined
+    : simpleModuleId
 }

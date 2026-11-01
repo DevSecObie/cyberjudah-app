@@ -7,7 +7,6 @@ import {
   Platform,
   ScrollView,
   SectionList,
-  StyleSheet,
   TextInput,
   useWindowDimensions,
   type FlatListProps,
@@ -25,7 +24,6 @@ import Box, { FadingText, type BoxProps, TouchableBox } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import Text, { type TextProps } from '~common/ui/Text'
 import { useTheme } from '~themes/ThemeProvider'
-import { WithoutWorkspaceHeaderInset } from '~features/app-switcher/workspaceHeaderInset'
 export type SheetSnapPoint = NonNullable<TrueSheetProps['detents']>[number]
 export type SheetScrollableOptions = NonNullable<TrueSheetProps['scrollableOptions']>
 
@@ -57,12 +55,6 @@ export type SheetRef = {
   presentAt: (snapPoint: SheetSnapPoint) => void
   resizeTo: (snapPoint: SheetSnapPoint) => void
   dismiss: () => void
-  /**
-   * Dismisses the sheet, then runs `action` once it is gone (at once when it is already closed).
-   * Use it for anything that presents another screen: on iOS a route presented while the sheet
-   * is still on screen or closing collides with it and leaves the app unresponsive.
-   */
-  dismissThen: (action: () => void) => void
   close: () => void
   forceClose: () => void
 }
@@ -121,8 +113,6 @@ export type SheetProps = {
   onClose?: () => void
   onDismiss?: () => void
   onDismissStart?: () => void
-  /** The sheet starts rising, before `onPresent` and `onOpenChange(true)`. */
-  onPresentStart?: () => void
   onOpenChange?: (isOpen: boolean) => void
   onPresent?: () => void
 }
@@ -209,14 +199,13 @@ const runSheetCommand = (
 
 const SheetItem = ({ children, tag, onPress, ...props }: SheetItemProps) => (
   <TouchableBox
-    className="border-continuous overflow-visible flex-row items-center justify-between p-[20px] border-separator"
-    style={{ borderBottomWidth: StyleSheet.hairlineWidth }}
+    className="border-continuous overflow-visible flex-row items-center justify-between p-[20px] border-border border-b-[1px]"
     accessibilityRole="button"
     onPress={onPress}
   >
     <Text {...props}>{children}</Text>
     {Boolean(tag) && (
-      <Box className="overflow-hidden border-continuous ml-[10px] p-[3px] bg-light-grey rounded-[4px]">
+      <Box className="overflow-hidden border-continuous ml-[10px] p-[3px] bg-light-grey rounded-[3px]">
         <Text className="text-[12px] text-grey" style={{ flexDirection: 'column-reverse' }}>
           {tag}
         </Text>
@@ -242,7 +231,6 @@ const Sheet = forwardRef<SheetRef, SheetProps>((props, ref) => {
     onClose,
     onDismiss,
     onDismissStart,
-    onPresentStart,
     onOpenChange,
     onPresent,
     scrollableOptions,
@@ -251,7 +239,6 @@ const Sheet = forwardRef<SheetRef, SheetProps>((props, ref) => {
   const { height } = useWindowDimensions()
   const sheetRef = React.useRef<TrueSheet>(null)
   const lifecycleStateRef = React.useRef<SheetLifecycleState>('dismissed')
-  const afterDismissRef = React.useRef<(() => void) | null>(null)
   const detents = getDetents(snapPoints)
   const initialDetentIndex = initialSnapPoint ? findSnapPointIndex(detents, initialSnapPoint) : 0
   const scrollable = !detents.includes('auto')
@@ -263,12 +250,6 @@ const Sheet = forwardRef<SheetRef, SheetProps>((props, ref) => {
   const renderedFooter = footer
     ? React.createElement(footer as React.ComponentType<SheetFooterProps>)
     : undefined
-
-  const runAfterDismiss = () => {
-    const action = afterDismissRef.current
-    afterDismissRef.current = null
-    action?.()
-  }
 
   React.useImperativeHandle(ref, () => {
     const present = (command: 'present' | 'presentAt', index: number) => {
@@ -296,8 +277,6 @@ const Sheet = forwardRef<SheetRef, SheetProps>((props, ref) => {
         () => sheetRef.current?.dismiss(),
         () => {
           lifecycleStateRef.current = previousState
-          // The native sheet is not there to close: nothing stands in the action's way.
-          runAfterDismiss()
         }
       )
     }
@@ -310,14 +289,6 @@ const Sheet = forwardRef<SheetRef, SheetProps>((props, ref) => {
           sheetRef.current?.resize(findSnapPointIndex(detents, snapPoint))
         ),
       dismiss: () => dismiss('dismiss'),
-      dismissThen: action => {
-        if (lifecycleStateRef.current === 'dismissed') {
-          action()
-          return
-        }
-        afterDismissRef.current = action
-        dismiss('dismiss')
-      },
       close: () => dismiss('close'),
       forceClose: () => dismiss('forceClose'),
     }
@@ -353,13 +324,11 @@ const Sheet = forwardRef<SheetRef, SheetProps>((props, ref) => {
         blurOptions={{
           intensity: 90,
         }}
-        // No colour on iOS: the system glass shows the page through the sheet. Android has no glass.
         backgroundColor={
-          backgroundColor ?? (Platform.OS === 'android' ? theme.colors.reverse : undefined)
+          backgroundColor || Platform.OS === 'android' ? theme.colors.reverse : undefined
         }
         detached={detached}
         detachedOffset={detachedOffset}
-        onWillPresent={() => onPresentStart?.()}
         onDidPresent={() => {
           lifecycleStateRef.current = 'presented'
           onOpenChange?.(true)
@@ -374,10 +343,9 @@ const Sheet = forwardRef<SheetRef, SheetProps>((props, ref) => {
           onOpenChange?.(false)
           onClose?.()
           onDismiss?.()
-          runAfterDismiss()
         }}
       >
-        <WithoutWorkspaceHeaderInset>{children}</WithoutWorkspaceHeaderInset>
+        {children}
       </TrueSheet>
     </SheetContext.Provider>
   )
@@ -421,10 +389,7 @@ const SheetHeader = ({
   onBackPress,
   rightComponent,
 }: SheetHeaderProps) => (
-  <Box
-    className="border-continuous overflow-hidden border-separator"
-    style={{ borderBottomWidth: StyleSheet.hairlineWidth }}
-  >
+  <Box className="border-continuous overflow-hidden border-border border-b-[1px]">
     <PageContent>
       {(title || subTitle || hasBackButton || leftComponent || rightComponent) && (
         <Box className="overflow-hidden border-continuous min-h-[54px] flex-row items-center">

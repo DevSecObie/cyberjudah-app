@@ -1,7 +1,7 @@
 import { SheetHeader, SheetScrollView } from '~common/sheet'
 import Sheet from '~common/ContextualPanel/ContextualSheet'
 import { useAtom } from 'jotai/react'
-import { useEffect, useEffectEvent } from 'react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TouchableOpacity } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
@@ -25,7 +25,7 @@ const RemovableChip = ({ label, onRemove }: { label: string; onRemove: () => voi
 
   return (
     <AnimatedBox
-      className="overflow-hidden border-continuous flex-row bg-primary rounded-full px-[12px] py-[5px] items-center"
+      className="overflow-hidden border-continuous flex-row bg-primary rounded-[20px] px-[12px] py-[5px] items-center"
       entering={FadeIn}
       exiting={FadeOut}
       layout={LinearTransition}
@@ -62,14 +62,13 @@ export const UnifiedTagsModalInstance = ({ item, setItem }: UnifiedTagsModalInst
     keys: ['name'],
   })
 
-  const openWithFreshSearch = useEffectEvent(() => {
-    open()
-    resetSearch()
-  })
-
   // Auto-open when atom changes
   useEffect(() => {
-    if (item) openWithFreshSearch()
+    if (item) {
+      open()
+      resetSearch()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item])
 
   // Calculate current items and selected tags for select mode
@@ -238,7 +237,12 @@ export const UnifiedTagsModalInstance = ({ item, setItem }: UnifiedTagsModalInst
                   key={tag.id}
                   onPress={() => handleTagPress(tag)}
                 >
-                  <Checkbox className="mr-[12px]" checked={isSelected} />
+                  <Checkbox
+                    className="mr-[12px]"
+                    checked={isSelected}
+                    fillChecked
+                    checkColor="white"
+                  />
                   <Text className="flex-[1] text-[16px]">{tag.name}</Text>
                 </TouchableBox>
               )
@@ -259,7 +263,7 @@ export const UnifiedTagsModalInstance = ({ item, setItem }: UnifiedTagsModalInst
             onPress={saveTag}
           >
             <FeatherIcon size={20} color="primary" name="tag" />
-            <Text className="ml-[10px] font-bold text-link">{`${t('Creer')} "${keyword}"`}</Text>
+            <Text className="ml-[10px] font-bold text-primary">{`${t('Creer')} "${keyword}"`}</Text>
           </TouchableBox>
         )}
       </SheetScrollView>

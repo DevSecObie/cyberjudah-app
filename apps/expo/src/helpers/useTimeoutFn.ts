@@ -10,6 +10,7 @@ export default function useTimeoutFn(
 
   const isReady = (): boolean | null => ready.current
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const set = (): void => {
     ready.current = false
     timeout.current && clearTimeout(timeout.current)
@@ -20,6 +21,7 @@ export default function useTimeoutFn(
     }, ms)
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const clear = (): void => {
     ready.current = null
     timeout.current && clearTimeout(timeout.current)
@@ -30,13 +32,12 @@ export default function useTimeoutFn(
     callback.current = fn
   }, [fn])
 
-  // Re-arm after every render and clear on unmount: set and clear used to be new
-  // on every render, so the previous dependency list never held the effect back.
+  // set on mount, clear on unmount
   useEffect(() => {
     set()
 
     return clear
-  })
+  }, [clear, ms, set])
 
   return [isReady, clear, set]
 }

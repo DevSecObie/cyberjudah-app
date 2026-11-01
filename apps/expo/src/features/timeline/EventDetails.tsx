@@ -1,25 +1,17 @@
 import { timelineContext } from '~features/study-assistant/referenceContext'
-import { titleFontStyle } from '~themes/styleValues'
 import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useAtomValue } from 'jotai/react'
 import useTimelineLanguage from './useTimelineLanguage'
 import { getLegacyLocalizedField } from '~helpers/languageUtils'
-import Box, { HStack, VStack } from '~common/ui/Box'
-import IconTile from '~common/ui/IconTile'
-import { FeatherIcon } from '~common/ui/Icon'
-import Text from '~common/ui/Text'
-import { StudySection } from '~common/ui/StudySection'
-import { useTranslation } from 'react-i18next'
-import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
-import { resolveUniverseColors } from '~themes/universeColors'
+import Box from '~common/ui/Box'
 import Paragraph from '~common/ui/Paragraph'
-import { radii } from '~common/ui/surfaces'
 import { calculateLabel } from './constants'
 import { TimelineEventDetail, TimelineEvent as TimelineEventProps } from './types'
 import { Image } from 'expo-image'
 import Media from './EventDetailsMedia'
+import TimelineArticle from './TimelineArticle'
 import Loading from '~common/Loading'
 import { useResourceAccess } from '~features/resources/resourceAccess'
 import { resourceQueryKeys } from '~helpers/resourceQueryKeys'
@@ -34,17 +26,16 @@ export type EventDetailsProps = Pick<
 > & { dateLabel?: string }
 
 const Description = ({ description, article }: Partial<TimelineEventDetail>) => {
-  const { t } = useTranslation()
-  if (!description && !article) return null
   return (
-    <StudySection title={t('timeline.event.description')}>
-      {!!description && (
-        <Paragraph className="font-semibold" scale={-1}>
-          {description}
-        </Paragraph>
-      )}
-      {!!article && <Paragraph scale={-1}>{article}</Paragraph>}
-    </StudySection>
+    <Box className="overflow-hidden border-continuous px-[20px]">
+      <Paragraph className="mb-[10px]" fontFamily="title">
+        Description
+      </Paragraph>
+      <Paragraph className="font-bold" scale={-1}>
+        {description}
+      </Paragraph>
+      {!!article && <TimelineArticle article={article} />}
+    </Box>
   )
 }
 
@@ -65,7 +56,6 @@ export const EventDetailsContent = ({
   onOpenEvent?: (event: TimelineEventProps) => void
 }) => {
   const preferredLanguage = useTimelineLanguage()
-  const stylingTheme = useStylingTheme()
   const lang = languageOverride || preferredLanguage
   const date = dateLabel || calculateLabel(start, end, lang)
   const resources = useResourceAccess()
@@ -102,29 +92,26 @@ export const EventDetailsContent = ({
     return null
   }
 
-  const timelineUniverse = resolveUniverseColors(stylingTheme.colors, 'timeline')
-
   return (
-    <Box className="overflow-hidden border-continuous">
-      <VStack className="gap-[10px] pt-[2px] pb-[4px]">
-        {image && (
+    <Box className="overflow-hidden border-continuous py-[10px]">
+      {image && (
+        <Box className="overflow-hidden border-continuous items-center justify-center my-[30px]">
           <Image
-            style={{ width: 120, height: 120, borderRadius: radii.card, marginBottom: 6 }}
+            style={{ width: 150, height: 150, borderRadius: 10 }}
             source={{
               uri: image,
             }}
           />
-        )}
-        <HStack className="items-center gap-[10px]">
-          <IconTile bg={timelineUniverse.background}>
-            <FeatherIcon name="clock" size={18} color={timelineUniverse.foreground} />
-          </IconTile>
-          <Text className="flex-[1] text-[15px] text-grey">{date}</Text>
-        </HStack>
-        <Text className="text-[30px] leading-[38px]" style={titleFontStyle(stylingTheme)}>
+        </Box>
+      )}
+      <Box className="overflow-hidden border-continuous mb-[30px] px-[20px]">
+        <Paragraph className="text-center flex-[1]" fontFamily="title" scale={3}>
           {getLegacyLocalizedField(lang, { fr: title, en: titleEn })}
-        </Text>
-      </VStack>
+        </Paragraph>
+        <Paragraph className="text-grey text-center" scale={-2} fontFamily="text">
+          {date}
+        </Paragraph>
+      </Box>
       <Description {...event} />
       <Media {...event} onOpenEvent={onOpenEvent} />
     </Box>

@@ -12,15 +12,20 @@ jest.mock('~helpers/databases', () => ({
   getDictionaryDbPath: (work: string) => `/documents/${work}.sqlite`,
   getDictionaryDirectoryDbPath: () => '/documents/dictionary-directory.sqlite',
 }))
+const mockCatalogIds = { withoutDirectory: false }
 jest.mock('~helpers/mobileResourceCatalog', () => ({
-  getMobileResourceCatalogEntry: (id: string) => ({
-    id,
-    url: `https://example.test/${id}.zip`,
-    entry: id === 'dictionary-directory' ? 'dictionary-directory.sqlite' : 'dictionnaire.sqlite',
-    entries: {},
-    archiveSha256: 'a'.repeat(64),
-    archiveBytes: 100,
-  }),
+  getMobileResourceCatalogEntry: (id: string) => {
+    if (id === 'dictionary-directory' && mockCatalogIds.withoutDirectory)
+      throw new Error(`MOBILE_RESOURCE_CATALOG_ENTRY_MISSING:${id}`)
+    return {
+      id,
+      url: `https://example.test/${id}.zip`,
+      entry: id === 'dictionary-directory' ? 'dictionary-directory.sqlite' : 'dictionnaire.sqlite',
+      entries: {},
+      archiveSha256: 'a'.repeat(64),
+      archiveBytes: 100,
+    }
+  },
 }))
 jest.mock('~helpers/strongBiblePublications', () => ({
   getStrongBiblePublication: jest.fn(),
@@ -76,5 +81,21 @@ describe('dictionary download plan', () => {
         true
       ).map(item => item.id)
     ).toEqual(['dictionary:bost:BOST:fr'])
+  })
+
+  it('installs the dictionary on its own when the catalog has no shared Directory', () => {
+    mockCatalogIds.withoutDirectory = true
+    try {
+      expect(
+        createDictionaryDownloadPlan({
+          kind: 'dictionary',
+          work: 'jewish-encyclopedia',
+          resourceId: 'JEWISH_ENCYCLOPEDIA',
+          language: 'en',
+        }).map(item => item.id)
+      ).toEqual(['dictionary:jewish-encyclopedia:JEWISH_ENCYCLOPEDIA:en'])
+    } finally {
+      mockCatalogIds.withoutDirectory = false
+    }
   })
 })

@@ -1,8 +1,9 @@
+import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
-import { titleFontStyle } from '~themes/styleValues'
 import distanceInWords from 'date-fns/formatDistance'
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
-import { TouchableOpacity, Text as NativeText } from 'react-native'
+import * as NativeUI from 'react-native'
+import { TouchableOpacity } from 'react-native'
 import HighlightOptions from '~common/HighlightOptions'
 import { twMerge } from '~common/ui/classNames'
 
@@ -13,7 +14,6 @@ import { useTranslation } from 'react-i18next'
 import EntityChipList from '~common/EntityChipList'
 import HighlightTypeIndicator from '~common/HighlightTypeIndicator'
 import type { TagsObj, Verse, VerseIds } from '~common/types'
-import Border from '~common/ui/Border'
 import Box from '~common/ui/Box'
 import Paragraph from '~common/ui/Paragraph'
 import Text from '~common/ui/Text'
@@ -30,7 +30,7 @@ import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
 import type { CustomColor, HighlightType } from '~redux/modules/user'
 
 const DateText = (
-  componentProps: Omit<UIComponentProps<typeof NativeText>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof NativeUI.Text>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
@@ -39,10 +39,10 @@ const DateText = (
 
   const resolvedClassName = twMerge('text-tertiary', className)
   return (
-    <NativeText
+    <NativeUI.Text
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof NativeText>['style']}
+      style={[props.style] as UIComponentProps<typeof NativeUI.Text>['style']}
     />
   )
 }
@@ -55,7 +55,10 @@ const Container = (
 ) => {
   const { theme: _themeOverride, className, ...props } = componentProps
 
-  const resolvedClassName = twMerge('mx-[20px] mt-[20px] pb-[20px]', className)
+  const resolvedClassName = twMerge(
+    'm-[20px] pb-[20px] mb-[0px] border-b-border border-b-[1px]',
+    className
+  )
   return (
     <Box
       {...props}
@@ -134,34 +137,34 @@ const VerseComponent = ({
   }
 
   return (
-    <>
-      <Container>
-        <TouchableOpacity accessibilityRole="button" activeOpacity={0.7} onPress={openBibleView}>
-          <Box
-            className="overflow-hidden border-continuous flex-row pr-[32px] items-center"
-            style={{ marginBottom: 10 }}
-          >
-            <Box className="overflow-hidden border-continuous flex-[1] flex-row items-center">
-              <HighlightTypeIndicator color={resolvedColor} type={highlightType} size={15} />
-              <Text className="text-[14px] ml-[10px]" style={titleFontStyle(stylingTheme)}>
-                {title}
-              </Text>
-            </Box>
-            <DateText style={{ fontSize: 10 }}>
-              {t('Il y a {{formattedDate}}', { formattedDate })}
-            </DateText>
+    <Container>
+      <TouchableOpacity accessibilityRole="button" activeOpacity={0.7} onPress={openBibleView}>
+        <Box
+          className="overflow-hidden border-continuous flex-row pr-[32px] items-center"
+          style={{ marginBottom: 10 }}
+        >
+          <Box className="overflow-hidden border-continuous flex-[1] flex-row items-center">
+            <HighlightTypeIndicator color={resolvedColor} type={highlightType} size={15} />
+            <Text
+              className="text-[14px] ml-[10px]"
+              style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+            >
+              {title}
+            </Text>
           </Box>
-          <Paragraph className="mb-[15px]" scale={-2}>
-            {content
-              ? truncate(removeBreakLines(content), 200)
-              : t('bibleVerse.textUnavailableInstalled')}
-          </Paragraph>
-        </TouchableOpacity>
-        <EntityChipList tags={tags} />
-        {setSettings && stringIds && <HighlightOptions verseIds={stringIds} color={color} />}
-      </Container>
-      <Border className="ml-[20px]" />
-    </>
+          <DateText style={{ fontSize: 10 }}>
+            {t('Il y a {{formattedDate}}', { formattedDate })}
+          </DateText>
+        </Box>
+        <Paragraph className="mb-[15px]" scale={-2}>
+          {content
+            ? truncate(removeBreakLines(content), 200)
+            : t('bibleVerse.textUnavailableInstalled')}
+        </Paragraph>
+      </TouchableOpacity>
+      <EntityChipList tags={tags} />
+      {setSettings && stringIds && <HighlightOptions verseIds={stringIds} color={color} />}
+    </Container>
   )
 }
 

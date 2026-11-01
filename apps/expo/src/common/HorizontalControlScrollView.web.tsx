@@ -3,7 +3,6 @@ import { ScrollView, type ScrollViewProps } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '~themes/ThemeProvider'
 import { FeatherIcon } from '~common/ui/Icon'
-import { floatingShadow, radii } from '~common/ui/surfaces'
 import { useHorizontalWheel } from './horizontalScroll/useHorizontalWheel.web'
 
 export default function HorizontalControlScrollView({
@@ -17,8 +16,7 @@ export default function HorizontalControlScrollView({
   const scrollRef = useRef<ScrollView>(null)
   useImperativeHandle(ref, () => scrollRef.current!, [])
   useEffect(() => {
-    // On web the scrollable node is the DOM element, which the native typings cannot express.
-    setElement((scrollRef.current?.getScrollableNode() as HTMLElement | null | undefined) ?? null)
+    setElement(scrollRef.current?.getScrollableNode() ?? null)
   }, [])
   return (
     <div style={{ position: 'relative', minWidth: 0 }}>
@@ -42,12 +40,12 @@ export default function HorizontalControlScrollView({
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: 0,
-                border: 0,
-                borderRadius: radii.tile,
-                background: theme.colors.surfaceRaised,
+                border: `1px solid ${theme.colors.border}`,
+                borderRadius: 8,
+                background: theme.colors.reverse,
                 color: theme.colors.primary,
                 cursor: 'pointer',
-                ...floatingShadow,
+                boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
               }}
             >
               <FeatherIcon

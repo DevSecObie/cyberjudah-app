@@ -45,7 +45,7 @@ export const getStrongEditorialHtmlStyles = (
     strong: { ...typographyStyle, fontWeight: 'bold' },
     em: { ...typographyStyle, color: theme.colors.quart, fontStyle: 'italic' },
     i: { ...typographyStyle, color: theme.colors.quart, fontStyle: 'italic' },
-    a: { ...typographyStyle, color: theme.colors.link },
+    a: { ...typographyStyle, color: theme.colors.primary },
     li: defaultTextStyle,
     ol: defaultTextStyle,
     ul: defaultTextStyle,

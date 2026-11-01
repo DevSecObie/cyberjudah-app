@@ -42,33 +42,11 @@ const docsArr = async (collectionName: string) => {
   return snapshot.docs.map((x: QueryDocumentSnapshot) => x.data())
 }
 
-// The catalog changes rarely and each read loads the whole collection: a screen that shows it
-// reuses a catalog read in the last hours, or one still loading. A refresh or a retry reads it.
-export const PLAN_CATALOG_MAX_AGE_MS = 6 * 60 * 60 * 1000
-let planCatalogReadAt: number | undefined
-
-export const fetchPlans = createAsyncThunk(
-  'plan/fetchPlans',
-  async (_options: { reuseRecent?: boolean } | void) => {
-    if (usesCyberJudahEditorial()) return [] as OnlinePlan[]
-    const results = (await docsArr('plans')) as OnlinePlan[]
-    planCatalogReadAt = Date.now()
-    return results
-  },
-  {
-    condition: (options, { getState }) => {
-      if (!options?.reuseRecent) return true
-      const { onlineStatus, onlinePlans } = (getState() as RootState).plan
-      if (onlineStatus === 'Pending') return false
-      return !(
-        onlineStatus === 'Resolved' &&
-        onlinePlans.length > 0 &&
-        planCatalogReadAt !== undefined &&
-        Date.now() - planCatalogReadAt < PLAN_CATALOG_MAX_AGE_MS
-      )
-    },
-  }
-)
+export const fetchPlans = createAsyncThunk('plan/fetchPlans', async () => {
+  if (usesCyberJudahEditorial()) return [] as OnlinePlan[]
+  const results = (await docsArr('plans')) as OnlinePlan[]
+  return results
+})
 
 export const fetchPlan = createAsyncThunk(
   'plan/fetchPlan',
@@ -95,18 +73,6 @@ export const fetchPlan = createAsyncThunk(
   }
 )
 
-// Runs at each launch: it reads only the followed plans, one read each, instead of the whole
-// catalog. The screens that show the catalog read it themselves.
-const readOnlineLastUpdate = async (planId: string) => {
-  try {
-    const snapshot = await getDoc(doc(firebaseDb, 'plans', planId))
-    return (snapshot.data() as OnlinePlan | undefined)?.lastUpdate
-  } catch {
-    // Unknown: the plan is downloaded again, as when the catalog could not be read.
-    return undefined
-  }
-}
-
 export const updatePlans = createAsyncThunk(
   'plan/updatesPlans',
   async (arg, { dispatch, getState }) => {
@@ -117,14 +83,15 @@ export const updatePlans = createAsyncThunk(
       return
     }
 
-    const onlineLastUpdates = await Promise.all(
-      myPlans.map(myPlan => readOnlineLastUpdate(myPlan.id))
-    )
+    await dispatch(fetchPlans())
+    const onlinePlans = (getState() as RootState).plan.onlinePlans
 
     const planIdsNeedsUpdate = myPlans
-      .filter((myPlan, index) => {
+      .filter(myPlan => {
         const myPlanLastUpdate = myPlan.lastUpdate
-        const onlinePlanLastUpdate = onlineLastUpdates[index]
+        const onlinePlanLastUpdate = onlinePlans.find(
+          onlinePlan => onlinePlan.id === myPlan.id
+        )?.lastUpdate
 
         if (myPlanLastUpdate && onlinePlanLastUpdate) {
           if (myPlanLastUpdate < onlinePlanLastUpdate) {
@@ -194,6 +161,13 @@ const planSlice = createSlice({
     addPlan(state, action: PayloadAction<Plan>) {
       if (!state.myPlans.some(plan => plan.id === action.payload.id))
         state.myPlans.push(action.payload)
+    },
+    // Puts the given copy in place of the stored one with the same id (or adds it), so a bundled
+    // plan picks up new days and rows. Reading progress lives under the slice ids and is kept.
+    replacePlan(state, action: PayloadAction<Plan>) {
+      const index = state.myPlans.findIndex(plan => plan.id === action.payload.id)
+      if (index === -1) state.myPlans.push(action.payload)
+      else state.myPlans[index] = action.payload
     },
     markAsRead(state, action: PayloadAction<{ readingSliceId: string; planId: string }>) {
       const { readingSliceId, planId } = action.payload
@@ -285,6 +259,7 @@ export const {
   markEntitySliceAsUnread,
   removePlan,
   addPlan,
+  replacePlan,
   startPlan,
   setPlanReminder,
 } = planSlice.actions

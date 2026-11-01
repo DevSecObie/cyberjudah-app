@@ -216,8 +216,6 @@ type HttpTimelineAccessOptions = {
   publicationRevision?: string
   fetcher?: typeof fetch
   isOnline: () => Promise<boolean>
-  /** Explains a request that failed without a response; defaults to the online gate. */
-  isOfflineFailure?: () => Promise<boolean>
   timeoutMs?: number
 }
 
@@ -236,7 +234,6 @@ export const createHttpTimelineAccess = ({
   publicationRevision,
   fetcher = fetch,
   isOnline,
-  isOfflineFailure = async () => !(await isOnline()),
   timeoutMs = 10_000,
 }: HttpTimelineAccessOptions): TimelineAccess => {
   const normalizedBaseUrl = baseUrl.replace(/\/+$/, '')
@@ -260,7 +257,7 @@ export const createHttpTimelineAccess = ({
     } catch (error) {
       if (error instanceof ResourceAccessError) throw error
       throw new ResourceAccessError(
-        (await isOfflineFailure()) ? 'NETWORK_OFFLINE' : 'TEMPORARY_UNAVAILABLE'
+        (await isOnline()) ? 'TEMPORARY_UNAVAILABLE' : 'NETWORK_OFFLINE'
       )
     } finally {
       clearTimeout(timeout)

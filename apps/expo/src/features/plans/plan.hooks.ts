@@ -1,4 +1,5 @@
 import { to } from 'await-to-js'
+import { Asset } from 'expo-asset'
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
@@ -23,12 +24,7 @@ import { useDefaultBibleVersion } from '../../state/useDefaultBibleVersion'
 import { VersionCode } from '~state/tabs'
 import type { AppDispatch } from '~redux/store'
 import { normalizeMeditationCollection } from './readingCalendar'
-import {
-  areOngoingPlansEqual,
-  buildComputedPlan,
-  buildComputedPlanItem,
-  hasPlanParticipation,
-} from './planProgress'
+import { areOngoingPlansEqual, buildComputedPlan, buildComputedPlanItem } from './planProgress'
 
 interface VerseContent {
   Pericope: {
@@ -136,76 +132,34 @@ export const useDownloadPlans = () => {
   const dispatch = useDispatch<AppDispatch>()
   const ongoingPlans = useSelector((state: RootState) => state.plan.ongoingPlans, shallowEqual)
 
-  // Plans are read once, when the screen mounts.
-  const downloadMissingPlans = React.useEffectEvent(async () => {
-    if (usesCyberJudahEditorial()) return
-    const planNeedsToBeDownloaded = ongoingPlans.filter(
-      plan => !myPlans.find(myPlan => myPlan.id === plan.id)
-    )
-
-    let err
-    ;[err] = await to(
-      Promise.all(
-        planNeedsToBeDownloaded.map(async planToDownload => {
-          setIsLoading(true)
-          return dispatch(fetchPlan({ id: planToDownload.id })).unwrap()
-        })
-      )
-    )
-
-    setIsLoading(false)
-
-    if (err) {
-      toast.error('Impossible de télécharger vos plans, vérifiez votre connexion internet.')
-    }
-  })
-
   React.useEffect(() => {
-    void downloadMissingPlans()
+    if (usesCyberJudahEditorial()) return
+    ;(async () => {
+      const planNeedsToBeDownloaded = ongoingPlans.filter(
+        plan => !myPlans.find(myPlan => myPlan.id === plan.id)
+      )
+
+      let err
+      ;[err] = await to(
+        Promise.all(
+          planNeedsToBeDownloaded.map(async planToDownload => {
+            setIsLoading(true)
+            return dispatch(fetchPlan({ id: planToDownload.id })).unwrap()
+          })
+        )
+      )
+
+      setIsLoading(false)
+
+      if (err) {
+        toast.error('Impossible de télécharger vos plans, vérifiez votre connexion internet.')
+      }
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return { isLoading }
 }
-
-/** Followed plans whose download is running, or failed during this session. */
-const requestedFollowedPlans = new Set<string>()
-
-/**
- * Download the content of followed plans this device does not have. Progress syncs between
- * devices but plan content is stored per device, and the home needs both to list « Mes plans ».
- * Unlike useDownloadPlans, it reacts to the sync arriving after mount, stays silent, and tries a
- * failing plan once per session.
- */
-export const useDownloadFollowedPlans = () => {
-  const dispatch = useDispatch<AppDispatch>()
-  // A joined string keeps the selection stable between renders.
-  const missingIds = useSelector((state: RootState) =>
-    state.plan.ongoingPlans
-      .filter(
-        participation =>
-          hasPlanParticipation(participation) &&
-          !state.plan.myPlans.some(plan => plan.id === participation.id)
-      )
-      .map(participation => participation.id)
-      .join(',')
-  )
-
-  React.useEffect(() => {
-    if (!missingIds || usesCyberJudahEditorial()) return
-    for (const id of missingIds.split(',')) {
-      if (requestedFollowedPlans.has(id)) continue
-      requestedFollowedPlans.add(id)
-      dispatch(fetchPlan({ id }))
-        .unwrap()
-        // A downloaded plan may be needed again after a logout clears the local plans.
-        .then(() => requestedFollowedPlans.delete(id))
-        .catch(error => console.warn('[Plans] Could not download a followed plan', id, error))
-    }
-  }, [missingIds, dispatch])
-}
-
-// The home remounts its plans whenever its layout changes width; check for updates once a launch.
-let plansUpdateRequested = false
 
 /**
  * Update myplans
@@ -214,8 +168,6 @@ let plansUpdateRequested = false
 export const useUpdatePlans = () => {
   const dispatch = useDispatch<AppDispatch>()
   React.useEffect(() => {
-    if (plansUpdateRequested) return
-    plansUpdateRequested = true
     dispatch(updatePlans())
   }, [dispatch])
 }
@@ -373,11 +325,24 @@ export const useVersesToContent = (verses: string) => {
   return { status, content }
 }
 
+// Images of the journeys CyberJudah ships with the app, named by the plan's `image`.
+const bundledPlanImages: Record<string, number> = {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  'cyberjudah-lion-reading': require('~assets/images/new-tab/bible-reader.webp'),
+}
+
 export const useFireStorage = (src?: string) => {
   const dispatch = useDispatch<AppDispatch>()
   const cachedUri = useSelector((state: RootState) => src && state.plan.images[src])
-  const directImage = !!src && /^(https:\/\/|data:image\/png;base64,)/.test(src)
-  const imageUrl = directImage ? src : src ? cachedUri || cdnUrl(`images/${src}.png`) : undefined
+  const bundled = src ? bundledPlanImages[src] : undefined
+  const directImage = !!bundled || (!!src && /^(https:\/\/|data:image\/png;base64,)/.test(src))
+  const imageUrl = bundled
+    ? Asset.fromModule(bundled).uri
+    : directImage
+      ? src
+      : src
+        ? cachedUri || cdnUrl(`images/${src}.png`)
+        : undefined
 
   // Keep the external Redux image cache synchronized with the requested source.
   // https://react.dev/learn/you-might-not-need-an-effect

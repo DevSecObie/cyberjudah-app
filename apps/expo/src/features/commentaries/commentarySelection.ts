@@ -3,16 +3,28 @@ import { COMMENTARY_CATALOG_BY_ID } from '~helpers/commentaryCatalog'
 import type { ResourceLanguage } from '~helpers/databaseTypes'
 import { getLanguage } from '~i18n'
 
-export const MAX_SELECTED_COMMENTARIES = 10
+export const MAX_SELECTED_COMMENTARIES = 5
 export const LEGACY_COMMENTARY_SELECTION_STORAGE_KEY = 'commentarySelection.v1'
 
 export type CommentaryProjectionId = `${string}:${ResourceLanguage}`
 export type CommentarySelectionState = CommentaryProjectionId[]
 
-export const DEFAULT_COMMENTARY_SELECTIONS: Record<ResourceLanguage, CommentarySelectionState> = {
-  fr: ['barnes:fr', 'acbc:fr', 'mhy-fr:fr'],
-  en: ['barnes:en', 'acbc:en', 'mhcc:en'],
-}
+const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+
+/** CyberJudah publishes one commentary per Bishop, and every reader starts with all three. */
+export const CYBERJUDAH_TEACHINGS: readonly CommentaryProjectionId[] = [
+  'bishop-nathanyel:en',
+  'bishop-yawasap:en',
+  'bishop-kani:en',
+]
+
+export const DEFAULT_COMMENTARY_SELECTIONS: Record<ResourceLanguage, CommentarySelectionState> =
+  isCyberJudah
+    ? { fr: [...CYBERJUDAH_TEACHINGS], en: [...CYBERJUDAH_TEACHINGS] }
+    : {
+        fr: ['barnes:fr', 'acbc:fr', 'mhy-fr:fr'],
+        en: ['barnes:en', 'acbc:en', 'mhcc:en'],
+      }
 
 export const createCommentaryProjectionId = (
   resourceId: string,
@@ -52,7 +64,9 @@ export const normalizeCommentarySelection = (value: unknown): CommentarySelectio
     result.push(projection.projectionId)
     if (result.length === MAX_SELECTED_COMMENTARIES) break
   }
-  return result
+  // A selection saved by an earlier build (Bible Strong's commentaries in 303, the single
+  // "cyberjudah" commentary after it) normalizes away here: the Bishops' commentaries come back.
+  return isCyberJudah && !result.length ? getDefaultCommentarySelection() : result
 }
 
 export const migrateCommentarySelectionState = (value: unknown): CommentarySelectionState => {

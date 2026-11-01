@@ -11,7 +11,7 @@ import Text from '~common/ui/Text'
 import { useResourceAccess } from '~features/resources/resourceAccess'
 import { useQuery } from '@tanstack/react-query'
 import { bibleChapterQueryOptions } from '~features/resources/resourceQueries'
-import { getChapterVerseCountFromCoverage } from '~helpers/bibleCoverage'
+import { getChapterVerseNumbersFromCoverage } from '~helpers/bibleCoverage'
 import type { BibleVersionCoverage } from '~helpers/biblesDb'
 type VerseSelectorPopupProps = {
   bibleAtom: PrimitiveAtom<BibleTab>
@@ -41,12 +41,9 @@ export const VerseSelectorPopup = ({
     ...bibleChapterQueryOptions({ book: book.Numero, chapter, version }, resources),
     enabled: !preferCoverage,
   })
-  const verseCount = getChapterVerseCountFromCoverage(coverage, book.Numero, chapter)
-  const verseNumbers = verseCount
-    ? Array.from({ length: verseCount }, (_, index) => index + 1)
-    : verses?.success
-      ? verses.data.verses.map(verse => Number(verse.Verset))
-      : []
+  const verseNumbers =
+    getChapterVerseNumbersFromCoverage(coverage, book.Numero, chapter) ??
+    (verses?.success ? verses.data.verses.map(verse => Number(verse.Verset)) : [])
 
   const ITEM_WIDTH = 40
   const ITEM_GAP = 10
@@ -83,7 +80,7 @@ export const VerseSelectorPopup = ({
                     accessibilityRole="button"
                     accessibilityLabel={t('Verset') + ' ' + verse}
                     accessibilityState={{ selected: verse === bible.data.selectedVerse }}
-                    className="w-[40px] h-[40px] bg-opacity5 rounded-[8px] items-center justify-center"
+                    className="w-[40px] h-[40px] bg-opacity5 rounded-[3px] items-center justify-center"
                     onPress={() => {
                       actions.setSelectedVerse(verse)
                       nav.close()
@@ -125,7 +122,7 @@ export const VerseSelectorPopup = ({
           {verseNumbers.length ? (
             verseNumbers.map(verse => (
               <TouchableBox
-                className="overflow-hidden border-continuous bg-opacity5 rounded-[8px] h-[40px] items-center justify-center"
+                className="overflow-hidden border-continuous bg-opacity5 rounded-[3px] h-[40px] items-center justify-center"
                 key={String(verse)}
                 onPress={() => handleSelect(verse)}
                 accessibilityRole="button"

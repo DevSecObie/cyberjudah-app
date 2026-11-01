@@ -110,7 +110,8 @@ export default function StudyOptionsPanel({
                 icon="external-link"
                 label={t('tab.openInNewTab')}
                 onPress={() => {
-                  nav.closeThen(openInNewTab)
+                  nav.close()
+                  openInNewTab()
                 }}
               />
               <PanelAction
@@ -145,7 +146,8 @@ export default function StudyOptionsPanel({
                 endpoint={endpoint}
                 showEmptyState
                 onOpenEndpoint={target => {
-                  nav.closeThen(() => openEndpoint(target))
+                  nav.close()
+                  openEndpoint(target)
                 }}
               />
             </>

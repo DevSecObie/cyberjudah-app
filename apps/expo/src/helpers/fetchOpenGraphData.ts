@@ -1,5 +1,6 @@
 import { Link, LinkType, OpenGraphData } from '~redux/modules/user'
 import { getCurrentAuthUser } from './firebaseAuthRuntime'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 
 const FUNCTION_URL = 'https://us-central1-bible-strong-app.cloudfunctions.net/fetchOpenGraph'
 
@@ -74,7 +75,8 @@ export function isValidUrl(url: string): boolean {
  * Retourne null si offline, URL invalide, ou erreur (pas grave)
  */
 export async function fetchOpenGraphData(url: string): Promise<OpenGraphData | null> {
-  if (!isValidUrl(url)) {
+  // Previews are fetched by Bible Strong's cloud function; CyberJudah sends no link there.
+  if (usesCyberJudahEditorial() || !isValidUrl(url)) {
     return null
   }
 

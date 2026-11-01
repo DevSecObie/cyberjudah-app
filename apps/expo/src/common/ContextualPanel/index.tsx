@@ -7,15 +7,6 @@ import PanelTransition from './PanelTransition'
 export default function ContextualPanel(props: ContextualPanelProps) {
   const panel = usePanelNavigation(props)
   const ref = useRef<SheetRef>(null)
-  const navigation = {
-    ...panel.navigation,
-    closeThen: (action: () => void) => {
-      const sheet = ref.current
-      if (sheet) sheet.dismissThen(action)
-      panel.navigation.close()
-      if (!sheet) action()
-    },
-  }
   useEffect(() => {
     if (panel.isOpen) ref.current?.present()
     else ref.current?.dismiss()
@@ -57,7 +48,7 @@ export default function ContextualPanel(props: ContextualPanelProps) {
       >
         <SheetScrollView key={panel.screenKey}>
           <PanelTransition direction={panel.direction}>
-            {panel.screen.content(navigation)}
+            {panel.screen.content(panel.navigation)}
           </PanelTransition>
         </SheetScrollView>
       </Sheet>

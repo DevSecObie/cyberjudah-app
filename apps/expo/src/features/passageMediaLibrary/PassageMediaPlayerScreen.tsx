@@ -1,93 +1,326 @@
-import { resolveFontFamily, titleFontStyle } from '~themes/styleValues'
+import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
-import { useLocalSearchParams } from 'expo-router'
-import { useState } from 'react'
+import { useGlobalSearchParams, useLocalSearchParams, usePathname, useRouter } from 'expo-router'
+import { useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useWindowDimensions } from 'react-native'
+import { Linking, Platform, useWindowDimensions } from 'react-native'
 import YoutubePlayer from '~helpers/react-native-youtube-iframe'
+import WebView from 'react-native-webview'
+import { useAtom } from 'jotai'
+import { dockedClassAtom } from './dockedClassPlayerStore'
+import {
+  CLASS_TIME_SCRIPT,
+  classTimeFromMessage,
+  rememberClassPosition,
+  resumeClassAt,
+} from './classVideoPosition'
+import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes'
 import Header from '~common/Header'
-import Box, { VStack } from '~common/ui/Box'
+import Box, { TouchableBox, VStack } from '~common/ui/Box'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
-import ScrollView from '~common/ui/ScrollView'
-import { radii } from '~common/ui/surfaces'
 import Text from '~common/ui/Text'
-import { formatPassageMediaDuration, getPassageMediaById } from '~features/bible/passageMedia'
+import { FeatherIcon, MaterialIcon } from '~common/ui/Icon'
+import PipGlass from './PipGlass'
+import ClassVideoFrame from './ClassVideoFrame'
+import {
+  formatPassageMediaDuration,
+  getPassageMediaById,
+  getPassageMediaEmbedUrl,
+} from '~features/bible/passageMedia'
 import { IS_FORM_SHEET } from '~helpers/constants'
 import useLanguage from '~helpers/useLanguage'
+import { useQuery } from '@tanstack/react-query'
+import { getCommentaryBibleViewRoute } from '~features/commentaries/commentaryReferenceNavigation'
+import ClassNotesList from './ClassNotesList'
+import ClassNotesPdfButton from '~features/notesExport/ClassNotesPdfButton'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
+import { CLASS_SEEK_PREFIX, getCachedClassById, loadClassNoteBlocks } from './cyberJudahClasses'
+const YOUTUBE_PLAYER_BASE_URL =
+  'https://lonelycpp.github.io/react-native-youtube-iframe/iframe_v2.html'
 
 const PassageMediaPlayerScreen = () => {
   const stylingTheme = useStylingTheme()
 
   const { t } = useTranslation()
-  const { workId, language: requestedLanguage } = useLocalSearchParams<{
+  const {
+    workId,
+    language: requestedLanguage,
+    start,
+    video,
+    title: videoTitle,
+  } = useLocalSearchParams<{
     workId?: string
     language?: string
+    start?: string
+    /** A recording the class library does not list (Said in Class), by its video and title. */
+    video?: string
+    title?: string
   }>()
+  const startSeconds = /^\d{1,6}$/.test(start ?? '') ? Number(start) : 0
   const preferredLanguage = useLanguage()
   const language =
     requestedLanguage === 'fr' || requestedLanguage === 'en' ? requestedLanguage : preferredLanguage
   const { width: windowWidth } = useWindowDimensions()
   const [playerError, setPlayerError] = useState<string>()
-  const item = workId ? getPassageMediaById(workId, language) : null
+  const classPlayerRef = useRef<WebView>(null)
+  const [dockedClass, setDockedClass] = useAtom(dockedClassAtom)
+  const pathname = usePathname()
+  const routeParams = useGlobalSearchParams()
+  const router = useRouter()
+  const item = workId
+    ? (getPassageMediaById(workId, language) ?? getCachedClassById(workId))
+    : video && /^[\w-]{11}$/.test(video)
+      ? ({
+          workId: `cyberjudah-recording-${video}`,
+          editionId: `cyberjudah-recording-${video}`,
+          providerId: video,
+          title: videoTitle ?? '',
+          durationSeconds: 0,
+          attributionLabel: 'CyberJudah',
+        } as unknown as NonNullable<ReturnType<typeof getPassageMediaById>>)
+      : null
+  // A class's notes come from the class library, even when the catalog also lists the video.
+  const cachedClass = workId ? getCachedClassById(workId) : null
+  const notesPath =
+    item && 'notesPath' in item ? String(item.notesPath) : (cachedClass?.notesPath ?? '')
+  console.log(
+    '[ClassPlayer]',
+    workId,
+    !!getPassageMediaById(workId ?? '', language),
+    !!getCachedClassById(workId ?? ''),
+    notesPath
+  )
+  const notes = useQuery({
+    queryKey: ['cyberjudah-class-note-blocks', notesPath],
+    queryFn: () => loadClassNoteBlocks(notesPath, item?.providerId ?? ''),
+    enabled: !!notesPath,
+    staleTime: 60 * 60 * 1000,
+    networkMode: 'always',
+    retry: 1,
+  })
   const playerWidth = Math.min(windowWidth - 32, 720)
   const playerHeight = (playerWidth * 9) / 16
+  const videoId = item?.providerId ?? ''
+  const playingInWindow = usesCyberJudahEditorial() && dockedClass?.videoId === videoId
+  // Where the player here starts, fixed each time it appears: a verse's moment when the page was
+  // opened for one, otherwise wherever the class was left (here or in the floating window).
+  const openedAt = useRef<string | undefined>(undefined)
+  const playerStart = useMemo(() => {
+    if (!videoId) return 0
+    const firstTime = openedAt.current !== videoId
+    openedAt.current = videoId
+    if (firstTime && startSeconds > 0 && !playingInWindow) {
+      rememberClassPosition(videoId, startSeconds)
+      return startSeconds
+    }
+    return resumeClassAt(videoId, startSeconds)
+  }, [videoId, startSeconds, playingInWindow])
+
+  // Into the floating window, carrying on from the moment it is at now.
+  const sendToWindow = () => {
+    if (!item) return
+    setDockedClass({
+      videoId: item.providerId,
+      title: item.title,
+      start: resumeClassAt(item.providerId, startSeconds),
+      returnTo: { pathname, params: routeParams as Record<string, string | string[]> },
+    })
+  }
 
   return (
-    <FormSheetScreen className="bg-canvas" isFormSheet={IS_FORM_SHEET}>
-      <Box className="overflow-hidden border-continuous flex-[1] bg-canvas">
-        <Header title={item?.title ?? t('passageMediaLibrary.playerTitle')} />
-        <ScrollView
-          backgroundColor="canvas"
-          contentInsetAdjustmentBehavior="automatic"
-          contentContainerStyle={{ alignItems: 'center', paddingHorizontal: 16, paddingTop: 24 }}
-        >
-          {item ? (
-            <VStack
-              className="overflow-hidden border-continuous gap-[18px]"
-              style={{ width: playerWidth }}
-            >
-              <Box
-                className="border-continuous overflow-hidden rounded-[16px] bg-surface"
-                style={{ width: playerWidth, height: playerHeight }}
+    <FormSheetScreen isFormSheet={IS_FORM_SHEET}>
+      <Box className="overflow-hidden border-continuous flex-[1] bg-reverse">
+        <Header
+          background
+          title={item?.title ?? t('passageMediaLibrary.playerTitle')}
+          rightComponent={notesPath ? <ClassNotesPdfButton notesPath={notesPath} /> : undefined}
+        />
+        {item ? (
+          <>
+            <Box className="items-center px-[16px] pt-[16px] pb-[12px] bg-reverse border-b-[1px] border-border">
+              <VStack
+                className="overflow-hidden border-continuous gap-[18px]"
+                style={{ width: playerWidth }}
               >
-                <YoutubePlayer
-                  height={playerHeight}
-                  width={playerWidth}
-                  videoId={item.providerId}
-                  play
-                  onError={error => setPlayerError(error || 'unknown')}
-                  onReady={() => setPlayerError(undefined)}
-                  initialPlayerParams={{ rel: false }}
-                  viewContainerStyle={{ borderRadius: radii.card, overflow: 'hidden' }}
-                  webViewStyle={{ borderRadius: radii.card, overflow: 'hidden' }}
-                />
-              </Box>
-              <VStack className="overflow-hidden border-continuous gap-[7px] px-[2px]">
-                <Text className="text-[22px] leading-[28px]" style={titleFontStyle(stylingTheme)}>
-                  {item.title}
-                </Text>
-                <Text
-                  className="text-grey text-[14px]"
-                  style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.text) }}
+                <Box
+                  className="border-continuous overflow-hidden rounded-[14px] border-[1px] border-border bg-light-grey"
+                  style={{
+                    width: playerWidth,
+                    height: playerHeight,
+                    shadowColor: 'rgb(89,131,240)',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 7,
+                    elevation: 1,
+                    overflow: 'visible',
+                  }}
                 >
-                  {formatPassageMediaDuration(item.durationSeconds)} · {item.attributionLabel}
-                </Text>
-                {!!playerError && (
+                  {playingInWindow ? (
+                    // The class plays in the floating window; tapping here brings it back.
+                    <TouchableBox
+                      accessibilityRole="button"
+                      onPress={() => setDockedClass(null)}
+                      className="flex-1 items-center justify-center gap-[8px] rounded-[14px] bg-[#000]"
+                    >
+                      <FeatherIcon name="maximize-2" size={20} color="white" />
+                      <Text className="text-[14px]" style={{ color: '#fff' }}>
+                        Playing in the small player. Tap to play it here.
+                      </Text>
+                    </TouchableBox>
+                  ) : usesCyberJudahEditorial() ? (
+                    // Like the reader's player (and Bible Strong's), the class plays inside
+                    // CyberJudah's hosted video page: YouTube refuses embeds from an inline page.
+                    <>
+                      {Platform.OS === 'web' ? (
+                        // The phone's web view has no web version; the site frames the same page.
+                        <Box
+                          style={{
+                            width: playerWidth,
+                            height: playerHeight,
+                            borderRadius: 14,
+                            overflow: 'hidden',
+                          }}
+                        >
+                          <ClassVideoFrame
+                            uri={getPassageMediaEmbedUrl(item.providerId, playerStart)}
+                            onTime={seconds => rememberClassPosition(item.providerId, seconds)}
+                          />
+                        </Box>
+                      ) : (
+                        <WebView
+                          ref={classPlayerRef}
+                          source={{ uri: getPassageMediaEmbedUrl(item.providerId, playerStart) }}
+                          injectedJavaScript={CLASS_TIME_SCRIPT}
+                          onMessage={event => {
+                            const seconds = classTimeFromMessage(event.nativeEvent.data)
+                            if (seconds !== undefined)
+                              rememberClassPosition(item.providerId, seconds)
+                          }}
+                          style={{ width: playerWidth, height: playerHeight, borderRadius: 14 }}
+                          allowsInlineMediaPlayback
+                          allowsFullscreenVideo
+                          mediaPlaybackRequiresUserAction={false}
+                          onError={() => setPlayerError('unavailable')}
+                        />
+                      )}
+                      {/* YouTube's own controls stay as they are; this adds picture in picture,
+                        where the YouTube app has its button to shrink the video. */}
+                      <TouchableBox
+                        accessibilityRole="button"
+                        accessibilityLabel="Picture in picture"
+                        onPress={sendToWindow}
+                        className="absolute top-[10px] left-[10px] w-[36px] h-[36px] rounded-full items-center justify-center"
+                      >
+                        <PipGlass radius={18} />
+                        <MaterialIcon name="picture-in-picture-alt" size={18} color="white" />
+                      </TouchableBox>
+                    </>
+                  ) : (
+                    <YoutubePlayer
+                      height={playerHeight}
+                      width={playerWidth}
+                      videoId={item.providerId}
+                      play
+                      onError={error => {
+                        console.log('[PassageMediaPlayer] error', item.providerId, error)
+                        setPlayerError(error || 'unknown')
+                      }}
+                      onReady={() => setPlayerError(undefined)}
+                      initialPlayerParams={{ rel: false }}
+                      webViewProps={{
+                        onShouldStartLoadWithRequest: (request: ShouldStartLoadRequest) => {
+                          const url = request.mainDocumentURL || request.url
+                          return url === 'about:blank' || url.startsWith(YOUTUBE_PLAYER_BASE_URL)
+                        },
+                      }}
+                      viewContainerStyle={{ borderRadius: 14, overflow: 'hidden' }}
+                      webViewStyle={{ borderRadius: 14, overflow: 'hidden' }}
+                    />
+                  )}
+                </Box>
+                <VStack className="overflow-hidden border-continuous gap-[7px] px-[2px]">
                   <Text
-                    className="text-quart text-[14px]"
+                    className="text-[22px] leading-[28px]"
+                    style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
+                  >
+                    {item.title}
+                  </Text>
+                  <Text
+                    className="text-grey text-[14px]"
                     style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.text) }}
                   >
-                    {t('passageMediaLibrary.playbackError')}
+                    {[
+                      'subtitle' in item ? item.subtitle : undefined,
+                      item.durationSeconds > 0
+                        ? formatPassageMediaDuration(item.durationSeconds)
+                        : undefined,
+                      item.attributionLabel,
+                    ]
+                      .filter(Boolean)
+                      .join(' · ')}
                   </Text>
+                  {!!playerError && (
+                    <Text
+                      className="text-quart text-[14px]"
+                      style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.text) }}
+                    >
+                      {t('passageMediaLibrary.playbackError')}
+                    </Text>
+                  )}
+                </VStack>
+              </VStack>
+            </Box>
+            {/* The notes in the app's own views, laid out a block at a time as they scroll. A failed
+                load says so and can be tried again, rather than leaving the space empty. */}
+            {notes.data ? (
+              <ClassNotesList
+                blocks={notes.data}
+                width={playerWidth}
+                onLinkPress={href => {
+                  if (href.startsWith(CLASS_SEEK_PREFIX)) {
+                    const seconds = Number(href.slice(CLASS_SEEK_PREFIX.length))
+                    // Restart the class's own player at that moment.
+                    classPlayerRef.current?.injectJavaScript(`(() => {
+                      const frame = document.querySelector('iframe')
+                      if (!frame) return
+                      const url = new URL(frame.src)
+                      url.searchParams.set('start', '${seconds}')
+                      url.searchParams.set('autoplay', '1')
+                      frame.src = url.toString()
+                    })(); true`)
+                  } else if (href.startsWith('bible://')) {
+                    const route = getCommentaryBibleViewRoute(href.slice('bible://'.length))
+                    if (route) router.push(route)
+                  } else if (/^https:\/\//.test(href)) {
+                    void Linking.openURL(href)
+                  }
+                }}
+              />
+            ) : notesPath ? (
+              <VStack className="py-[40px] px-[20px] items-center gap-[12px]">
+                <Text className="text-grey text-center">
+                  {notes.isError ? 'The notes did not load.' : 'Loading the notes…'}
+                </Text>
+                {notes.isError && (
+                  <TouchableBox accessibilityRole="button" onPress={() => notes.refetch()}>
+                    <Text className="text-primary text-[15px]">Try again</Text>
+                  </TouchableBox>
                 )}
               </VStack>
-            </VStack>
-          ) : (
-            <Box className="overflow-hidden border-continuous py-[60px] px-[20px] items-center justify-center">
-              <Text className="text-grey text-center">{t('passageMediaLibrary.notFound')}</Text>
-            </Box>
-          )}
-        </ScrollView>
+            ) : cachedClass?.pending ? (
+              // Up on YouTube before its notes are written, as the Telegram app lists it.
+              <VStack className="py-[40px] px-[20px] items-center">
+                <Text className="text-grey text-center">
+                  The notes for this class are coming soon.
+                </Text>
+              </VStack>
+            ) : null}
+          </>
+        ) : (
+          <Box className="overflow-hidden border-continuous py-[60px] px-[20px] items-center justify-center">
+            <Text className="text-grey text-center">{t('passageMediaLibrary.notFound')}</Text>
+          </Box>
+        )}
       </Box>
     </FormSheetScreen>
   )

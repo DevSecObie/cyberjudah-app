@@ -5,7 +5,7 @@ import { TimelineSection as TimelineSectionProps, ShallowTimelineSection } from 
 import { useLocalSearchParams } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
 import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
-import { timelineEventsQueryOptions } from './timelineEventsQuery'
+import { getEvents } from './events'
 import Box from '~common/ui/Box'
 import TimelineResourceBoundary from './TimelineResourceBoundary'
 const omitEvents = ({ events, ...rest }: TimelineSectionProps): ShallowTimelineSection => rest
@@ -30,7 +30,10 @@ const Timeline = ({
 
   const [current, setCurrent] = React.useState(goTo)
   const [entrance, setEntrance] = React.useState<0 | 1>(1)
-  const { data: events } = useQuery(timelineEventsQueryOptions)
+  const { data: events } = useQuery({
+    queryKey: ['timeline'],
+    queryFn: getEvents,
+  })
   const currentSectionIndex = events?.length
     ? Math.min(Math.max(current, 0), events.length - 1)
     : current
@@ -51,7 +54,7 @@ const Timeline = ({
 
   return (
     <TimelineResourceBoundary hasBackButton={hasBackButton} onBackPress={onBackPress}>
-      <Box className="overflow-hidden border-continuous flex-[1] bg-canvas">
+      <Box className="overflow-hidden border-continuous flex-[1] bg-reverse">
         <View style={{ flex: 1, position: 'relative' }}>
           {events?.map((ev, i) => {
             const prevEvent = events[i - 1] && omitEvents(events[i - 1])

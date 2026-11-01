@@ -1,5 +1,5 @@
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
-import { Text as NativeText, TouchableOpacity as NativeTouchableOpacity } from 'react-native'
+import * as NativeUI from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
 import type { Theme as AppTheme } from '~themes'
@@ -8,7 +8,7 @@ import { useTheme as useAppTheme } from '~themes/ThemeProvider'
 import { wp } from '~helpers/utils'
 
 const TouchableOpacity = (
-  componentProps: Omit<UIComponentProps<typeof NativeTouchableOpacity>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof NativeUI.TouchableOpacity>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
@@ -17,12 +17,12 @@ const TouchableOpacity = (
 
   const resolvedClassName = twMerge('items-center justify-center h-[45px]', className)
   return (
-    <NativeTouchableOpacity
+    <NativeUI.TouchableOpacity
       {...props}
       className={resolvedClassName}
       style={
         [{ width: wp(99) / 5 }, props.style] as UIComponentProps<
-          typeof NativeTouchableOpacity
+          typeof NativeUI.TouchableOpacity
         >['style']
       }
     />
@@ -31,7 +31,7 @@ const TouchableOpacity = (
 
 const Text = (
   componentProps: Omit<
-    UIComponentProps<typeof NativeText>,
+    UIComponentProps<typeof NativeUI.Text>,
     keyof { isSelected?: boolean } | 'theme'
   > &
     Omit<{ isSelected?: boolean }, 'theme'> & { theme?: AppTheme; className?: string }
@@ -45,7 +45,7 @@ const Text = (
     className
   )
   return (
-    <NativeText
+    <NativeUI.Text
       {...props}
       className={resolvedClassName}
       style={
@@ -55,7 +55,7 @@ const Text = (
             fontWeight: isSelected ? 'bold' : 'normal',
           },
           props.style,
-        ] as UIComponentProps<typeof NativeText>['style']
+        ] as UIComponentProps<typeof NativeUI.Text>['style']
       }
     />
   )

@@ -4,6 +4,7 @@ import { EaseView } from 'react-native-ease'
 import Box from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import { FeatherIcon } from '~common/ui/Icon'
+import { DOWNLOAD_LIST_LAYOUT } from './downloadListLayout'
 interface DownloadSectionHeaderProps {
   title: string
   isCollapsed: boolean
@@ -20,7 +21,10 @@ const DownloadSectionHeader = ({
   totalCount,
 }: DownloadSectionHeaderProps) => {
   return (
-    <Box className="border-continuous overflow-hidden min-h-[40px] flex-row items-center px-[24px]">
+    <Box
+      className="border-continuous overflow-hidden min-h-[52px] flex-row items-center bg-light-grey border-t-[1px] border-b-[1px] border-border"
+      style={{ paddingHorizontal: DOWNLOAD_LIST_LAYOUT.sectionPaddingHorizontal }}
+    >
       <TouchableOpacity
         accessibilityLabel={title}
         accessibilityRole="button"
@@ -30,7 +34,7 @@ const DownloadSectionHeader = ({
         style={{ flex: 1 }}
       >
         <Box className="overflow-hidden border-continuous flex-row items-center">
-          <Text className="text-[13px] text-grey">{title}</Text>
+          <Text className="text-[16px]">{title}</Text>
           <EaseView
             animate={{ rotate: isCollapsed ? 0 : 90 }}
             transition={{
@@ -38,12 +42,12 @@ const DownloadSectionHeader = ({
               duration: 200,
               easing: [0.455, 0.03, 0.515, 0.955],
             }}
-            style={{ marginLeft: 4, width: 16, height: 16 }}
+            style={{ marginLeft: 6, width: 18, height: 18 }}
           >
-            <FeatherIcon name="chevron-right" size={16} color="grey" />
+            <FeatherIcon name="chevron-right" size={18} color="tertiary" />
           </EaseView>
           <Box className="overflow-hidden border-continuous flex-[1]" />
-          <Text className="text-[13px] text-grey">
+          <Text className="text-[12px] text-tertiary">
             {downloadedCount}/{totalCount}
           </Text>
         </Box>

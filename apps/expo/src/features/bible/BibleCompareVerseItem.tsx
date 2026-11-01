@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
-import { StyleSheet, View } from 'react-native'
+import * as NativeUI from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
 import type { Theme as AppTheme } from '~themes'
@@ -28,27 +28,20 @@ import type { VersionCode } from '~state/tabs'
 import CompareStrongVerseText from './CompareStrongVerseText'
 
 const Container = (
-  componentProps: Omit<UIComponentProps<typeof View>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof NativeUI.View>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
 ) => {
-  const { theme: _themeOverride, className, children, ...props } = componentProps
+  const { theme: _themeOverride, className, ...props } = componentProps
 
-  const resolvedClassName = twMerge('p-[20px]', className)
+  const resolvedClassName = twMerge('p-[20px] border-t-border border-t-[1px]', className)
   return (
-    <View
+    <NativeUI.View
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof View>['style']}
-    >
-      {/* A hairline above the version, from where its text starts. */}
-      <View
-        className="absolute top-[0px] right-[0px] left-[20px] bg-separator"
-        style={{ height: StyleSheet.hairlineWidth }}
-      />
-      {children}
-    </View>
+      style={[props.style] as UIComponentProps<typeof NativeUI.View>['style']}
+    />
   )
 }
 
@@ -82,7 +75,7 @@ const PlainCompareVerseItem = ({
     networkMode: 'always',
     staleTime: Infinity,
   })
-  const content = error ? 'Impossible de charger ce verset' : (data?.content ?? '')
+  const content = error ? 'Could not load this verse' : (data?.content ?? '')
 
   const focusVerses = selectedVerseKeys.map(v => v.split('-')[v.split('-').length - 1]).map(Number)
 

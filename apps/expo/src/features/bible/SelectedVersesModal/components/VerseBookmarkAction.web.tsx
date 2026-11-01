@@ -1,6 +1,4 @@
 import { useTranslation } from 'react-i18next'
-import { getUniverseColor, resolveUniverseColors } from '~themes/universeColors'
-import { personalContentIcons } from '~common/personalContent'
 import ContextualPanel from '~common/ContextualPanel'
 import Box from '~common/ui/Box'
 import Text from '~common/ui/Text'
@@ -9,32 +7,10 @@ import { useTheme } from '~themes/ThemeProvider'
 import { useBibleBookmarkScreens } from '~features/bookmarks/useBibleBookmarkScreens'
 import { getSelectedVersesBookmarkLocation } from '~features/bible/selectedVersesActions'
 import { ACTION_ITEM_WIDTH, ICON_BOX_SIZE, ICON_SIZE } from '../constants'
-import { useSelectionMenu } from '../selectionMenuContext'
-import { formatShortcut } from '~features/keyboard-shortcuts/keymap'
 import ActionItem from './ActionItem'
 import type { VerseBookmarkActionProps } from './VerseBookmarkAction'
 
-export default function VerseBookmarkAction(props: VerseBookmarkActionProps) {
-  const menu = useSelectionMenu()
-  const { t } = useTranslation()
-  const theme = useTheme()
-  if (menu)
-    return (
-      <ActionItem
-        name={personalContentIcons.bookmarks}
-        tintColor={resolveUniverseColors(theme.colors, 'bookmarks').foreground}
-        label={t('Marque-page')}
-        onPress={() => menu.openScreen('bookmark')}
-        disabled={props.disabled || !getSelectedVersesBookmarkLocation(props.selectedVerses)}
-        isActive={props.isActive}
-        shortcut={formatShortcut('bookmark')}
-        nested
-      />
-    )
-  return <VerseBookmarkPanel {...props} />
-}
-
-function VerseBookmarkPanel({
+export default function VerseBookmarkAction({
   selectedVerses,
   version,
   disabled,
@@ -53,8 +29,7 @@ function VerseBookmarkPanel({
   if (disabled || !location)
     return (
       <ActionItem
-        name={personalContentIcons.bookmarks}
-        tintColor={resolveUniverseColors(theme.colors, 'bookmarks').foreground}
+        name="bookmark"
         label={t('Marque-page')}
         onPress={onPress}
         disabled
@@ -70,21 +45,15 @@ function VerseBookmarkPanel({
       onOpen={panel.prepare}
       trigger={
         <Box className="items-center py-2 gap-2" style={{ width: ACTION_ITEM_WIDTH }}>
-          {/* As the sheet's tile: an existing bookmark is marked by a border, not a shadow. */}
           <Box
             className="items-center justify-center bg-light-grey rounded-[16px]"
             style={{
               width: ICON_BOX_SIZE,
               height: ICON_BOX_SIZE,
-              borderWidth: 2,
-              borderColor: isActive ? theme.colors.primary : 'transparent',
+              ...(isActive ? { boxShadow: `inset 0 0 0 2px ${theme.colors.primary}` } : {}),
             }}
           >
-            <FeatherIcon
-              name={personalContentIcons.bookmarks}
-              size={ICON_SIZE}
-              color={getUniverseColor('bookmarks')}
-            />
+            <FeatherIcon name="bookmark" size={ICON_SIZE} color="primary" />
           </Box>
           <Text className="text-[10px] text-center">{t('Marque-page')}</Text>
         </Box>

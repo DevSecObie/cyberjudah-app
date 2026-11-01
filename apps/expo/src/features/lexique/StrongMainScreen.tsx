@@ -7,8 +7,6 @@ import { useTranslation } from 'react-i18next'
 import type { Verse } from '~common/types'
 import { getPassageMediaForStrong } from '~features/bible/passageMedia'
 import { resourceQueryKeys } from '~helpers/resourceQueryKeys'
-import { formatStrongDisplayCode } from '~helpers/strongIdentities'
-import { staticResourceQueryOptions } from '~helpers/queryOptions'
 import verseToReference from '~helpers/verseToReference'
 import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
 import { RootState } from '~redux/modules/reducer'
@@ -167,7 +165,6 @@ const StrongMainScreen = ({
       coreAvailability.data?.status === 'available'
     ),
     networkMode: 'always',
-    ...staticResourceQueryOptions,
   })
   useEffect(() => {
     if (!entry || recordedHistoryReferenceRef.current === entry.stepCode) return
@@ -248,7 +245,6 @@ const StrongMainScreen = ({
     : []
   return (
     <StrongEntryRouteScaffold
-      className="bg-canvas"
       context={activeContext}
       entryState={entryState}
       hasBackButton={hasBackButton}
@@ -257,7 +253,7 @@ const StrongMainScreen = ({
       showEntryMenu
       subTitle={
         entry
-          ? `${t(entry.language === 'greek' ? 'Grec' : 'Hébreu')} · ${formatStrongDisplayCode(entry.stepCode)}`
+          ? `${t(entry.language === 'greek' ? 'Grec' : 'Hébreu')} · ${entry.stepCode}`
           : undefined
       }
       title={t('strongDetail.title')}

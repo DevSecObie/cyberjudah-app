@@ -5,7 +5,6 @@ import { createPortal } from 'react-dom'
 import { getWordAnnotationAnchorRange } from '~redux/modules/user/wordAnnotationRanges'
 import type { RootStyles, VerseRelationItem, WebViewProps } from './BibleDOMWrapper'
 import { getAnnotationInsertionPoint } from './AnnotationMode/annotationDomText'
-import { findVerseTextElement } from './AnnotationMode/verseTargets'
 import { useDispatch } from './DispatchProvider'
 import { OPEN_ANNOTATION_TAGS } from './dispatch'
 import { getRelationItemNavigationActions } from './relationDisplayActions'
@@ -22,8 +21,7 @@ type PortalTarget = {
 type Props = {
   wordAnnotations: WebViewProps['wordAnnotations']
   annotationRelationItems: Record<string, VerseRelationItem[]>
-  // Every version on screen, each showing the items of its own annotations
-  versions: string[]
+  version: string
   settings: RootStyles['settings']
   annotationMode?: boolean
   contentKey: string
@@ -32,7 +30,7 @@ type Props = {
 const AnnotationInlineItems = ({
   wordAnnotations,
   annotationRelationItems,
-  versions,
+  version,
   settings,
   annotationMode,
   contentKey,
@@ -41,11 +39,10 @@ const AnnotationInlineItems = ({
   const [portalTargets, setPortalTargets] = useState<PortalTarget[]>([])
   const relationsAreInline = (settings.relationsDisplay || 'inline') === 'inline'
   const tagsAreInline = settings.tagsDisplay === 'inline'
-  const versionsKey = versions.join(',')
   const inlineAnchorKey = getAnnotationInlineAnchorKey({
     wordAnnotations,
     relationItemsByAnnotation: annotationRelationItems,
-    versions,
+    version,
     relationsAreInline,
     tagsAreInline,
   })
@@ -56,7 +53,7 @@ const AnnotationInlineItems = ({
     const targets: PortalTarget[] = []
 
     Object.entries(wordAnnotations).forEach(([annotationId, annotation]) => {
-      if (!versions.includes(annotation.version)) return
+      if (annotation.version !== version) return
       const relationItems = annotationRelationItems[annotationId] || []
       const hasRelations = relationsAreInline && relationItems.length > 0
       const hasTags = tagsAreInline && Object.keys(annotation.tags || {}).length > 0
@@ -64,7 +61,7 @@ const AnnotationInlineItems = ({
 
       const anchorRange = getWordAnnotationAnchorRange(annotation, 'end')
       if (!anchorRange) return
-      const verseElement = findVerseTextElement(annotation.version, anchorRange.verseKey)
+      const verseElement = document.getElementById(`verse-text-${anchorRange.verseKey}`)
       if (!verseElement) return
 
       const insertionPoint = getAnnotationInsertionPoint(verseElement, anchorRange.endWordIndex)
@@ -86,7 +83,7 @@ const AnnotationInlineItems = ({
     return () => {
       targets.forEach(target => target.element.remove())
     }
-  }, [versionsKey, relationsAreInline, tagsAreInline, contentKey, inlineAnchorKey])
+  }, [version, relationsAreInline, tagsAreInline, contentKey, inlineAnchorKey])
 
   useEffect(() => {
     if (!portalTargets.length) return

@@ -4,19 +4,14 @@ import { usePathname } from 'expo-router'
 import { TabCommandContext } from '~common/useTabCommands'
 import { activeTabIdAtom, appSwitcherModeAtom } from '~state/tabs'
 import { commandPaletteOpenAtom } from '~features/app-switcher/commandPalette/state'
-import {
-  isBlockingOverlayOpen,
-  isEditingTarget,
-  isPassthroughPanelOpen,
-} from '~features/keyboard-shortcuts/keyboardTargets'
-import { matchShortcut, type ShortcutId } from '~features/keyboard-shortcuts/keymap'
-import type { BibleKeyboardShortcutOptions } from './useBibleKeyboardShortcut'
+import { isEditingTarget } from '~features/app-switcher/keyboardShortcuts'
+import { isBibleShortcut } from './bibleKeyboardActions'
 
 export function useBibleKeyboardShortcut(
-  shortcut: ShortcutId,
+  key: 'v' | 's',
   tabId: string,
   run: () => void,
-  { enabled = true, repeat = false, besideVerseMenu = false }: BibleKeyboardShortcutOptions = {}
+  enabled = true
 ) {
   const ownerId = useContext(TabCommandContext)
   const activeId = useAtomValue(activeTabIdAtom)
@@ -28,13 +23,12 @@ export function useBibleKeyboardShortcut(
   useEffect(() => {
     if (!active || paletteOpen) return
     const handleKey = (event: KeyboardEvent) => {
+      if (!isBibleShortcut(event, key) || event.defaultPrevented || isEditingTarget(event.target))
+        return
       if (
-        !matchShortcut(event, shortcut) ||
-        (event.repeat && !repeat) ||
-        event.defaultPrevented ||
-        isEditingTarget(event.target) ||
-        isBlockingOverlayOpen() ||
-        (!besideVerseMenu && isPassthroughPanelOpen())
+        document.querySelector(
+          '[role="dialog"], [role="alertdialog"], [role="menu"], [aria-modal="true"]'
+        )
       )
         return
       event.preventDefault()
@@ -43,6 +37,6 @@ export function useBibleKeyboardShortcut(
     }
     document.addEventListener('keydown', handleKey, true)
     return () => document.removeEventListener('keydown', handleKey, true)
-  }, [active, paletteOpen, shortcut, repeat, besideVerseMenu, run])
+  }, [active, paletteOpen, key, run])
   return active
 }

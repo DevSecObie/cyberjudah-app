@@ -1,6 +1,7 @@
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import React from 'react'
-import { TextInputProps as RNTextInputProps, TextInput } from 'react-native'
+import * as NativeUI from 'react-native'
+import { TextInputProps as RNTextInputProps } from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
 import Box from '~common/ui/Box'
@@ -14,7 +15,10 @@ interface StyledTextInputProps {
 }
 
 const StyledTextInput = (
-  componentProps: Omit<UIComponentProps<typeof TextInput>, keyof StyledTextInputProps | 'theme'> &
+  componentProps: Omit<
+    UIComponentProps<typeof NativeUI.TextInput>,
+    keyof StyledTextInputProps | 'theme'
+  > &
     Omit<StyledTextInputProps, 'theme'> & { theme?: AppTheme; className?: string }
 ) => {
   const { theme: themeOverride, className, ...props } = componentProps
@@ -23,11 +27,11 @@ const StyledTextInput = (
 
   const { leftIcon } = props
   const resolvedClassName = twMerge(
-    'text-default h-[48px] border-border border-[2px] rounded-[12px]',
+    'text-default h-[48px] border-border border-[2px] rounded-[10px]',
     className
   )
   return (
-    <TextInput
+    <NativeUI.TextInput
       {...props}
       className={resolvedClassName}
       style={resolveTextTypography(theme.fontFamily.text, [

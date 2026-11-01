@@ -1,22 +1,19 @@
 import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
-import { titleFontStyle } from '~themes/styleValues'
 import { dictionaryContext } from '~features/study-assistant/resourceContext'
 import HorizontalControlScrollView from '~common/HorizontalControlScrollView'
 import { goBackOrHome } from '~navigation/goBackOrHome'
 import { twMerge } from '~common/ui/classNames'
+import { resolveThemeColor } from '~themes/colorValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
-import React, { useEffect, useEffectEvent, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
+import { Linking } from 'react-native'
 import { useQuery } from '@tanstack/react-query'
 import { MenuView, type MenuAction } from '~common/ui/MenuView'
 import { useSelector } from 'react-redux'
 import truncHTML from 'trunc-html'
 import books from '~assets/bible_versions/books-desc'
 import SwitchableHTMLView from '~common/SwitchableHTMLView'
-import Box, { HStack, TouchableBox, VStack } from '~common/ui/Box'
-import IconTile from '~common/ui/IconTile'
-import { STUDY_COLUMN_MAX_WIDTH, StudySection } from '~common/ui/StudySection'
-import DictionnaryIcon from '~common/DictionnaryIcon'
-import { resolveUniverseColors } from '~themes/universeColors'
+import Box, { TouchableBox } from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
 import { FeatherIcon } from '~common/ui/Icon'
@@ -77,9 +74,6 @@ interface DictionaryDetailScreenProps {
     context: { work: string; language: 'fr' | 'en' }
   ) => void
 }
-
-/** Dictionary words and sources are stored in lower case: the page sets them as names. */
-const capitalizeFirst = (value = '') => value.charAt(0).toLocaleUpperCase() + value.slice(1)
 
 const DictionnaryDetailScreen = ({
   dictionaryAtom,
@@ -240,18 +234,18 @@ const DictionnaryDetailScreen = ({
     : null
   const relationCount = useRelationCount(dictionaryEndpoint)
 
-  const setTitle = useEffectEvent((title: string) =>
+  const setTitle = (title: string) =>
     setDictionaryTab(
       produce(draft => {
         draft.title = title
       })
     )
-  )
 
   useEffect(() => {
     if (word) {
       setTitle(word)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [word])
 
   useEffect(() => {
@@ -284,6 +278,9 @@ const DictionnaryDetailScreen = ({
       const route = getCommentaryBibleViewRoute(href.slice('bible://'.length))
       if (route) pushRouteOnce(route)
       else toast.error('Impossible de charger cette référence biblique.')
+    } else if (/^https:\/\/archive\.org\//.test(href)) {
+      // A reference work's link to its printed page
+      void Linking.openURL(href).catch(() => {})
     } else if (href.startsWith('strong://')) {
       const code = href.slice('strong://'.length).trim().toUpperCase()
       if (/^[HG]\d+[A-Z]?$/u.test(code)) {
@@ -372,16 +369,9 @@ const DictionnaryDetailScreen = ({
     )
   }
 
-  // A form sheet has no container of its own: the box inside carries the ground there.
-  const screen = (content: React.ReactNode) => (
-    <FormSheetScreen className="bg-canvas" isFormSheet={isFormSheet}>
-      <Box className="overflow-hidden border-continuous flex-[1] bg-canvas">{content}</Box>
-    </FormSheetScreen>
-  )
-
   if (dictionaryAvailabilityQuery.isError || dictionaryQuery.isError) {
-    return screen(
-      <>
+    return (
+      <FormSheetScreen isFormSheet={isFormSheet}>
         <Header
           hasBackButton={hasBackButton}
           onCustomBackPress={goBack}
@@ -399,13 +389,13 @@ const DictionnaryDetailScreen = ({
             void dictionaryQuery.refetch()
           }}
         />
-      </>
+      </FormSheetScreen>
     )
   }
 
   if (!dictionnaireItem && !dictionaryQuery.isPending) {
-    return screen(
-      <>
+    return (
+      <FormSheetScreen isFormSheet={isFormSheet}>
         <Header
           hasBackButton={hasBackButton}
           onCustomBackPress={goBack}
@@ -415,18 +405,16 @@ const DictionnaryDetailScreen = ({
           icon={require('~assets/images/empty-state-icons/inbox.svg')}
           message={t('Impossible de charger le dictionnaire...')}
         />
-      </>
+      </FormSheetScreen>
     )
   }
 
-  const dictionaryUniverse = resolveUniverseColors(stylingTheme.colors, 'dictionary')
-
-  return screen(
-    <>
+  return (
+    <FormSheetScreen isFormSheet={isFormSheet}>
       <Header
         hasBackButton={hasBackButton}
-        title={t('Dictionnaire')}
-        subTitle={capitalizeFirst(resolvedDictionaryTitle)}
+        title={word}
+        subTitle={resolvedDictionaryTitle}
         rightComponent={
           <MenuView
             tabActions
@@ -489,55 +477,22 @@ const DictionnaryDetailScreen = ({
           </MenuView>
         }
       />
-      <AppScrollView
-        backgroundColor="canvas"
-        contentContainerStyle={{ maxWidth: STUDY_COLUMN_MAX_WIDTH + 40, paddingHorizontal: 20 }}
-      >
-        <VStack className="gap-[10px] pt-[2px] pb-[4px]">
-          {(tags || relationCount > 0) && (
-            <EntityChipList
-              tags={tags}
-              relationCount={relationCount}
-              onRelationPress={() => dictionaryEndpoint && openEntityRelations(dictionaryEndpoint)}
-            />
-          )}
-          <HStack className="items-center gap-[10px]">
-            <IconTile bg={dictionaryUniverse.background}>
-              <DictionnaryIcon size={18} color={dictionaryUniverse.foreground} />
-            </IconTile>
-            <Text className="text-[15px] text-grey">
-              {capitalizeFirst(resolvedDictionaryTitle)}
-            </Text>
-          </HStack>
-          <Text className="text-[34px] leading-[42px]" style={titleFontStyle(stylingTheme)}>
-            {capitalizeFirst(word)}
-          </Text>
-        </VStack>
+      <AppScrollView contentContainerStyle={{ maxWidth: 600 }}>
         {correspondenceSources.length > 1 && (
-          <StudySection
-            title={t('Aussi dans {{count}} dictionnaires', {
-              count: correspondenceSources.length,
-            })}
-            surface="none"
-            className="mt-[20px]"
-          >
-            <HorizontalControlScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={{ marginHorizontal: -20 }}
-              contentContainerStyle={{ paddingHorizontal: 20, gap: 8 }}
-            >
+          <Box className="overflow-hidden border-continuous px-[20px] pb-[12px]">
+            <Text className="text-[12px] font-bold text-tertiary mb-[7px]">
+              {t('Aussi dans {{count}} dictionnaires', {
+                count: correspondenceSources.length,
+              })}
+            </Text>
+            <HorizontalControlScrollView horizontal showsHorizontalScrollIndicator={false}>
               {correspondenceSources.map(source => {
                 const selected = isCurrentSource(source)
                 return (
                   <TouchableBox
-                    className={twMerge(
-                      'overflow-hidden border-continuous rounded-full px-[12px] py-[6px]',
-                      selected ? 'bg-primary' : 'bg-surface'
-                    )}
+                    className="overflow-hidden border-continuous border-[1px] rounded-[14px] px-[8px] py-[4px] mr-[6px]"
                     key={`${source.resource.work}:${source.resource.language}:${source.id}`}
                     disabled={selected}
-                    accessibilityState={{ selected }}
                     onPress={() =>
                       setDictionaryTab(
                         produce(draft => {
@@ -552,9 +507,29 @@ const DictionnaryDetailScreen = ({
                         })
                       )
                     }
+                    style={[
+                      { opacity: selected ? 0.6 : 1 },
+                      [
+                        {
+                          backgroundColor: resolveThemeColor(
+                            stylingTheme,
+                            selected ? 'lightGrey' : undefined
+                          ),
+                          borderColor: resolveThemeColor(
+                            stylingTheme,
+                            selected ? 'secondary' : 'border'
+                          ),
+                          opacity: selected ? 0.6 : 1,
+                        },
+                      ],
+                    ]}
                   >
                     <Text
-                      className={twMerge('text-[13px]', selected && 'text-reverse font-semibold')}
+                      className={twMerge(
+                        selected ? 'text-secondary' : 'text-primary',
+                        'text-[12px]'
+                      )}
+                      style={{ fontWeight: selected ? 'bold' : undefined }}
                     >
                       {source.abbreviation}
                     </Text>
@@ -562,30 +537,38 @@ const DictionnaryDetailScreen = ({
                 )
               })}
             </HorizontalControlScrollView>
-          </StudySection>
+          </Box>
         )}
-        <StudySection title={t('Définition')}>
-          {dictionaryQuery.isPending ? (
-            <Loading message={t('Chargement...')} />
-          ) : (
-            dictionnaireItem?.definition && (
-              <SwitchableHTMLView
-                selectable
-                previewSource={{
-                  kind: 'dictionary',
-                  work,
-                  resourceId,
-                  dictionaryTitle: resolvedDictionaryTitle,
-                  language: dictionaryResourceLanguage,
-                }}
-                value={dictionnaireItem.definition.replace(/\n/gi, '')}
-                onLinkClicked={openLink}
-              />
-            )
-          )}
-        </StudySection>
+        {(tags || relationCount > 0) && (
+          <Box className="overflow-hidden border-continuous px-[20px]">
+            <EntityChipList
+              tags={tags}
+              relationCount={relationCount}
+              onRelationPress={() => dictionaryEndpoint && openEntityRelations(dictionaryEndpoint)}
+            />
+          </Box>
+        )}
+        {dictionaryQuery.isPending ? (
+          <Loading message={t('Chargement...')} />
+        ) : (
+          dictionnaireItem?.definition && (
+            <SwitchableHTMLView
+              selectable
+              previewSource={{
+                kind: 'dictionary',
+                work,
+                resourceId,
+                dictionaryTitle: resolvedDictionaryTitle,
+                language: dictionaryResourceLanguage,
+              }}
+              padded
+              value={dictionnaireItem.definition.replace(/\n/gi, '')}
+              onLinkClicked={openLink}
+            />
+          )
+        )}
       </AppScrollView>
-    </>
+    </FormSheetScreen>
   )
 }
 

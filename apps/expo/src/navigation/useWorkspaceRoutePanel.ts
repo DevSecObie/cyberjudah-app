@@ -1,11 +1,7 @@
 import { useRootNavigationState, useSegments } from 'expo-router'
 import { atom, useAtomValue } from 'jotai'
 import { Platform, useWindowDimensions } from 'react-native'
-import {
-  WORKSPACE_FRAME_GAP,
-  WORKSPACE_SIDEBAR_WIDTH,
-  workspaceSidebarVariant,
-} from '~features/app-switcher/utils/useResponsiveWorkspace'
+import { WORKSPACE_SIDEBAR_WIDTH } from '~features/app-switcher/utils/useResponsiveWorkspace'
 import { resolveWorkspaceLayout } from './workspaceLayoutPolicy'
 export { WORKSPACE_ROUTE_PANEL_WIDTH } from './workspaceLayoutPolicy'
 
@@ -25,8 +21,7 @@ export function useWorkspaceRoutePanel() {
   const enabled = Platform.OS === 'web' && width >= WORKSPACE_ROUTE_PANEL_BREAKPOINT
   const open = enabled && panelRoutes.has(segments[0] as string)
   const { sidebarDocked, panelWidth } = resolveWorkspaceLayout({
-    // The inset panel gives up its frame gap on both sides.
-    width: workspaceSidebarVariant === 'inset' ? width - 2 * WORKSPACE_FRAME_GAP : width,
+    width,
     sidebarWidth: WORKSPACE_SIDEBAR_WIDTH,
     panelOpen: open,
     sidebarHidden,
@@ -40,15 +35,7 @@ export function useWorkspaceRoutePanel() {
     baseIndex >= 0 && workspaceState?.key
       ? { key: workspaceState.key, count: routes.length - 1 - baseIndex }
       : undefined
-  // Under a sheet the page that stays on screen is the base route, not the sheet's own path.
-  const basePath =
-    baseRoute && baseIndex < routes.length - 1
-      ? baseRoute.name === 'index'
-        ? '/'
-        : `/${baseRoute.name}`
-      : undefined
   return {
-    basePath,
     sidebarDocked: Platform.OS === 'web' ? sidebarDocked : true,
     closeTarget,
     enabled,

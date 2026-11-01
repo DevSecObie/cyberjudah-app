@@ -5,18 +5,15 @@ import Text from '~common/ui/Text'
 const InterlinearMark = ({
   highlighted = false,
   passive = false,
-  className,
 }: {
   highlighted?: boolean
   passive?: boolean
-  className?: string
 }) => {
   return (
     <Text
       className={twMerge(
-        passive ? 'text-default' : highlighted ? 'text-link' : 'text-tertiary',
-        'text-[17px] font-bold',
-        className
+        passive ? 'text-default' : highlighted ? 'text-primary' : 'text-tertiary',
+        'text-[17px] font-bold'
       )}
       style={{ fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif' }}
     >

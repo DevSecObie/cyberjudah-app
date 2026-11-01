@@ -1,4 +1,5 @@
 import passageMediaJson from '~assets/passage-media.json'
+import cyberJudahPassageMedia from '~assets/cyberjudah/passage-media.json'
 import { getBook } from '~helpers/bibleBookCatalog'
 import type { ActiveLanguage } from '~helpers/languageUtils'
 import englishBookNames from '../../../i18n/locales/en/translation_book.json'
@@ -47,6 +48,8 @@ type PassageMediaAnchor = {
 
 type PassageMediaWork = {
   id: string
+  /** The series a class belongs to, which the library lists it under. */
+  series?: string
   categories?: PassageMediaCategory[]
   editions: Partial<Record<ActiveLanguage, PassageMediaEdition>>
   anchors: PassageMediaAnchor[]
@@ -81,6 +84,10 @@ export type ResolvedPassageMedia = Pick<
   attributionLabel: string
   reference: string
   strongCodes: string[]
+  /** Where playing starts: the moment a class read the verse. */
+  startSeconds?: number
+  /** Shown under the title, e.g. a class's teacher and date. */
+  subtitle?: string
 }
 
 export type ResolvedPassageMediaChapter = {
@@ -88,10 +95,18 @@ export type ResolvedPassageMediaChapter = {
   isIntroductionStartChapter: boolean
   afterVerses: Record<number, ResolvedPassageMedia[]>
   chapterResources: ResolvedPassageMedia[]
+  /** The chapter gallery's own sections, in place of Bible Strong's (CyberJudah's classes). */
+  gallerySections?: {
+    id: 'chapter-resources' | 'passages'
+    title: string
+    items: ResolvedPassageMedia[]
+    showAllLabel?: string
+  }[]
 }
 
 export type ResolvedPassageMediaLibraryItem = ResolvedPassageMedia & {
   categories: PassageMediaCategory[]
+  series?: string
 }
 
 export const formatPassageMediaDuration = (durationSeconds: number): string => {
@@ -107,12 +122,21 @@ export const formatPassageMediaDuration = (durationSeconds: number): string => {
   return `${minutes}:${String(seconds).padStart(2, '0')}`
 }
 
-const PASSAGE_MEDIA_PLAYER_URL = 'https://bible-strong.app/embed/youtube.html'
-const PASSAGE_MEDIA_APP_ID = 'com.smontlouis.biblestrong'
+// CyberJudah serves its own copy of the player page (public/embed/youtube.html) from its server.
+const PASSAGE_MEDIA_PLAYER_URL = usesCyberJudahEditorial()
+  ? `${(
+      process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL ||
+      'https://cyberjudah-telegram-staging.oisrae1.workers.dev'
+    ).replace(/\/+$/, '')}/embed/youtube.html`
+  : 'https://bible-strong.app/embed/youtube.html'
+const PASSAGE_MEDIA_APP_ID = usesCyberJudahEditorial()
+  ? 'io.cyberjudah.app'
+  : 'com.smontlouis.biblestrong'
 
-export const getPassageMediaEmbedUrl = (providerId: string): string =>
+export const getPassageMediaEmbedUrl = (providerId: string, startSeconds = 0): string =>
   `${PASSAGE_MEDIA_PLAYER_URL}?v=${encodeURIComponent(providerId)}` +
-  `&appId=${encodeURIComponent(PASSAGE_MEDIA_APP_ID)}`
+  `&appId=${encodeURIComponent(PASSAGE_MEDIA_APP_ID)}` +
+  (startSeconds > 0 ? `&start=${Math.floor(startSeconds)}` : '')
 
 type ResolvePassageMediaChapterInput = {
   book: number
@@ -386,6 +410,7 @@ export const resolvePassageMediaLibrary = (
     result.push({
       ...edition,
       categories: work.categories?.length ? work.categories : ['uncategorized'],
+      ...(work.series ? { series: work.series } : {}),
     })
   }
 
@@ -393,15 +418,7 @@ export const resolvePassageMediaLibrary = (
 }
 
 const passageMediaCatalog: PassageMediaCatalog = usesCyberJudahEditorial()
-  ? {
-      attribution: {
-        label: 'CyberJudah',
-        url: 'https://cyberjudah.io',
-        termsUrl: 'https://cyberjudah.io/app/terms',
-      },
-      works: [],
-      indexes: { chapters: {}, strongs: {}, library: [] },
-    }
+  ? (cyberJudahPassageMedia as PassageMediaCatalog)
   : (passageMediaJson as PassageMediaCatalog)
 
 export const getPassageMediaForChapter = (input: ResolvePassageMediaChapterInput) =>

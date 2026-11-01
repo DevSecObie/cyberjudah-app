@@ -76,7 +76,7 @@ def body_slices(html, lang):
 def cover(label, days, lang, color):
     image=Image.new('RGB',(640,360),color)
     d=ImageDraw.Draw(image)
-    font=ROOT/'apps/expo/src/assets/fonts/eina-03-bold.otf'
+    font=ROOT/'apps/expo/src/assets/fonts/Inter-Bold.ttf'
     large=ImageFont.truetype(str(font),90 if len(label)<10 else 72)
     box=d.textbbox((0,0),label,font=large)
     d.text(((640-(box[2]-box[0]))/2,115),label,font=large,fill='#ffffff')

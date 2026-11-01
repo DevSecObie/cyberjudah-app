@@ -2,22 +2,19 @@ import { twMerge } from '~common/ui/classNames'
 
 import type { CommentaryCatalogEntry, CommentaryLanguage } from '~helpers/commentaryCatalog'
 import React from 'react'
-import { Pressable, StyleSheet } from 'react-native'
+import { Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler'
 import {
-  DropProvider,
+  Sortable,
   SortableDirection,
   SortableItem,
-  useHorizontalSortableList,
   type SortableRenderItemProps,
 } from 'react-native-reanimated-dnd'
 import Animated, {
   FadeIn,
   FadeOut,
   interpolate,
-  type SharedValue,
-  useAnimatedReaction,
+  LinearTransition,
   useAnimatedStyle,
   useReducedMotion,
   useSharedValue,
@@ -35,10 +32,6 @@ import { getAddedCommentaryProjectionIds } from './selectedCommentaryAnimations'
 const SLOT_WIDTH = 56
 const SLOT_GAP = 6
 const SLOT_HEIGHT = 58
-// Inside the scroll content, so avatars scroll to the screen edges.
-const ROW_PADDING = 16
-
-const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView)
 
 export type SelectedCommentaryHeaderItem = {
   projectionId: CommentaryProjectionId
@@ -52,16 +45,13 @@ type SortableCommentaryHeaderItem = SelectedCommentaryHeaderItem & {
 
 type Props = {
   items: readonly SelectedCommentaryHeaderItem[]
+  max: number
   onRemove: (projectionId: CommentaryProjectionId) => void
   onMove: (fromIndex: number, toIndex: number) => void
   onReorder: (projectionIds: CommentaryProjectionId[]) => void
 }
 
-type SortableCommentaryRenderProps = SortableRenderItemProps<SortableCommentaryHeaderItem> & {
-  containerWidth: number
-}
-
-type SortableCommentaryProps = SortableCommentaryRenderProps & {
+type SortableCommentaryProps = SortableRenderItemProps<SortableCommentaryHeaderItem> & {
   animateIn: boolean
   animateOut: boolean
   isDragging: boolean
@@ -102,6 +92,7 @@ const SortableCommentary = ({
       id={id}
       data={item}
       {...sortableProps}
+      animatedStyle={{ shadowOpacity: 0, shadowRadius: 0, elevation: 0 }}
       onDragStart={() => onDragStateChange(item.projectionId, true)}
       onDrop={(_droppedId, _toIndex, positions) => {
         onDragStateChange(item.projectionId, false)
@@ -148,7 +139,7 @@ const SortableCommentary = ({
                 'overflow-hidden border-continuous',
                 twMerge(
                   isDragging ? 'border-primary' : 'border-[transparent]',
-                  'overflow-hidden border-continuous absolute top-[-3px] left-[-3px] rounded-full border-[2px]'
+                  'overflow-hidden border-continuous absolute top-[-3px] left-[-3px] rounded-[22px] border-[2px]'
                 )
               )}
               pointerEvents="none"
@@ -177,7 +168,7 @@ const SortableCommentary = ({
               })}
             >
               <Box
-                className="border-continuous overflow-hidden rounded-full items-center justify-center bg-opacity5"
+                className="border-continuous overflow-hidden rounded-[10px] items-center justify-center bg-reverse border-[1px] border-border"
                 style={{ width: 18, height: 18 }}
               >
                 <FeatherIcon name="x" size={12} color="tertiary" />
@@ -197,87 +188,7 @@ const SortableCommentary = ({
   )
 }
 
-type SortableCommentaryRowProps = {
-  items: SortableCommentaryHeaderItem[]
-  viewportWidth: number
-  savedScrollX: SharedValue<number>
-  scrollToEnd: boolean
-  renderItem: (props: SortableCommentaryRenderProps) => React.ReactNode
-}
-
-// The library's <Sortable> remounts on every order change and scrolls back to
-// the start. Owning the scroll view keeps the position across reorders and
-// reveals a newly added commentary.
-const SortableCommentaryRow = ({
-  items,
-  viewportWidth,
-  savedScrollX,
-  scrollToEnd,
-  renderItem,
-}: SortableCommentaryRowProps) => {
-  const {
-    scrollViewRef,
-    dropProviderRef,
-    handleScroll,
-    handleScrollEnd,
-    scrollX,
-    contentWidth,
-    getItemProps,
-  } = useHorizontalSortableList({
-    data: items,
-    itemWidth: SLOT_WIDTH,
-    gap: SLOT_GAP,
-    paddingHorizontal: ROW_PADDING,
-  })
-  const [initialScrollX] = React.useState(() => {
-    const maxScrollX = Math.max(0, contentWidth - viewportWidth)
-    return scrollToEnd ? maxScrollX : Math.min(savedScrollX.get(), maxScrollX)
-  })
-
-  React.useLayoutEffect(() => {
-    scrollX.set(initialScrollX)
-  }, [scrollX, initialScrollX])
-
-  useAnimatedReaction(
-    () => scrollX.get() as number,
-    (current, previous) => {
-      if (previous !== null) savedScrollX.set(current)
-    }
-  )
-
-  return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <DropProvider ref={dropProviderRef}>
-        <AnimatedScrollView
-          ref={scrollViewRef}
-          horizontal
-          contentOffset={{ x: initialScrollX, y: 0 }}
-          onScroll={handleScroll}
-          scrollEventThrottle={16}
-          onScrollEndDrag={handleScrollEnd}
-          onMomentumScrollEnd={handleScrollEnd}
-          showsHorizontalScrollIndicator={false}
-          style={{ flex: 1, height: SLOT_HEIGHT, backgroundColor: 'transparent' }}
-          contentContainerStyle={{ width: contentWidth, height: SLOT_HEIGHT }}
-        >
-          {items.map((item, index) => {
-            const itemProps = getItemProps(item, index)
-            return renderItem({
-              item,
-              index,
-              direction: SortableDirection.Horizontal,
-              autoScrollHorizontalDirection: itemProps.autoScrollDirection,
-              containerWidth: viewportWidth,
-              ...itemProps,
-            })
-          })}
-        </AnimatedScrollView>
-      </DropProvider>
-    </GestureHandlerRootView>
-  )
-}
-
-const SelectedCommentariesHeader = ({ items, onRemove, onMove, onReorder }: Props) => {
+const SelectedCommentariesHeader = ({ items, max, onRemove, onMove, onReorder }: Props) => {
   const reduceMotion = useReducedMotion()
   const previousProjectionIdsRef = React.useRef<readonly CommentaryProjectionId[] | undefined>(
     undefined
@@ -300,9 +211,9 @@ const SelectedCommentariesHeader = ({ items, onRemove, onMove, onReorder }: Prop
     () => getAddedCommentaryProjectionIds(previousProjectionIdsRef.current, projectionIds),
     [projectionIds]
   )
-  const { t } = useTranslation()
-  const [rowWidth, setRowWidth] = React.useState(0)
-  const savedScrollX = useSharedValue(0)
+  const emptySlots = Array.from({ length: Math.max(0, max - items.length) })
+  const selectedWidth =
+    sortableItems.length * SLOT_WIDTH + Math.max(0, sortableItems.length - 1) * SLOT_GAP
 
   React.useLayoutEffect(() => {
     previousProjectionIdsRef.current = projectionIds
@@ -329,7 +240,7 @@ const SelectedCommentariesHeader = ({ items, onRemove, onMove, onReorder }: Prop
   )
 
   const renderItem = React.useCallback(
-    (props: SortableCommentaryRenderProps) => (
+    (props: SortableRenderItemProps<SortableCommentaryHeaderItem>) => (
       <SortableCommentary
         {...props}
         key={props.id}
@@ -356,33 +267,50 @@ const SelectedCommentariesHeader = ({ items, onRemove, onMove, onReorder }: Prop
   )
 
   return (
-    <Box
-      className="border-continuous overflow-hidden relative py-[10px] bg-reverse border-separator"
-      style={{ minHeight: SLOT_HEIGHT + 20, borderBottomWidth: StyleSheet.hairlineWidth }}
-      onLayout={event => setRowWidth(Math.floor(event.nativeEvent.layout.width))}
-    >
-      {sortableItems.length === 0 ? (
-        <Animated.View
-          entering={reduceMotion ? undefined : FadeIn.duration(160)}
-          className="justify-center"
-          style={{ height: SLOT_HEIGHT, paddingHorizontal: ROW_PADDING }}
-        >
-          <Text className="text-tertiary text-[13px]">
-            {t('commentaries.selector.noneSelected')}
-          </Text>
-        </Animated.View>
-      ) : rowWidth > 0 ? (
-        <Box className="border-continuous overflow-visible" style={{ height: SLOT_HEIGHT }}>
-          <SortableCommentaryRow
-            key={`${projectionIds.join('|')}@${rowWidth}`}
-            items={sortableItems}
-            viewportWidth={rowWidth}
-            savedScrollX={savedScrollX}
-            scrollToEnd={addedProjectionIds.size > 0}
-            renderItem={renderItem}
-          />
-        </Box>
-      ) : null}
+    <Box className="border-continuous overflow-hidden relative py-[10px] px-[16px] bg-reverse border-b-[1px] border-border">
+      <Box
+        className="overflow-hidden border-continuous flex-row items-start"
+        style={{ minHeight: SLOT_HEIGHT, gap: SLOT_GAP }}
+      >
+        {sortableItems.length > 0 ? (
+          <Box
+            className="border-continuous overflow-visible"
+            style={{ width: selectedWidth, height: SLOT_HEIGHT }}
+          >
+            <Sortable
+              data={sortableItems}
+              renderItem={renderItem}
+              direction={SortableDirection.Horizontal}
+              itemWidth={SLOT_WIDTH}
+              gap={SLOT_GAP}
+              useFlatList={false}
+              style={{ height: SLOT_HEIGHT, backgroundColor: 'transparent' }}
+              contentContainerStyle={{ height: SLOT_HEIGHT }}
+            />
+          </Box>
+        ) : null}
+        {emptySlots.map((_, index) => (
+          <Animated.View
+            key={`empty-${items.length + index}`}
+            entering={reduceMotion ? undefined : FadeIn.duration(160)}
+            exiting={reduceMotion ? undefined : FadeOut.duration(140)}
+            layout={reduceMotion ? undefined : LinearTransition.duration(160)}
+            style={{ width: SLOT_WIDTH, alignItems: 'center', paddingTop: 4 }}
+          >
+            <Box className="overflow-hidden border-continuous opacity-[0.5]">
+              <Box
+                className="border-continuous overflow-hidden rounded-[19px] items-center justify-center border-[1px] border-dashed border-tertiary"
+                style={{ width: 38, height: 38 }}
+              >
+                <FeatherIcon name="plus" size={18} color="tertiary" />
+              </Box>
+            </Box>
+          </Animated.View>
+        ))}
+      </Box>
+      <Text className="absolute right-[16px] bottom-[8px] text-tertiary text-[12px]">
+        {items.length}/{max}
+      </Text>
     </Box>
   )
 }

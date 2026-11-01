@@ -18,8 +18,6 @@ interface NewTabItemProps {
   description?: string
   hero?: boolean
   compact?: boolean
-  /** Dense phone presentation: `tile` stacks icon and text, `inline` sets them side by side. */
-  variant?: 'card' | 'tile' | 'inline'
 }
 
 const useOpenTabByType = ({ type, newAtom }: NewTabItemProps) => {
@@ -27,7 +25,7 @@ const useOpenTabByType = ({ type, newAtom }: NewTabItemProps) => {
   const [tab, setTab] = useAtom(newAtom)
   const onPress = () => {
     if (launchSearch(type, Platform.OS === 'web' ? undefined : newAtom)) return
-    setTab({ ...tab, previewUri: '', type, ...getDefaultData(type) } as TabItem)
+    setTab({ ...tab, base64Preview: '', type, ...getDefaultData(type) } as TabItem)
   }
 
   return {
@@ -43,81 +41,32 @@ const NewTabItem = ({
   description,
   hero = false,
   compact = false,
-  variant = 'card',
 }: NewTabItemProps) => {
   const { t } = useTranslation()
   const { onPress } = useOpenTabByType({ type, newAtom, onPlanPress })
   const isLibraryResource =
     type === 'strong' || type === 'nave' || type === 'dictionary' || type === 'commentary'
+  const heroArt = compact
+    ? { width: 150, height: 102, rise: 36, right: 14 }
+    : { width: 280, height: 190, rise: 56, right: 32 }
   const iconSize = hero ? (Platform.OS === 'web' ? 64 : 40) : isLibraryResource ? 34 : 28
-  const label = title ?? t(`tabs.${type}`)
-
-  if (hero && variant === 'tile') {
-    return (
-      <TouchableBox
-        testID={`new-tab-tool-${type}`}
-        accessibilityLabel={label}
-        accessibilityHint={description}
-        activeOpacity={0.7}
-        className="relative overflow-hidden border-continuous bg-surface rounded-[24px] px-[20px] py-[20px] min-h-[120px] justify-center gap-[4px]"
-        onPress={onPress}
-      >
-        <Text className="text-[28px] leading-[34px] font-medium">{label}</Text>
-        {description ? (
-          <Text className="text-[14px] leading-[19px] text-tertiary max-w-[170px]">
-            {description}
-          </Text>
-        ) : null}
-        <Image
-          source={require('~assets/images/new-tab/bible-reader.webp')}
-          accessible={false}
-          pointerEvents="none"
-          contentFit="contain"
-          contentPosition="bottom right"
-          style={{ position: 'absolute', right: 0, bottom: 0, width: 150, height: 112 }}
-        />
-      </TouchableBox>
-    )
-  }
-
-  if (variant !== 'card') {
-    const isTile = variant === 'tile'
-    return (
-      <TouchableBox
-        testID={`new-tab-tool-${type}`}
-        accessibilityLabel={label}
-        accessibilityHint={description}
-        activeOpacity={0.7}
-        className={
-          isTile
-            ? 'flex-1 overflow-hidden border-continuous bg-surface rounded-[16px] px-[12px] py-[14px] min-h-[92px] gap-[8px]'
-            : 'flex-1 overflow-hidden border-continuous flex-row items-center bg-surface rounded-[16px] px-[12px] py-[10px] min-h-[64px] gap-[10px]'
-        }
-        onPress={onPress}
-      >
-        <TabIcon type={type} size={isLibraryResource ? 28 : 26} />
-        <Box className="flex-1 min-w-0 gap-[2px]">
-          <Text className="text-[15px] leading-[19px] font-medium">{label}</Text>
-          {description ? (
-            <Text className="text-[12px] leading-[16px] text-tertiary">{description}</Text>
-          ) : null}
-        </Box>
-      </TouchableBox>
-    )
-  }
 
   return (
     <TouchableBox
       testID={`new-tab-tool-${type}`}
-      accessibilityLabel={label}
+      accessibilityLabel={title ?? t(`tabs.${type}`)}
       accessibilityHint={description}
       activeOpacity={0.7}
       className={
         hero
-          ? 'relative overflow-hidden border-continuous flex-row items-center bg-surface rounded-[24px] px-[24px] py-[24px]'
-          : 'overflow-hidden border-continuous flex-row items-center bg-surface rounded-[16px] px-[18px] py-[18px] min-h-[92px] gap-[14px]'
+          ? 'relative overflow-visible border-continuous flex-row items-center bg-reverse shadow-[0_2px_7px_rgba(89,131,240,0.1)] rounded-[18px] px-[24px] py-[24px]'
+          : 'border-continuous flex-row items-center bg-reverse shadow-[0_2px_7px_rgba(89,131,240,0.1)] rounded-[18px] px-[18px] py-[18px] min-h-[92px] gap-[14px]'
       }
-      style={hero ? { minHeight: compact ? 180 : 218 } : undefined}
+      style={
+        hero
+          ? { minHeight: compact ? 180 : 218, marginTop: Math.max(0, heroArt.rise - 42) }
+          : undefined
+      }
       onPress={onPress}
     >
       <Box
@@ -138,7 +87,7 @@ const NewTabItem = ({
         <TabIcon type={type} size={iconSize} />
         <Box className="flex-1 min-w-0 gap-[6px]">
           <Text className={hero ? 'text-[36px] font-medium' : 'text-[16px] font-medium'}>
-            {label}
+            {title ?? t(`tabs.${type}`)}
           </Text>
           {description ? (
             <Text className="text-[13px] leading-[19px] text-tertiary">{description}</Text>
@@ -146,20 +95,35 @@ const NewTabItem = ({
         </Box>
       </Box>
       {hero && (
-        <Image
-          source={require('~assets/images/new-tab/bible-reader.webp')}
-          accessible={false}
-          pointerEvents="none"
-          contentFit="contain"
-          contentPosition="bottom"
-          style={{
-            position: 'absolute',
-            right: compact ? 24 : 42,
-            bottom: 0,
-            width: compact ? 125 : 295,
-            height: compact ? 108 : 205,
-          }}
-        />
+        <>
+          {/* Light panel in the card's corner; the lion sits on it and rises above the card. */}
+          <Box
+            pointerEvents="none"
+            className="border-continuous rounded-tr-[18px] rounded-bl-[18px]"
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              width: heroArt.width + heroArt.right * 2,
+              height: heroArt.height - heroArt.rise,
+              backgroundColor: '#E6EDFF',
+            }}
+          />
+          <Image
+            source={require('~assets/images/new-tab/bible-reader.webp')}
+            accessible={false}
+            pointerEvents="none"
+            contentFit="contain"
+            contentPosition="bottom"
+            style={{
+              position: 'absolute',
+              right: heroArt.right,
+              top: -heroArt.rise,
+              width: heroArt.width,
+              height: heroArt.height,
+            }}
+          />
+        </>
       )}
       <FeatherIcon name="chevron-right" size={hero ? 22 : 18} color="tertiary" />
     </TouchableBox>

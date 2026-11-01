@@ -1,16 +1,12 @@
 import books, { type Book } from '~assets/bible_versions/books-desc'
 import legacyBookAliases from '~assets/bible_versions/books.json'
+import cyberJudahBooks from '~assets/cyberjudah/books.json'
 import { versions } from '~helpers/bibleVersions'
 import { BHG_INTERLINEAR_IDENTITY } from '~helpers/interlinearBiblePublicationCatalog'
 import { isStrongCapableBibleVersion } from '~helpers/strongBiblePublications'
 import { getSupportedOsisBookId } from '~helpers/osisReference'
 
-export type PublicBiblePresentation =
-  | 'text'
-  | 'strong'
-  | 'transliteration'
-  | 'reverse-interlinear'
-  | 'interlinear'
+export type PublicBiblePresentation = 'text' | 'strong' | 'reverse-interlinear' | 'interlinear'
 
 export type PublicBiblePassage = {
   startVerse: number
@@ -43,6 +39,9 @@ const normalizeSlug = (value: string): string =>
 
 const versionSlug = (version: string): string => version.toLocaleLowerCase().replaceAll('_', '-')
 
+const IS_CYBERJUDAH = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+const cyberJudahSlugs = new Map(cyberJudahBooks.map(book => [book.id, book.slug] as const))
+
 const booksByAlias = new Map<string, Book>()
 const bookSlugsById = new Map<number, string>()
 
@@ -52,8 +51,13 @@ for (const book of books) {
   const canonicalSlug = osisId.toLocaleLowerCase()
   bookSlugsById.set(book.Numero, canonicalSlug)
 
-  const legacyAliases = legacyBookAliases[String(book.Numero) as keyof typeof legacyBookAliases]
-  const aliases = [osisId, book.Nom, ...(legacyAliases ?? [])]
+  // Bible Strong's legacy aliases follow its own book numbers. CyberJudah numbers the Apocrypha
+  // in the KJV 1611 order (Baruch is 74, not 1 Esdras), so its books keep their own names there.
+  const legacyAliases =
+    IS_CYBERJUDAH && book.Numero > 66
+      ? [cyberJudahSlugs.get(book.Numero) ?? '']
+      : legacyBookAliases[String(book.Numero) as keyof typeof legacyBookAliases]
+  const aliases = [osisId, book.Nom, ...(legacyAliases ?? [])].filter(Boolean)
   for (const alias of aliases) {
     const normalizedAlias = normalizeSlug(alias)
     const existing = booksByAlias.get(normalizedAlias)
@@ -126,7 +130,6 @@ export const parsePublicBibleRoute = (
   const presentationSegment = segments[position]
   if (
     presentationSegment === 'strong' ||
-    presentationSegment === 'transliteration' ||
     presentationSegment === 'reverse-interlinear' ||
     presentationSegment === 'interlinear'
   ) {

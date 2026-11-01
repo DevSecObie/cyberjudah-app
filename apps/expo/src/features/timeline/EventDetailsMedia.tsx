@@ -1,18 +1,15 @@
 import { Image } from 'expo-image'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { Carousel } from 'react-native-reanimated-carousel'
-import { configureCarouselPan } from '~helpers/configureCarouselPan'
+import Carousel from 'react-native-reanimated-carousel'
 import Link from '~common/Link'
-import Box, { VStack } from '~common/ui/Box'
+import Box from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
-import { StudySection } from '~common/ui/StudySection'
-import { radii } from '~common/ui/surfaces'
-import Text from '~common/ui/Text'
+import Paragraph from '~common/ui/Paragraph'
 import { useQuery } from '@tanstack/react-query'
 import { useLayoutSize } from '~helpers/useLayoutSize'
 import EventDetailVerse from './EventDetailVerse'
-import { timelineEventsQueryOptions } from './timelineEventsQuery'
+import { getEvents } from './events'
 import { getTimelineImageUri } from './timelineImage'
 import { TimelineEvent, TimelineEventDetail } from './types'
 import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
@@ -20,6 +17,7 @@ import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
 const Media = ({
   images,
   scriptures,
+  videos,
   related,
   onOpenEvent,
 }: Pick<TimelineEventDetail, 'images' | 'scriptures' | 'videos' | 'related'> & {
@@ -31,28 +29,37 @@ const Media = ({
   const sliderWidth = size.width
   const imageWidth = Math.max(0, sliderWidth * 0.8)
 
-  const { data: events } = useQuery(timelineEventsQueryOptions)
+  const { data: events } = useQuery({
+    queryKey: ['timeline'],
+    queryFn: getEvents,
+  })
 
   const flattenedEvents = events?.reduce((acc: TimelineEvent[], curr, sectionIndex) => {
     return [...acc, ...curr.events.map(event => ({ ...event, sectionIndex }))]
   }, [])
 
   return (
-    <VStack ref={ref} onLayout={onLayout}>
+    <Box ref={ref} onLayout={onLayout} className="overflow-hidden border-continuous py-[20px]">
       {!!scriptures?.length && (
-        <StudySection title={t('Versets')} surface="rows">
-          {/* An event can cite the same passage twice. */}
-          {scriptures.map((scripture, index) => (
-            <EventDetailVerse key={`${index}:${scripture}`} verses={scripture} />
+        <Box className="overflow-hidden border-continuous px-[20px] mt-[20px]">
+          <Paragraph className="mb-[10px]" fontFamily="title">
+            {t('Versets')}
+          </Paragraph>
+          {scriptures.map(scripture => (
+            <Box className="overflow-hidden border-continuous" key={scripture}>
+              <EventDetailVerse verses={scripture} />
+            </Box>
           ))}
-        </StudySection>
+        </Box>
       )}
       {!!images?.length && (
-        <StudySection title={t('Images')} surface="none">
-          {/* The carousel runs to the edges of the page, its images take a card's corners. */}
+        <Box className="overflow-hidden border-continuous py-[20px] bg-[rgb(18,45,66)]">
+          <Paragraph className="mb-[20px] px-[20px] text-[white]" fontFamily="title">
+            {t('Images')}
+          </Paragraph>
           <Carousel
-            loop
-            itemSize={imageWidth + 20}
+            itemWidth={imageWidth + 20}
+            itemHeight={imageWidth + 60}
             data={images}
             contentContainerStyle={{
               alignItems: 'center',
@@ -62,14 +69,18 @@ const Media = ({
               <Box className="overflow-hidden border-continuous">
                 <Image
                   draggable={false}
-                  style={{ width: imageWidth, height: imageWidth, borderRadius: radii.card }}
+                  style={{ width: imageWidth, height: imageWidth }}
                   source={{ uri: getTimelineImageUri(item.file, 'original') }}
                   contentFit="contain"
                 />
-                <Text className="mt-[10px] text-center text-[13px] text-grey">{item.caption}</Text>
+                <Paragraph className="mt-[15px] text-center text-[white]" scale={-3}>
+                  {item.caption}
+                </Paragraph>
               </Box>
             )}
-            onConfigurePanGesture={configureCarouselPan([-10, 10])}
+            onConfigurePanGesture={gestureChain => {
+              gestureChain.activeOffsetX([-10, 10])
+            }}
             style={{
               width: sliderWidth,
               height: imageWidth + 60,
@@ -77,10 +88,13 @@ const Media = ({
               justifyContent: 'center',
             }}
           />
-        </StudySection>
+        </Box>
       )}
       {!!related?.length && (
-        <StudySection title={t('timeline.event.related')} surface="rows">
+        <Box className="overflow-hidden border-continuous p-[20px]">
+          <Paragraph className="mb-[20px]" fontFamily="title">
+            {t('Évenements associés')}
+          </Paragraph>
           {related.map(r => (
             <Link
               key={r.slug}
@@ -98,15 +112,29 @@ const Media = ({
                 }
               }}
             >
-              <Box className="overflow-hidden border-continuous px-[16px] py-[12px] flex-row items-center gap-[12px]">
-                <Text className="flex-[1] text-[15px]">{r.title}</Text>
-                <FeatherIcon name="chevron-right" size={18} color="grey" />
+              <Box
+                className="overflow-hidden border-continuous bg-reverse p-[20px] rounded-[20px] mb-[20px] flex-row"
+                style={{
+                  shadowColor: 'rgb(89,131,240)',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 7,
+                  elevation: 1,
+                  overflow: 'visible',
+                }}
+              >
+                <Paragraph className="flex-[1]" key={r.slug}>
+                  {r.title}
+                </Paragraph>
+                <Box className="overflow-hidden border-continuous items-center flex-row">
+                  <FeatherIcon name="chevron-right" size={22} color="primary" />
+                </Box>
               </Box>
             </Link>
           ))}
-        </StudySection>
+        </Box>
       )}
-    </VStack>
+    </Box>
   )
 }
 

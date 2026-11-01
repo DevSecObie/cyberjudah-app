@@ -25,7 +25,6 @@ import { useTheme } from '~themes/ThemeProvider'
 import { resolveThemeColor } from '~themes/colorValues'
 import Color from 'color'
 import { webFontFamily } from '~helpers/webFontFamily'
-import { floatingShadow, radii } from '~common/ui/surfaces'
 import TabIcon, { tabIconColorConfig } from './utils/getIconByTabType'
 import type {
   SidebarDragGroupProps,
@@ -68,7 +67,7 @@ function PreviewTab({ tab }: { tab: TabItem }) {
         style={{
           width: 20,
           height: 20,
-          borderRadius: radii.mark,
+          borderRadius: 5,
           flexShrink: 0,
           display: 'flex',
           alignItems: 'center',
@@ -97,12 +96,12 @@ function DragPreview({ snapshot }: { snapshot: Snapshot }) {
       data-sidebar-drag-preview
       style={{
         width,
-        borderRadius: radii.tile,
-        // The dragged row floats above the sidebar: raised, with the one shared shadow.
-        background: theme.colors.surfaceRaised,
+        borderRadius: 8,
+        background: theme.colors.lightGrey,
         color: theme.colors.default,
         fontFamily: webFontFamily(theme.fontFamily.text),
-        ...floatingShadow,
+        boxShadow: '0 8px 24px #0003',
+        border: `1px solid ${theme.colors.border}`,
         boxSizing: 'border-box',
         overflow: 'hidden',
         pointerEvents: 'none',
@@ -133,7 +132,7 @@ export function SidebarDragProvider({ children, onExpandGroup }: SidebarDragProv
   const groups = useAtomValue(tabGroupsAtom)
   const reducedMotion = useReducedMotion()
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null)
-  const [foldGroups, setFoldGroups] = useState(false)
+  const [foldedGroupId, setFoldedGroupId] = useState<string>()
   const [draft, setDraft] = useState<Record<string, string[]> | null>(null)
   const [groupOrder, setGroupOrder] = useState<string[] | null>(null)
   const groupOrderRef = useRef<string[] | null>(null)
@@ -159,7 +158,7 @@ export function SidebarDragProvider({ children, onExpandGroup }: SidebarDragProv
       }))
     : orderedGroups
   const finish = () => {
-    setFoldGroups(false)
+    setFoldedGroupId(undefined)
     setGroupOrder(null)
     groupOrderRef.current = null
     setDraft(null)
@@ -177,8 +176,7 @@ export function SidebarDragProvider({ children, onExpandGroup }: SidebarDragProv
         const group = store.get(tabGroupsAtom).find(group => group.id === drag.groupId)
         if (!group) return
         sourceRef.current = drag
-        // Moving a group folds them all, so the groups trade places as short headers.
-        setFoldGroups(drag.kind === 'group')
+        setFoldedGroupId(drag.kind === 'group' ? drag.groupId : undefined)
         expandedDuringDrag.current.clear()
         groupOrderRef.current = store
           .get(tabGroupsAtom)
@@ -273,7 +271,7 @@ export function SidebarDragProvider({ children, onExpandGroup }: SidebarDragProv
             }
           }}
         >
-          {children(projectedGroups, foldGroups)}
+          {children(projectedGroups, foldedGroupId)}
         </div>
         <DragOverlay
           dropAnimation={{ duration: reducedMotion ? 0 : 200, easing: 'ease-out' }}

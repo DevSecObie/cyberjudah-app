@@ -25,10 +25,6 @@
         "buildType": "apk"
       }
     },
-    "staging-simulator": {
-      "extends": "staging",
-      "ios": { "simulator": true }
-    },
     "production": {
       "channel": "production"
     },

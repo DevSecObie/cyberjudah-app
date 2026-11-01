@@ -6,7 +6,6 @@ import { publicationFromArtifactResponse, type ResourcePublication } from './res
 import { getResourceDownloadAppCheckToken } from './resourceAppCheck'
 import { FIREBASE_APP_CHECK_HEADER } from './resourceAppCheckRequest'
 import { appLogger } from './agentObservability'
-import { asDownloadFailure } from './resourceDeviceCondition'
 
 type DownloadResourceArtifactOptions = {
   url: string
@@ -85,9 +84,7 @@ export const downloadResourceArtifact = async ({
     )
 
     onResumable?.(resumable)
-    const result = await resumable.downloadAsync().catch(error => {
-      throw asDownloadFailure(error)
-    })
+    const result = await resumable.downloadAsync()
     if (!result) throw new Error('RESOURCE_DOWNLOAD_RESULT_MISSING')
     if (result.status < 200 || result.status >= 300) {
       const getHeader = (name: string) =>

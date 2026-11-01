@@ -32,7 +32,7 @@ export default function BibleVerseKeyboardDialog({
     setQuery('')
     setOpen(true)
   }
-  const active = useBibleKeyboardShortcut('goToVerse', bible.id, present, { enabled: !!count })
+  const active = useBibleKeyboardShortcut('v', bible.id, present, !!count)
   useTabCommands(
     [{ id: 'go-to-verse', title: t('goToVerse'), attributes: { disabled: !count } }],
     present
@@ -62,7 +62,7 @@ export default function BibleVerseKeyboardDialog({
         >
           <Dialog.Title>{t('goToVerse')}</Dialog.Title>
           <Dialog.Description>
-            {book.Nom} {chapter} · {t('hotkeys.verseRange', { max: count })}
+            {t(book.Nom)} {chapter} · {t('hotkeys.verseRange', { max: count })}
           </Dialog.Description>
           <form
             onSubmit={event => {

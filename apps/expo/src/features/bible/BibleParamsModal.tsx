@@ -1,7 +1,6 @@
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import React from 'react'
-import { View } from 'react-native'
-import { ListSeparator } from '~common/ui/ListSection'
+import * as NativeUI from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
 import type { Theme as AppTheme } from '~themes'
@@ -40,28 +39,39 @@ import {
   setSettingsRedWordsDisplay,
   setSettingsRelationsDisplay,
   setSettingsTagsDisplay,
+  setSettingsCyberJudahTagsEnabled,
   setSettingsTextDisplay,
 } from '~redux/modules/user'
 import { colorPickerModalAtom } from '~state/app'
 import TouchableIcon from './TouchableIcon'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import TouchableSvgIcon from './TouchableSvgIcon'
 
 export const HalfContainer = (
-  componentProps: Omit<UIComponentProps<typeof View>, keyof { border?: boolean } | 'theme'> &
+  componentProps: Omit<
+    UIComponentProps<typeof NativeUI.View>,
+    keyof { border?: boolean } | 'theme'
+  > &
     Omit<{ border?: boolean }, 'theme'> & { theme?: AppTheme; className?: string }
 ) => {
-  const { theme: _themeOverride, className, border, children, ...props } = componentProps
+  const { theme: _themeOverride, className, ...props } = componentProps
 
+  const { border } = props
   const resolvedClassName = twMerge(
-    'min-h-[60px] px-[20px] pr-[10px] py-[8px] flex-row items-center',
+    'min-h-[60px] px-[20px] pr-[10px] py-[8px] border-b-border flex-row items-center',
     className
   )
   return (
-    <View {...props} testID="bible-params-row" className={resolvedClassName}>
-      {children}
-      {/* A hairline under the row, from where its text starts. */}
-      {border && <ListSeparator inset={20} overlay />}
-    </View>
+    <NativeUI.View
+      {...props}
+      testID="bible-params-row"
+      className={resolvedClassName}
+      style={
+        [{ borderBottomWidth: border ? 1 : 0 }, props.style] as UIComponentProps<
+          typeof NativeUI.View
+        >['style']
+      }
+    />
   )
 }
 
@@ -217,6 +227,9 @@ const BibleParamsModal = ({
         : 'inline')
   )
   const tagsDisplay = useSelector((state: RootState) => state.user.bible.settings.tagsDisplay)
+  const cyberJudahTagsEnabled = useSelector(
+    (state: RootState) => state.user.bible.settings.cyberJudahTagsEnabled !== false
+  )
   const press = useSelector((state: RootState) => state.user.bible.settings.press)
   const redWordsDisplay = useSelector(
     (state: RootState) => state.user.bible.settings.redWordsDisplay
@@ -471,6 +484,22 @@ const BibleParamsModal = ({
               }}
             />
           </HalfContainer>
+          {usesCyberJudahEditorial() && (
+            <HalfContainer border>
+              <Text className={inline ? 'flex-[5] text-[14px]' : 'flex-[5]'}>
+                Precept & law tags
+              </Text>
+              <Text className="ml-[5px] text-[12px] font-bold">
+                {cyberJudahTagsEnabled ? t('Activé') : t('Désactivé')}
+              </Text>
+              <TouchableIcon
+                accessibilityLabel="Precept & law tags"
+                isSelected={cyberJudahTagsEnabled}
+                name="tag"
+                onPress={() => dispatch(setSettingsCyberJudahTagsEnabled(!cyberJudahTagsEnabled))}
+              />
+            </HalfContainer>
+          )}
           <HalfContainer border>
             <Text className={inline ? 'flex-[5] text-[14px]' : 'flex-[5]'}>
               {t('Contexte et médias')}

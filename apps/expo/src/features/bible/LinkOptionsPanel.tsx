@@ -48,12 +48,11 @@ export default function LinkOptionsPanel({
                   icon="book-open"
                   label={t('Voir dans la Bible')}
                   onPress={() => {
-                    nav.closeThen(() =>
-                      push({
-                        pathname: '/bible-view',
-                        params: getBibleViewParamsForVerseKeys(verse.verseKeys, verse.version),
-                      })
-                    )
+                    nav.close()
+                    push({
+                      pathname: '/bible-view',
+                      params: getBibleViewParamsForVerseKeys(verse.verseKeys, verse.version),
+                    })
                   }}
                 />
               )}
@@ -68,7 +67,8 @@ export default function LinkOptionsPanel({
                   icon="git-merge"
                   label={t('Éditer les relations')}
                   onPress={() => {
-                    nav.closeThen(onRelations)
+                    nav.close()
+                    onRelations()
                   }}
                 />
               )}

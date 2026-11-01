@@ -90,7 +90,7 @@ export const buildComputedPlanItem = (plan: Plan, ongoingPlan?: OngoingPlan): Co
 
 /** What a reader opens. Titles and unknown types only structure the day. */
 export const isReadableEntitySlice = (slice: EntitySlice): boolean =>
-  ['Text', 'Image', 'Video', 'Chapter', 'Verse'].includes(slice.type ?? '')
+  ['Text', 'Image', 'Video', 'Chapter', 'Verse', 'Quiz'].includes(slice.type ?? '')
 
 /** Older plans carry elements without an id; their place in the day identifies them. */
 export const getEntitySliceKey = (
@@ -98,27 +98,6 @@ export const getEntitySliceKey = (
   slice: Pick<EntitySlice, 'id'>,
   index: number
 ): string => slice.id || `${readingSliceId}:${index}`
-
-/** What follows an element in its day: the next one to read, or the end of the day. */
-export type PlanDayStep =
-  | { kind: 'next'; slice: EntitySlice; index: number; entitySliceId: string }
-  | { kind: 'finish' }
-
-/** Undefined when the element is not, or no longer, in this day. */
-export const getPlanDayStep = (
-  readingSlice: ReadingSlice,
-  entitySliceId: string
-): PlanDayStep | undefined => {
-  const readable = readingSlice.slices.flatMap((slice, index) =>
-    isReadableEntitySlice(slice)
-      ? [{ slice, index, entitySliceId: getEntitySliceKey(readingSlice.id, slice, index) }]
-      : []
-  )
-  const position = readable.findIndex(item => item.entitySliceId === entitySliceId)
-  if (position < 0) return undefined
-  const next = readable[position + 1]
-  return next ? { kind: 'next', ...next } : { kind: 'finish' }
-}
 
 export const getReadableEntitySliceKeys = (readingSlice: ReadingSlice): string[] =>
   readingSlice.slices.flatMap((slice, index) =>

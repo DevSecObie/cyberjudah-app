@@ -1,5 +1,5 @@
 import { twMerge } from '~common/ui/classNames'
-import { titleFontStyle } from '~themes/styleValues'
+import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme, useTheme } from '~themes/ThemeProvider'
 import { Feather } from '@expo/vector-icons'
 import type { TFunction } from 'i18next'
@@ -159,7 +159,7 @@ export const SceneTwoNodeCard = ({
           style={{
             fontSize: s(resolvedFontSize) || 16,
             fontWeight: !active ? 'bold' : undefined,
-            ...(active ? titleFontStyle(stylingTheme) : {}),
+            fontFamily: resolveFontFamily(active ? stylingTheme.fontFamily.title : undefined),
           }}
           className={twMerge(active ? 'text-reverse' : 'text-default')}
         >

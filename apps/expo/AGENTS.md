@@ -15,7 +15,7 @@ Bible Strong is a React Native application for Bible study, primarily targeting 
 - **Timeline**: Biblical history visualization
 - **Offline support**: Core functionality works without internet
 
-**Tech Stack**: Expo SDK 58, React Native 0.88, TypeScript, Redux Toolkit, Jotai, Uniwind, SQLite
+**Tech Stack**: Expo SDK 57, React Native 0.86, TypeScript, Redux Toolkit, Jotai, Uniwind, SQLite
 
 ## Documentation Reference
 
@@ -285,7 +285,7 @@ utilities without confusing them with border colors.
 ```tsx
 <Box className="flex-1 bg-reverse p-4">
   <HStack className="items-center gap-3">
-    <Text className="text-link font-bold">Example</Text>
+    <Text className="text-primary font-bold">Example</Text>
   </HStack>
 </Box>
 ```
@@ -299,22 +299,6 @@ Theme palettes live in `src/themes/`. `global.css` is generated from them: run
 `yarn workspace @bible-strong/expo themes:check` before finishing. Do not manually
 edit generated palette values. Use `useTheme` from `~themes/ThemeProvider` when a
 consumer needs JavaScript values. See ADR-0040 for the Bible DOM boundary.
-
-## Surfaces
-
-Pages, cards, rows, radii and shadows follow the chapter « The app » of
-`../../design-system/project/README.md` (ADR-0086). A hub or settings page sits on
-`bg-canvas`, set on its root `Container`, `SafeAreaBox` or `FormSheetScreen`, with its content
-in `ListSection`, `ListRow` and `Card`; a continuous list
-runs full width on the page ground. A page that scrolls runs to the bottom edge: the shared
-`ScrollView`, `FlatList` and `SectionList` pad their content with `usePageBottomInset()`, a raw
-scroll view does it itself, and only a page with fixed bottom content passes `reserveBottom` to
-its container. On a tablet the sidebar button sits over every page's top left: build a page
-header with `Header` or `FiltersHeader`, or pad a header of its own with
-`useWorkspaceHeaderInset()`. Take radii from `radii` and the one shadow from
-`floatingShadow` in `~common/ui/surfaces`. `yarn agents:styles:check` refuses new
-departures; when a change removes some, lower `scripts/agents-surface-baseline.json`
-with `node scripts/agents-surface-lint.mjs --update-baseline`.
 
 ## Reanimated 4 Best Practices
 

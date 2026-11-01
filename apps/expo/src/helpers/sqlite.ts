@@ -1,5 +1,6 @@
 import * as FileSystem from 'expo-file-system/legacy'
-import * as SQLite from 'expo-sqlite'
+import type * as SQLite from 'expo-sqlite'
+import { openSQLiteDatabase } from './sqliteConnection'
 import {
   databaseDictionnaireName,
   databaseMhyName,
@@ -21,9 +22,7 @@ import { restoreOrphanedResourceBackup } from './atomicResourceFile'
 
 export type SQLiteDatabase = SQLite.SQLiteDatabase
 
-export const openSQLiteDatabase = (
-  ...args: Parameters<typeof SQLite.openDatabaseAsync>
-): ReturnType<typeof SQLite.openDatabaseAsync> => SQLite.openDatabaseAsync(...args)
+export { openSQLiteDatabase } from './sqliteConnection'
 
 // Original DB class for backward compatibility
 class DB {
@@ -40,7 +39,7 @@ class DB {
     return new Promise(async (resolve, reject) => {
       try {
         this.db = await appLogger.measure('database', 'legacy.open', () =>
-          SQLite.openDatabaseAsync(this.name)
+          openSQLiteDatabase(this.name)
         )
         console.log(`[DBManager] ${this.name} loaded`)
         resolve(true)
@@ -137,7 +136,7 @@ class LanguageAwareDB {
         'database',
         'language_aware.open',
         () =>
-          SQLite.openDatabaseAsync(
+          openSQLiteDatabase(
             fileName,
             {
               useNewConnection: true,
@@ -149,21 +148,12 @@ class LanguageAwareDB {
           language: this.lang,
         }
       )
-      try {
-        await appLogger.measure(
-          'database',
-          'language_aware.ensure_indexes',
-          () => this.ensureResourceQueryIndexes(),
-          // The size tells a copy cut short by an interrupted download from a damaged one.
-          { database: this.dbId, language: this.lang, fileBytes: fileInfo.size }
-        )
-      } catch (error) {
-        // Later queries would run on the same broken file: the connection is not kept.
-        const database = this.db
-        this.db = undefined
-        await database?.closeAsync().catch(() => undefined)
-        throw error
-      }
+      await appLogger.measure(
+        'database',
+        'language_aware.ensure_indexes',
+        () => this.ensureResourceQueryIndexes(),
+        { database: this.dbId, language: this.lang }
+      )
       console.log(`[DBManager] ${this.dbId} (${this.lang}) loaded from ${this.path}`)
     })()
 
@@ -217,18 +207,6 @@ class LanguageAwareDB {
       console.error(`[DBManager] Error deleting ${this.dbId}:`, error)
       throw error
     }
-  }
-
-  /**
-   * Removes a copy SQLite cannot read, with its journal and backup files: only a new download
-   * repairs it, and a leftover backup would be restored over the next launch.
-   */
-  discardUnreadableCopy = async (): Promise<void> => {
-    await this.close()
-    for (const suffix of ['', '-journal', '-wal', '-shm', '.backup']) {
-      await FileSystem.deleteAsync(`${this.path}${suffix}`, { idempotent: true })
-    }
-    console.log(`[DBManager] ${this.dbId} (${this.lang}) unreadable copy discarded`)
   }
 
   getPath = (): string => this.path

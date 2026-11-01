@@ -1,18 +1,12 @@
 import { Platform } from 'react-native'
 import { useResponsiveWorkspace } from '~features/app-switcher/utils/useResponsiveWorkspace'
 import { resolveThemeColor } from '~themes/colorValues'
-import { floatingShadow } from '~common/ui/surfaces'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { useAtomValue } from 'jotai/react'
 import { useTranslation } from 'react-i18next'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { isBibleOverlayOpenAtom } from 'src/state/app'
 import { useFooterFullScreen } from './footerFullScreen'
-import {
-  CHAPTER_NAV_ICON_SIZE,
-  chapterNavButtonStyle,
-  chapterNavSideOffset,
-} from './chapterNavButton'
 import Box, { AnimatedHStack, AnimatedTouchableBox, TouchableBox } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import { useBottomBarHeightInTab } from '~features/app-switcher/context/TabContext'
@@ -57,21 +51,17 @@ const BasicFooter = ({
     <Box
       pointerEvents="box-none"
       className="absolute top-0 w-full h-full self-center"
-      style={{ maxWidth: isWide && !isParallel && Platform.OS !== 'web' ? 710 : undefined }}
+      style={{ maxWidth: isWide && !isParallel ? 710 : undefined }}
     >
       <AnimatedTouchableBox
-        className="border-continuous overflow-visible bg-surface-raised items-center justify-center absolute"
+        className="border-continuous overflow-visible w-[40px] h-[40px] border-[2px] rounded-[20px] border-light-grey bg-reverse items-center justify-center absolute left-[10px]"
         disabled={isDisabled || !onPrevChapter}
         onPress={onPrevChapter}
         accessibilityRole="button"
         accessibilityLabel={t('accessibility.previousChapter')}
         accessibilityState={{ disabled: isDisabled || !onPrevChapter }}
         style={[
-          chapterNavButtonStyle,
-          {
-            left: chapterNavSideOffset(isParallel),
-            opacity: isDisabled || !onPrevChapter ? 0.6 : 1,
-          },
+          { opacity: isDisabled || !onPrevChapter ? 0.6 : 1 },
           [
             {
               bottom: Platform.OS === 'web' ? '50%' : isWide ? '25%' : 10 + bottomBarHeight,
@@ -85,7 +75,7 @@ const BasicFooter = ({
           ],
         ]}
       >
-        <FeatherIcon name="chevron-left" size={CHAPTER_NAV_ICON_SIZE} color="tertiary" />
+        <FeatherIcon name="arrow-left" size={20} color="tertiary" />
       </AnimatedTouchableBox>
       <PlayableButtons
         onPlay={onPlay}
@@ -97,18 +87,14 @@ const BasicFooter = ({
         centerTranslateY={centerTranslateY}
       />
       <AnimatedTouchableBox
-        className="border-continuous overflow-visible items-center justify-center bg-surface-raised absolute"
+        className="border-continuous overflow-visible w-[40px] h-[40px] items-center justify-center border-[2px] rounded-[20px] border-light-grey bg-reverse absolute right-[10px]"
         disabled={isDisabled || !onNextChapter}
         onPress={onNextChapter}
         accessibilityRole="button"
         accessibilityLabel={t('accessibility.nextChapter')}
         accessibilityState={{ disabled: isDisabled || !onNextChapter }}
         style={[
-          chapterNavButtonStyle,
-          {
-            right: chapterNavSideOffset(isParallel),
-            opacity: isDisabled || !onNextChapter ? 0.6 : 1,
-          },
+          { opacity: isDisabled || !onNextChapter ? 0.6 : 1 },
           [
             {
               bottom: Platform.OS === 'web' ? '50%' : isWide ? '25%' : 10 + bottomBarHeight,
@@ -122,7 +108,7 @@ const BasicFooter = ({
           ],
         ]}
       >
-        <FeatherIcon name="chevron-right" size={CHAPTER_NAV_ICON_SIZE} color="tertiary" />
+        <FeatherIcon name="arrow-right" size={20} color="tertiary" />
       </AnimatedTouchableBox>
     </Box>
   )
@@ -158,7 +144,7 @@ const PlayableButtons = ({
 
   return (
     <AnimatedHStack
-      className="border-continuous overflow-visible absolute self-center flex-row"
+      className="border-continuous overflow-visible absolute self-center flex-row bg-light-grey p-[2px] rounded-[50px]"
       style={[
         { bottom: 10 + bottomBarHeight },
         {
@@ -169,22 +155,18 @@ const PlayableButtons = ({
       ]}
     >
       <TouchableBox
-        className="border-continuous overflow-visible items-center justify-center w-[50px] h-[50px] rounded-full relative"
+        className="border-continuous overflow-visible items-center justify-center w-[50px] h-[50px] border-[2px] rounded-[25px] border-light-grey relative"
         disabled={isDisabled}
         activeOpacity={0.5}
         onPress={onPlay}
         accessibilityRole="button"
         accessibilityLabel={accessibilityLabel}
         accessibilityState={{ disabled: isDisabled, busy: isLoading }}
-        // The play button floats over the text: the one shadow, no ring around it.
         style={[
-          { opacity: isDisabled ? 0.6 : 1, ...floatingShadow },
+          { opacity: isDisabled ? 0.6 : 1 },
           [
             {
-              backgroundColor: resolveThemeColor(
-                stylingTheme,
-                isPlaying ? 'primary' : 'surfaceRaised'
-              ),
+              backgroundColor: resolveThemeColor(stylingTheme, isPlaying ? 'primary' : 'reverse'),
               opacity: isDisabled ? 0.6 : 1,
             },
           ],
