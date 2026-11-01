@@ -1,14 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
+import { openInApp } from '~common/inAppBrowser'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  ActivityIndicator,
-  Linking,
-  PermissionsAndroid,
-  Platform,
-  Share,
-  StyleSheet,
-} from 'react-native'
+import { ActivityIndicator, PermissionsAndroid, Platform, Share, StyleSheet } from 'react-native'
 import PanelAction from '~common/ContextualPanel/PanelAction'
 import { useDispatch } from 'react-redux'
 import slugify from 'slugify'
@@ -205,7 +199,7 @@ const PublishStudyMenuItem = ({ study, onClosed }: Props) => {
               icon="external-link"
               label={t('Ouvrir le lien')}
               onPress={() => {
-                void Linking.openURL(url)
+                openInApp(url)
               }}
             />
             <PanelAction

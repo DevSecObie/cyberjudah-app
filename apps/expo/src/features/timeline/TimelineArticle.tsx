@@ -2,7 +2,7 @@ import { Feather } from '@expo/vector-icons'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import React, { type ReactNode, useState } from 'react'
-import { Linking, Platform, Pressable, View, useWindowDimensions } from 'react-native'
+import { Pressable, View, useWindowDimensions } from 'react-native'
 import WebView from 'react-native-webview'
 import Paragraph from '~common/ui/Paragraph'
 import Text from '~common/ui/Text'
@@ -11,8 +11,7 @@ import { getCommentaryBibleViewRoute } from '~features/commentaries/commentaryRe
 import { parseInlineBibleReferences } from '~helpers/bcvParser'
 import { useTheme } from '~themes/ThemeProvider'
 import { articlePieces, type ArticlePiece, withoutDisagreements } from './articlePieces'
-import WikipediaSheet from './WikipediaSheet'
-import { isWikipediaUrl } from './wikipediaLinks'
+import { openInApp } from '~common/inAppBrowser'
 
 // An event's article as the Timeline writes it: paragraphs, where a class it cites is a line
 // "Title — date — time" followed by the class's link at that moment. The class becomes a card that
@@ -143,16 +142,12 @@ const ClassCard = ({ piece }: { piece: Extract<ArticlePiece, { kind: 'class' }> 
 /** The article, its scriptures and links tappable and the classes it cites playable in place. */
 const TimelineArticle = ({ article }: { article: string }) => {
   const router = useRouter()
-  const [wikipediaUrl, setWikipediaUrl] = useState<string>()
   const openOsis = (osis: string) => {
     const route = getCommentaryBibleViewRoute(osis)
     if (route) router.push(route)
   }
-  // The Web app has no sheet to read a page in; there the link opens as before.
-  const openUrl = (url: string) => {
-    if (Platform.OS !== 'web' && isWikipediaUrl(url)) setWikipediaUrl(url)
-    else void Linking.openURL(url)
-  }
+  // Pages open on the in-app browser sheet, never in Safari.
+  const openUrl = openInApp
   return (
     <View style={{ marginTop: 20 }}>
       {articlePieces(withoutDisagreements(article)).map((piece, index) =>
@@ -162,9 +157,6 @@ const TimelineArticle = ({ article }: { article: string }) => {
           <LinkedText key={index} text={piece.text} onOpenOsis={openOsis} onOpenUrl={openUrl} />
         )
       )}
-      {Platform.OS !== 'web' ? (
-        <WikipediaSheet url={wikipediaUrl} onClose={() => setWikipediaUrl(undefined)} />
-      ) : null}
     </View>
   )
 }

@@ -1,4 +1,5 @@
 import { chaptersReadingKey, finishReading } from '~features/plans/finishedReading'
+import { openInApp } from '~common/inAppBrowser'
 import { getPassageContextHeaderHeight } from '../passagePreviewPresentation'
 import type { PlanDayStepView } from './PlanDayStepCard'
 import type { LabeledCommentaryChip } from './InlineCommentaryChips'
@@ -33,7 +34,7 @@ import { getDefaultStore, PrimitiveAtom } from 'jotai/vanilla'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQueryClient } from '@tanstack/react-query'
-import { AppState, Linking, Platform, useWindowDimensions, type ViewStyle } from 'react-native'
+import { AppState, Platform, useWindowDimensions, type ViewStyle } from 'react-native'
 import { useConfirmDialog } from '~common/ConfirmDialog/useConfirmDialog'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { isBibleOverlayOpenAtom, isFullScreenBibleAtom } from 'src/state/app'
@@ -715,7 +716,7 @@ export const BibleDOMWrapper = ({
         }
 
         try {
-          await Linking.openURL(sourceUrl)
+          openInApp(sourceUrl)
         } catch (error) {
           appLogger.captureError('webview', 'passage_media.open_source_failed', error, {
             sourceUrl,

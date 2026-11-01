@@ -1,4 +1,4 @@
-import { Linking } from 'react-native'
+import { openInApp } from '~common/inAppBrowser'
 import { useTranslation } from 'react-i18next'
 import type { CommentaryCatalogEntry } from '~helpers/commentaryCatalog'
 import Box from '~common/ui/Box'
@@ -72,7 +72,7 @@ export default function CommentarySectionCard({
             const osis = commentaryHrefToOsis(href)
             const route = osis ? getCommentaryBibleViewRoute(osis) : undefined
             if (route) pushRouteOnce(route)
-            else if (/^https?:\/\//iu.test(href)) void Linking.openURL(href)
+            else if (/^https?:\/\//iu.test(href)) openInApp(href)
           }}
         />
       </Box>

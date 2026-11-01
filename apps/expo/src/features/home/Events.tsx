@@ -1,4 +1,5 @@
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
+import { openInApp } from '~common/inAppBrowser'
 import { titleFontStyle } from '~themes/styleValues'
 import { useTranslation } from 'react-i18next'
 import { HStack, VStack } from '~common/ui/Box'
@@ -13,7 +14,7 @@ import { getDateLocale } from '~helpers/languageUtils'
 import { format } from 'date-fns'
 import React from 'react'
 import { useFireStorage } from '~features/plans/plan.hooks'
-import { StyleSheet, Linking, TouchableOpacity } from 'react-native'
+import { StyleSheet, TouchableOpacity } from 'react-native'
 import MaskedView from '@react-native-masked-view/masked-view'
 import { Image } from 'expo-image'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -115,7 +116,7 @@ export const Events = () => {
 
   const handlePress = async () => {
     if (event?.url) {
-      await Linking.openURL(event.url)
+      openInApp(event.url)
     }
   }
 

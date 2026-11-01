@@ -1,6 +1,6 @@
 import { biblicalMapBounds } from '@bible-strong/resource-domain/biblical-map'
+import { openInApp } from '~common/inAppBrowser'
 import { useTranslation } from 'react-i18next'
-import { Linking } from 'react-native'
 
 import { HStack, TouchableBox, VStack } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
@@ -66,14 +66,14 @@ const StrongEntityPlaceMap = ({
       {(!!place?.palopenmapsUrl || !!place?.googleMapUrl) && region && (
         <HStack className="overflow-hidden border-continuous gap-[16px] flex-wrap">
           {!!place?.palopenmapsUrl && (
-            <TouchableBox onPress={() => Linking.openURL(place.palopenmapsUrl!)}>
+            <TouchableBox onPress={() => openInApp(place.palopenmapsUrl!)}>
               <Text className="text-link font-semibold text-[13px]">
                 {t('strongDetail.entity.bibleMap')}
               </Text>
             </TouchableBox>
           )}
           {!!place?.googleMapUrl && (
-            <TouchableBox onPress={() => Linking.openURL(place.googleMapUrl!)}>
+            <TouchableBox onPress={() => openInApp(place.googleMapUrl!)}>
               <Text className="text-link font-semibold text-[13px]">Google Maps</Text>
             </TouchableBox>
           )}

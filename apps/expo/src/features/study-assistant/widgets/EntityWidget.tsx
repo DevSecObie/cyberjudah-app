@@ -1,4 +1,4 @@
-import { Linking } from 'react-native'
+import { openInApp } from '~common/inAppBrowser'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import type { EntityWidget as Descriptor } from '@bible-strong/ai-contract/contract'
@@ -113,9 +113,9 @@ function EntityBody({ widget }: { widget: Descriptor }) {
               <TouchableBox
                 accessibilityRole="link"
                 onPress={() =>
-                  void Linking.openURL(
+                  openInApp(
                     `https://www.openstreetmap.org/?mlat=${place.latitude}&mlon=${place.longitude}#map=10/${place.latitude}/${place.longitude}`
-                  ).catch(() => {})
+                  )
                 }
                 className="self-start py-1"
               >

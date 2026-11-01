@@ -1,9 +1,10 @@
 import { useConfirmDialog } from '~common/ConfirmDialog/useConfirmDialog'
+import { openInApp } from '~common/inAppBrowser'
 import { twMerge } from '~common/ui/classNames'
 import { colorWithOpacity, resolveThemeColor } from '~themes/colorValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import React, { useEffectEvent } from 'react'
-import { Linking, Platform, TouchableOpacity } from 'react-native'
+import { Platform, TouchableOpacity } from 'react-native'
 import { useQuery } from '@tanstack/react-query'
 import { getDefaultStore } from 'jotai/vanilla'
 import { useTranslation } from 'react-i18next'
@@ -327,7 +328,7 @@ const VersionSelectorItem = ({
   const showInterlinearCapability = showStrongIndex && isInterlinearCapableBibleVersion(version.id)
   const openSourceUrl = () => {
     if (version.sourceUrl) {
-      Linking.openURL(version.sourceUrl)
+      openInApp(version.sourceUrl)
     }
   }
 

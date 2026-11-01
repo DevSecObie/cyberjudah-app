@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
+import { openInApp } from '~common/inAppBrowser'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
-import { Linking, Platform } from 'react-native'
+import { Platform } from 'react-native'
 import Sheet from '~common/ContextualPanel/ContextualSheet'
 import { SheetHeader, SheetScrollView, type SheetRef } from '~common/sheet'
 import Box, { TouchableBox, VStack } from '~common/ui/Box'
@@ -134,7 +135,7 @@ const VersePreceptsSheet = ({
     const item = readCachedClassLibrary()?.find(entry => entry.notesPath === notesPath)
     if (item)
       router.push({ pathname: '/(explore)/passage-media-player', params: { workId: item.workId } })
-    else void Linking.openURL(`${SITE}${notesPath}`)
+    else openInApp(`${SITE}${notesPath}`)
   }
 
   return (

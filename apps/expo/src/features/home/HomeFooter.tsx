@@ -1,6 +1,7 @@
 import type { PropsWithChildren } from 'react'
+import { openInApp } from '~common/inAppBrowser'
 import { useTranslation } from 'react-i18next'
-import { Linking, Platform } from 'react-native'
+import { Platform } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { LinkBox, type LinkProps } from '~common/Link'
 import Border from '~common/ui/Border'
@@ -49,7 +50,7 @@ const HomeFooter = () => {
         <Box className="overflow-hidden border-continuous flex-[1]">
           <Button
             color="#3b5998"
-            onPress={() => Linking.openURL('https://www.facebook.com/fr.bible.strong')}
+            onPress={() => openInApp('https://www.facebook.com/fr.bible.strong')}
             leftIcon={
               <FeatherIcon name="facebook" size={20} color="white" style={{ marginRight: 10 }} />
             }

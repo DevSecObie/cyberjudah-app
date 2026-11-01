@@ -1,6 +1,6 @@
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
+import { openInApp } from '~common/inAppBrowser'
 import { titleFontStyle } from '~themes/styleValues'
-import { Linking } from 'react-native'
 
 import Header from '~common/Header'
 import Box from '~common/ui/Box'
@@ -34,14 +34,14 @@ const SupportScreen = () => {
             Si vous souhaitez me soutenir, vous pouvez le faire de deux façons. Soit par{' '}
             <Paragraph
               className="text-link font-bold"
-              onPress={() => Linking.openURL('https://fr.tipeee.com/smontlouis')}
+              onPress={() => openInApp('https://fr.tipeee.com/smontlouis')}
             >
               Tipeee,
             </Paragraph>{' '}
             ou par{' '}
             <Paragraph
               className="text-link font-bold"
-              onPress={() => Linking.openURL('https://www.paypal.me/smontlouis')}
+              onPress={() => openInApp('https://www.paypal.me/smontlouis')}
             >
               PayPal
             </Paragraph>

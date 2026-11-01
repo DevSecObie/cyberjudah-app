@@ -1,11 +1,12 @@
 import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
+import { openInApp } from '~common/inAppBrowser'
 import { commentaryContext } from '~features/study-assistant/resourceContext'
 import { useQuery } from '@tanstack/react-query'
 import { staticResourceQueryOptions } from '~helpers/queryOptions'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { Linking } from 'react-native'
+
 import countLsgChapters from '~assets/bible_versions/countLsgChapters'
 import Header from '~common/Header'
 import Loading from '~common/Loading'
@@ -253,15 +254,11 @@ const CommentaryEntryScreen = ({
                     const osis = commentaryHrefToOsis(href)
                     const route = osis ? getCommentaryBibleViewRoute(osis) : undefined
                     if (route) pushRouteOnce(route)
-                    else if (/^https?:\/\//iu.test(href)) void Linking.openURL(href)
+                    else if (/^https?:\/\//iu.test(href)) openInApp(href)
                   }}
                 />
                 {classMoment ? (
-                  <CommentaryClassVideo
-                    key={section.id}
-                    ref={classVideoRef}
-                    moment={classMoment}
-                  />
+                  <CommentaryClassVideo key={section.id} ref={classVideoRef} moment={classMoment} />
                 ) : null}
               </Box>
             </Card>

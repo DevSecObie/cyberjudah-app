@@ -1,5 +1,6 @@
 import React from 'react'
-import { Linking } from 'react-native'
+import { openInApp } from '~common/inAppBrowser'
+
 import Paragraph from '~common/ui/Paragraph'
 
 interface InlineLinkProps {
@@ -11,7 +12,7 @@ interface InlineLinkProps {
 const InlineLink = ({ href, children, ...props }: InlineLinkProps) => {
   return (
     <Paragraph
-      onPress={() => Linking.openURL(href)}
+      onPress={() => openInApp(href)}
       fontFamily="text"
       {...props}
       className="text-link font-bold"

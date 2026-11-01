@@ -1,9 +1,10 @@
 import { resolveFontFamily } from '~themes/styleValues'
+import { openInApp } from '~common/inAppBrowser'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { useGlobalSearchParams, useLocalSearchParams, usePathname, useRouter } from 'expo-router'
 import { useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Linking, Platform, useWindowDimensions } from 'react-native'
+import { Platform, useWindowDimensions } from 'react-native'
 import YoutubePlayer from '~helpers/react-native-youtube-iframe'
 import WebView from 'react-native-webview'
 import { useAtom } from 'jotai'
@@ -292,7 +293,7 @@ const PassageMediaPlayerScreen = () => {
                     const route = getCommentaryBibleViewRoute(href.slice('bible://'.length))
                     if (route) router.push(route)
                   } else if (/^https:\/\//.test(href)) {
-                    void Linking.openURL(href)
+                    openInApp(href)
                   }
                 }}
               />

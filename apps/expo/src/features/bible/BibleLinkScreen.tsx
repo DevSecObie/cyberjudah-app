@@ -1,4 +1,5 @@
 import ExternalLinkCard from './ExternalLinkCard'
+import { openInApp } from '~common/inAppBrowser'
 import { titleFontStyle } from '~themes/styleValues'
 import { goBackOrHome } from '~navigation/goBackOrHome'
 import { useConfirmDialog } from '~common/ConfirmDialog/useConfirmDialog'
@@ -249,7 +250,7 @@ const BibleLinkScreen = () => {
     try {
       const canOpen = await Linking.canOpenURL(urlToOpen)
       if (canOpen) {
-        await Linking.openURL(urlToOpen)
+        openInApp(urlToOpen)
       } else {
         toast.error(t("Impossible d'ouvrir ce lien"))
       }

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { ActivityIndicator, Linking, Modal, Platform, Pressable, View } from 'react-native'
+import { ActivityIndicator, Linking, Modal, Pressable, View } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import WebView from 'react-native-webview'
 import { HStack } from '~common/ui/Box'
@@ -7,18 +7,16 @@ import Container from '~common/ui/Container'
 import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
 import { useTheme } from '~themes/ThemeProvider'
-import { isWikipediaUrl } from './wikipediaLinks'
+import { closeInApp, useInAppBrowserUrl } from './inAppBrowser'
 
-// A Wikipedia page the Timeline cites, read on a page sheet inside the app instead of leaving
-// for the browser. The sheet keeps to Wikipedia: a link in the page to anywhere else opens in
-// the browser, and "Open in Safari" is always there for the page itself.
+// Every web page the app links to, read on a page sheet inside the app: CyberJudah never sends
+// the reader off to Safari. Only mail, phone and App Store links go to the system.
 
-const titleFromUrl = (url: string) => {
+const hostOf = (url: string) => {
   try {
-    const page = new URL(url).pathname.split('/wiki/')[1]
-    return page ? decodeURIComponent(page).replace(/_/g, ' ') : 'Wikipedia'
+    return new URL(url).host.replace(/^www\./u, '')
   } catch {
-    return 'Wikipedia'
+    return ''
   }
 }
 
@@ -55,7 +53,10 @@ const SheetButton = ({
   )
 }
 
-const WikipediaSheet = ({ url, onClose }: { url?: string; onClose: () => void }) => {
+/** The one in-app browser, shown whenever openInApp is given a page. Mounted once, at the root. */
+const InAppBrowserHost = () => {
+  const url = useInAppBrowserUrl()
+  const onClose = closeInApp
   const { t } = useTranslation()
   const webView = useRef<{ goBack: () => void } | null>(null)
   const [pageUrl, setPageUrl] = useState(url)
@@ -73,7 +74,7 @@ const WikipediaSheet = ({ url, onClose }: { url?: string; onClose: () => void })
     setLoading(true)
   }
 
-  const heading = title || (pageUrl ? titleFromUrl(pageUrl) : 'Wikipedia')
+  const heading = title || (pageUrl ? hostOf(pageUrl) : '')
 
   return (
     <Modal
@@ -97,16 +98,12 @@ const WikipediaSheet = ({ url, onClose }: { url?: string; onClose: () => void })
               {heading}
             </Text>
             <Text numberOfLines={1} className="text-grey text-[12px]">
-              Wikipedia
+              {pageUrl ? hostOf(pageUrl) : ''}
             </Text>
           </View>
+          {/* Keeps the title centred against the buttons on its left. */}
           {canGoBack ? <View className="w-11" /> : null}
-          <SheetButton
-            icon="compass"
-            label={Platform.OS === 'ios' ? 'Open in Safari' : 'Open in browser'}
-            disabled={!pageUrl}
-            onPress={() => pageUrl && void Linking.openURL(pageUrl)}
-          />
+          <View className="w-11" />
         </HStack>
         {url ? (
           <View style={{ flex: 1 }}>
@@ -123,15 +120,15 @@ const WikipediaSheet = ({ url, onClose }: { url?: string; onClose: () => void })
               onNavigationStateChange={state => {
                 setCanGoBack(state.canGoBack)
                 if (state.url) setPageUrl(state.url)
-                const pageTitle = state.title?.replace(/\s+[-–—]\s+Wikipedia$/u, '')
+                const pageTitle = state.title?.replace(/\s+[-–—|]\s+[^-–—|]+$/u, '')
                 if (pageTitle && !pageTitle.startsWith('http')) setTitle(pageTitle)
               }}
               onShouldStartLoadWithRequest={request => {
                 // Pictures, maps and other parts of the page load as they are.
                 if (request.isTopFrame === false) return true
-                if (isWikipediaUrl(request.url) || request.url === 'about:blank') return true
-                // A link off Wikipedia leaves for the browser rather than taking over the sheet.
-                if (/^https?:\/\//iu.test(request.url)) void Linking.openURL(request.url)
+                if (/^https?:\/\//iu.test(request.url) || request.url === 'about:blank') return true
+                // Mail, phone and store links belong to the system.
+                void Linking.openURL(request.url).catch(() => {})
                 return false
               }}
             />
@@ -150,4 +147,4 @@ const WikipediaSheet = ({ url, onClose }: { url?: string; onClose: () => void })
   )
 }
 
-export default WikipediaSheet
+export default InAppBrowserHost

@@ -1,4 +1,5 @@
 import PageContent from '~common/ui/PageContent'
+import { openInApp } from '~common/inAppBrowser'
 import type { LayoutChangeEvent } from 'react-native'
 import { getReadingTypography, type ReadingTypography } from '~common/readingHtml'
 import { useReferencePreview } from '~features/bibleReferencePreview/state'
@@ -9,7 +10,6 @@ import { formatStrongDisplayCode } from '~helpers/strongIdentities'
 import { useTheme } from '~themes/ThemeProvider'
 import React from 'react'
 import {
-  Linking,
   Text as NativeText,
   type NativeSyntheticEvent,
   type TextLayoutEventData,
@@ -165,7 +165,7 @@ export const StrongEditorialHtml = ({
           onOpenStrong(target.slice('strong://'.length))
           return
         }
-        if (/^https?:\/\//iu.test(target)) Linking.openURL(target)
+        if (/^https?:\/\//iu.test(target)) openInApp(target)
       }}
     />
   )
@@ -189,7 +189,7 @@ const openEditorialPreviewLink = (
     onOpenStrong(target.slice('strong://'.length))
     return
   }
-  if (/^https?:\/\//iu.test(target)) Linking.openURL(target)
+  if (/^https?:\/\//iu.test(target)) openInApp(target)
 }
 
 const renderEditorialPreviewNodes = (

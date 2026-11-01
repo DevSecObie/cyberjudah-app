@@ -30,6 +30,7 @@ import { FeatureOnboardingModal } from '~features/feature-onboarding'
 import OnBoardingModal from '~features/onboarding/OnBoarding'
 import { useKeepClassIndexCurrent } from '~features/passageMediaLibrary/classLibraryIndex'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
+import InAppBrowserHost from '~common/InAppBrowserHost'
 import LocalMigrationGate from '~features/migrations/LocalMigrationGate'
 import { appLogger } from '~helpers/agentObservability'
 import { createFormSheetOptions } from '~navigation/formSheetOptions'
@@ -207,6 +208,7 @@ const FullAppRuntime = ({ theme }: FullAppRuntimeProps) => {
                       </Stack>
                     </WorkspaceLayout>
                     <DockedClassPlayer />
+                    <InAppBrowserHost />
                     {/* Bible Strong's own assistant stays off; CyberJudah has Ask. */}
                     {!usesCyberJudahEditorial() && <AssistantLauncher />}
                     <ThemedToaster />

@@ -1,4 +1,5 @@
 import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
+import { openInApp } from '~common/inAppBrowser'
 import { titleFontStyle } from '~themes/styleValues'
 import { dictionaryContext } from '~features/study-assistant/resourceContext'
 import HorizontalControlScrollView from '~common/HorizontalControlScrollView'
@@ -6,7 +7,7 @@ import { goBackOrHome } from '~navigation/goBackOrHome'
 import { twMerge } from '~common/ui/classNames'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import React, { useEffect, useEffectEvent, useRef } from 'react'
-import { Linking } from 'react-native'
+
 import { useQuery } from '@tanstack/react-query'
 import { MenuView, type MenuAction } from '~common/ui/MenuView'
 import { useSelector } from 'react-redux'
@@ -288,7 +289,7 @@ const DictionnaryDetailScreen = ({
       else toast.error('Impossible de charger cette référence biblique.')
     } else if (/^https:\/\/archive\.org\//.test(href)) {
       // A reference work's link to its printed page
-      void Linking.openURL(href).catch(() => {})
+      openInApp(href)
     } else if (href.startsWith('strong://')) {
       const code = href.slice('strong://'.length).trim().toUpperCase()
       if (/^[HG]\d+[A-Z]?$/u.test(code)) {

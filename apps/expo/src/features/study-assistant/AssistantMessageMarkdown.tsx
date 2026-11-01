@@ -1,4 +1,4 @@
-import { Linking } from 'react-native'
+import { openInApp } from '~common/inAppBrowser'
 import { StreamdownText } from 'react-native-streamdown'
 import {
   sourceIdFromLink,
@@ -45,7 +45,7 @@ export default function AssistantMessageMarkdown({
       return
     }
     const safe = safeLink(url)
-    if (safe) void Linking.openURL(safe).catch(() => {})
+    if (safe) openInApp(safe)
   }
   return (
     <StreamdownText

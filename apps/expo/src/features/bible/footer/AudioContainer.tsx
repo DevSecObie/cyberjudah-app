@@ -1,9 +1,10 @@
 import { twMerge } from '~common/ui/classNames'
+import { openInApp } from '~common/inAppBrowser'
 import { floatingShadow } from '~common/ui/surfaces'
 import { colorWithOpacity } from '~themes/colorValues'
 import { useTheme } from '~themes/ThemeProvider'
 import React from 'react'
-import { Linking, TouchableOpacityProps } from 'react-native'
+import { TouchableOpacityProps } from 'react-native'
 import { useAtomValue } from 'jotai/react'
 import { useTranslation } from 'react-i18next'
 import { isBibleOverlayOpenAtom } from 'src/state/app'
@@ -98,7 +99,7 @@ const AudioContainer = ({ children, onReduce, audioMode, onChangeMode }: AudioCo
         )}
         {!usesCyberJudahEditorial() && (
           <Chip
-            onPress={() => Linking.openURL('https://click.audibible.app/5nmN/stephane30')}
+            onPress={() => openInApp('https://click.audibible.app/5nmN/stephane30')}
             accessibilityRole="link"
             accessibilityLabel={t('accessibility.openAudibible')}
           >
