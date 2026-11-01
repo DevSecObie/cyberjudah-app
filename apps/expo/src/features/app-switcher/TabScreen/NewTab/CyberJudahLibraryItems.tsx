@@ -12,7 +12,7 @@ type LibraryEntry = {
   pathname: string
 }
 
-/** CyberJudah's own content, first in the new tab's library, the classes before everything. */
+/** CyberJudah's own content in the new tab's library, under Strong, Nave, Dictionary and Commentary. */
 export const CYBERJUDAH_LIBRARY: LibraryEntry[] = [
   {
     key: 'classes',

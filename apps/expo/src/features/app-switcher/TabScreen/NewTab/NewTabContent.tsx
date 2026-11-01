@@ -139,9 +139,6 @@ export default function NewTabContent({
             image={require('~assets/images/new-tab/library-reader.webp')}
           />
           <Box style={{ gap: DENSE_GAP }}>
-            {usesCyberJudahEditorial() && (
-              <CyberJudahLibraryItems compact columns gap={DENSE_GAP} />
-            )}
             <Box className="flex-row" style={{ gap: DENSE_GAP }}>
               {renderItem('strong', t('tabs.strong'), t('newTab.strongDescription'), 'inline')}
               {renderItem('nave', t('tabs.nave'), t('newTab.naveDescription'), 'inline')}
@@ -160,6 +157,9 @@ export default function NewTabContent({
                 'inline'
               )}
             </Box>
+            {usesCyberJudahEditorial() && (
+              <CyberJudahLibraryItems compact columns gap={DENSE_GAP} />
+            )}
           </Box>
         </Box>
       </Box>
@@ -234,9 +234,6 @@ export default function NewTabContent({
             image={require('~assets/images/new-tab/library-reader.webp')}
           />
           <Box style={{ gap: ITEM_GAP }}>
-            {usesCyberJudahEditorial() && (
-              <CyberJudahLibraryItems compact={false} columns={libraryColumns} gap={ITEM_GAP} />
-            )}
             <Box className={libraryColumns ? 'flex-row' : undefined} style={{ gap: ITEM_GAP }}>
               <Box className={libraryColumns ? 'flex-1 min-w-0' : undefined}>
                 {renderItem('strong', t('tabs.strong'), t('newTab.strongDescription'))}
@@ -253,6 +250,9 @@ export default function NewTabContent({
                 {renderItem('commentary', t('tabs.commentary'), t('newTab.commentaryDescription'))}
               </Box>
             </Box>
+            {usesCyberJudahEditorial() && (
+              <CyberJudahLibraryItems compact={false} columns={libraryColumns} gap={ITEM_GAP} />
+            )}
           </Box>
         </Box>
       </Box>
