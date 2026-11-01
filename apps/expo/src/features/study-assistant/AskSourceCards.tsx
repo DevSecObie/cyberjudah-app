@@ -9,6 +9,7 @@ import { sourceThumbnails } from './cyberJudahSourceArtwork'
 import { CYBERJUDAH_PORTRAITS } from '~features/lexique/cyberJudahPortraits'
 import { useOpenStudySource } from './useOpenStudySource'
 import { useAskPalette } from './askPalette'
+import { sourceKindLabel } from './askStudyKinds'
 
 function portrait(source: CyberJudahSource) {
   const id = /^\/(?:person)\/([a-z0-9-]+)$/.exec(source.url)?.[1]
@@ -60,7 +61,10 @@ export default function AskSourceCards({
         {sources.map(source => {
           const link = sourceLink(source)
           const hasArtwork = !!portrait(source) || sourceThumbnails(source).length > 0
-          const moment = source.video && source.t !== undefined ? timestamp(source.t) : source.kind
+          const moment =
+            source.video && source.t !== undefined
+              ? timestamp(source.t)
+              : sourceKindLabel(source.kind)
           return (
             <Pressable
               key={`${source.n}:${source.video || source.url}:${source.thumb || ''}`}
@@ -95,7 +99,6 @@ export default function AskSourceCards({
                       color: p.text3,
                       fontSize: 11.5,
                       fontWeight: '500',
-                      textTransform: 'capitalize',
                     }}
                   >
                     {moment}

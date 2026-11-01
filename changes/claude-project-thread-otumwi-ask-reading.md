@@ -1,2 +1,4 @@
 - Bible reader: an Ask button in the selected verses' Study actions opens Ask about those verses. Ask shows "Asking about Genesis 1:3" over the question (✕ clears it) and sends the passage with each question, so Ask starts from that verse's precepts and classes. Needs the server's `reading` field (cyberjudah-telegram, Ask improvements); an older server ignores it.
 - Ask: a class moment cited in an answer (a source card or an inline [n]) plays in the floating player at that second, so the answer stays open to read along; the player's back arrow opens the class page as before.
+- Ask: a precept the answer cites shows under it as a chain of its first scriptures (KJV text, in Bible order), each opening the Bible, with the precept's own page a tap away.
+- Ask: source cards name their kind in the library's words (Precept, Case study, Law, Encyclopedia, Study notes, Class notes…) and open the full page in the app.
