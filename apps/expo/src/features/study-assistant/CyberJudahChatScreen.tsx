@@ -19,6 +19,7 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useVoiceQuestion } from './useVoiceQuestion'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { selectUserLoginInfo } from '~redux/selectors/user'
 import { storage } from '~helpers/storage'
@@ -369,6 +370,34 @@ function AccountChat({ account }: { account: string }) {
       return []
     }
   }
+  // Ask by voice: what was said lands in the question box, to read over before sending.
+  const voice = useVoiceQuestion({
+    consent: () => agreedProviders(),
+    onText: text => {
+      setQuestion(current =>
+        (current.trim() ? `${current.trim()} ${text}` : text).slice(0, questionLimit)
+      )
+      input.current?.focus()
+    },
+    onError: cause => {
+      const code = cause instanceof CyberJudahAskError ? cause.code : ''
+      // Not agreed to the provider that hears it, or no microphone: the keyboard's own dictation.
+      if (code === 'CONSENT' || (cause instanceof Error && cause.message === 'MIC_DENIED')) {
+        input.current?.focus()
+        return
+      }
+      setError(
+        t(
+          code === 'DAILY_LIMIT'
+            ? 'assistant.limit'
+            : code === 'PAUSED'
+              ? 'assistant.cyberjudah.paused'
+              : 'askChat.notHeard',
+          { defaultValue: 'That was not heard. Try again, or type your question.' }
+        )
+      )
+    },
+  })
   const save = async (conversation: Chat, turn: ChatTurn) => {
     try {
       await saveChatTurn(account, conversation, turn)
@@ -1037,16 +1066,38 @@ function AccountChat({ account }: { account: string }) {
                 <FeatherIcon name="chevron-down" size={13} style={{ color: p.text1 }} />
               </Pressable>
               <Box className="flex-1" />
-              {/* The mic opens the keyboard on the question, where iOS dictation is one tap away. */}
+              {/* The mic: tap to speak, tap again to stop; the words land in the question box. On
+                  the website, the keyboard's own dictation. */}
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel={t('askChat.dictate', { defaultValue: 'Speak your question' })}
-                onPress={() => input.current?.focus()}
-                disabled={!account}
+                accessibilityLabel={
+                  voice.state === 'recording'
+                    ? t('askChat.stopDictating', {
+                        defaultValue: 'Stop and write down what you said',
+                      })
+                    : t('askChat.dictate', { defaultValue: 'Speak your question' })
+                }
+                accessibilityState={{ busy: voice.state === 'hearing' }}
+                onPress={() => {
+                  if (!voice.supported) return input.current?.focus()
+                  if (voice.state === 'recording') return void voice.stop()
+                  if (voice.state === 'idle') {
+                    setError('')
+                    void voice.start()
+                  }
+                }}
+                disabled={!account || busy || voice.state === 'hearing'}
                 className="h-9 w-9 items-center justify-center rounded-full"
-                style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+                style={({ pressed }) => ({
+                  opacity: pressed || voice.state === 'hearing' ? 0.6 : 1,
+                  backgroundColor: voice.state === 'recording' ? '#e5484d' : 'transparent',
+                })}
               >
-                <FeatherIcon name="mic" size={18} style={{ color: p.text1 }} />
+                <FeatherIcon
+                  name={voice.state === 'recording' ? 'square' : 'mic'}
+                  size={voice.state === 'recording' ? 14 : 18}
+                  style={{ color: voice.state === 'recording' ? 'white' : p.text1 }}
+                />
               </Pressable>
               <Pressable
                 accessibilityRole="button"

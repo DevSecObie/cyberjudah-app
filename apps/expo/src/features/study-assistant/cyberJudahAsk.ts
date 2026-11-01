@@ -313,3 +313,34 @@ export async function reportAskAnswer(
   })
   if (!response.ok) throw new Error('REPORT_UNAVAILABLE')
 }
+
+// The provider that hears a spoken question (the server's /listen, on Workers AI).
+export const LISTEN_PROVIDER = 'Cloudflare (Workers AI)'
+
+/**
+ * A spoken question as text: the recording goes to the CyberJudah server, which writes down what
+ * was said (`POST /api/app/ask/listen`). Only with the reader's agreement to that provider; the
+ * text comes back to the question box for the reader to check before sending.
+ */
+export async function listenToQuestion(
+  audio: ArrayBuffer,
+  consent: string[],
+  signal: AbortSignal
+): Promise<string> {
+  if (!consent.includes(LISTEN_PROVIDER)) throw new CyberJudahAskError('CONSENT', LISTEN_PROVIDER)
+  const user = getCurrentAuthUser()
+  if (!user) throw new CyberJudahAskError('SIGN_IN_REQUIRED')
+  const response = await expoFetch(secureAskEndpoint(origin, '/api/app/ask/listen'), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/octet-stream',
+      Authorization: `Bearer ${await user.getIdToken()}`,
+      'X-AI-Consent': LISTEN_PROVIDER,
+    },
+    body: new Uint8Array(audio),
+    signal,
+  })
+  const body = (await response.json().catch(() => null)) as Record<string, unknown> | null
+  if (!response.ok || typeof body?.text !== 'string') throw errorOf(response.status, body)
+  return body.text.slice(0, 4000)
+}
