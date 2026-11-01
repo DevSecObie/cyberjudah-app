@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import Box, { TouchableBox, VStack } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
+import ClassVideoEmbed from '~features/passageMediaLibrary/ClassVideoEmbed'
 import { verseText, type Moment, type ScriptureRef } from './classTeaching'
 
 /** A titled block of a page, under a rule (as the case studies have them). */
@@ -66,7 +67,10 @@ export const Scripture = ({
   )
 }
 
-/** A moment of a class: who taught it and where, opening the class. */
+/**
+ * A moment of a class, embedded: its video plays here from the moment, and its name under it
+ * opens the class.
+ */
 export const MomentLink = ({
   moment,
   label,
@@ -76,11 +80,21 @@ export const MomentLink = ({
   label?: string
   onOpen: (moment: Moment) => void
 }) => (
-  <TouchableBox accessibilityRole="link" onPress={() => onOpen(moment)} className="py-[4px]">
-    <Text className="text-primary text-[13px] font-bold">
-      {label ? `${label} · ` : ''}Watch at {moment.ts}
-    </Text>
-  </TouchableBox>
+  <Box className="pt-[4px]">
+    <ClassVideoEmbed
+      videoId={moment.video}
+      start={moment.t}
+      title={moment.title ?? label ?? 'Class'}
+      meta={[
+        moment.read ? 'Read in class' : moment.teacher,
+        moment.date,
+        moment.ts ? `from ${moment.ts}` : '',
+      ]
+        .filter(Boolean)
+        .join(' · ')}
+      onOpenClass={() => onOpen(moment)}
+    />
+  </Box>
 )
 
 /** What the classes said, quoted, with the moment it was said. */

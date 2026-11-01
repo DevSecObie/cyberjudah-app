@@ -18,6 +18,7 @@ import { parseInlineBibleReferences } from '~helpers/bcvParser'
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme } from '~themes/ThemeProvider'
 import { caseSlugOf, kindName, loadCaseStudy, type CaseScripture } from './caseStudies'
+import ClassVideoEmbed, { useClassVideoOf } from '~features/passageMediaLibrary/ClassVideoEmbed'
 
 const SCRIPTURE_FIRST = 4
 const SCRIPTURE_MORE = 6
@@ -140,6 +141,29 @@ const Scripture = ({ scripture, onOpen }: { scripture: CaseScripture; onOpen: ()
         </Text>
       </Box>
     </TouchableBox>
+  )
+}
+
+/** A class the case was taught in: its video embedded when it is a class, else a row to its notes. */
+const TaughtIn = ({
+  taught,
+  onOpen,
+}: {
+  taught: { title: string; range: string; url: string }
+  onOpen: () => void
+}) => {
+  const video = useClassVideoOf(taught.url)
+  return video ? (
+    <Box className="py-[6px]">
+      <ClassVideoEmbed
+        videoId={video}
+        title={taught.title}
+        meta={taught.range}
+        onOpenClass={onOpen}
+      />
+    </Box>
+  ) : (
+    <Row title={taught.title} meta={taught.range} onPress={onOpen} />
   )
 }
 
@@ -325,12 +349,7 @@ const CaseStudyScreen = () => {
           {!!k.taught?.length && (
             <Section title="Taught in">
               {k.taught.map(taught => (
-                <Row
-                  key={taught.url}
-                  title={taught.title}
-                  meta={taught.range}
-                  onPress={() => openPage(taught.url)}
-                />
+                <TaughtIn key={taught.url} taught={taught} onOpen={() => openPage(taught.url)} />
               ))}
             </Section>
           )}

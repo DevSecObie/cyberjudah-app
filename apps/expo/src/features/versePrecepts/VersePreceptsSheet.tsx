@@ -14,6 +14,10 @@ import { cyberJudahSiteLinkToOsis } from '~helpers/cyberJudahSiteLinks'
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme } from '~themes/ThemeProvider'
 import { preceptsForVerse, type VersePrecept } from './versePrecepts'
+import ClassVideoEmbed, {
+  secondsOfClock,
+  useClassVideoOf,
+} from '~features/passageMediaLibrary/ClassVideoEmbed'
 
 const SITE = 'https://cyberjudah.io'
 
@@ -45,6 +49,7 @@ const PreceptCard = ({
 }) => {
   const theme = useTheme()
   const [expanded, setExpanded] = useState(false)
+  const classVideo = useClassVideoOf(precept.note.url)
   const range = /^(\d+)-(\d+)$/.exec(precept.ref.verses ?? '')
   const verseText = useVerseText(
     range ? precept.ref.url.replace(/#v\d+$/, `#v${range[1]}-${range[2]}`) : precept.ref.url
@@ -85,13 +90,25 @@ const PreceptCard = ({
           <Text className="text-[16px]">{expanded ? 'Show less' : 'Read more'}</Text>
         </TouchableBox>
       )}
-      <TouchableBox accessibilityRole="link" onPress={() => onOpenClass(precept.note.url)}>
-        <Text className="text-[14px] leading-[20px]">
-          {[precept.note.label, formatDate(precept.note.date), precept.ts]
+      {classVideo ? (
+        <ClassVideoEmbed
+          videoId={classVideo}
+          start={secondsOfClock(precept.ts)}
+          title={precept.note.label}
+          meta={[formatDate(precept.note.date), precept.ts ? `from ${precept.ts}` : '']
             .filter(Boolean)
             .join(' · ')}
-        </Text>
-      </TouchableBox>
+          onOpenClass={() => onOpenClass(precept.note.url)}
+        />
+      ) : (
+        <TouchableBox accessibilityRole="link" onPress={() => onOpenClass(precept.note.url)}>
+          <Text className="text-[14px] leading-[20px]">
+            {[precept.note.label, formatDate(precept.note.date), precept.ts]
+              .filter(Boolean)
+              .join(' · ')}
+          </Text>
+        </TouchableBox>
+      )}
     </VStack>
   )
 }

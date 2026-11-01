@@ -31,11 +31,10 @@ import {
   type CommentaryScreenRouteParams,
 } from './commentaryResourceParams'
 import CommentaryEntryNavigation from './CommentaryEntryNavigation'
-import CommentaryClassVideo, {
-  type CommentaryClassVideoHandle,
-  classMomentOf,
-  firstClassMomentIn,
-} from './CommentaryClassVideo'
+import ClassVideoEmbed, {
+  type ClassVideoEmbedHandle,
+} from '~features/passageMediaLibrary/ClassVideoEmbed'
+import { classMomentOf, firstClassMomentIn } from './commentaryClassMoment'
 import { groupCommentarySectionsForVerse } from './commentaryResourceNavigation'
 import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
 const CommentaryEntryScreen = ({
@@ -59,7 +58,7 @@ const CommentaryEntryScreen = ({
   const { t } = useTranslation()
   const canGoBackInStack = useCanGoBackInStack()
   const scrollRef = React.useRef<React.ComponentRef<typeof ScrollView>>(null)
-  const classVideoRef = React.useRef<CommentaryClassVideoHandle>(null)
+  const classVideoRef = React.useRef<ClassVideoEmbedHandle>(null)
   const query = useQuery({
     queryKey: [
       'commentary-resource-chapter',
@@ -241,8 +240,8 @@ const CommentaryEntryScreen = ({
                   onLinkPress={href => {
                     // The entry's timestamp plays the class below, from that moment.
                     const moment = classMomentOf(href)
-                    if (moment && classMoment) {
-                      classVideoRef.current?.playAt(moment)
+                    if (moment && moment.videoId === classMoment?.videoId) {
+                      classVideoRef.current?.playAt(moment.start)
                       return
                     }
                     const osis = commentaryHrefToOsis(href)
@@ -252,11 +251,15 @@ const CommentaryEntryScreen = ({
                   }}
                 />
                 {classMoment ? (
-                  <CommentaryClassVideo
-                    key={section.id}
-                    ref={classVideoRef}
-                    moment={classMoment}
-                  />
+                  <Box className="mt-[16px]">
+                    <ClassVideoEmbed
+                      key={section.id}
+                      ref={classVideoRef}
+                      videoId={classMoment.videoId}
+                      start={classMoment.start}
+                      bare
+                    />
+                  </Box>
                 ) : null}
               </Box>
             </Box>
