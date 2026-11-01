@@ -10,4 +10,8 @@
   launchers crop the corners).
 - The lion was sharpened from the book's 512-pixel copy to 2048 pixels before it was placed.
 - A new app icon needs a native build; it ships with the next build, not over the air.
-- Not changed: splash screens and the notification icon.
+- Splash screen (owner's request, 2026-11-01): the same lion with the faint cyan grid and the
+  pink and cyan corner brackets, on the book's near-black (#05070f) in both light and dark mode
+  (was the faceted lion on white / navy). The image is 300 points wide (was 200). The grid fades
+  out at the image's edges because the splash only allows one solid color behind the picture.
+- Not changed: the notification icon.
