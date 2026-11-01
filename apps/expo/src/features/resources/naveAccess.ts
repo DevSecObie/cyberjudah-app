@@ -3,6 +3,7 @@ import loadNaveByRandom from '~helpers/loadNaveByRandom'
 import loadNaveBySearch from '~helpers/loadNaveBySearch'
 import loadNaveByVerset from '~helpers/loadNaveByVerset'
 import loadNaveItem from '~helpers/loadNaveItem'
+import { localizeNaveTopic } from '~features/nave/naveReferenceNames'
 import {
   mapLocalResourceError,
   ResourceAccessError,
@@ -511,7 +512,7 @@ export const createHybridNaveAccess = ({
         lang,
         () => offline.loadItem(nameLower, lang),
         () => online.loadItem(nameLower, lang)
-      )
+      ).then(topic => localizeNaveTopic(topic, lang))
     },
     loadByVerse: (verse, language) => {
       const lang = languageOrFrench(language)
@@ -527,7 +528,7 @@ export const createHybridNaveAccess = ({
         lang,
         () => offline.loadRandom(lang),
         () => online.loadRandom(lang)
-      )
+      ).then(topic => localizeNaveTopic(topic, lang))
     },
   }
 }
