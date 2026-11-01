@@ -1,4 +1,3 @@
-import { isStandaloneStrongModule } from '@bible-strong/resource-domain/strong-lexicon'
 import type { DownloadItem } from '~state/downloadQueue'
 import { isSharedDB, type DatabaseId, type ResourceLanguage } from '~helpers/databaseTypes'
 import { versions, type Version } from '~helpers/bibleVersions'
@@ -279,7 +278,8 @@ export const completeStrongLexiconDownloadPlan = (
   for (const lexiconModule of items) {
     if (
       lexiconModule.type !== 'strong-lexicon-module' ||
-      isStandaloneStrongModule(lexiconModule.strongLexiconModuleId)
+      // CyberJudah's People module stands alone: its catalog has no lexicon core to pair it with.
+      !requiresStrongLexiconCore(lexiconModule.strongLexiconModuleId)
     ) {
       continue
     }
