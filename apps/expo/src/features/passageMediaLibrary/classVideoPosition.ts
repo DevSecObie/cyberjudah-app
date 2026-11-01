@@ -74,7 +74,7 @@ export type ClassCommand = { func: 'playVideo' | 'pauseVideo' | 'seekTo'; args?:
 
 /**
  * Run inside the hosted video page on the phone, beside CLASS_TIME_SCRIPT: it reports whether the
- * video plays, and passes the floating window's play, pause and skip on to the video.
+ * video plays and how long it is, and passes the floating window's play, pause and skip on to the video.
  */
 export const CLASS_CONTROL_SCRIPT = `(() => {
   if (window.__cyberJudahClassControls) return
@@ -82,11 +82,18 @@ export const CLASS_CONTROL_SCRIPT = `(() => {
   const frame = document.querySelector('iframe')
   if (!frame || !window.ReactNativeWebView) return
   let lastState
+  let lastDuration = -1
   window.addEventListener('message', event => {
     if (!/^https:\\/\\/www\\.youtube(-nocookie)?\\.com$/.test(event.origin)) return
     let data
     try { data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data } catch (e) { return }
-    const state = data && data.info && data.info.playerState
+    const info = data && data.info
+    const duration = info && info.duration
+    if (typeof duration === 'number' && duration > 0 && Math.floor(duration) !== lastDuration) {
+      lastDuration = Math.floor(duration)
+      window.ReactNativeWebView.postMessage(JSON.stringify({ classDuration: duration }))
+    }
+    const state = info && info.playerState
     if (typeof state !== 'number' || state === lastState) return
     lastState = state
     window.ReactNativeWebView.postMessage(JSON.stringify({ classState: state }))
@@ -100,3 +107,29 @@ export const CLASS_CONTROL_SCRIPT = `(() => {
 /** The call that hands a command to the video page from the app (CLASS_CONTROL_SCRIPT). */
 export const classCommandScript = ({ func, args = [] }: ClassCommand) =>
   `window.__cyberJudahCommand && window.__cyberJudahCommand(${JSON.stringify(func)}, ${JSON.stringify(args)}); true`
+
+/** Reads the video's length in seconds, as the video page reports it (CLASS_CONTROL_SCRIPT). */
+export const classDurationFromMessage = (data: unknown): number | undefined => {
+  if (typeof data !== 'string' || !data.includes('classDuration')) return undefined
+  try {
+    const value = (JSON.parse(data) as { classDuration?: unknown }).classDuration
+    return typeof value === 'number' && value > 0 ? value : undefined
+  } catch {
+    return undefined
+  }
+}
+
+/**
+ * YouTube's player states: -1 not started, 0 ended, 1 playing, 2 paused, 3 buffering, 5 ready
+ * (cued). Until a video has played once, only a tap on YouTube's own button may be able to start it.
+ */
+export const classNotStarted = (state: number) => state === -1 || state === 5
+
+/** A playing time as a clock, the way the iPhone's and YouTube's players show it: 4:05, 1:02:09. */
+export const classClock = (seconds: number) => {
+  const total = Math.max(0, Math.floor(Number.isFinite(seconds) ? seconds : 0))
+  const h = Math.floor(total / 3600)
+  const m = Math.floor((total % 3600) / 60)
+  const s = String(total % 60).padStart(2, '0')
+  return h ? `${h}:${String(m).padStart(2, '0')}:${s}` : `${m}:${s}`
+}

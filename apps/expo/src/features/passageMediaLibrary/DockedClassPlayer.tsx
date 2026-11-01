@@ -1,14 +1,27 @@
 import { useRouter } from 'expo-router'
 import { useAtom } from 'jotai'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Animated, PanResponder, Platform, useWindowDimensions } from 'react-native'
+import {
+  Animated,
+  type LayoutChangeEvent,
+  PanResponder,
+  Platform,
+  useWindowDimensions,
+  View,
+} from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Box, { TouchableBox } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
+import Text from '~common/ui/Text'
 import { getPassageMediaEmbedUrl } from '~features/bible/passageMedia'
 import ClassVideoFrame, { type ClassVideoFrameHandle } from './ClassVideoFrame'
 import FloatingLayer from './FloatingLayer'
-import { classPositionOf, rememberClassPosition } from './classVideoPosition'
+import {
+  classClock,
+  classNotStarted,
+  classPositionOf,
+  rememberClassPosition,
+} from './classVideoPosition'
 import PipGlass from './PipGlass'
 import { dockedClassAtom } from './dockedClassPlayerStore'
 
@@ -16,6 +29,9 @@ const MARGIN = 12
 const MINI_WIDTH = 240
 // How much of a window pushed off the side stays on screen.
 const TAB_WIDTH = 28
+// As in YouTube's player: a double tap on the left or right of the video skips 10 seconds.
+const DOUBLE_TAP_MS = 300
+const DOUBLE_TAP_SKIP = 10
 
 type Side = 'left' | 'right'
 
@@ -51,12 +67,126 @@ const RoundButton = ({
 )
 
 /**
+ * The playing time and a bar to drag through the class, as in the iPhone's and YouTube's players:
+ * the time played on the left, the time left on the right. Dragging the bar takes the touch from
+ * the window, so it never moves the window.
+ */
+const Scrubber = ({
+  time,
+  duration,
+  onScrub,
+  onSeek,
+}: {
+  time: number
+  duration: number
+  onScrub: (active: boolean) => void
+  onSeek: (seconds: number) => void
+}) => {
+  const [width, setWidth] = useState(0)
+  const [dragAt, setDragAt] = useState<number | null>(null)
+  const startX = useRef(0)
+  const latest = useRef({ width, duration, onScrub, onSeek })
+  latest.current = { width, duration, onScrub, onSeek }
+  const at = (x: number) => {
+    const { width: w, duration: d } = latest.current
+    return w > 0 ? Math.min(Math.max(x / w, 0), 1) * d : 0
+  }
+  const responder = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponder: () => true,
+        onPanResponderTerminationRequest: () => false,
+        onPanResponderGrant: event => {
+          startX.current = event.nativeEvent.locationX
+          latest.current.onScrub(true)
+          setDragAt(at(startX.current))
+        },
+        onPanResponderMove: (_, { dx }) => setDragAt(at(startX.current + dx)),
+        onPanResponderRelease: (_, { dx }) => {
+          latest.current.onSeek(at(startX.current + dx))
+          latest.current.onScrub(false)
+          setDragAt(null)
+        },
+        onPanResponderTerminate: () => {
+          latest.current.onScrub(false)
+          setDragAt(null)
+        },
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  )
+  const shown = dragAt ?? Math.min(time, duration)
+  const part = duration > 0 ? shown / duration : 0
+  return (
+    <Box className="flex-row items-center gap-[6px] px-[4px]">
+      <Text style={{ color: 'white', fontSize: 11, fontVariant: ['tabular-nums'] }}>
+        {classClock(shown)}
+      </Text>
+      <View
+        {...responder.panHandlers}
+        accessible
+        accessibilityRole="adjustable"
+        accessibilityLabel="Class position"
+        accessibilityValue={{ text: `${classClock(shown)} of ${classClock(duration)}` }}
+        accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+        onAccessibilityAction={event =>
+          onSeek(
+            Math.min(
+              Math.max(shown + (event.nativeEvent.actionName === 'increment' ? 15 : -15), 0),
+              duration
+            )
+          )
+        }
+        onLayout={(event: LayoutChangeEvent) => setWidth(event.nativeEvent.layout.width)}
+        style={{ flex: 1, height: 24, justifyContent: 'center' }}
+      >
+        <View
+          pointerEvents="none"
+          style={{
+            height: dragAt === null ? 3 : 5,
+            borderRadius: 3,
+            backgroundColor: 'rgba(255,255,255,0.35)',
+          }}
+        >
+          <View
+            style={{
+              width: `${part * 100}%`,
+              height: '100%',
+              borderRadius: 3,
+              backgroundColor: '#ff0033',
+            }}
+          />
+        </View>
+        <View
+          pointerEvents="none"
+          style={{
+            position: 'absolute',
+            left: Math.max(0, part * width - (dragAt === null ? 6 : 8)),
+            width: dragAt === null ? 12 : 16,
+            height: dragAt === null ? 12 : 16,
+            borderRadius: 8,
+            backgroundColor: '#ff0033',
+          }}
+        />
+      </View>
+      <Text style={{ color: 'white', fontSize: 11, fontVariant: ['tabular-nums'] }}>
+        -{classClock(Math.max(0, duration - shown))}
+      </Text>
+    </Box>
+  )
+}
+
+/**
  * The class video in a floating window over the app, like the iPhone's picture in picture: it
  * keeps playing while the reader opens the chapters or moves anywhere else. Drag it from anywhere
  * on it to anywhere on the screen; a tap shows play, pause and skip, which hide again; let go and it settles against the nearest side. Push it past a
  * side and it tucks away there, leaving a tab with an arrow that brings it back while the class
  * keeps playing. ✕ closes it; the arrow in the other corner goes back to the page the class
- * started from. The frame stays mounted throughout, so playback never restarts, and the playing
+ * started from. Until the class has played once, the middle of the window is left to YouTube's own
+ * button, since the phone may only start a video from a tap on it; the play button shows what
+ * YouTube reports, never a guess. A double tap on either side skips 10 seconds, and a bar shows
+ * the time played and the time left. The frame stays mounted throughout, so playback never restarts, and the playing
  * time is kept so the class page picks up at the same moment.
  */
 const DockedClassPlayer = () => {
@@ -66,13 +196,28 @@ const DockedClassPlayer = () => {
   const [dragging, setDragging] = useState(false)
   // As on the iPhone's picture in picture: a tap shows the controls, which hide again on their own.
   const [controls, setControls] = useState(true)
-  const [playing, setPlaying] = useState(true)
+  // Only what YouTube reports: a video the phone did not let start must not show pause.
+  const [playing, setPlaying] = useState(false)
+  // Whether the class has played once in this window (YouTube's state 1).
+  const [started, setStarted] = useState(false)
+  const [duration, setDuration] = useState(0)
+  const [time, setTime] = useState(0)
+  const [scrubbing, setScrubbing] = useState(false)
+  const [skipped, setSkipped] = useState<{ side: 'back' | 'forward'; key: number } | null>(null)
+  const askedToPlay = useRef(false)
+  const lastTap = useRef<{ at: number; side: 'back' | 'forward' | null }>({ at: 0, side: null })
   const frame = useRef<ClassVideoFrameHandle>(null)
   const hideControls = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const hideSkipped = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const holdControls = useRef(false)
+  holdControls.current = !playing || scrubbing
   const showControls = () => {
     setControls(true)
     clearTimeout(hideControls.current)
-    hideControls.current = setTimeout(() => setControls(false), 3500)
+    // They stay up while the class is paused or the bar is held, as in the iPhone's player.
+    hideControls.current = setTimeout(() => {
+      if (!holdControls.current) setControls(false)
+    }, 3500)
   }
   const toggleControls = () => {
     if (controls) {
@@ -132,10 +277,17 @@ const DockedClassPlayer = () => {
   const isOpen = !!docked
   useEffect(() => {
     if (isOpen) {
-      setPlaying(true)
+      setPlaying(false)
+      setStarted(false)
+      setDuration(0)
+      setTime(docked?.start ?? 0)
+      askedToPlay.current = false
       showControls()
     }
-    return () => clearTimeout(hideControls.current)
+    return () => {
+      clearTimeout(hideControls.current)
+      clearTimeout(hideSkipped.current)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, docked?.videoId])
   useEffect(() => {
@@ -147,8 +299,28 @@ const DockedClassPlayer = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expanded, width, height])
 
-  const toggleControlsRef = useRef(toggleControls)
-  toggleControlsRef.current = toggleControls
+  // A tap shows or hides the controls; a second tap on the same side soon after skips instead.
+  const tap = (x: number) => {
+    const part = (x - position.current.x) / cardWidth
+    const side = part < 0.4 ? 'back' : part > 0.6 ? 'forward' : null
+    const now = Date.now()
+    const previous = lastTap.current
+    if (started && side && previous.side === side && now - previous.at < DOUBLE_TAP_MS) {
+      lastTap.current = { at: 0, side: null }
+      // Undo the first tap's show or hide.
+      toggleControls()
+      skipRef.current(side === 'back' ? -DOUBLE_TAP_SKIP : DOUBLE_TAP_SKIP, false)
+      setSkipped({ side, key: now })
+      clearTimeout(hideSkipped.current)
+      hideSkipped.current = setTimeout(() => setSkipped(null), 700)
+      return
+    }
+    lastTap.current = { at: now, side }
+    toggleControls()
+  }
+  const toggleControlsRef = useRef(tap)
+  toggleControlsRef.current = tap
+  const skipRef = useRef<(seconds: number, show?: boolean) => void>(() => {})
   const responder = useMemo(
     () =>
       PanResponder.create({
@@ -161,12 +333,12 @@ const DockedClassPlayer = () => {
         onPanResponderGrant: () => setDragging(true),
         onPanResponderMove: (_, { dx, dy }) =>
           pan.setValue({ x: position.current.x + dx, y: position.current.y + dy }),
-        onPanResponderRelease: (_, { dx, dy }) => {
+        onPanResponderRelease: (_, { dx, dy, x0 }) => {
           setDragging(false)
-          // A tap rather than a drag shows or hides the controls.
+          // A tap rather than a drag shows or hides the controls, or skips on a double tap.
           if (Math.abs(dx) < 5 && Math.abs(dy) < 5) {
             pan.setValue(position.current)
-            toggleControlsRef.current()
+            toggleControlsRef.current(x0)
             return
           }
           settle(position.current.x + dx, position.current.y + dy)
@@ -187,17 +359,22 @@ const DockedClassPlayer = () => {
     setTucked(null)
     setDocked(null)
   }
+  // The icon follows YouTube's reported state; the press only asks.
   const togglePlay = () => {
     frame.current?.command({ func: playing ? 'pauseVideo' : 'playVideo' })
-    setPlaying(value => !value)
     showControls()
   }
-  const skip = (seconds: number) => {
-    const at = classPositionOf(docked.videoId) ?? 0
-    frame.current?.command({ func: 'seekTo', args: [Math.max(0, at + seconds), true] })
-    rememberClassPosition(docked.videoId, Math.max(0, at + seconds))
-    showControls()
+  const seek = (seconds: number) => {
+    const to = Math.max(0, duration > 0 ? Math.min(seconds, duration - 1) : seconds)
+    frame.current?.command({ func: 'seekTo', args: [to, true] })
+    rememberClassPosition(docked.videoId, to)
+    setTime(to)
   }
+  const skip = (seconds: number, show = true) => {
+    seek((classPositionOf(docked.videoId) ?? time) + seconds)
+    if (show) showControls()
+  }
+  skipRef.current = skip
   const goBack = () => {
     if (docked.returnTo) router.navigate(docked.returnTo as never)
   }
@@ -228,15 +405,58 @@ const DockedClassPlayer = () => {
             ref={frame}
             key={docked.videoId}
             uri={getPassageMediaEmbedUrl(docked.videoId, docked.start)}
-            onTime={seconds => rememberClassPosition(docked.videoId, seconds)}
+            onTime={seconds => {
+              rememberClassPosition(docked.videoId, seconds)
+              if (!scrubbing) setTime(seconds)
+            }}
+            onDuration={setDuration}
             onState={state => {
-              if (state === 1) setPlaying(true)
+              if (state === 1) {
+                setPlaying(true)
+                setStarted(true)
+                showControls()
+              }
               if (state === 2 || state === 0) setPlaying(false)
+              if (classNotStarted(state)) {
+                setPlaying(false)
+                // The phone may not have let it start on its own: ask once, and if that does
+                // not take, YouTube's own button in the middle of the window is left free.
+                if (!askedToPlay.current) {
+                  askedToPlay.current = true
+                  frame.current?.command({ func: 'playVideo' })
+                }
+              }
             }}
           />
           {/* The whole window moves the video: the video page underneath never takes the touch. A
               tap shows the controls instead, as on the iPhone's picture in picture. */}
-          {!tucked && (
+          {!tucked && !started && (
+            // YouTube's own play button stays free in the middle; the strip on top still moves the
+            // window and holds close, bigger and back.
+            <Box
+              {...responder.panHandlers}
+              accessibilityHint="Drag to move the video"
+              className="absolute left-0 right-0 top-0 flex-row items-center justify-between p-[6px]"
+              style={{ cursor: dragging ? 'grabbing' : 'grab', userSelect: 'none' } as object}
+            >
+              <RoundButton icon="x" label="Close the video" onPress={close} />
+              <Box className="flex-row gap-[6px]">
+                <RoundButton
+                  icon={expanded ? 'minimize-2' : 'maximize-2'}
+                  label={expanded ? 'Make the video smaller' : 'Make the video bigger'}
+                  onPress={() => setExpanded(value => !value)}
+                />
+                {docked.returnTo && (
+                  <RoundButton
+                    icon="corner-up-left"
+                    label="Go back to the page the class started from"
+                    onPress={goBack}
+                  />
+                )}
+              </Box>
+            </Box>
+          )}
+          {!tucked && started && (
             <Box
               {...responder.panHandlers}
               accessibilityHint="Drag to move the video; tap to show its controls"
@@ -289,7 +509,42 @@ const DockedClassPlayer = () => {
                       onPress={() => skip(15)}
                     />
                   </Box>
-                  <Box style={{ height: 30 }} />
+                  {duration > 0 ? (
+                    <Scrubber
+                      time={time}
+                      duration={duration}
+                      onScrub={active => {
+                        setScrubbing(active)
+                        showControls()
+                      }}
+                      onSeek={seconds => {
+                        seek(seconds)
+                        showControls()
+                      }}
+                    />
+                  ) : (
+                    <Box style={{ height: 24 }} />
+                  )}
+                </Box>
+              )}
+              {skipped && (
+                <Box
+                  key={skipped.key}
+                  pointerEvents="none"
+                  className="absolute top-0 bottom-0 items-center justify-center"
+                  style={{ width: '40%', [skipped.side === 'back' ? 'left' : 'right']: 0 }}
+                >
+                  <Box
+                    className="flex-row items-center gap-[4px] rounded-full px-[10px] py-[4px]"
+                    style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
+                  >
+                    <FeatherIcon
+                      name={skipped.side === 'back' ? 'rotate-ccw' : 'rotate-cw'}
+                      size={14}
+                      color="white"
+                    />
+                    <Text style={{ color: 'white', fontSize: 12 }}>{DOUBLE_TAP_SKIP} seconds</Text>
+                  </Box>
                 </Box>
               )}
             </Box>
