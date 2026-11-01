@@ -1,0 +1,4 @@
+- Firestore rules: a study's revision history is now readable and writable only by the study's owner. Before, any signed-in account could read another person's study history if it knew the study's id.
+- Firestore rules: the `subscription` field on a profile (`users/<uid>`, `staging_users/<uid>`) can no longer be set or changed by the account owner; only the server sets it, as in upstream. Every app write to the profile is a merge, so sign-in and profile edits keep working.
+- Delete account can now remove study history in the production collections too: deleting a revision checks the study's owner instead of a user field on the revision, which older revisions lack.
+- Takes effect only when the rules are published to CyberJudah's Firebase project.
