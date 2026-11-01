@@ -9,6 +9,8 @@ import Text from '~common/ui/Text'
 import { useResponsiveWorkspace } from '~features/app-switcher/utils/useResponsiveWorkspace'
 import type { TabItem } from '~state/tabs'
 import { useTheme } from '~themes/ThemeProvider'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
+import CyberJudahLibraryItems from './CyberJudahLibraryItems'
 import NewTabItem from './NewTabItem'
 import NewTabSearch from './NewTabSearch'
 
@@ -137,6 +139,9 @@ export default function NewTabContent({
             image={require('~assets/images/new-tab/library-reader.webp')}
           />
           <Box style={{ gap: DENSE_GAP }}>
+            {usesCyberJudahEditorial() && (
+              <CyberJudahLibraryItems compact columns gap={DENSE_GAP} />
+            )}
             <Box className="flex-row" style={{ gap: DENSE_GAP }}>
               {renderItem('strong', t('tabs.strong'), t('newTab.strongDescription'), 'inline')}
               {renderItem('nave', t('tabs.nave'), t('newTab.naveDescription'), 'inline')}
@@ -229,6 +234,9 @@ export default function NewTabContent({
             image={require('~assets/images/new-tab/library-reader.webp')}
           />
           <Box style={{ gap: ITEM_GAP }}>
+            {usesCyberJudahEditorial() && (
+              <CyberJudahLibraryItems compact={false} columns={libraryColumns} gap={ITEM_GAP} />
+            )}
             <Box className={libraryColumns ? 'flex-row' : undefined} style={{ gap: ITEM_GAP }}>
               <Box className={libraryColumns ? 'flex-1 min-w-0' : undefined}>
                 {renderItem('strong', t('tabs.strong'), t('newTab.strongDescription'))}
