@@ -14,3 +14,5 @@ Web only. The iPhone and Android apps are unchanged.
 - The staging web build in CI uses `web:export`, so it gets the same settings.
 - Ask on web opens Ask CyberJudah, as on the phone. The web copy of the assistant screen still
   opened Bible Strong's own assistant; it now picks the same way the phone's screen does.
+- Bible Strong's floating assistant button stays off on web for CyberJudah, as on the phone
+  (CyberJudah has Ask).
