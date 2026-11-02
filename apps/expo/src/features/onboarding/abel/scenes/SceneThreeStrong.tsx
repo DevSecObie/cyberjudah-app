@@ -1,12 +1,13 @@
 import { twMerge } from '~common/ui/classNames'
-import { resolveFontFamily } from '~themes/styleValues'
+import { titleFontStyle } from '~themes/styleValues'
 import { useTheme as useStylingTheme, useTheme } from '~themes/ThemeProvider'
 import { Feather } from '@expo/vector-icons'
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from 'expo-audio'
 import type { TFunction } from 'i18next'
 import { useState } from 'react'
 import { ActivityIndicator, Pressable } from 'react-native'
-import Carousel, { Pagination, type TAnimationStyle } from 'react-native-reanimated-carousel'
+import { Carousel, type CarouselItemAnimation, Pagination } from 'react-native-reanimated-carousel'
+import { configureCarouselPan } from '~helpers/configureCarouselPan'
 import { Extrapolation, interpolate, type SharedValue } from 'react-native-reanimated'
 import Box, { HStack, VStack } from '~common/ui/Box'
 import Text from '~common/ui/Text'
@@ -94,7 +95,7 @@ const StrongDefinitionCard = ({
           style={{ paddingHorizontal: s(10), paddingVertical: s(8), borderRadius: s(11) }}
         >
           <Text
-            className="text-primary font-bold"
+            className="text-link font-bold"
             style={[{ fontSize: s(10) || 16 }, { letterSpacing: s(1.8) }]}
           >
             {t('onboarding.abel.sceneThree.strongLabel')}
@@ -147,7 +148,7 @@ const StrongDefinitionCard = ({
             {
               fontSize: s(28) || 16,
               lineHeight: s(34),
-              fontFamily: resolveFontFamily(stylingTheme.fontFamily.title),
+              ...titleFontStyle(stylingTheme),
             },
             { fontFamily: 'Literata Book', fontStyle: 'italic' },
           ]}
@@ -194,7 +195,7 @@ const StrongDefinitionCard = ({
             }}
           >
             <Text
-              className={twMerge(isAction ? 'text-reverse' : 'text-primary', 'font-bold')}
+              className={twMerge(isAction ? 'text-reverse' : 'text-link', 'font-bold')}
               style={{ fontSize: s(14) || 16 }}
             >
               H{definition.code}
@@ -205,7 +206,7 @@ const StrongDefinitionCard = ({
           style={{
             fontSize: s(28) || 16,
             lineHeight: s(32),
-            fontFamily: resolveFontFamily(stylingTheme.fontFamily.title),
+            ...titleFontStyle(stylingTheme),
           }}
         >
           {t(definition.titleKey)}
@@ -232,7 +233,7 @@ const StrongDefinitionCard = ({
 const createStrongHorizontalStackAnimation = (
   moveSize: number,
   stackInterval: number
-): TAnimationStyle => {
+): CarouselItemAnimation => {
   return rawValue => {
     'worklet'
 
@@ -310,19 +311,14 @@ const StrongCardStack = ({
   return (
     <Carousel
       loop
-      autoFillData
       defaultIndex={activeIndex}
       data={[...STRONG_DEFINITIONS]}
-      windowSize={3}
-      itemWidth={cardWidth}
-      itemHeight={cardHeight}
-      customConfig={{ type: 'positive', viewCount: 2 }}
-      customAnimation={horizontalStackAnimation}
-      onProgressChange={carouselProgress}
-      withAnimation={{ type: 'spring', config: {} }}
-      onConfigurePanGesture={gesture => {
-        gesture.activeOffsetX([-10, 10])
-      }}
+      renderWindowSize={3}
+      itemSize={cardWidth}
+      itemAnimation={horizontalStackAnimation}
+      progress={carouselProgress}
+      animation={{ type: 'spring' }}
+      onConfigurePanGesture={configureCarouselPan([-10, 10])}
       style={{ width: cardWidth, height: cardHeight, overflow: 'visible' }}
       contentContainerStyle={{ overflow: 'visible' }}
       onSnapToItem={index => onIndexChange(index === 0 ? 0 : 1)}
@@ -350,19 +346,22 @@ const StrongPagination = ({
   const activeDotSize = metrics.s(10)
 
   return (
-    <Pagination.Custom
+    <Pagination
       progress={carouselProgress}
-      data={[...STRONG_DEFINITIONS]}
-      size={dotSize}
+      count={STRONG_DEFINITIONS.length}
       containerStyle={{ gap: metrics.s(8) }}
-      dotStyle={{ borderRadius: dotSize / 2, backgroundColor: theme.colors.lightPrimary }}
+      dotStyle={{
+        width: dotSize,
+        height: dotSize,
+        borderRadius: dotSize / 2,
+        backgroundColor: theme.colors.lightPrimary,
+      }}
       activeDotStyle={{
         width: activeDotSize,
         height: activeDotSize,
         borderRadius: activeDotSize / 2,
         backgroundColor: theme.colors.primary,
       }}
-      carouselName="Strong"
     />
   )
 }

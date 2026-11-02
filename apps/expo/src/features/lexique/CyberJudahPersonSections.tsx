@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
-import { Linking } from 'react-native'
+import { useOpenSiteLink } from '~features/publishedNotes/siteLinks'
 import Box, { HStack, TouchableBox, VStack } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
+import ClassVideoEmbed, { secondsOfClock } from '~features/passageMediaLibrary/ClassVideoEmbed'
 import { readCachedClassLibrary } from '~features/passageMediaLibrary/cyberJudahClasses'
 import { cyberJudahSiteLinkToOsis } from '~helpers/cyberJudahSiteLinks'
 import { resolveFontFamily } from '~themes/styleValues'
@@ -81,6 +82,13 @@ const TaughtCard = ({
   })
   const points = ownPoints(teaching.points ?? [], text.data ?? '')
   const osis = cyberJudahSiteLinkToOsis(verseSiteUrl(teaching.url))
+  const classMeta = [
+    teaching.note.teacher,
+    formatDate(teaching.note.date),
+    teaching.ts ? `from ${teaching.ts}` : '',
+  ]
+    .filter(Boolean)
+    .join(' · ')
   return (
     <VStack className="rounded-[16px] border-[1px] border-border p-[16px] gap-[12px]">
       <TouchableBox
@@ -115,22 +123,24 @@ const TaughtCard = ({
           ))}
         </VStack>
       )}
-      <TouchableBox
-        accessibilityRole="link"
-        onPress={() => onOpenClass(teaching.note.url)}
-        className="gap-[2px]"
-      >
-        <Text className="font-bold text-[15px]">{teaching.note.label}</Text>
-        <Text className="text-tertiary text-[14px]">
-          {[
-            teaching.note.teacher,
-            formatDate(teaching.note.date),
-            teaching.ts ? `from ${teaching.ts}` : '',
-          ]
-            .filter(Boolean)
-            .join(' · ')}
-        </Text>
-      </TouchableBox>
+      {teaching.video ? (
+        <ClassVideoEmbed
+          videoId={teaching.video}
+          start={teaching.t ?? secondsOfClock(teaching.ts)}
+          title={teaching.note.label}
+          meta={classMeta}
+          onOpenClass={() => onOpenClass(teaching.note.url)}
+        />
+      ) : (
+        <TouchableBox
+          accessibilityRole="link"
+          onPress={() => onOpenClass(teaching.note.url)}
+          className="gap-[2px]"
+        >
+          <Text className="font-bold text-[15px]">{teaching.note.label}</Text>
+          <Text className="text-tertiary text-[14px]">{classMeta}</Text>
+        </TouchableBox>
+      )}
     </VStack>
   )
 }
@@ -146,6 +156,7 @@ export default function CyberJudahPersonSections({
   onOpenEntityProfile: (entityKey: string) => void
 }) {
   const router = useRouter()
+  const { open: openSiteLink } = useOpenSiteLink()
   const [taughtShown, setTaughtShown] = useState(TAUGHT_FIRST)
   const [classesShown, setClassesShown] = useState(CLASSES_FIRST)
   const person = useQuery({
@@ -164,12 +175,12 @@ export default function CyberJudahPersonSections({
     const osis = cyberJudahSiteLinkToOsis(verseSiteUrl(path))
     if (osis) onOpenBibleReference(osis)
   }
-  // A class in the library opens in its player; any other note opens on the website.
+  // A class in the library opens in its player; any other note opens in the app's own pages.
   const openClass = (notesPath: string) => {
     const item = readCachedClassLibrary()?.find(entry => entry.notesPath === notesPath)
     if (item)
       router.push({ pathname: '/(explore)/passage-media-player', params: { workId: item.workId } })
-    else void Linking.openURL(`https://cyberjudah.io${notesPath}`)
+    else openSiteLink(notesPath)
   }
 
   return (

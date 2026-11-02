@@ -1,4 +1,4 @@
-import { resolveThemeColor, resolveFontFamily } from '~themes/styleValues'
+import { resolveThemeColor, titleFontStyle } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { Feather } from '@expo/vector-icons'
 import { useTranslation } from 'react-i18next'
@@ -66,7 +66,8 @@ const OfflineSetupResourceOption = ({
   let description = option.description
   if (option.descriptionKey) description = t(option.descriptionKey)
 
-  const selectedBorderColor = selected ? palette.accent : palette.itemBorder
+  // A border marks the choice only: an option not chosen keeps its width in transparent.
+  const selectedBorderColor = selected ? palette.accent : 'transparent'
   const checkboxBorderColor = selected ? palette.accent : palette.description
   const checkboxBackground = selected ? palette.accent : palette.itemSurface
   const pressMotion = OFFLINE_SETUP_MOTION.detail.resourceItem
@@ -107,7 +108,7 @@ const OfflineSetupResourceOption = ({
                       color:
                         resolveThemeColor(stylingTheme, palette.title) ||
                         stylingTheme.colors.default,
-                      fontFamily: resolveFontFamily(stylingTheme.fontFamily.title),
+                      ...titleFontStyle(stylingTheme),
                     },
                     { flexShrink: 1 },
                   ]}

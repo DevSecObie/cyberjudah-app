@@ -1,7 +1,7 @@
 import { twMerge } from '~common/ui/classNames'
+import { openInApp } from '~common/inAppBrowser'
 import React, { PropsWithChildren } from 'react'
 import {
-  Linking,
   Share,
   GestureResponderEvent,
   StyleProp,
@@ -22,8 +22,10 @@ export interface LinkProps<R extends keyof MainStackProps> extends Pick<
   | 'accessibilityLabel'
   | 'accessibilityRole'
   | 'accessibilityState'
+  | 'delayLongPress'
   | 'disabled'
   | 'onAccessibilityAction'
+  | 'onLongPress'
 > {
   route?: R
   href?: string
@@ -102,7 +104,7 @@ const Link = <R extends keyof MainStackProps>({
     }
 
     if (href) {
-      Linking.openURL(href)
+      openInApp(href)
     }
 
     if (share) {

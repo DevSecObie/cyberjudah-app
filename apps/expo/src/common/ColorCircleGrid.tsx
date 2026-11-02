@@ -25,7 +25,7 @@ interface ColorCircleGridProps {
   /**
    * Layout mode:
    * - 'scroll': Horizontal ScrollView with dynamic width (like ColorCirclesBar)
-   * - 'grid': Flex wrap grid
+   * - 'grid': Flex wrap grid, centered
    */
   layout?: 'scroll' | 'grid'
   /**
@@ -36,6 +36,11 @@ interface ColorCircleGridProps {
    * For scroll layout: height of items container
    */
   itemHeight?: number
+  /**
+   * For scroll layout: the width of each item, when the row shares its line with other controls
+   * instead of spanning the screen
+   */
+  itemWidth?: number
 }
 
 const ColorCircleGrid = ({
@@ -49,12 +54,13 @@ const ColorCircleGrid = ({
   layout = 'scroll',
   scrollPadding,
   itemHeight = 60,
+  itemWidth: fixedItemWidth,
 }: ColorCircleGridProps) => {
   const { t } = useTranslation()
 
   if (layout === 'grid') {
     return (
-      <HStack className="border-continuous overflow-visible gap-[8px] flex-wrap justify-end">
+      <HStack className="border-continuous overflow-visible gap-[8px] flex-wrap justify-center">
         {colors.map((color, index) => (
           <HighlightTypeIndicator
             key={color.key}
@@ -85,7 +91,7 @@ const ColorCircleGrid = ({
   const itemCount = colors.length + (showAddButton ? 1 : 0)
   const minItemWidth =
     Platform.OS === 'web' ? Math.max(52, circleSize + 32) : COLOR_CIRCLE_MIN_WIDTH
-  const itemWidth = Math.max(screenWidth / itemCount, minItemWidth)
+  const itemWidth = fixedItemWidth ?? Math.max(screenWidth / itemCount, minItemWidth)
 
   return (
     <Box style={Platform.OS === 'web' ? { marginHorizontal: 16 } : undefined}>

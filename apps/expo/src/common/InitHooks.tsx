@@ -3,7 +3,8 @@ import * as Font from 'expo-font'
 import * as Speech from 'expo-speech'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AppState, AppStateStatus, InteractionManager, Platform } from 'react-native'
+import { AppState, AppStateStatus, Platform } from 'react-native'
+import { runAfterInteractions } from '~helpers/runAfterInteractions'
 import { useDispatch, useStore } from 'react-redux'
 import { getDefaultStore } from 'jotai/vanilla'
 
@@ -57,7 +58,7 @@ const InitHooks = (_props: InitHooksProps) => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const store = useStore<RootState>()
-  const { isLogged, user } = useLogin()
+  const { isLogged, isSessionLost, user } = useLogin()
   const accountEntryHydrationEnabled = canStartRemoteHydration(accountEntryState)
   const accountMigrations = useAccountMigrations({
     getCurrentState: store.getState,
@@ -169,7 +170,7 @@ const InitHooks = (_props: InitHooksProps) => {
     const event = AppState.addEventListener('change', handleAppStateChange)
 
     // Defer non-critical operations to after first interactions
-    const deferred = InteractionManager.runAfterInteractions(() => {
+    const deferred = runAfterInteractions(() => {
       // Check legacy database storage (renamed/duplicate cleanup)
       // Language-folder migration has already completed before the local migration gate.
       checkDatabasesStorage().catch(err =>
@@ -207,9 +208,12 @@ const InitHooks = (_props: InitHooksProps) => {
     runBeforeSync: accountMigrations.runBeforeSync,
     resumeToken: accountMigrations.resumeToken,
   })
+  // While the session is lost nothing comes from the server, and local changes wait in the queue.
   useTabGroupsSync({
-    incomingEnabled: accountEntryHydrationEnabled && accountMigrations.isAccountSyncReady,
-    outgoingEnabled: accountEntryHydrationEnabled && accountMigrations.isAccountWriteReady,
+    incomingEnabled:
+      accountEntryHydrationEnabled && accountMigrations.isAccountSyncReady && !isSessionLost,
+    outgoingEnabled:
+      (accountEntryHydrationEnabled && accountMigrations.isAccountWriteReady) || isSessionLost,
   })
   useAppRatingCheck()
 

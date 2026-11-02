@@ -1,4 +1,5 @@
-import { Linking, Platform } from 'react-native'
+import { Platform } from 'react-native'
+import { openInApp } from '~common/inAppBrowser'
 import { EnrichedMarkdownText } from 'react-native-enriched-markdown'
 import { useTheme } from '~themes/ThemeProvider'
 import { prepareMarkdown, safeLink } from './markdown'
@@ -29,7 +30,7 @@ export default function AssistantMarkdown({
       onLinkPress={({ url }) => {
         if (onLinkPress?.(url)) return
         const safe = safeLink(url)
-        if (safe) void Linking.openURL(safe).catch(() => {})
+        if (safe) openInApp(safe)
       }}
       markdownStyle={{
         paragraph: reading

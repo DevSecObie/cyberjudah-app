@@ -7,8 +7,12 @@ import {
   getDbPath,
   getDictionaryDbPath,
   getDictionaryDirectoryDbPath,
+  getStudyLinksDbPath,
 } from '~helpers/databases'
-import { getMobileResourceCatalogEntry } from '~helpers/mobileResourceCatalog'
+import {
+  getMobileResourceCatalogEntry,
+  hasMobileResourceCatalogEntry,
+} from '~helpers/mobileResourceCatalog'
 import {
   getStrongBiblePublication,
   isStrongCapableBibleVersion,
@@ -274,6 +278,7 @@ export const completeStrongLexiconDownloadPlan = (
   for (const lexiconModule of items) {
     if (
       lexiconModule.type !== 'strong-lexicon-module' ||
+      // CyberJudah's People module stands alone: its catalog has no lexicon core to pair it with.
       !requiresStrongLexiconCore(lexiconModule.strongLexiconModuleId)
     ) {
       continue
@@ -342,6 +347,8 @@ export const createOfflineCopyDownloadItem = (identity: OfflineCopyIdentity): Do
       return createDictionaryDownloadItem(identity)
     case 'dictionary-directory':
       return createDictionaryDirectoryDownloadItem()
+    case 'study-links':
+      return createStudyLinksDownloadItem()
     case 'commentary':
       return createCommentaryDownloadItem(identity)
     case 'database':
@@ -381,6 +388,8 @@ export const createOfflineCopyDownloadPlan = (
       return createDictionaryDownloadPlan(identity, context.isDictionaryDirectoryAvailable ?? false)
     case 'dictionary-directory':
       return [createDictionaryDirectoryDownloadItem()]
+    case 'study-links':
+      return [createStudyLinksDownloadItem()]
     case 'commentary':
       return [createCommentaryDownloadItem(identity)]
     case 'database':
@@ -416,15 +425,40 @@ const hasDictionaryDirectoryInCatalog = () => {
   }
 }
 
+export function createStudyLinksDownloadItem(): DownloadItem {
+  const catalogArtifact = getMobileResourceCatalogEntry('study-links')
+  return {
+    id: 'study-links',
+    type: 'study-links',
+    name: 'Study Links',
+    url: catalogArtifact.url,
+    destinationPath: getStudyLinksDbPath(),
+    archiveEntry: catalogArtifact.entry,
+    estimatedSize: catalogArtifact.archiveBytes,
+    expectedArchiveSha256: catalogArtifact.archiveSha256,
+    addedAt: Date.now(),
+    retryCount: 0,
+  }
+}
+
+// The links come with the dictionaries, like the directory, but nothing waits for them: a reader
+// without them only misses a section.
+const studyLinksCompanion = (): DownloadItem[] =>
+  hasMobileResourceCatalogEntry('study-links') ? [createStudyLinksDownloadItem()] : []
+
 export const createDictionaryDownloadPlan = (
   identity: Extract<OfflineCopyIdentity, { kind: 'dictionary' }>,
   isDirectoryAvailable = false
 ): DownloadItem[] => {
   // A catalog without the shared index (CyberJudah's) installs the dictionary on its own.
   if (isDirectoryAvailable || !hasDictionaryDirectoryInCatalog())
-    return [createDictionaryDownloadItem(identity)]
+    return [createDictionaryDownloadItem(identity), ...studyLinksCompanion()]
   const directory = createDictionaryDirectoryDownloadItem()
-  return [directory, { ...createDictionaryDownloadItem(identity), dependsOnId: directory.id }]
+  return [
+    directory,
+    { ...createDictionaryDownloadItem(identity), dependsOnId: directory.id },
+    ...studyLinksCompanion(),
+  ]
 }
 
 export function createDictionaryDownloadItem(

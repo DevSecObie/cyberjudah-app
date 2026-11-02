@@ -5,7 +5,6 @@ import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import React, { memo, useCallback } from 'react'
 import { twMerge } from '~common/ui/classNames'
 
-import PageContent from '~common/ui/PageContent'
 import type { Theme as AppTheme } from '~themes'
 
 import { useRouter } from 'expo-router'
@@ -18,7 +17,6 @@ import { ActionSheetItem } from '~common/ActionMenu'
 import Header from '~common/Header'
 import Link from '~common/Link'
 import { Sheet } from '~common/sheet'
-import Box from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import { useOpenInNewTab } from '~features/app-switcher/utils/useOpenInNewTab'
 import generateUUID from '~helpers/generateUUID'
@@ -27,28 +25,6 @@ import { deleteStudy, Study } from '~redux/modules/user'
 import type { AppDispatch } from '~redux/store'
 import { unifiedTagsModalAtom } from '../../state/app'
 import PublishStudyMenuItem from './PublishStudyMenuItem'
-import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
-
-const HeaderBox = (
-  componentProps: Omit<UIComponentProps<typeof Box>, 'theme'> & {
-    theme?: AppTheme
-    className?: string
-  }
-) => {
-  const { theme: _themeOverride, className, ...props } = componentProps
-
-  const resolvedClassName = twMerge(
-    'items-center pl-[15px] pr-[15px] border-b-[1px] border-b-border',
-    className
-  )
-  return (
-    <Box
-      {...props}
-      style={[props.style] as UIComponentProps<typeof Box>['style']}
-      className={twMerge('overflow-hidden border-continuous', resolvedClassName)}
-    />
-  )
-}
 
 const ValidateIcon = (
   componentProps: Omit<UIComponentProps<typeof Icon.Feather>, 'theme'> & {
@@ -136,8 +112,8 @@ const EditHeader = ({
           }
         />
         <Sheet ref={ref}>
-          {/* Publishing and PDF export run on Bible Strong's servers. */}
-          {!usesCyberJudahEditorial() && <PublishStudyMenuItem study={study} onClosed={close} />}
+          {/* Publishing runs on CyberJudah's own server; the PDF is made on the phone. */}
+          <PublishStudyMenuItem study={study} onClosed={close} />
           <ActionSheetItem
             icon="tag"
             label={t('Éditer les tags')}
@@ -193,15 +169,15 @@ const EditHeader = ({
   }
 
   return (
-    <HeaderBox>
-      <PageContent className="h-[54px] items-center justify-center flex-row">
-        <Box className="overflow-hidden border-continuous flex-[1] justify-center">
-          <Link onPress={setReadOnly} style={{ marginRight: 15 }}>
-            <ValidateIcon name="check" size={25} />
-          </Link>
-        </Box>
-      </PageContent>
-    </HeaderBox>
+    <Header
+      title={title}
+      onTitlePress={openRenameModal}
+      rightComponent={
+        <Link onPress={setReadOnly} padding>
+          <ValidateIcon name="check" size={25} />
+        </Link>
+      }
+    />
   )
 }
 

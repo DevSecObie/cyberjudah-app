@@ -1,6 +1,9 @@
 import { CYBERJUDAH_TEACHINGS, parseCommentaryProjectionId } from './commentarySelection'
 import { COMMENTARY_CATALOG_BY_ID } from '~helpers/commentaryCatalog'
 
+/** Each enabled commentary costs one request per chapter read inline. */
+export const MAX_INLINE_COMMENTARIES = 5
+
 /** Associated writings remain available in Resources, but not in inline Bible reading. */
 export function isInlineCommentaryEligible(id: string): boolean {
   const projection = parseCommentaryProjectionId(id)
@@ -21,7 +24,7 @@ export function normalizeInlineCommentaries(value: unknown, selected: readonly s
       ? CYBERJUDAH_TEACHINGS
       : eligible
   )
-  return [...new Set(selected)].filter(item => enabled.has(item)).slice(0, 5)
+  return [...new Set(selected)].filter(item => enabled.has(item)).slice(0, MAX_INLINE_COMMENTARIES)
 }
 
 /**

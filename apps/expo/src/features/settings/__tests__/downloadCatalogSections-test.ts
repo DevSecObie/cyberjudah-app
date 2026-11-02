@@ -57,13 +57,17 @@ describe('native Downloads with the published resource catalog', () => {
           section.data.map(item => item.id)
         )
         // Dictionary UI identities are first-class; the artifact catalog still uses database:*.
-        const catalogIds = ids.map((id: string) =>
-          id.startsWith('dictionary:') ? `database:${id.split(':').slice(2).join(':')}` : id
-        )
+        // The KJV row also brings its Strong's numbers, so the catalog's index has no row of its own.
+        const catalogIds = [
+          ...ids.map((id: string) =>
+            id.startsWith('dictionary:') ? `database:${id.split(':').slice(2).join(':')}` : id
+          ),
+          'bible-strong:KJV',
+        ]
         expect(catalogIds.sort()).toEqual(Object.keys(MOBILE_RESOURCE_CATALOG.resources).sort())
         expect(ids).toContain('dictionary:jewish-encyclopedia:JEWISH_ENCYCLOPEDIA:en')
         expect(ids).toContain('bible:KJV')
-        expect(ids).toContain('bible-strong:KJV')
+        expect(ids).not.toContain('bible-strong:KJV')
         expect(ids).toContain('database:TIMELINE:en')
         expect(ids).not.toContain('strong-lexicon:simple-fr')
       })

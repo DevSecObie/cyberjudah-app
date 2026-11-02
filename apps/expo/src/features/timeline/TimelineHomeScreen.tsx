@@ -15,7 +15,7 @@ import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
 import { useResourceLanguage } from 'src/state/resourcesLanguage'
 import TimelineHomeDetailModal from './TimelineHomeDetailModal'
 import TimelineItem from './TimelineItem'
-import { getEvents } from './events'
+import { timelineEventsQueryOptions } from './timelineEventsQuery'
 interface Props {
   hasBackButton?: boolean
   isFormSheet?: boolean
@@ -39,10 +39,7 @@ const TimelineHomeScreen = ({
   const [preferredTimelineLanguage, setTimelineResourceLanguage] = useResourceLanguage('TIMELINE')
   const timelineResourceLanguage = languageOverride ?? preferredTimelineLanguage
 
-  const { data: events } = useQuery({
-    queryKey: ['timeline'],
-    queryFn: getEvents,
-  })
+  const { data: events } = useQuery(timelineEventsQueryOptions)
 
   const openTimelineInNewTab = () => {
     openInNewTab({
@@ -62,8 +59,8 @@ const TimelineHomeScreen = ({
   }
 
   return (
-    <FormSheetScreen isFormSheet={isFormSheet}>
-      <Box className="overflow-hidden border-continuous flex-[1] bg-reverse">
+    <FormSheetScreen className="bg-canvas" isFormSheet={isFormSheet}>
+      <Box className="overflow-hidden border-continuous flex-[1] bg-canvas">
         <Header
           hasBackButton={showBackButton}
           title={t('La Chronologie biblique')}
@@ -113,7 +110,7 @@ const TimelineHomeScreen = ({
             </ContextualMenu>
           }
         />
-        <ScrollView backgroundColor="lightGrey">
+        <ScrollView backgroundColor="canvas" contentContainerStyle={{ paddingTop: 16 }}>
           {events?.map((event, i) => (
             <TimelineItem
               goTo={i}

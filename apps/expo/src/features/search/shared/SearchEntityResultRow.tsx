@@ -9,7 +9,6 @@ import { FeatherIcon } from '~common/ui/Icon'
 import { Chip } from '~common/ui/NewChip'
 import Paragraph from '~common/ui/Paragraph'
 import Text from '~common/ui/Text'
-import { searchTypeIconConfig } from './SearchTypeIcon'
 import { mergeRanges, normalizeDisplayedText, normalizeSearchText } from './searchFuzzy'
 import type { MatchRange, SearchEntityResult } from './searchResultTypes'
 import { getPassageSearchExcerpt } from './searchPassageExcerpt'
@@ -173,7 +172,7 @@ const PassageDescription = ({
       {parts.map((part, i) => {
         if (part.startsWith('{{') && part.endsWith('}}')) {
           return (
-            <Paragraph className="font-bold text-primary" small key={i}>
+            <Paragraph className="font-bold text-link" small key={i}>
               {part.slice(2, -2)}
             </Paragraph>
           )
@@ -201,12 +200,7 @@ export const SearchEntityResultRow = ({
 }) => {
   const stylingTheme = useStylingTheme()
   return (
-    <HStack
-      className="border-continuous overflow-hidden border-b-[1px] border-l-[3px] border-border items-center"
-      style={{
-        borderLeftColor: resolveThemeColor(stylingTheme, searchTypeIconConfig[item.iconType].color),
-      }}
-    >
+    <HStack className="overflow-hidden border-continuous items-center">
       <TouchableOpacity
         accessibilityRole="button"
         onPress={onPress}

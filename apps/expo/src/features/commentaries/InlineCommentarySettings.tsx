@@ -1,4 +1,4 @@
-import { ScrollView } from 'react-native'
+import { ScrollView, StyleSheet } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { COMMENTARY_CATALOG_BY_ID } from '~helpers/commentaryCatalog'
@@ -15,6 +15,7 @@ import {
 import { parseCommentaryProjectionId } from './commentarySelection'
 import {
   isInlineCommentaryEligible,
+  MAX_INLINE_COMMENTARIES,
   normalizeInlineCommentaries,
 } from './inlineCommentarySelection'
 
@@ -28,6 +29,7 @@ export default function InlineCommentarySettings({ onManage }: { onManage?: () =
     settings.inlineCommentaries,
     settings.commentarySelection
   )
+  const limitReached = enabled.length >= MAX_INLINE_COMMENTARIES
   return (
     <>
       <ScrollView style={{ maxHeight: 440 }} keyboardShouldPersistTaps="handled">
@@ -49,12 +51,18 @@ export default function InlineCommentarySettings({ onManage }: { onManage?: () =
           const entry = projection ? COMMENTARY_CATALOG_BY_ID.get(projection.resourceId) : undefined
           if (!projection || !entry) return null
           const checked = enabled.includes(id)
+          const disabled = !checked && limitReached
           return (
-            <HStack key={id} className="items-center">
+            <HStack
+              key={id}
+              className="items-center border-separator"
+              style={{ opacity: disabled ? 0.45 : 1, borderTopWidth: StyleSheet.hairlineWidth }}
+            >
               <TouchableBox
+                disabled={disabled}
                 accessibilityRole="checkbox"
                 accessibilityLabel={entry.title}
-                accessibilityState={{ checked }}
+                accessibilityState={{ checked, disabled }}
                 onPress={() =>
                   dispatch(
                     setSettingsInlineCommentaries(
@@ -62,7 +70,7 @@ export default function InlineCommentarySettings({ onManage }: { onManage?: () =
                     )
                   )
                 }
-                className="flex-1 flex-row items-center gap-[12px] p-[16px] rounded-lg hover:bg-light-grey"
+                className="flex-1 flex-row items-center gap-[12px] p-[16px] rounded-[12px] hover:bg-light-grey"
               >
                 <Checkbox checked={checked} />
                 <Box className="flex-1 gap-[4px]">
@@ -74,14 +82,17 @@ export default function InlineCommentarySettings({ onManage }: { onManage?: () =
             </HStack>
           )
         })}
+        {limitReached && eligibleSelection.length > MAX_INLINE_COMMENTARIES && (
+          <Text className="px-[16px] pb-[16px] text-quart text-[12px]">
+            {t('inlineCommentary.limit', { max: MAX_INLINE_COMMENTARIES })}
+          </Text>
+        )}
         {!eligibleSelection.length && (
           <Box className="p-[16px] gap-[12px]">
             <Text className="text-grey">{t('inlineCommentary.noSelection')}</Text>
             {onManage && (
               <TouchableBox accessibilityRole="button" onPress={onManage}>
-                <Text className="text-primary font-semibold">
-                  {t('commentaries.selector.title')}
-                </Text>
+                <Text className="text-link font-semibold">{t('commentaries.selector.title')}</Text>
               </TouchableBox>
             )}
           </Box>
@@ -99,7 +110,7 @@ export function InlineCommentaryManageAction({ onPress }: { onPress: () => void 
       onPress={onPress}
       className="px-[8px] min-h-[44px] justify-center"
     >
-      <Text className="text-primary font-semibold text-[14px]">
+      <Text className="text-link font-semibold text-[14px]">
         {t('commentaries.availability.manage')}
       </Text>
     </TouchableBox>

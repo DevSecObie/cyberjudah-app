@@ -7,6 +7,7 @@ import { getInterlinearSidecarPath } from './interlinearBibleSidecar'
 import { getDownloadItemIdentity } from './offlineCopy'
 import { invalidateOfflineCopyQueries } from './offlineCopyQueries'
 import { installResourceDatabaseItem } from './resourceDatabaseInstallation'
+import { asStorageFullFailure } from './resourceDeviceCondition'
 import {
   beginResourceInstallation,
   commitResourceInstallation,
@@ -37,6 +38,8 @@ const getResourceInstallationRecoveryTarget = (
     case 'dictionary':
       return { kind: 'file', destinationPath: item.destinationPath }
     case 'dictionary-directory':
+      return { kind: 'file', destinationPath: item.destinationPath }
+    case 'study-links':
       return { kind: 'file', destinationPath: item.destinationPath }
     case 'commentary':
       return { kind: 'file', destinationPath: item.destinationPath }
@@ -93,7 +96,7 @@ export const installManagedResource = async (
     ) {
       rollbackResourceInstallation(installationJournal)
     }
-    throw error
+    throw asStorageFullFailure(error)
   }
 
   await invalidateOfflineCopyQueries(getDownloadItemIdentity(item))

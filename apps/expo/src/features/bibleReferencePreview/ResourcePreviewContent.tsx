@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { ActivityIndicator, Linking } from 'react-native'
+import { openInApp } from '~common/inAppBrowser'
+import { ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import type { ReadingTypography } from '~common/readingHtml'
 import SwitchableHTMLView from '~common/SwitchableHTMLView'
@@ -87,7 +88,7 @@ export default function ResourcePreviewContent({
           reference: resource.code,
         })
       )
-    else if (/^https?:\/\//iu.test(payload.href)) void Linking.openURL(payload.href)
+    else if (/^https?:\/\//iu.test(payload.href)) openInApp(payload.href)
   }
   if (query.isPending)
     return (
@@ -98,7 +99,7 @@ export default function ResourcePreviewContent({
       <Box className="gap-[12px]">
         <Text className="text-grey text-[14px]">{t('resourcePreview.unavailable')}</Text>
         <TouchableBox accessibilityRole="button" onPress={() => void query.refetch()}>
-          <Text className="text-primary">{t('Réessayer')}</Text>
+          <Text className="text-link">{t('Réessayer')}</Text>
         </TouchableBox>
       </Box>
     )

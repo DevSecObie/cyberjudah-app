@@ -7,8 +7,10 @@ import Text from '~common/ui/Text'
 import { sourceLink, timestamp, type CyberJudahSource } from './cyberJudahAsk'
 import { sourceThumbnails } from './cyberJudahSourceArtwork'
 import { CYBERJUDAH_PORTRAITS } from '~features/lexique/cyberJudahPortraits'
+import ClassVideoEmbed from '~features/passageMediaLibrary/ClassVideoEmbed'
 import { useOpenStudySource } from './useOpenStudySource'
 import { useAskPalette } from './askPalette'
+import { sourceKindLabel } from './askStudyKinds'
 
 function portrait(source: CyberJudahSource) {
   const id = /^\/(?:person)\/([a-z0-9-]+)$/.exec(source.url)?.[1]
@@ -60,7 +62,10 @@ export default function AskSourceCards({
         {sources.map(source => {
           const link = sourceLink(source)
           const hasArtwork = !!portrait(source) || sourceThumbnails(source).length > 0
-          const moment = source.video && source.t !== undefined ? timestamp(source.t) : source.kind
+          const moment =
+            source.video && source.t !== undefined
+              ? timestamp(source.t)
+              : sourceKindLabel(source.kind)
           return (
             <Pressable
               key={`${source.n}:${source.video || source.url}:${source.thumb || ''}`}
@@ -77,7 +82,17 @@ export default function AskSourceCards({
                 opacity: pressed ? 0.75 : 1,
               })}
             >
-              {hasArtwork && <SourceArtwork source={source} />}
+              {source.video && /^[\w-]{11}$/.test(source.video) ? (
+                // A class plays right in its card, from the moment the answer cites.
+                <ClassVideoEmbed
+                  videoId={source.video}
+                  start={source.t ?? 0}
+                  title={source.title}
+                  bare
+                />
+              ) : (
+                hasArtwork && <SourceArtwork source={source} />
+              )}
               <Box className="gap-2 p-3">
                 <HStack className="items-center gap-[6px]">
                   <Box
@@ -95,7 +110,6 @@ export default function AskSourceCards({
                       color: p.text3,
                       fontSize: 11.5,
                       fontWeight: '500',
-                      textTransform: 'capitalize',
                     }}
                   >
                     {moment}

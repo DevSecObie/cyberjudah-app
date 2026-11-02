@@ -1,13 +1,13 @@
 import { pageContentStyle } from '~common/ui/PageContent'
 import { type SheetRef } from '~common/sheet'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { FlatList, Platform } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAtom, useSetAtom } from 'jotai/react'
 import Empty from '~common/Empty'
 import FiltersHeader from '~common/FiltersHeader'
 import RenameModal from '~common/RenameModal'
-import Box from '~common/ui/Box'
+import Box, { usePageBottomInset } from '~common/ui/Box'
 import FabButton from '~common/ui/FabButton'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
 import { useSheet } from '~helpers/useSheet'
@@ -64,6 +64,7 @@ const StudiesScreen = ({
   const dispatch = useDispatch()
   const r = useMediaQueriesArray()
   const [listWidth, setListWidth] = useState(0)
+  const bottomInset = usePageBottomInset()
   const columns =
     Platform.OS === 'web' ? (listWidth >= 1000 ? 4 : listWidth >= 720 ? 3 : 2) : r([2, 2, 3, 3])
 
@@ -86,7 +87,6 @@ const StudiesScreen = ({
     renameModalRef.current?.present()
   }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const onStudyPress = (studyId: string) => {
     if (isNewTabSelection) {
       const study = studies.find(candidate => candidate.id === studyId)
@@ -146,12 +146,13 @@ const StudiesScreen = ({
   )
 
   // Open the study when a new study is created
+  const openPendingStudy = useEffectEvent((studyId: string) => onStudyPress(studyId))
   useEffect(() => {
     if (pendingStudyId && pendingStudy) {
-      onStudyPress(pendingStudyId)
+      openPendingStudy(pendingStudyId)
       setPendingStudyId(null)
     }
-  }, [pendingStudy, pendingStudyId, onStudyPress])
+  }, [pendingStudy, pendingStudyId])
 
   const sortOptions = [
     { value: 'newest', label: t('entityList.sort.newest') },
@@ -190,8 +191,8 @@ const StudiesScreen = ({
     queryState
   )
   return (
-    <FormSheetScreen isFormSheet={isFormSheet}>
-      <Box className="overflow-hidden border-continuous flex-[1] bg-reverse">
+    <FormSheetScreen className="bg-canvas" isFormSheet={isFormSheet}>
+      <Box className="overflow-hidden border-continuous flex-[1] bg-canvas">
         <FiltersHeader
           title={t('Études')}
           hasBackButton={showBackButton}
@@ -264,7 +265,11 @@ const StudiesScreen = ({
             onLayout={event => setListWidth(event.nativeEvent.layout.width)}
             numColumns={columns}
             data={filteredStudies}
-            contentContainerStyle={[pageContentStyle, { paddingBottom: 100 }]}
+            contentContainerStyle={[
+              pageContentStyle,
+              // With the cards' margins: a 20 gutter on the sides, 12 between two cards.
+              { paddingHorizontal: 14, paddingTop: 10, paddingBottom: 100 + bottomInset },
+            ]}
             keyExtractor={item => item.id}
             renderItem={({ item }) => {
               const endpoint = createStudyEndpoint(item.id, item.title)

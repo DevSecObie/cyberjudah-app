@@ -24,6 +24,7 @@ import { BookSelectorSheetProvider } from '~features/bible/BookSelectorSheet/Boo
 import { StrongAudioProvider } from '~features/bible/StrongAudioProvider'
 import { appLogger } from '~helpers/agentObservability'
 import { createFormSheetOptions } from '~navigation/formSheetOptions'
+import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import type { Theme } from '~themes/index'
 import { PlaybackService } from '../../../playbackService'
 
@@ -98,7 +99,8 @@ const FullAppRuntime = ({ theme }: { theme: Theme }) => {
                 </Stack>
               </WorkspaceLayout>
               <WorkspaceAnalytics />
-              <AssistantLauncher />
+              {/* Bible Strong's own assistant stays off; CyberJudah has Ask (as on the phone). */}
+              {!usesCyberJudahEditorial() && <AssistantLauncher />}
               <ConfirmDialogHost />
               <DockedClassPlayer />
               <ThemedToaster />

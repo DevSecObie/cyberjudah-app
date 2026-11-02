@@ -4,10 +4,11 @@ import { useImperativeHandle, useState, type ReactNode } from 'react'
 import { HeaderActionContext, HeaderContentContext } from './HeaderActionContext'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '~themes/ThemeProvider'
-import { webFontFamily } from '~helpers/webFontFamily'
+import { webFontFamily, webTitleFontStyle } from '~helpers/webFontFamily'
 import { webThemeVariables } from '~themes/webThemeVariables'
 import { FeatherIcon } from '~common/ui/Icon'
 import type { ContextualPanelProps, PanelScreen, PanelNavigation } from './types'
+import { KEYBOARD_PASSTHROUGH } from '~features/keyboard-shortcuts/keyboardTargets'
 import { usePanelNavigation } from './usePanelNavigation'
 import PanelTransition from './PanelTransition'
 import { PanelNavigationContext } from './NavigationContext'
@@ -27,6 +28,7 @@ export default function ContextualPanel(props: ContextualPanelProps) {
   useImperativeHandle(props.controllerRef, () => ({
     present: () => (panel.isOpen ? panel.navigation.close() : panel.present()),
     dismiss: panel.navigation.close,
+    open: panel.present,
   }))
   return (
     <Popover
@@ -50,8 +52,13 @@ export default function ContextualPanel(props: ContextualPanelProps) {
       )}
       <Popover.Content
         triggerRef={props.anchorRef}
-        shouldCloseOnInteractOutside={element => !props.anchorRef?.current?.contains(element)}
-        placement="bottom"
+        shouldCloseOnInteractOutside={element =>
+          !props.nonModal && !props.anchorRef?.current?.contains(element)
+        }
+        isNonModal={props.nonModal}
+        {...(props.nonModal ? { [KEYBOARD_PASSTHROUGH]: '' } : {})}
+        placement={props.placement ?? 'bottom'}
+        shouldFlip={!props.noFlip}
         offset={8}
         className="bs-filter-popover"
         style={{
@@ -127,19 +134,28 @@ function PanelFrameLayout({
                     <FeatherIcon name="arrow-left" size={17} />
                   </button>
                 )}
-                {active ? (
-                  <Popover.Heading style={{ fontFamily: webFontFamily(theme.fontFamily.title) }}>
-                    {screen.title}
-                  </Popover.Heading>
-                ) : (
-                  <h2>{screen.title}</h2>
-                )}
+                <div className="bs-panel-title">
+                  {active ? (
+                    <Popover.Heading style={webTitleFontStyle(theme)}>
+                      {screen.title}
+                    </Popover.Heading>
+                  ) : (
+                    <h2>{screen.title}</h2>
+                  )}
+                  {screen.titleAccessory}
+                </div>
                 {screen.headerRight}
                 <div ref={setActionTarget} style={{ display: 'contents' }} />
               </div>
               {screen.headerContent}
               <div ref={setContentTarget} />
-              <div className="bs-filter-options">{content}</div>
+              <div
+                className={
+                  screen.flush ? 'bs-filter-options bs-filter-options-flush' : 'bs-filter-options'
+                }
+              >
+                {content}
+              </div>
               {screen.footer}
             </PanelTransition>
           </HeaderContentContext.Provider>

@@ -1,12 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import {
-  KeyboardAvoidingView,
-  Linking,
-  Platform,
-  Pressable,
-  ScrollView,
-  TextInput,
-} from 'react-native'
+import { openInApp } from '~common/inAppBrowser'
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput } from 'react-native'
 import { useSelector } from 'react-redux'
 import { selectUserLoginInfo } from '~redux/selectors/user'
 import { useTranslation } from 'react-i18next'
@@ -78,7 +72,7 @@ function Sources({ sources }: { sources: CyberJudahSource[] }) {
             disabled={!link}
             accessibilityRole="link"
             accessibilityLabel={`${source.n}. ${source.title}${detail ? `, ${detail}` : ''}`}
-            onPress={() => link && void Linking.openURL(link)}
+            onPress={() => link && openInApp(link)}
             className="flex-row gap-3 rounded-xl bg-light-grey p-3"
           >
             <Text className="font-bold text-primary">{source.n}</Text>

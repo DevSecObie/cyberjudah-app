@@ -1,3 +1,4 @@
+// surface-allow: a light shadow under the chapter's thumbnails shows their white contour on the page
 import { m, useReducedMotion } from 'motion/react'
 import { createPortal } from 'react-dom'
 import { IS_DOM } from 'expo/dom'
@@ -6,7 +7,11 @@ import type {
   StrongLexiconChapterEntity,
   StrongLexiconEntityCategory,
 } from '~features/resources/strongLexiconAccess'
-import { getChapterEntityAvatarUri } from './chapterEntityAvatar'
+import { CHAPTER_ENTITY_AVATAR_SHADOW, getChapterEntityAvatar } from './chapterEntityAvatar'
+import {
+  getEntityAvatarRadius,
+  type EntityPortraitSources,
+} from '~features/lexique/entityPortraits'
 import OverlayCloseButton from './OverlayCloseButton'
 import { useModalOverlayLifecycle } from './overlayLifecycle'
 import { useTranslations } from './TranslationsContext'
@@ -20,13 +25,17 @@ import { withColorAlpha } from './themeOverlayColor'
 
 type Props = {
   entities: StrongLexiconChapterEntity[]
+  portraits: EntityPortraitSources
   groupLabels: Record<StrongLexiconEntityCategory, string>
   openEntityLabel: string
   colors: {
     default: string
     primary: string
     reverse: string
+    surfaceRaised: string
   }
+  /** The ground drawn behind the cut-out portraits (`getEntityPortraitGround`). */
+  portraitGround: string
   fontFamily: string
   visibleStackItemCount: number
   isOpen: boolean
@@ -36,9 +45,11 @@ type Props = {
 
 const ChapterEntitiesOverlay = ({
   entities,
+  portraits,
   groupLabels,
   openEntityLabel,
   colors,
+  portraitGround,
   fontFamily,
   visibleStackItemCount,
   isOpen,
@@ -90,7 +101,7 @@ const ChapterEntitiesOverlay = ({
         <OverlayCloseButton
           label={translations.passageMediaClose}
           color={colors.default}
-          backgroundColor={colors.reverse}
+          backgroundColor={colors.surfaceRaised}
           onClose={onClose}
         />
       )}
@@ -169,7 +180,7 @@ const ChapterEntitiesOverlay = ({
                 >
                   <m.img
                     layoutId={`chapter-entity-${entity.uniqueName}`}
-                    src={getChapterEntityAvatarUri(entity)}
+                    {...getChapterEntityAvatar(entity, portraits)}
                     alt=""
                     transition={{ layout: { ...spring, delay: sourceDelay } }}
                     style={{
@@ -178,9 +189,10 @@ const ChapterEntitiesOverlay = ({
                       height: 68,
                       margin: '0 auto 8px',
                       border: `2px solid ${colors.reverse}`,
-                      borderRadius: 36,
-                      boxShadow: '0 5px 16px rgba(0, 0, 0, 0.2)',
-                      objectFit: 'contain',
+                      borderRadius: getEntityAvatarRadius(68),
+                      background: portraitGround,
+                      boxShadow: CHAPTER_ENTITY_AVATAR_SHADOW,
+                      objectFit: 'cover',
                     }}
                   />
                   <m.div

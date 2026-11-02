@@ -1,13 +1,15 @@
 import { resolveFontFamily } from '~themes/styleValues'
+import { useRecordHistory } from '~features/history/useRecordHistory'
+import { openInApp } from '~common/inAppBrowser'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { useGlobalSearchParams, useLocalSearchParams, usePathname, useRouter } from 'expo-router'
 import { useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Linking, Platform, useWindowDimensions } from 'react-native'
+import { Platform, useWindowDimensions } from 'react-native'
 import YoutubePlayer from '~helpers/react-native-youtube-iframe'
 import WebView from 'react-native-webview'
-import { useAtom } from 'jotai'
-import { dockedClassAtom } from './dockedClassPlayerStore'
+import { useAtom, useSetAtom } from 'jotai'
+import { dockedClassAtom, dockedClassReturnAtom } from './dockedClassPlayerStore'
 import {
   CLASS_TIME_SCRIPT,
   classTimeFromMessage,
@@ -62,8 +64,9 @@ const PassageMediaPlayerScreen = () => {
     requestedLanguage === 'fr' || requestedLanguage === 'en' ? requestedLanguage : preferredLanguage
   const { width: windowWidth } = useWindowDimensions()
   const [playerError, setPlayerError] = useState<string>()
-  const classPlayerRef = useRef<WebView>(null)
+  const classPlayerRef = useRef<{ injectJavaScript: (script: string) => void } | null>(null)
   const [dockedClass, setDockedClass] = useAtom(dockedClassAtom)
+  const askDockedClassBack = useSetAtom(dockedClassReturnAtom)
   const pathname = usePathname()
   const routeParams = useGlobalSearchParams()
   const router = useRouter()
@@ -127,6 +130,19 @@ const PassageMediaPlayerScreen = () => {
     })
   }
 
+  // Reopened from Pick up and History, like Bible Strong's own pages.
+  useRecordHistory(
+    workId && item?.title
+      ? {
+          type: 'cyberjudah',
+          kind: 'class',
+          title: item.title,
+          subtitle: item.subtitle,
+          pathname: '/(explore)/passage-media-player',
+          params: { workId },
+        }
+      : null
+  )
   return (
     <FormSheetScreen isFormSheet={IS_FORM_SHEET}>
       <Box className="overflow-hidden border-continuous flex-[1] bg-reverse">
@@ -159,7 +175,7 @@ const PassageMediaPlayerScreen = () => {
                     // The class plays in the floating window; tapping here brings it back.
                     <TouchableBox
                       accessibilityRole="button"
-                      onPress={() => setDockedClass(null)}
+                      onPress={() => askDockedClassBack(count => count + 1)}
                       className="flex-1 items-center justify-center gap-[8px] rounded-[14px] bg-[#000]"
                     >
                       <FeatherIcon name="maximize-2" size={20} color="white" />
@@ -188,7 +204,7 @@ const PassageMediaPlayerScreen = () => {
                         </Box>
                       ) : (
                         <WebView
-                          ref={classPlayerRef}
+                          ref={classPlayerRef as never}
                           source={{ uri: getPassageMediaEmbedUrl(item.providerId, playerStart) }}
                           injectedJavaScript={CLASS_TIME_SCRIPT}
                           onMessage={event => {
@@ -292,7 +308,7 @@ const PassageMediaPlayerScreen = () => {
                     const route = getCommentaryBibleViewRoute(href.slice('bible://'.length))
                     if (route) router.push(route)
                   } else if (/^https:\/\//.test(href)) {
-                    void Linking.openURL(href)
+                    openInApp(href)
                   }
                 }}
               />

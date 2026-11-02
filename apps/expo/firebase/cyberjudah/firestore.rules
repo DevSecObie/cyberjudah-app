@@ -4,7 +4,15 @@ service cloud.firestore {
     function signedIn() { return request.auth != null; }
     function owns(userId) { return signedIn() && request.auth.uid == userId; }
     // Internal staging study data uses the same UID, in isolated collections.
-    match /staging_users/{userId}/{document=**} {
+    // `subscription` belongs to the server: clients never set or change it (as upstream).
+    function keepsSubscription() {
+      return request.resource.data.get('subscription', null) == (resource == null ? null : resource.data.get('subscription', null));
+    }
+    match /staging_users/{userId} {
+      allow read, delete: if owns(userId);
+      allow create, update: if owns(userId) && keepsSubscription();
+    }
+    match /staging_users/{userId}/{collection}/{document=**} {
       allow read, write: if owns(userId);
     }
     match /staging_users-status/{userId} {
@@ -22,7 +30,8 @@ service cloud.firestore {
     }
     // These are personal documents. They never grant Telegram admin rights or API quotas.
     match /users/{userId} {
-      allow read, write: if owns(userId);
+      allow read, delete: if owns(userId);
+      allow create, update: if owns(userId) && keepsSubscription();
     }
     match /users/{userId}/{collection}/{document} {
       allow read, write: if owns(userId) && collection in [
@@ -39,12 +48,10 @@ service cloud.firestore {
     match /users/{userId}/studies/{studyId}/revisions/{revisionId} {
       allow read, write: if owns(userId);
     }
+    // A study's history is as private as the study: only the study's owner reads or writes it.
     match /studies/{studyId}/revisions/{revisionId} {
-      allow read: if signedIn();
-      allow create: if signedIn() && request.resource.data.user.id == request.auth.uid;
-      allow update: if signedIn() && resource.data.user.id == request.auth.uid
-        && request.resource.data.user.id == request.auth.uid;
-      allow delete: if signedIn() && resource.data.user.id == request.auth.uid;
+      allow read, write: if signedIn()
+        && get(/databases/$(database)/documents/studies/$(studyId)).data.user.id == request.auth.uid;
     }
     match /studies/{studyId} {
       allow read: if signedIn() && resource.data.user.id == request.auth.uid;

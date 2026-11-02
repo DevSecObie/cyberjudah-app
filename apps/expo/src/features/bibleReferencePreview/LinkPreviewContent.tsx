@@ -1,4 +1,4 @@
-import { Linking } from 'react-native'
+import { openInApp } from '~common/inAppBrowser'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import ExternalLinkCard from '~features/bible/ExternalLinkCard'
@@ -10,7 +10,6 @@ import type { RootState } from '~redux/modules/reducer'
 import { createExternalLinkEndpointFromLink } from '~features/studyRelations/endpoints'
 import { useRelationCount } from '~features/studyRelations/useRelationCount'
 import { useOpenEntityRelations } from '~features/studyRelations/useOpenEntityRelations'
-import { toast } from '~helpers/toast'
 
 export default function LinkPreviewContent({ linkId }: { linkId: string }) {
   const selector = makeLinkByIdSelector()
@@ -25,7 +24,7 @@ export default function LinkPreviewContent({ linkId }: { linkId: string }) {
       <ExternalLinkCard
         link={link}
         onOpen={() => {
-          void Linking.openURL(link.url).catch(() => toast.error(t("Impossible d'ouvrir ce lien")))
+          openInApp(link.url)
         }}
       />
       <EntityChipList

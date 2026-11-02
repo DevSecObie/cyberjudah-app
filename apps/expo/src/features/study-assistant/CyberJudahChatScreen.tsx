@@ -18,7 +18,8 @@ import * as Haptics from 'expo-haptics'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
-import { useRouter } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useVoiceQuestion } from './useVoiceQuestion'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { selectUserLoginInfo } from '~redux/selectors/user'
 import { storage } from '~helpers/storage'
@@ -273,6 +274,15 @@ function AccountChat({ account }: { account: string }) {
   const [chat, setChat] = useState<Chat>(newChat)
   const [history, setHistory] = useState<ChatSummary[]>([])
   const [question, setQuestion] = useState('')
+  // Opened from the Bible reader: the passage Ask starts from, until the reader clears it.
+  const params = useLocalSearchParams<{ reading?: string }>()
+  const [reading, setReading] = useState(
+    typeof params.reading === 'string' ? params.reading.slice(0, 40) : ''
+  )
+  useEffect(() => {
+    if (typeof params.reading === 'string' && params.reading)
+      setReading(params.reading.slice(0, 40))
+  }, [params.reading])
   const [pending, setPending] = useState<ChatTurn | null>(null)
   const [busy, setBusy] = useState(false)
   const [status, setStatus] = useState('')
@@ -360,6 +370,34 @@ function AccountChat({ account }: { account: string }) {
       return []
     }
   }
+  // Ask by voice: what was said lands in the question box, to read over before sending.
+  const voice = useVoiceQuestion({
+    consent: () => agreedProviders(),
+    onText: text => {
+      setQuestion(current =>
+        (current.trim() ? `${current.trim()} ${text}` : text).slice(0, questionLimit)
+      )
+      input.current?.focus()
+    },
+    onError: cause => {
+      const code = cause instanceof CyberJudahAskError ? cause.code : ''
+      // Not agreed to the provider that hears it, or no microphone: the keyboard's own dictation.
+      if (code === 'CONSENT' || (cause instanceof Error && cause.message === 'MIC_DENIED')) {
+        input.current?.focus()
+        return
+      }
+      setError(
+        t(
+          code === 'DAILY_LIMIT'
+            ? 'assistant.limit'
+            : code === 'PAUSED'
+              ? 'assistant.cyberjudah.paused'
+              : 'askChat.notHeard',
+          { defaultValue: 'That was not heard. Try again, or type your question.' }
+        )
+      )
+    },
+  })
   const save = async (conversation: Chat, turn: ChatTurn) => {
     try {
       await saveChatTurn(account, conversation, turn)
@@ -408,6 +446,7 @@ function AccountChat({ account }: { account: string }) {
           history: chatHistory(base),
           consent: agreedProviders(),
           ...(model ? { model } : {}),
+          ...(reading ? { reading } : {}),
           account,
         },
         controller.signal,
@@ -583,7 +622,7 @@ function AccountChat({ account }: { account: string }) {
                 >
                   <Image
                     source={require('~assets/images/icon.png')}
-                    style={{ width: 72, height: 72, borderRadius: 18 }}
+                    style={{ width: 88, height: 88 }}
                     accessible={false}
                   />
                 </Box>
@@ -920,6 +959,28 @@ function AccountChat({ account }: { account: string }) {
               shadowOffset: { width: 0, height: 0 },
             }}
           >
+            {!!reading && (
+              <HStack className="items-center gap-[6px] px-2 pt-2">
+                <FeatherIcon name="book-open" size={13} style={{ color: p.accent }} />
+                <Text className="flex-1" numberOfLines={1} style={{ color: p.text3, fontSize: 13 }}>
+                  {t('askChat.readingFrom', {
+                    defaultValue: 'Asking about {{reading}}',
+                    reading,
+                  })}
+                </Text>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('askChat.clearReading', {
+                    defaultValue: 'Stop asking about {{reading}}',
+                    reading,
+                  })}
+                  onPress={() => setReading('')}
+                  hitSlop={12}
+                >
+                  <FeatherIcon name="x" size={14} style={{ color: p.text3 }} />
+                </Pressable>
+              </HStack>
+            )}
             <TextInput
               ref={input}
               multiline
@@ -1005,16 +1066,38 @@ function AccountChat({ account }: { account: string }) {
                 <FeatherIcon name="chevron-down" size={13} style={{ color: p.text1 }} />
               </Pressable>
               <Box className="flex-1" />
-              {/* The mic opens the keyboard on the question, where iOS dictation is one tap away. */}
+              {/* The mic: tap to speak, tap again to stop; the words land in the question box. On
+                  the website, the keyboard's own dictation. */}
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel={t('askChat.dictate', { defaultValue: 'Speak your question' })}
-                onPress={() => input.current?.focus()}
-                disabled={!account}
+                accessibilityLabel={
+                  voice.state === 'recording'
+                    ? t('askChat.stopDictating', {
+                        defaultValue: 'Stop and write down what you said',
+                      })
+                    : t('askChat.dictate', { defaultValue: 'Speak your question' })
+                }
+                accessibilityState={{ busy: voice.state === 'hearing' }}
+                onPress={() => {
+                  if (!voice.supported) return input.current?.focus()
+                  if (voice.state === 'recording') return void voice.stop()
+                  if (voice.state === 'idle') {
+                    setError('')
+                    void voice.start()
+                  }
+                }}
+                disabled={!account || busy || voice.state === 'hearing'}
                 className="h-9 w-9 items-center justify-center rounded-full"
-                style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+                style={({ pressed }) => ({
+                  opacity: pressed || voice.state === 'hearing' ? 0.6 : 1,
+                  backgroundColor: voice.state === 'recording' ? '#e5484d' : 'transparent',
+                })}
               >
-                <FeatherIcon name="mic" size={18} style={{ color: p.text1 }} />
+                <FeatherIcon
+                  name={voice.state === 'recording' ? 'square' : 'mic'}
+                  size={voice.state === 'recording' ? 14 : 18}
+                  style={{ color: voice.state === 'recording' ? 'white' : p.text1 }}
+                />
               </Pressable>
               <Pressable
                 accessibilityRole="button"

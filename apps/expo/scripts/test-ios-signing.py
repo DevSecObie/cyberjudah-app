@@ -64,6 +64,19 @@ class ProfileValidationTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     signing.validate(changed, self.now)
 
+    def test_production_profile_only_signs_the_production_app(self):
+        production = copy.deepcopy(self.profile)
+        production["Entitlements"]["application-identifier"] = f"{signing.TEAM}.io.cyberjudah.app"
+        self.assertEqual(
+            signing.validate(production, self.now, bundle="io.cyberjudah.app")["bundle"],
+            "io.cyberjudah.app",
+        )
+        # A staging profile never signs the store app, and no third application is accepted.
+        with self.assertRaises(ValueError):
+            signing.validate(self.profile, self.now, bundle="io.cyberjudah.app")
+        with self.assertRaises(ValueError):
+            signing.validate(production, self.now, bundle="io.cyberjudah.other")
+
 
 if __name__ == "__main__":
     unittest.main()

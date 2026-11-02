@@ -1,3 +1,4 @@
+// surface-allow: a light shadow under the chapter's thumbnails shows their white contour on the page
 import Feather from '@expo/vector-icons/Feather'
 import { LayoutGroup, m, useReducedMotion } from 'motion/react'
 import { useId, useState, type CSSProperties, type ReactNode } from 'react'
@@ -9,17 +10,25 @@ import type {
 import type { StrongLexiconModuleAvailability } from '~helpers/strongLexiconModules'
 import type { BibleDOMDownloadState, RootStyles } from './BibleDOMWrapper'
 import ChapterEntitiesOverlay from './ChapterEntitiesOverlay'
-import { getChapterEntityAvatarUri } from './chapterEntityAvatar'
-import { getChapterEntitiesViewMode } from './chapterEntitiesPresentation'
+import { CHAPTER_ENTITY_AVATAR_SHADOW, getChapterEntityAvatar } from './chapterEntityAvatar'
+import {
+  getEntityAvatarRadius,
+  getEntityPortraitGround,
+  type EntityPortraitSources,
+} from '~features/lexique/entityPortraits'
+import { getChapterEntitiesViewMode, splitChapterEntities } from './chapterEntitiesPresentation'
 import { useBibleOverlayOpen } from './overlayLifecycle'
 import { getOverlayLayoutTransition } from './overlayStagger'
+import { isDarkTheme } from './utils'
 
 const MAX_STACKED_ENTITIES = 3
+const AVATAR_SIZE = 62
 
 type ChapterEntityTranslations = {
   title: string
   groups: Record<StrongLexiconEntityCategory, string>
   openEntity: string
+  openMap: string
   empty: string
   downloadTitle: string
   downloadDescription: string
@@ -30,18 +39,22 @@ type ChapterEntityTranslations = {
 
 type Props = RootStyles & {
   entities: StrongLexiconChapterEntity[]
+  portraits: EntityPortraitSources
   loaded: boolean
   availabilityStatus: StrongLexiconModuleAvailability['status'] | null
   downloadState: BibleDOMDownloadState
   translations: ChapterEntityTranslations
   chapterResources?: ReactNode
   onOpenEntity: (uniqueName: string) => void
+  /** The map of the places of the Bible, the places of this chapter brought forward. */
+  onOpenMap: (uniqueNames: string[]) => void
   onDownload: () => void
   onDismiss: () => void
 }
 
 const ChapterEntities = ({
   entities,
+  portraits,
   loaded,
   availabilityStatus,
   downloadState,
@@ -49,6 +62,7 @@ const ChapterEntities = ({
   translations,
   chapterResources,
   onOpenEntity,
+  onOpenMap,
   onDownload,
   onDismiss,
 }: Props) => {
@@ -61,9 +75,15 @@ const ChapterEntities = ({
   if (viewMode === 'hidden' && !chapterResources) return null
 
   const colors = settings.colors[settings.theme]
+  const portraitGround = getEntityPortraitGround(isDarkTheme(settings.theme), colors)
   const isDownloading = ['queued', 'downloading', 'inserting'].includes(downloadState.status ?? '')
   const progress = Math.max(0, Math.min(1, downloadState.progress))
-  const stackedEntities = entities.slice(0, MAX_STACKED_ENTITIES)
+  const { painted, stacked } = splitChapterEntities(entities, portraits)
+  const showsPainted = viewMode === 'entities' && painted.length > 0
+  const showsStack = viewMode === 'entities' && stacked.length > 0
+  const stackedEntities = stacked.slice(0, MAX_STACKED_ENTITIES)
+  const places =
+    viewMode === 'entities' ? entities.filter(entity => entity.category === 'place') : []
   const layoutTransition = getOverlayLayoutTransition(shouldReduceMotion)
   const sectionStyle: CSSProperties = {
     direction: 'ltr',
@@ -106,7 +126,70 @@ const ChapterEntities = ({
           }}
         />
       </h2>
-      {(viewMode === 'download' || viewMode === 'entities' || chapterResources) && (
+      {showsPainted && (
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            gap: '16px 10px',
+            marginTop: 20,
+          }}
+        >
+          {painted.map(entity => (
+            <m.button
+              key={entity.uniqueName}
+              type="button"
+              className="chapter-entity-button"
+              data-ignore-verse-touch
+              aria-label={translations.openEntity.replace('{{name}}', entity.name)}
+              whileTap={{ opacity: 0.55, scale: 0.97 }}
+              onClick={() => onOpenEntity(entity.uniqueName)}
+              style={{
+                width: 74,
+                margin: 0,
+                padding: 0,
+                border: 0,
+                background: 'transparent',
+                color: colors.default,
+                fontFamily: settings.fontFamily,
+                cursor: 'pointer',
+              }}
+            >
+              <img
+                {...getChapterEntityAvatar(entity, portraits)}
+                alt=""
+                style={{
+                  display: 'block',
+                  width: AVATAR_SIZE,
+                  height: AVATAR_SIZE,
+                  margin: '0 auto 6px',
+                  border: `2px solid ${colors.reverse}`,
+                  borderRadius: getEntityAvatarRadius(AVATAR_SIZE),
+                  background: portraitGround,
+                  boxShadow: CHAPTER_ENTITY_AVATAR_SHADOW,
+                  objectFit: 'cover',
+                }}
+              />
+              <span
+                style={{
+                  display: '-webkit-box',
+                  overflow: 'hidden',
+                  fontSize: 12,
+                  lineHeight: 1.22,
+                  fontWeight: 600,
+                  textAlign: 'center',
+                  WebkitBoxOrient: 'vertical',
+                  WebkitLineClamp: 2,
+                }}
+              >
+                {entity.name}
+              </span>
+            </m.button>
+          ))}
+        </div>
+      )}
+      {(viewMode === 'download' || showsStack || chapterResources) && (
         <div
           style={{
             display: 'flex',
@@ -157,7 +240,7 @@ const ChapterEntities = ({
                     height: 62,
                     placeItems: 'center',
                     border: `2px dashed ${colors.border}`,
-                    borderRadius: 33,
+                    borderRadius: getEntityAvatarRadius(62),
                     background: colors.reverse,
                     color: colors.tertiary,
                   }}
@@ -219,11 +302,11 @@ const ChapterEntities = ({
                     placeItems: 'center',
                     margin: 0,
                     padding: 0,
-                    border: `1px solid ${colors.border}`,
-                    borderRadius: 12,
-                    background: colors.reverse,
+                    border: 0,
+                    borderRadius: '50%',
+                    // A neutral tint, like the app's secondary button: no outline, no shadow
+                    background: colors.lightGrey,
                     color: colors.tertiary,
-                    boxShadow: '0 1px 4px rgba(0, 0, 0, 0.14)',
                     cursor: 'pointer',
                   }}
                 >
@@ -232,14 +315,14 @@ const ChapterEntities = ({
               )}
             </div>
           )}
-          {viewMode === 'entities' && (
+          {showsStack && (
             <LayoutGroup id={layoutGroupId}>
               <m.button
                 layoutDependency={isOverlayOpen}
                 type="button"
                 className="chapter-entity-button"
                 data-ignore-verse-touch
-                aria-label={entities.map(entity => entity.name).join(', ')}
+                aria-label={stacked.map(entity => entity.name).join(', ')}
                 whileTap={{ opacity: 0.55 }}
                 onClick={() => setIsOverlayOpen(true)}
                 style={{
@@ -264,19 +347,20 @@ const ChapterEntities = ({
                       key={entity.uniqueName}
                       layoutId={`chapter-entity-${entity.uniqueName}`}
                       layoutDependency={isOverlayOpen}
-                      src={getChapterEntityAvatarUri(entity)}
+                      {...getChapterEntityAvatar(entity, portraits)}
                       alt=""
                       transition={{ layout: layoutTransition }}
                       style={{
                         gridArea: '1 / 1',
                         display: 'block',
-                        width: 62,
-                        height: 62,
+                        width: AVATAR_SIZE,
+                        height: AVATAR_SIZE,
                         placeSelf: 'center',
                         border: `2px solid ${colors.reverse}`,
-                        borderRadius: 33,
-                        boxShadow: '0 2px 7px rgba(0, 0, 0, 0.22)',
-                        objectFit: 'contain',
+                        borderRadius: getEntityAvatarRadius(AVATAR_SIZE),
+                        background: portraitGround,
+                        boxShadow: CHAPTER_ENTITY_AVATAR_SHADOW,
+                        objectFit: 'cover',
                         x: position * 6,
                         y: Math.abs(position) * 2,
                         rotate: position * 5,
@@ -288,10 +372,12 @@ const ChapterEntities = ({
                 })}
               </m.button>
               <ChapterEntitiesOverlay
-                entities={entities}
+                entities={stacked}
+                portraits={portraits}
                 groupLabels={translations.groups}
                 openEntityLabel={translations.openEntity}
                 colors={colors}
+                portraitGround={portraitGround}
                 fontFamily={settings.fontFamily}
                 visibleStackItemCount={stackedEntities.length}
                 isOpen={isOverlayOpen}
@@ -303,6 +389,33 @@ const ChapterEntities = ({
             </LayoutGroup>
           )}
           {chapterResources}
+        </div>
+      )}
+      {places.length > 0 && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 18 }}>
+          <m.button
+            type="button"
+            data-ignore-verse-touch
+            whileTap={{ opacity: 0.55 }}
+            onClick={() => onOpenMap(places.map(place => place.uniqueName))}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '8px 14px',
+              border: 0,
+              borderRadius: 999,
+              background: colors.lightPrimary,
+              color: colors.link,
+              fontFamily: settings.fontFamily,
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            <Feather name="map" size={15} color={colors.link} />
+            {translations.openMap}
+          </m.button>
         </div>
       )}
     </section>

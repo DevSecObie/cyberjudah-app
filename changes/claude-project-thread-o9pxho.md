@@ -1,0 +1,1 @@
+- Store build: a hand-started signed iPhone build for the App Store app `io.cyberjudah.app`, on the production servers (cyberjudah.io) and the real study collections, with purchases off. The beta build is unchanged.

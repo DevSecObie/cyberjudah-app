@@ -44,11 +44,13 @@ export const resourceQueryKeys = {
   bibleParallel: (request: {
     book: number
     chapter: number
-    versions: readonly string[]
-    strongMode?: string
-    interlinearMode?: string
-    interlinearLocale?: string
-    interlinearLocaleAutomatic?: boolean
+    columns: readonly {
+      version: string
+      strongMode?: string
+      interlinearMode?: string
+      interlinearLocale?: string
+    }[]
+    defaultInterlinearLocale?: string
   }) => [...bibleContent, 'parallel', request] as const,
   bibleComments: (request: { book: number; chapter: number; language: string }) =>
     [...bibleContent, 'comments', request] as const,
@@ -97,6 +99,7 @@ export const resourceQueryKeys = {
     chapter: number
     strongCodes: readonly string[]
   }) => [...strongLexicon, 'chapter-entities', request] as const,
+  strongLexiconPlaces: (language: string) => [...strongLexicon, 'places', language] as const,
   offlineDatabaseAvailability: (databaseId: string, language: string) =>
     [...offlineDatabase, 'availability', databaseId, language] as const,
   timeline: (language: string) => [...timeline, language] as const,

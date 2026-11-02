@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useRecordHistory } from '~features/history/useRecordHistory'
 import { useLocalSearchParams } from 'expo-router'
 import { ScrollView, useWindowDimensions } from 'react-native'
 import Header from '~common/Header'
@@ -48,6 +49,19 @@ const PublishedNoteScreen = () => {
   // A day's note not published yet: the chapter itself is read in its place, never left out.
   const chapter = note.isError ? noteChapter(path) : undefined
 
+  // Reopened from Pick up and History, like Bible Strong's own pages.
+  useRecordHistory(
+    note.data?.title
+      ? {
+          type: 'cyberjudah',
+          kind: path.startsWith('/encyclopedia') ? 'topic' : 'note',
+          title: note.data.title,
+          subtitle: path.startsWith('/encyclopedia') ? 'Encyclopedia' : undefined,
+          pathname: '/(explore)/published-note',
+          params: { path },
+        }
+      : null
+  )
   return (
     <SafeAreaBox className="overflow-hidden border-continuous bg-reverse">
       <Header

@@ -70,6 +70,7 @@ jest.mock('~common/Link', () => ({ __esModule: true, default: () => null }))
 jest.mock('~common/ui/Box', () => ({
   __esModule: true,
   default: ({ children }: React.PropsWithChildren) => children,
+  usePageBottomInset: () => 0,
 }))
 jest.mock('~common/ui/Container', () => ({
   __esModule: true,
@@ -78,6 +79,7 @@ jest.mock('~common/ui/Container', () => ({
 jest.mock('~common/ui/Button', () => ({ __esModule: true, default: () => null }))
 jest.mock('~common/ui/Text', () => ({ __esModule: true, default: () => null }))
 jest.mock('~common/ui/Icon', () => ({ FeatherIcon: () => null }))
+jest.mock('~common/ui/Radio', () => ({ __esModule: true, default: () => null }))
 jest.mock('~common/ui/PageContent', () => ({ pageContentStyle: {} }))
 beforeAll(() => {
   ;(

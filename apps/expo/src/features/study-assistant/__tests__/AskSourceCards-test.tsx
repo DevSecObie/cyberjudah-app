@@ -27,6 +27,10 @@ jest.mock('~common/ui/Box', () => ({
 }))
 jest.mock('~common/ui/Text', () => ({ __esModule: true, default: mockHost('Text') }))
 jest.mock('~common/ui/Icon', () => ({ FeatherIcon: mockHost('Icon') }))
+jest.mock('~features/passageMediaLibrary/ClassVideoEmbed', () => ({
+  __esModule: true,
+  default: mockHost('ClassVideoEmbed'),
+}))
 jest.mock('../AskGlassBackdrop', () => ({ __esModule: true, default: () => null }))
 jest.mock('../askPalette', () => ({
   useAskPalette: () => ({
@@ -77,7 +81,7 @@ it('keeps text-only sources compact without a blank artwork block', () => {
   })
 })
 
-it('keeps a video thumbnail and timestamp link, then collapses failed artwork gracefully', () => {
+it('embeds a class video at the cited moment, and the card still opens the class', () => {
   act(() => {
     view = create(
       <AskSourceCards
@@ -94,21 +98,11 @@ it('keeps a video thumbnail and timestamp link, then collapses failed artwork gr
       />
     )
   })
-  expect(view.root.findByType('Image' as never).props.source.uri).toContain('abcdefghijk')
+  const embed = view.root.findByType('ClassVideoEmbed' as never)
+  expect(embed.props).toEqual(expect.objectContaining({ videoId: 'abcdefghijk', start: 90 }))
   act(() => view.root.findByType('Pressable' as never).props.onPress())
   expect(mockOpen).toHaveBeenLastCalledWith(
     expect.objectContaining({ video: 'abcdefghijk', t: 90 })
   )
-  let failures = 0
-  while (view.root.findAllByType('Image' as never).length && failures < 6) {
-    act(() => view.root.findByType('Image' as never).props.onError())
-    failures++
-  }
-  expect(view.root.findAllByType('Image' as never)).toHaveLength(0)
-  expect(
-    view.root.findAllByProps({
-      className: 'aspect-video w-full items-center justify-center bg-light-grey',
-    })
-  ).toHaveLength(0)
   expect(JSON.stringify(view.toJSON())).toContain('Faith and works')
 })
