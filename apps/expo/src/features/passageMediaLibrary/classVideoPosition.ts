@@ -91,6 +91,12 @@ export const CLASS_CONTROL_SCRIPT = `(() => {
     if (!/^https:\\/\\/www\\.youtube(-nocookie)?\\.com$/.test(event.origin)) return
     let data
     try { data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data } catch (e) { return }
+    if (data && typeof data.cyberJudahPictureInPictureMode === 'boolean') {
+      window.ReactNativeWebView.postMessage(
+        JSON.stringify({ classPictureInPicture: data.cyberJudahPictureInPictureMode })
+      )
+      return
+    }
     const info = data && data.info
     const duration = info && info.duration
     if (typeof duration === 'number' && duration > 0 && Math.floor(duration) !== lastDuration) {
@@ -162,6 +168,18 @@ export const CLASS_PICTURE_IN_PICTURE_SCRIPT = `(() => {
   if (window.__cyberJudahPictureInPicture) return
   window.__cyberJudahPictureInPicture = true
   if (!/(^|\\.)youtube(-nocookie)?\\.com$/.test(location.hostname)) return
+  // Tell the page (and so the app) when the video goes into or out of Picture in Picture.
+  document.addEventListener(
+    'webkitpresentationmodechanged',
+    event => {
+      const mode = event.target && event.target.webkitPresentationMode
+      window.parent.postMessage(
+        JSON.stringify({ cyberJudahPictureInPictureMode: mode === 'picture-in-picture' }),
+        '*'
+      )
+    },
+    true
+  )
   window.addEventListener('message', event => {
     let data
     try { data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data } catch (e) { return }
@@ -183,3 +201,14 @@ export const CLASS_PICTURE_IN_PICTURE_SCRIPT = `(() => {
 export const CLASS_FRAME_SCRIPT = `if (window.top === window) { ${CLASS_TIME_SCRIPT};
 ${CLASS_CONTROL_SCRIPT}; } else { ${CLASS_PICTURE_IN_PICTURE_SCRIPT}; }
 true`
+
+/** Whether the video went into (true) or out of (false) the iPhone's Picture in Picture. */
+export const classPictureInPictureFromMessage = (data: unknown): boolean | undefined => {
+  if (typeof data !== 'string' || !data.includes('classPictureInPicture')) return undefined
+  try {
+    const value = (JSON.parse(data) as { classPictureInPicture?: unknown }).classPictureInPicture
+    return typeof value === 'boolean' ? value : undefined
+  } catch {
+    return undefined
+  }
+}

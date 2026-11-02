@@ -5,6 +5,7 @@ import {
   type ClassCommand,
   classCommandScript,
   classDurationFromMessage,
+  classPictureInPictureFromMessage,
   classStateFromMessage,
   classTimeFromMessage,
 } from './classVideoPosition'
@@ -18,11 +19,13 @@ type Props = {
   onState?: (state: number) => void
   /** The video's length in seconds, once YouTube reports it. */
   onDuration?: (seconds: number) => void
+  /** The video went into (true) or out of (false) the iPhone's Picture in Picture. */
+  onPictureInPicture?: (active: boolean) => void
 }
 
 /** CyberJudah's hosted video page: YouTube refuses embeds from an inline page on the phone. */
 const ClassVideoFrame = forwardRef<ClassVideoFrameHandle, Props>(
-  ({ uri, onTime, onState, onDuration }, ref) => {
+  ({ uri, onTime, onState, onDuration, onPictureInPicture }, ref) => {
     const view = useRef<{ injectJavaScript: (script: string) => void } | null>(null)
     useImperativeHandle(ref, () => ({
       command: command => view.current?.injectJavaScript(classCommandScript(command)),
@@ -47,6 +50,8 @@ const ClassVideoFrame = forwardRef<ClassVideoFrameHandle, Props>(
           if (state !== undefined) onState?.(state)
           const duration = classDurationFromMessage(event.nativeEvent.data)
           if (duration !== undefined) onDuration?.(duration)
+          const pictureInPicture = classPictureInPictureFromMessage(event.nativeEvent.data)
+          if (pictureInPicture !== undefined) onPictureInPicture?.(pictureInPicture)
         }}
       />
     )

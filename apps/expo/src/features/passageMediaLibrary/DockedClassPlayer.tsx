@@ -204,6 +204,8 @@ const DockedClassPlayer = () => {
   const [duration, setDuration] = useState(0)
   const [time, setTime] = useState(0)
   const [scrubbing, setScrubbing] = useState(false)
+  // While the iPhone's own Picture in Picture plays the class, this window steps aside.
+  const [pictureInPicture, setPictureInPicture] = useState(false)
   const [skipped, setSkipped] = useState<{ side: 'back' | 'forward'; key: number } | null>(null)
   const askedToPlay = useRef(false)
   const lastTap = useRef<{ at: number; side: 'back' | 'forward' | null }>({ at: 0, side: null })
@@ -281,6 +283,7 @@ const DockedClassPlayer = () => {
       setPlaying(false)
       setStarted(false)
       setDuration(0)
+      setPictureInPicture(false)
       setTime(docked?.start ?? 0)
       askedToPlay.current = false
       showControls()
@@ -383,7 +386,10 @@ const DockedClassPlayer = () => {
   return (
     <FloatingLayer>
       <Animated.View
+        // Kept, unseen and untouchable, while Picture in Picture plays: the video lives in it.
+        pointerEvents={pictureInPicture ? 'none' : 'auto'}
         style={{
+          opacity: pictureInPicture ? 0 : 1,
           // On the website, fixed to the window and over every sheet and dialog the site opens.
           position: Platform.OS === 'web' ? ('fixed' as 'absolute') : 'absolute',
           zIndex: 100000,
@@ -411,6 +417,7 @@ const DockedClassPlayer = () => {
               if (!scrubbing) setTime(seconds)
             }}
             onDuration={setDuration}
+            onPictureInPicture={setPictureInPicture}
             onState={state => {
               if (state === 1) {
                 setPlaying(true)
