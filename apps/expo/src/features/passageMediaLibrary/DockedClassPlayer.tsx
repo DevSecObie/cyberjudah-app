@@ -208,6 +208,7 @@ const DockedClassPlayer = () => {
   const [pictureInPicture, setPictureInPicture] = useState(false)
   const [skipped, setSkipped] = useState<{ side: 'back' | 'forward'; key: number } | null>(null)
   const askedToPlay = useRef(false)
+  const askedForPictureInPicture = useRef(false)
   const lastTap = useRef<{ at: number; side: 'back' | 'forward' | null }>({ at: 0, side: null })
   const frame = useRef<ClassVideoFrameHandle>(null)
   const hideControls = useRef<ReturnType<typeof setTimeout>>(undefined)
@@ -286,6 +287,7 @@ const DockedClassPlayer = () => {
       setPictureInPicture(false)
       setTime(docked?.start ?? 0)
       askedToPlay.current = false
+      askedForPictureInPicture.current = false
       showControls()
     }
     return () => {
@@ -423,6 +425,12 @@ const DockedClassPlayer = () => {
                 setPlaying(true)
                 setStarted(true)
                 showControls()
+                // Once the class plays, it goes straight into the iPhone's own floating player,
+                // as YouTube's app does. If iOS wants a tap first, the button stays.
+                if (Platform.OS === 'ios' && !askedForPictureInPicture.current) {
+                  askedForPictureInPicture.current = true
+                  frame.current?.command({ func: 'pictureInPicture' })
+                }
               }
               if (state === 2 || state === 0) setPlaying(false)
               if (classNotStarted(state)) {
