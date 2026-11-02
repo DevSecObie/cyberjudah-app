@@ -32,6 +32,9 @@ if (platform === 'android') {
     )
   )
   assert.equal(config.PROJECT_ID, 'cyberjudah-app')
-  assert.equal(config.BUNDLE_ID, 'io.cyberjudah.app.dev')
+  const target = process.env.CYBERJUDAH_IOS_TARGET || 'staging'
+  const bundles = { staging: 'io.cyberjudah.app.dev', production: 'io.cyberjudah.app' }
+  assert(bundles[target], 'CYBERJUDAH_IOS_TARGET must be staging or production')
+  assert.equal(config.BUNDLE_ID, bundles[target])
 } else throw new Error('Choose android or ios')
 console.log(`${platform}: CyberJudah Firebase project and application identity verified`)
