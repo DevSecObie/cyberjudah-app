@@ -516,6 +516,26 @@ export async function personalNotesPdf(entries: PersonalNotePdfEntry[], heading:
   return pdf.finish('')
 }
 
+/** A study the reader wrote, already as Markdown (features/studies/studyMarkdown.ts), as a PDF, base64. */
+export async function studyPdf(study: {
+  title: string
+  author?: string
+  modified?: number
+  markdown: string
+  link?: string
+}) {
+  const title = study.title || 'Study'
+  const pdf = await createWriter({ title, author: study.author || 'CyberJudah', subject: 'Study' })
+  pdf.head(
+    title,
+    [study.author, study.modified ? longDate(isoDay(study.modified)) : '']
+      .filter(Boolean)
+      .join('  ·  ')
+  )
+  pdf.block(marked.lexer(study.markdown, { gfm: true }))
+  return pdf.finish((study.link ?? '').replace(/^https?:\/\//, ''))
+}
+
 /** A file name from the title: letters, digits and dashes, with the date. */
 export const pdfName = (note: { date?: string | null; title?: string }) =>
   `${(note.date ?? '').slice(0, 10)}-${String(note.title ?? 'note')

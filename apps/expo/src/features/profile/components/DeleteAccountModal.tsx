@@ -16,6 +16,7 @@ import Text from '~common/ui/Text'
 import FireAuth from '~helpers/FireAuth'
 import { MODAL_FOOTER_HEIGHT } from '~helpers/constants'
 import { toast } from '~helpers/toast'
+import { deleteAllPublishedStudies } from '~features/studies/publishedStudies'
 
 type DeleteAccountModalProps = {
   modalRef: React.RefObject<SheetRef | null>
@@ -48,6 +49,10 @@ const DeleteAccountModal = ({ modalRef }: DeleteAccountModalProps) => {
 
     setIsLoading(true)
     try {
+      // Studies the reader published come down with the account. The server keeps no other copy.
+      await deleteAllPublishedStudies().catch(error =>
+        console.warn('[Auth] Could not take down published studies', error)
+      )
       await deleteCurrentAuthUser()
       handleClose()
       FireAuth.logout()

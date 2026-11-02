@@ -27,7 +27,6 @@ import { deleteStudy, Study } from '~redux/modules/user'
 import type { AppDispatch } from '~redux/store'
 import { unifiedTagsModalAtom } from '../../state/app'
 import PublishStudyMenuItem from './PublishStudyMenuItem'
-import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 
 const HeaderBox = (
   componentProps: Omit<UIComponentProps<typeof Box>, 'theme'> & {
@@ -136,8 +135,8 @@ const EditHeader = ({
           }
         />
         <Sheet ref={ref}>
-          {/* Publishing and PDF export run on Bible Strong's servers. */}
-          {!usesCyberJudahEditorial() && <PublishStudyMenuItem study={study} onClosed={close} />}
+          {/* Publishing runs on CyberJudah's own server; the PDF is made on the phone. */}
+          <PublishStudyMenuItem study={study} onClosed={close} />
           <ActionSheetItem
             icon="tag"
             label={t('Éditer les tags')}

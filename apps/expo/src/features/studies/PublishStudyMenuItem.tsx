@@ -1,10 +1,9 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ActivityIndicator, Linking, PermissionsAndroid, Platform, Share } from 'react-native'
+import { ActivityIndicator, Linking, Platform, Share } from 'react-native'
 import PanelAction from '~common/ContextualPanel/PanelAction'
 import { useDispatch } from 'react-redux'
-import slugify from 'slugify'
 import { LinkBox } from '~common/Link'
 import { toast } from '~helpers/toast'
 import { Status } from '~common/types'
@@ -17,19 +16,26 @@ import { publishStudy, Study } from '~redux/modules/user'
 import type { AppDispatch } from '~redux/store'
 import Clipboard from '@react-native-clipboard/clipboard'
 import { remoteQueryOptions } from '~helpers/queryOptions'
+import { studyPdf, pdfName } from '~features/notesExport/notePdf'
+import { sharePdf } from '~features/notesExport/sharePdf'
+import {
+  deletePublishedStudy,
+  publishedStudyStatus,
+  publishedStudyUrl,
+  putPublishedStudy,
+} from './publishedStudies'
+import { studyMarkdown } from './studyMarkdown'
 interface Props {
   study: Study
   onClosed: () => void
 }
 
+// Published studies live on CyberJudah's own server (publishedStudies.ts), never on Bible Strong's.
 const useStudyStatus = (study: Study) => {
-  const url = `https://bible-strong.app/studies/${study.id}`
+  const url = publishedStudyUrl(study.id)
   const query = useQuery({
     queryKey: ['published-study-status', study.id],
-    queryFn: async () => {
-      const response = await fetch(url)
-      return response.status
-    },
+    queryFn: () => publishedStudyStatus(study.id),
     enabled: study.published,
     ...remoteQueryOptions,
   })
@@ -53,7 +59,41 @@ const PublishStudyMenuItem = ({ study, onClosed }: Props) => {
   const dispatch = useDispatch<AppDispatch>()
   const { t } = useTranslation()
 
-  const onPublishStudy = () => isConnected && dispatch(publishStudy(study.id))
+  const queryClient = useQueryClient()
+  const [publishing, setPublishing] = useState(false)
+  const refreshStatus = () =>
+    queryClient.invalidateQueries({ queryKey: ['published-study-status', study.id] })
+
+  const onPublishStudy = async () => {
+    if (!isConnected || publishing) return
+    setPublishing(true)
+    try {
+      await putPublishedStudy(study)
+      if (!study.published) await dispatch(publishStudy(study.id))
+      await refreshStatus()
+      toast(t('studies.publishedCopyUpdated'))
+    } catch (e) {
+      console.log('[Studies] Could not publish the study:', e)
+      toast.error(t('studies.publishFailed'))
+    } finally {
+      setPublishing(false)
+    }
+  }
+
+  const onUnpublishStudy = async () => {
+    if (publishing) return
+    setPublishing(true)
+    try {
+      await deletePublishedStudy(study.id)
+      await dispatch(publishStudy(study.id, false))
+      await refreshStatus()
+    } catch (e) {
+      console.log('[Studies] Could not unpublish the study:', e)
+      toast.error(t('studies.publishFailed'))
+    } finally {
+      setPublishing(false)
+    }
+  }
 
   const copyToClipboard = async (url: string) => {
     Clipboard.setString(url)
@@ -68,81 +108,20 @@ const PublishStudyMenuItem = ({ study, onClosed }: Props) => {
     return result
   }
 
+  // The PDF is made on the phone from the study itself (notePdf.ts), then handed to the share sheet.
   const exportPDF = async () => {
     try {
-      if (Platform.OS === 'web') return
-      const { default: RNFetchBlob } = await import('rn-fetch-blob')
       setPDFStatus('Pending')
-      const file_name = slugify(study.title)
-      const dirPath = Platform.select({
-        ios: RNFetchBlob.fs.dirs.DocumentDir,
-        android: RNFetchBlob.fs.dirs.DownloadDir,
+      const base64 = await studyPdf({
+        title: study.title,
+        author: study.user?.displayName,
+        modified: study.modified_at,
+        markdown: studyMarkdown(study.content),
+        link: study.published ? url : '',
       })
-      const filePath = `${dirPath}/${file_name}.pdf`
-
-      const options = Platform.select({
-        ios: {
-          fileCache: true,
-          path: filePath,
-          appendExt: 'pdf',
-          indicator: true,
-        },
-        android: {
-          fileCache: true,
-          appendExt: 'pdf',
-          path: filePath,
-        },
-      })
-
-      if (Platform.OS === 'android') {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          {
-            title: t('Accès au dossier de téléchargement'),
-            message: t('Bible Strong aimerait stocker les études dans votre dossier "Downloads"'),
-            buttonNeutral: t('Demandez plus tard'),
-            buttonNegative: t('Annuler'),
-            buttonPositive: t('Ok'),
-          }
-        )
-
-        if (granted === 'denied') {
-          setPDFStatus('Rejected')
-          return
-        }
-      }
-
-      const res = await RNFetchBlob.config(options!).fetch(
-        'POST',
-        'https://us-central1-bible-strong-app.cloudfunctions.net/exportStudyPDF',
-        {
-          'Content-Type': 'application/json',
-        },
-        JSON.stringify({ studyId: study.id })
-      )
-
-      const resStatus = res.info().status
-
-      if (resStatus !== 200) {
-        setPDFStatus('Rejected')
-        return
-      }
-
       setPDFStatus('Resolved')
-
-      if (Platform.OS === 'ios') {
-        onClosed()
-        setTimeout(() => {
-          RNFetchBlob.ios.openDocument(res.path())
-        }, 500)
-      }
-
-      if (Platform.OS === 'android') {
-        onClosed()
-        setTimeout(() => {
-          RNFetchBlob.android.actionViewIntent(res.path(), 'application/pdf')
-        }, 500)
-      }
+      onClosed()
+      await sharePdf(base64, pdfName({ title: study.title }), study.title)
     } catch (e) {
       console.log('[Studies] Error generating PDF:', e)
       setPDFStatus('Rejected')
@@ -156,8 +135,8 @@ const PublishStudyMenuItem = ({ study, onClosed }: Props) => {
           <PanelAction
             icon="upload-cloud"
             label={t("Publier l'étude")}
-            disabled={!isConnected}
-            onPress={onPublishStudy}
+            disabled={!isConnected || publishing}
+            onPress={() => void onPublishStudy()}
           />
         ) : (
           <>
@@ -165,7 +144,7 @@ const PublishStudyMenuItem = ({ study, onClosed }: Props) => {
               <PanelAction
                 icon="link-2"
                 label={t("Dépublier l'étude")}
-                onPress={() => dispatch(publishStudy(study.id, false))}
+                onPress={() => void onUnpublishStudy()}
               />
             ) : (
               <Box className="flex-row items-center gap-3 p-3">
@@ -189,6 +168,12 @@ const PublishStudyMenuItem = ({ study, onClosed }: Props) => {
                 </Text>
               </Box>
             )}
+            <PanelAction
+              icon="refresh-cw"
+              label={t('studies.updatePublishedCopy')}
+              disabled={!isConnected || publishing}
+              onPress={() => void onPublishStudy()}
+            />
             <PanelAction
               icon="external-link"
               label={t('Ouvrir le lien')}
@@ -234,7 +219,7 @@ const PublishStudyMenuItem = ({ study, onClosed }: Props) => {
                 {data === 200 ? (
                   <LinkBox
                     className="py-[10px] items-center flex-row"
-                    onPress={() => dispatch(publishStudy(study.id, false))}
+                    onPress={() => void onUnpublishStudy()}
                   >
                     <FeatherIcon name="link-2" color="success" size={20} />
                     <Text className="ml-[20px]">{t("Dépublier l'étude")}</Text>
@@ -254,6 +239,19 @@ const PublishStudyMenuItem = ({ study, onClosed }: Props) => {
               </Box>
             )}
 
+            <LinkBox
+              className="py-[10px] items-center flex-row"
+              disabled={!isConnected || publishing}
+              style={{ opacity: !isConnected || publishing ? 0.6 : 1 }}
+              onPress={() => void onPublishStudy()}
+            >
+              {publishing ? (
+                <ActivityIndicator size={20} />
+              ) : (
+                <FeatherIcon name="refresh-cw" size={20} />
+              )}
+              <Text className="ml-[20px]">{t('studies.updatePublishedCopy')}</Text>
+            </LinkBox>
             <LinkBox className="py-[10px] items-center flex-row" href={url}>
               <FeatherIcon name="external-link" size={20} />
               <Text className="ml-[20px]">{t('Ouvrir le lien')}</Text>
@@ -315,12 +313,31 @@ const PublishStudyMenuItem = ({ study, onClosed }: Props) => {
           <Box className="overflow-hidden border-continuous p-[20px]">
             <LinkBox
               className="items-center flex-row"
-              onPress={onPublishStudy}
-              disabled={!isConnected}
-              style={[{ opacity: !isConnected ? 0.6 : 1 }, [{ opacity: !isConnected ? 0.6 : 1 }]]}
+              onPress={() => void onPublishStudy()}
+              disabled={!isConnected || publishing}
+              style={{ opacity: !isConnected || publishing ? 0.6 : 1 }}
             >
+              {publishing && <ActivityIndicator size={16} style={{ marginRight: 10 }} />}
               <Text>{t("Publier l'étude")}</Text>
             </LinkBox>
+            {pdfStatus !== 'Pending' && (
+              <LinkBox className="pt-[20px] items-center flex-row" onPress={() => exportPDF()}>
+                <MaterialIcon name="picture-as-pdf" size={20} />
+                <Text className={pdfStatus === 'Rejected' ? 'text-quart ml-[20px]' : 'ml-[20px]'}>
+                  {t(
+                    pdfStatus === 'Rejected'
+                      ? "Une erreur s'est produite. Réessayer ?"
+                      : 'Exporter en pdf'
+                  )}
+                </Text>
+              </LinkBox>
+            )}
+            {pdfStatus === 'Pending' && (
+              <Box className="pt-[20px] flex-row items-center" style={{ opacity: 0.6 }}>
+                <ActivityIndicator size={20} />
+                <Text className="ml-[20px]">{t('Génération du pdf...')}</Text>
+              </Box>
+            )}
           </Box>
           <Border />
         </>
