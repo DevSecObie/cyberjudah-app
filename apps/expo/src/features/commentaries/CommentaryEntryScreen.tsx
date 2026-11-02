@@ -33,6 +33,7 @@ import {
 import CommentaryEntryNavigation from './CommentaryEntryNavigation'
 import { groupCommentarySectionsForVerse } from './commentaryResourceNavigation'
 import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
+import BishopsVerseCommentary, { isBishopCommentary } from './BishopsVerseCommentary'
 const CommentaryEntryScreen = ({
   routeParams,
   onOpenChapter,
@@ -113,6 +114,15 @@ const CommentaryEntryScreen = ({
         section.rangeEndVerse !== section.rangeStartVerse ? `–${section.rangeEndVerse}` : ''
       }`
     : `${bookLabel} ${chapter}`
+  // A Bishop's verse opens on every Bishop who taught it, one card per class.
+  const bishopVerse =
+    section && isBishopCommentary(projection.resourceId) && section.rangeStartVerse > 0
+      ? focusVerse !== undefined &&
+        focusVerse >= section.rangeStartVerse &&
+        focusVerse <= section.rangeEndVerse
+        ? focusVerse
+        : section.rangeStartVerse
+      : undefined
 
   return (
     <FormSheetScreen isFormSheet={IS_FORM_SHEET}>
@@ -120,8 +130,8 @@ const CommentaryEntryScreen = ({
         <Header
           background
           hasBackButton={IS_FORM_SHEET ? canGoBackInStack : true}
-          title={entry.author}
-          subTitle={passage}
+          title={bishopVerse ? `${bookLabel} ${chapter}:${bishopVerse}` : entry.author}
+          subTitle={bishopVerse ? t('commentaries.bishops.title') : passage}
           rightComponent={
             <Box className="overflow-hidden border-continuous mr-[4px]">
               <CommentaryResourceHeaderActions
@@ -161,6 +171,15 @@ const CommentaryEntryScreen = ({
             title={t('commentaries.resource.sectionMissing')}
             failure={{ cause: 'not-found', recoveries: [] }}
           />
+        ) : bishopVerse ? (
+          <ScrollView contentContainerStyle={{ maxWidth: 600, padding: 18, paddingBottom: 44 }}>
+            <BishopsVerseCommentary
+              book={book}
+              chapter={chapter}
+              verse={bishopVerse}
+              initialResourceId={projection.resourceId}
+            />
+          </ScrollView>
         ) : (
           <ScrollView
             ref={scrollRef}
