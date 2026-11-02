@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router'
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Animated,
@@ -23,7 +23,7 @@ import {
   rememberClassPosition,
 } from './classVideoPosition'
 import PipGlass from './PipGlass'
-import { dockedClassAtom } from './dockedClassPlayerStore'
+import { dockedClassAtom, dockedClassReturnAtom } from './dockedClassPlayerStore'
 
 const MARGIN = 12
 const MINI_WIDTH = 240
@@ -192,6 +192,7 @@ const Scrubber = ({
  */
 const DockedClassPlayer = () => {
   const [docked, setDocked] = useAtom(dockedClassAtom)
+  const returnAsked = useAtomValue(dockedClassReturnAtom)
   const [expanded, setExpanded] = useState(false)
   const [tucked, setTucked] = useState<Side | null>(null)
   const [dragging, setDragging] = useState(false)
@@ -279,6 +280,21 @@ const DockedClassPlayer = () => {
   }
 
   const isOpen = !!docked
+  // The class's page asked for it back: out of Picture in Picture first, if it is there, so the
+  // video does not stay in the iPhone's floating player once this window is gone.
+  const pictureInPictureRef = useRef(pictureInPicture)
+  pictureInPictureRef.current = pictureInPicture
+  useEffect(() => {
+    if (!returnAsked || !docked) return
+    if (!pictureInPictureRef.current) {
+      setDocked(null)
+      return
+    }
+    frame.current?.command({ func: 'pictureInPicture' })
+    const handBack = setTimeout(() => setDocked(null), 400)
+    return () => clearTimeout(handBack)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [returnAsked])
   useEffect(() => {
     if (isOpen) {
       setPlaying(false)

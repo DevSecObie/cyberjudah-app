@@ -8,8 +8,8 @@ import { useTranslation } from 'react-i18next'
 import { Platform, useWindowDimensions } from 'react-native'
 import YoutubePlayer from '~helpers/react-native-youtube-iframe'
 import WebView from 'react-native-webview'
-import { useAtom } from 'jotai'
-import { dockedClassAtom } from './dockedClassPlayerStore'
+import { useAtom, useSetAtom } from 'jotai'
+import { dockedClassAtom, dockedClassReturnAtom } from './dockedClassPlayerStore'
 import {
   CLASS_TIME_SCRIPT,
   classTimeFromMessage,
@@ -66,6 +66,7 @@ const PassageMediaPlayerScreen = () => {
   const [playerError, setPlayerError] = useState<string>()
   const classPlayerRef = useRef<{ injectJavaScript: (script: string) => void } | null>(null)
   const [dockedClass, setDockedClass] = useAtom(dockedClassAtom)
+  const askDockedClassBack = useSetAtom(dockedClassReturnAtom)
   const pathname = usePathname()
   const routeParams = useGlobalSearchParams()
   const router = useRouter()
@@ -174,7 +175,7 @@ const PassageMediaPlayerScreen = () => {
                     // The class plays in the floating window; tapping here brings it back.
                     <TouchableBox
                       accessibilityRole="button"
-                      onPress={() => setDockedClass(null)}
+                      onPress={() => askDockedClassBack(count => count + 1)}
                       className="flex-1 items-center justify-center gap-[8px] rounded-[14px] bg-[#000]"
                     >
                       <FeatherIcon name="maximize-2" size={20} color="white" />
