@@ -1,8 +1,6 @@
-import { Image } from 'expo-image'
 import { useTranslation } from 'react-i18next'
 import Card from '~common/ui/Card'
 import { FeatherIcon } from '~common/ui/Icon'
-import { ICON_TILE_SIZE } from '~common/ui/IconTile'
 import ListSection, { ListRow } from '~common/ui/ListSection'
 import { getAppleReviewing } from '~helpers/getAppleReviewing'
 import useLanguage from '~helpers/useLanguage'
@@ -19,21 +17,6 @@ const HomeGoFurther = () => {
   const appleIsReviewing = getAppleReviewing()
 
   const rows = [
-    <ListRow
-      key="audibible"
-      href="https://click.audibible.app/5nmN/stephane30"
-      label={t('audibible.try')}
-      description={t('audibible.description')}
-      accessibilityLabel={t('audibible.try')}
-      accessibilityHint={t('audibible.description')}
-      icon={
-        <Image
-          source={require('~assets/images/audibible-icon.png')}
-          accessible={false}
-          style={{ width: ICON_TILE_SIZE, height: ICON_TILE_SIZE }}
-        />
-      }
-    />,
     ...(appleIsReviewing
       ? []
       : [

@@ -3,8 +3,6 @@ import { useTranslation } from 'react-i18next'
 import Link, { type LinkProps } from '~common/Link'
 import Box from '~common/ui/Box'
 import Text from '~common/ui/Text'
-import { useComputedPlanItems } from '~features/plans/plan.hooks'
-import useLanguage from '~helpers/useLanguage'
 import type { MainStackProps } from '~navigation/type'
 import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
 import { HomeGrid, useHomeLayout } from './homeLayout'
@@ -38,12 +36,7 @@ type ExploreCard = {
 const HomeExploreGrid = () => {
   const { t } = useTranslation()
   const { content } = useHomeLayout()
-  const lang = useLanguage()
   const pushRoute = usePushRouteOnce()
-  const plans = useComputedPlanItems()
-  const bibleProjectPlan = plans.find(
-    plan => plan.id === (lang === 'fr' ? 'bible-project-plan' : 'bible-project-plan-en')
-  )
 
   const cards: ExploreCard[] = [
     {
@@ -62,20 +55,6 @@ const HomeExploreGrid = () => {
       art: { tint: '#E3EFE6', align: 'center', drop: 14 },
       link: { route: 'TimelineHome' },
     },
-    ...(bibleProjectPlan
-      ? [
-          {
-            id: 'bible-project',
-            title: t('home.learning.bibleProjectPlan'),
-            description: t('readingPlans.readAtYourPace'),
-            image: require('~assets/images/home/bible-project-plan.jpg'),
-            link: {
-              route: 'Plan',
-              params: { planId: bibleProjectPlan.id, plan: bibleProjectPlan },
-            },
-          } satisfies ExploreCard,
-        ]
-      : []),
     {
       id: 'meditations',
       title: t('home.meditations.collections'),
