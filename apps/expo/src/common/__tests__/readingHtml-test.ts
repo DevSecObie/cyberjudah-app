@@ -4,6 +4,7 @@ import {
   estimateReadingHtmlHeight,
   getReadingTypography,
   readingHtmlCSS,
+  readingHtmlClassStyles,
   readingHtmlStyles,
 } from '../readingHtml'
 
@@ -105,4 +106,21 @@ it('estimates rendered HTML height from text length, blocks and paragraph spacin
     )
   ).toBe((3 + 1 + 1) * 30 + 20)
   expect(estimateReadingHtmlHeight('', typography, 200)).toBe(0)
+})
+
+it('shows the commentary verse words in gold that reads on light and dark pages', () => {
+  const typography = getReadingTypography('Avenir', 0, 'normal')
+  expect(readingHtmlClassStyles(typography, colors)['cj-verse']).toEqual({
+    color: '#8A5A12',
+    fontStyle: 'italic',
+  })
+  const dark = { ...colors, background: 'rgb(18,18,18)', text: 'rgb(240,240,240)' }
+  expect(readingHtmlClassStyles(typography, dark)['cj-verse'].color).toBe('#E0A64A')
+  expect(readingHtmlClassStyles(typography, dark)['cj-kjv'].color).toBe('rgb(156, 156, 156)')
+  const css = readingHtmlCSS(typography, colors, '.x')
+  expect(css).toContain('.x .cj-verse { color: #8A5A12; font-style: italic; }')
+  expect(css).toContain('.x .cj-precept { border-width: 0px; border-left-width: 2px;')
+  expect(cleanReadingHTML('<p><i class="cj-verse">In the beginning:</i> x</p>')).toContain(
+    'class="cj-verse"'
+  )
 })
