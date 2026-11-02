@@ -430,9 +430,10 @@ const DockedClassPlayer = () => {
           />
           {/* The whole window moves the video: the video page underneath never takes the touch. A
               tap shows the controls instead, as on the iPhone's picture in picture. */}
-          {!tucked && !started && (
-            // YouTube's own play button stays free in the middle; the strip on top still moves the
-            // window and holds close, bigger and back.
+          {!tucked && (!started || expanded) && (
+            // YouTube's own controls stay free underneath: its play button before the class
+            // starts, and all of them (time bar, captions, full screen) once the window is
+            // enlarged. The strip on top still moves the window and holds close, size and back.
             <Box
               {...responder.panHandlers}
               accessibilityHint="Drag to move the video"
@@ -456,7 +457,7 @@ const DockedClassPlayer = () => {
               </Box>
             </Box>
           )}
-          {!tucked && started && (
+          {!tucked && started && !expanded && (
             <Box
               {...responder.panHandlers}
               accessibilityHint="Drag to move the video; tap to show its controls"
