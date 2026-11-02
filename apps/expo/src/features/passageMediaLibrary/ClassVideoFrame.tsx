@@ -26,7 +26,10 @@ const ClassVideoFrame = forwardRef<ClassVideoFrameHandle, Props>(
   ({ uri, onTime, onState, onDuration }, ref) => {
     const view = useRef<{ injectJavaScript: (script: string) => void } | null>(null)
     useImperativeHandle(ref, () => ({
-      command: command => view.current?.injectJavaScript(classCommandScript(command)),
+      command: command => {
+        console.log('[ClassPlayer] command', command.func, 'webview', !!view.current)
+        view.current?.injectJavaScript(classCommandScript(command))
+      },
     }))
     return (
       <WebView
@@ -39,6 +42,8 @@ const ClassVideoFrame = forwardRef<ClassVideoFrameHandle, Props>(
         mediaPlaybackRequiresUserAction={false}
         injectedJavaScript={CLASS_TIME_SCRIPT + CLASS_CONTROL_SCRIPT}
         onMessage={event => {
+          if (event.nativeEvent.data.includes('classCommandHeard'))
+            console.log('[ClassPlayer] page heard', event.nativeEvent.data)
           const seconds = classTimeFromMessage(event.nativeEvent.data)
           if (seconds !== undefined) onTime?.(seconds)
           const state = classStateFromMessage(event.nativeEvent.data)

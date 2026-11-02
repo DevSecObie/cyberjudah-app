@@ -65,12 +65,14 @@ export const verseNumbers = (spec?: string | null): number[] => {
   return [...new Set(out)].sort((a, b) => a - b)
 }
 
-/** The Bishops' teaching comes first, then the Deacons', then the Captains', then the rest. */
+/** The Bishops' teaching comes first, then the Deacons', then the Captains', then the rest; Zakai's last. */
 const teacherRank = (teacher?: string | null) => {
   const name = teacher ?? ''
   if (/^bishop\b/i.test(name)) return 0
   if (/^deacon\b/i.test(name)) return 1
   if (/^captain\b/i.test(name)) return 2
+  // Zakai's classes always come last (Obie, 2026-11-02).
+  if (/^zakai\b/i.test(name)) return 4
   return 3
 }
 const byRankNewestFirst = (a: ClassMoment, b: ClassMoment) =>

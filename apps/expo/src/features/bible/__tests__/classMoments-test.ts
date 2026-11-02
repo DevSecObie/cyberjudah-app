@@ -164,6 +164,7 @@ describe('chapter classes by rank', () => {
         moments: [
           moment('captainAAAA', '1', 'Captain Mattathias', '2026-10-01'),
           moment('unknownAAAA', '2', '', '2026-10-30'),
+          moment('zakaiAAAAAA', '6', 'Zakai', '2026-10-31'),
           moment('deaconAAAAA', '3', 'Deacon Asaph', '2026-09-01'),
           moment('bishopOLDAA', '4', 'Bishop Nathanael', '2025-01-01'),
           moment('bishopNEWAA', '5', 'Bishop Yawasap', '2026-10-25'),
@@ -176,6 +177,7 @@ describe('chapter classes by rank', () => {
       'deaconAAAAA',
       'captainAAAA',
       'unknownAAAA',
+      'zakaiAAAAAA',
     ])
   })
 })

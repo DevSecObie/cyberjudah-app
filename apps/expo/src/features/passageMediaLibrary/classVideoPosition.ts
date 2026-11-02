@@ -79,8 +79,9 @@ export type ClassCommand = { func: 'playVideo' | 'pauseVideo' | 'seekTo'; args?:
 export const CLASS_CONTROL_SCRIPT = `(() => {
   if (window.__cyberJudahClassControls) return
   window.__cyberJudahClassControls = true
-  const frame = document.querySelector('iframe')
-  if (!frame || !window.ReactNativeWebView) return
+  if (!window.ReactNativeWebView) return
+  // The video page adds its YouTube frame itself, and may not have yet: find it when needed.
+  const frame = () => document.querySelector('iframe')
   let lastState
   let lastDuration = -1
   window.addEventListener('message', event => {
@@ -99,8 +100,10 @@ export const CLASS_CONTROL_SCRIPT = `(() => {
     window.ReactNativeWebView.postMessage(JSON.stringify({ classState: state }))
   })
   window.__cyberJudahCommand = (func, args) => {
-    if (frame.contentWindow)
-      frame.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args: args || [] }), '*')
+    const target = frame()
+    window.ReactNativeWebView.postMessage(JSON.stringify({ classCommandHeard: func, hasFrame: !!(target && target.contentWindow) }))
+    if (target && target.contentWindow)
+      target.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args: args || [] }), '*')
   }
 })(); true`
 
