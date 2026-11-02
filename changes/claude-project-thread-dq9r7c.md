@@ -11,7 +11,4 @@ Web only. The iPhone and Android apps are unchanged.
 - The web export drops code no screen uses (Expo tree shaking, set only in `web:export` and
   `web:build`): the largest file goes from 23.5 MB to 17.0 MB. The whole icon set and every date
   language no longer ship.
-- No purchase code on web: the browser has no store, and `revenueCatPublicKey()` already gives
-  no key there. `revenueCat.web.ts` gives the same "unavailable" answers without the 1.1 MB SDK.
-  Largest file now 15.9 MB (about 4 MB compressed).
 - The staging web build in CI uses `web:export`, so it gets the same settings.
