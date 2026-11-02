@@ -1,0 +1,120 @@
+name: CyberJudah signed iPhone store build
+# The App Store app (io.cyberjudah.app) on the production servers. Kept step for step with
+# cyberjudah-ios-signed.yml (the beta on staging); only the settings file, signing secrets and
+# bundle checks differ. Started by hand only, and the app-store environment holds its secrets,
+# so it never runs on a merge. It exports a signed IPA and uploads nothing to Apple.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cyberjudah-ios-store-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  ios-signed:
+    if: github.repository == 'DevSecObie/cyberjudah-app'
+    runs-on: macos-26
+    environment: app-store
+    timeout-minutes: 120
+    env:
+      CI: '1'
+      EXPO_NO_TELEMETRY: '1'
+      SENTRY_DISABLE_AUTO_UPLOAD: 'true'
+      NODE_OPTIONS: --max-old-space-size=6144
+      CYBERJUDAH_APPLE_TEAM_ID: M8DUMWBXLH
+      CYBERJUDAH_IOS_TARGET: production
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 apps/expo/scripts/test-ios-signing.py
+      - name: Require the store app's Firebase file
+        run: |
+          test -s apps/expo/firebase/cyberjudah-production/GoogleService-Info.plist || {
+            echo 'Add the Firebase iOS file for io.cyberjudah.app first (see firebase/cyberjudah-production/README.md)'; exit 1; }
+      - name: Install the approved store signing assets
+        env:
+          CJ_IOS_CERTIFICATE: ${{ secrets.IOS_STAGING_CERTIFICATE_BASE64 }}
+          CJ_IOS_PASSWORD: ${{ secrets.IOS_STAGING_CERTIFICATE_PASSWORD }}
+          CJ_IOS_PROFILE: ${{ secrets.IOS_PRODUCTION_PROFILE_BASE64 }}
+        run: |
+          set -euo pipefail
+          test -n "$CJ_IOS_CERTIFICATE" && test -n "$CJ_IOS_PASSWORD" && test -n "$CJ_IOS_PROFILE" || { echo 'Approved store signing secrets are missing'; exit 1; }
+          umask 077
+          printf '%s' "$CJ_IOS_CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/store.p12"
+          printf '%s' "$CJ_IOS_PROFILE" | base64 --decode > "$RUNNER_TEMP/store.mobileprovision"
+          security cms -D -i "$RUNNER_TEMP/store.mobileprovision" > "$RUNNER_TEMP/profile.plist"
+          python3 apps/expo/scripts/prepare-ios-signing.py "$RUNNER_TEMP/profile.plist" "$RUNNER_TEMP/ios-signing"
+          CJ_KEYCHAIN_PASSWORD=$(openssl rand -hex 32)
+          echo "::add-mask::$CJ_KEYCHAIN_PASSWORD"
+          security create-keychain -p "$CJ_KEYCHAIN_PASSWORD" "$RUNNER_TEMP/store.keychain-db"
+          security set-keychain-settings -lut 21600 "$RUNNER_TEMP/store.keychain-db"
+          security unlock-keychain -p "$CJ_KEYCHAIN_PASSWORD" "$RUNNER_TEMP/store.keychain-db"
+          security import "$RUNNER_TEMP/store.p12" -P "$CJ_IOS_PASSWORD" -k "$RUNNER_TEMP/store.keychain-db" -t cert -f pkcs12 -T /usr/bin/codesign -T /usr/bin/security
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -k "$CJ_KEYCHAIN_PASSWORD" "$RUNNER_TEMP/store.keychain-db" > /dev/null
+          security list-keychains -d user -s "$RUNNER_TEMP/store.keychain-db"
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          cp "$RUNNER_TEMP/store.mobileprovision" "$HOME/Library/MobileDevice/Provisioning Profiles/CyberJudah-Store.mobileprovision"
+          security find-identity -v -p codesigning "$RUNNER_TEMP/store.keychain-db"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: corepack enable
+      - run: yarn workspaces focus @bible-strong/expo
+      - name: Verify the native scheduler guard is enabled
+        run: |
+          clang++ -std=c++20 -I apps/expo/node_modules/react-native/ReactCommon \
+            apps/expo/scripts/check-ios-scheduler-guard.cpp -o "$RUNNER_TEMP/scheduler-guard"
+          "$RUNNER_TEMP/scheduler-guard"
+      - name: Use only the CyberJudah production settings
+        run: |
+          cp apps/expo/.env.cyberjudah.production.example apps/expo/.env.local
+          # Bible Strong's own environment files must not be loadable by the release bundler.
+          rm -f apps/expo/.env.production apps/expo/.env.staging apps/expo/.env.development
+      - run: yarn workspace @bible-strong/expo typecheck
+      - run: yarn workspace @bible-strong/expo test --runInBand
+      - name: Verify FTS database close with the bundled SQLite implementation
+        run: |
+          clang -O0 -g -fsanitize=address -DSQLITE_ENABLE_FTS5 \
+            -I apps/expo/node_modules/expo-sqlite/vendor/sqlite3 \
+            apps/expo/scripts/check-sqlite-fts-close.c \
+            apps/expo/node_modules/expo-sqlite/vendor/sqlite3/sqlite3.c \
+            -o "$RUNNER_TEMP/sqlite-fts-close"
+          "$RUNNER_TEMP/sqlite-fts-close"
+      - name: Give the CyberJudah settings to the native build
+        # Build 303's bundle came out without them although Expo loaded .env.local, so every
+        # later process, including the Xcode bundle phase and its Metro workers, gets them too.
+        run: |
+          # Only the app's public settings: a variable such as NODE_OPTIONS or PATH can never be
+          # set for the signing steps from this file.
+          grep -E '^(EXPO_PUBLIC_[A-Z0-9_]+|APP_NAME|BUNDLE_IDENTIFIER|IOS_GOOGLE_SERVICES_FILE|ANDROID_GOOGLE_SERVICES_FILE|EAS_BUILD_CHANNEL|OTA_URL)=' apps/expo/.env.cyberjudah.production.example | sed -E 's/^([A-Z0-9_]+)="?([^"]*)"?$/\1=\2/' >> "$GITHUB_ENV"
+          echo NODE_ENV=production >> "$GITHUB_ENV"
+      - run: yarn workspace @bible-strong/expo exec expo prebuild --platform ios --no-install
+      - run: node apps/expo/scripts/verify-cyberjudah-native-config.mjs ios
+      - run: pod install
+        working-directory: apps/expo/ios
+      - run: ruby apps/expo/scripts/configure-ios-signing.rb "$RUNNER_TEMP/ios-signing/signing.json"
+      - name: Archive and export a signed IPA without uploading
+        run: |
+          set -euo pipefail
+          workspace=$(find apps/expo/ios -maxdepth 1 -name '*.xcworkspace' -print -quit)
+          scheme=$(basename "$workspace" .xcworkspace)
+          xcodebuild -workspace "$workspace" -scheme "$scheme" -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/CyberJudah-Store.xcarchive" archive > "$RUNNER_TEMP/ios-build.log" 2>&1 || { tail -100 "$RUNNER_TEMP/ios-build.log"; exit 1; }
+          # A header patch alone is ineffective when Expo uses the prebuilt React core.
+          grep -E 'CompileC .*RCTReactNativeFactory\.(o|mm)' "$RUNNER_TEMP/ios-build.log" > /dev/null || { echo 'Native factory was not compiled from the patched sources'; exit 1; }
+          app=$(find "$RUNNER_TEMP/CyberJudah-Store.xcarchive/Products/Applications" -maxdepth 1 -name '*.app' -print -quit)
+          codesign --verify --deep --strict "$app"
+          node apps/expo/scripts/verify-cyberjudah-bundle.mjs "$app/main.jsbundle"
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/CyberJudah-Store.xcarchive" -exportOptionsPlist "$RUNNER_TEMP/ios-signing/ExportOptions.plist" -exportPath "$RUNNER_TEMP/CyberJudah-Store-IPA" > "$RUNNER_TEMP/ios-export.log" 2>&1 || { tail -100 "$RUNNER_TEMP/ios-export.log"; exit 1; }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: CyberJudah-store-iPhone-signed
+          path: |
+            ${{ runner.temp }}/CyberJudah-Store-IPA/*.ipa
+            ${{ runner.temp }}/ios-build.log
+            ${{ runner.temp }}/ios-export.log
+          retention-days: 14
+      - name: Remove temporary signing credentials
+        if: always()
+        run: |
+          security delete-keychain "$RUNNER_TEMP/store.keychain-db" || true
+          rm -f "$HOME/Library/MobileDevice/Provisioning Profiles/CyberJudah-Store.mobileprovision" "$RUNNER_TEMP/store.p12" "$RUNNER_TEMP/store.mobileprovision" "$RUNNER_TEMP/profile.plist"
