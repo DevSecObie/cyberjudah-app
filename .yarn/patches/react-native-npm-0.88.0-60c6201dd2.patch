@@ -1,0 +1,74 @@
+diff --git a/ReactCommon/react/renderer/scheduler/Scheduler.cpp b/ReactCommon/react/renderer/scheduler/Scheduler.cpp
+index e74e8025c267022145beca65dbb525b8fc1c7836..6650645649d6c279940fb6102b8a95a7b5708f17 100644
+--- a/ReactCommon/react/renderer/scheduler/Scheduler.cpp
++++ b/ReactCommon/react/renderer/scheduler/Scheduler.cpp
+@@ -178,6 +178,10 @@ Scheduler::Scheduler(
+ }
+ 
+ Scheduler::~Scheduler() {
++  // CyberJudah: invalidate rendering-update lambdas already queued with the raw
++  // delegate_ pointer; Scheduler is going away.
++  *delegateInvalidated_ = true;
++
+   LOG(WARNING) << "Scheduler::~Scheduler() was called (address: " << this
+                << ").";
+ 
+@@ -270,6 +274,12 @@ Scheduler::findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
+ #pragma mark - Delegate
+ 
+ void Scheduler::setDelegate(SchedulerDelegate* delegate) {
++  if (delegate_ != delegate) {
++    // CyberJudah: lambdas already queued against the previous delegate see
++    // `true` and no-op; new ones get a fresh token of their own.
++    *delegateInvalidated_ = true;
++    delegateInvalidated_ = std::make_shared<std::atomic<bool>>(false);
++  }
+   delegate_ = delegate;
+ }
+ 
+@@ -304,7 +314,11 @@ void Scheduler::uiManagerDidFinishTransaction(
+       runtimeScheduler_->scheduleRenderingUpdate(
+           surfaceId,
+           [delegate = delegate_,
++           invalidated = delegateInvalidated_,
+            mountingCoordinator = std::move(mountingCoordinator)]() {
++            if (*invalidated) {
++              return;
++            }
+             delegate->schedulerShouldRenderTransactions(mountingCoordinator);
+           });
+     } else {
+@@ -330,9 +344,13 @@ void Scheduler::uiManagerDidDispatchCommand(
+     runtimeScheduler_->scheduleRenderingUpdate(
+         shadowNode->getSurfaceId(),
+         [delegate = delegate_,
++         invalidated = delegateInvalidated_,
+          shadowView = std::move(shadowView),
+          commandName,
+          args]() {
++          if (*invalidated) {
++            return;
++          }
+           delegate->schedulerDidDispatchCommand(shadowView, commandName, args);
+         });
+   }
+diff --git a/ReactCommon/react/renderer/scheduler/Scheduler.h b/ReactCommon/react/renderer/scheduler/Scheduler.h
+index 1f5a59d1e1e296629f3d525430d4dcd90c5d4f25..cc53f3207a760c97b847d56fd2fd5c355fa543ab 100644
+--- a/ReactCommon/react/renderer/scheduler/Scheduler.h
++++ b/ReactCommon/react/renderer/scheduler/Scheduler.h
+@@ -158,6 +158,15 @@ class Scheduler final : public UIManagerDelegate {
+ 
+   mutable std::shared_mutex onSurfaceStartCallbackMutex_;
+   std::vector<OnSurfaceStartCallback> onSurfaceStartCallbacks_;
++
++  // CyberJudah: invalidation token captured by value into lambdas deferred via
++  // runtimeScheduler_->scheduleRenderingUpdate. Set to true on delegate change
++  // or Scheduler destruction, so a lambda that outlives its captured raw
++  // delegate pointer no-ops instead of dereferencing dangling memory.
++  // Port of the guard React Native 0.86.3 had behind
++  // enableSchedulerDelegateInvalidation (facebook/react-native#56680).
++  std::shared_ptr<std::atomic<bool>> delegateInvalidated_ =
++      std::make_shared<std::atomic<bool>>(false);
+ };
+ 
+ } // namespace facebook::react

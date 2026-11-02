@@ -185,7 +185,7 @@
     "react-blurhash": "^0.3.0",
     "react-dom": "19.3.0",
     "react-i18next": "11.18.6",
-    "react-native": "0.88.0",
+    "react-native": "patch:react-native@npm%3A0.88.0#~/.yarn/patches/react-native-npm-0.88.0-60c6201dd2.patch",
     "react-native-ease": "^0.4.0",
     "react-native-edge-to-edge": "^1.4.3",
     "react-native-enriched-markdown": "1.0.2",
