@@ -16,7 +16,26 @@ import type { NoteBlock } from './cyberJudahClasses'
 // lays out like any other list. The look follows the website's notes and Bible Strong's verse
 // blocks: headings, the passage with its time pill, the KJV quote, the precepts under it.
 
-type Colors = { text: string; muted: string; link: string; surface: string; border: string }
+type Colors = {
+  text: string
+  muted: string
+  link: string
+  surface: string
+  border: string
+  verse: string
+}
+
+/** Whether a theme colour is a light one, by its brightness: rgb(…) or #rrggbb. */
+const isLight = (color: string) => {
+  const rgb = /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(color)
+  const hex = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/i.exec(color)
+  const [r, g, b] = rgb
+    ? rgb.slice(1, 4).map(Number)
+    : hex
+      ? hex.slice(1, 4).map(part => parseInt(part, 16))
+      : [255, 255, 255]
+  return 0.299 * r + 0.587 * g + 0.114 * b > 150
+}
 type OnLink = (href: string) => void
 
 const ENTITIES: Record<string, string> = {
@@ -249,7 +268,17 @@ const Block = ({
         )
       return (
         <View style={{ marginBottom: 12, marginTop: block.variant === 'passage' ? 18 : 0 }}>
-          <Inline html={block.html} colors={colors} onLink={onLink} />
+          {block.lead ? (
+            <NativeText style={{ color: colors.text, fontSize: 17, lineHeight: 27 }}>
+              <NativeText style={{ color: colors.verse, fontStyle: 'italic' }}>
+                {renderInline(parseInline(block.lead), colors, onLink)}
+              </NativeText>
+              {'  '}
+              {renderInline(parseInline(block.html), colors, onLink)}
+            </NativeText>
+          ) : (
+            <Inline html={block.html} colors={colors} onLink={onLink} />
+          )}
         </View>
       )
     case 'quote':
@@ -460,6 +489,8 @@ const useNoteColors = (): Colors => {
     link: theme.colors.primary,
     surface: theme.colors.lightGrey,
     border: theme.colors.border,
+    // The verse's own words in a point: gold, darker on a light page so it reads.
+    verse: isLight(theme.colors.reverse) ? '#8A5A12' : '#E0A64A',
   }
 }
 

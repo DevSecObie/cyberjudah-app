@@ -487,7 +487,13 @@ const blocksToHtml = (lines: string[], videoId: string): string => {
  */
 export type NoteBlock =
   | { type: 'heading'; level: number; html: string }
-  | { type: 'paragraph'; html: string; variant?: 'label' | 'passage' }
+  | {
+      type: 'paragraph'
+      html: string
+      variant?: 'label' | 'passage'
+      /** The verse's own words a point opens on ("verse words: what was said"), shown in gold. */
+      lead?: string
+    }
   | { type: 'rule' }
   | { type: 'reading'; blocks: NoteBlock[] }
   | { type: 'quote'; blocks: NoteBlock[] }
@@ -759,9 +765,56 @@ const flowInClassOrder = (blocks: NoteBlock[]): NoteBlock[] => {
   return out
 }
 
+const wordsOf = (html: string) =>
+  plainText(html.replace(/<sup\b[^>]*>.*?<\/sup>/g, ' '))
+    .toLowerCase()
+    .replace(/[^a-z ]+/g, ' ')
+    // The KJV's spelling and the notes' can differ: worshipped/worshiped, honoured/honored.
+    .replace(/([a-z])\1/g, '$1')
+    .replace(/our\b/g, 'or')
+    .split(/\s+/)
+    .filter(Boolean)
+    .join(' ')
+
+const verseWordsOf = (blocks: NoteBlock[]): string =>
+  blocks
+    .map(block =>
+      block.type === 'paragraph'
+        ? wordsOf(block.html)
+        : 'blocks' in block
+          ? verseWordsOf(block.blocks)
+          : ''
+    )
+    .join(' ')
+
+/**
+ * Each point opens on the words of the verse it comments on ("verse words: what was said"). Split
+ * those words off as the paragraph's lead when they are the verse's own, quoted just above, so
+ * they can be shown apart from what was said on them.
+ */
+const withVerseWords = (blocks: NoteBlock[], verse = ''): NoteBlock[] => {
+  let current = verse
+  return blocks.map(block => {
+    if (block.type === 'verse') {
+      current = verseWordsOf(block.blocks)
+      return block
+    }
+    if (block.type === 'list')
+      return { ...block, items: block.items.map(item => withVerseWords(item, current)) }
+    if (block.type === 'reading' || block.type === 'quote' || block.type === 'aside')
+      return { ...block, blocks: withVerseWords(block.blocks, current) }
+    if (block.type !== 'paragraph' || block.variant || !current) return block
+    const split = /^([^<:]{3,220}?):\s+([\s\S]+)$/.exec(block.html)
+    if (!split) return block
+    const words = wordsOf(split[1])
+    if (!words || !` ${current} `.includes(` ${words} `)) return block
+    return { ...block, lead: split[1], html: split[2] }
+  })
+}
+
 /** The notes as blocks for the app's own components. */
 export const classNotesToBlocks = (markdown: string, videoId: string): NoteBlock[] =>
-  flowInClassOrder(blocksOf(notesLines(markdown), videoId))
+  flowInClassOrder(withVerseWords(blocksOf(notesLines(markdown), videoId)))
 
 /** The notes as HTML: headings, scripture quotes, precepts nested under each verse. */
 export const classNotesToHtml = (markdown: string, videoId: string): string =>
