@@ -615,7 +615,15 @@ const BibleVerseDetailCard: React.FC<Props> = ({
         />
       </Box>
       <Box className="overflow-hidden border-continuous bg-canvas flex-[1]">
-        {strongCardsQuery.isError ? (
+        {Number(verseBook) > 66 && strongCards.length === 0 ? (
+          // CyberJudah: the Apocrypha (books 67 and on) has no Strong's word data yet.
+          <Empty
+            iconElement={
+              <FeatherIcon name="book-open" size={36} color={getUniverseColor('bible')} />
+            }
+            message={t('resource.strong.apocryphaComing')}
+          />
+        ) : strongCardsQuery.isError ? (
           <ResourceUnavailableView
             identity={{
               kind: 'strong-lexicon-module',

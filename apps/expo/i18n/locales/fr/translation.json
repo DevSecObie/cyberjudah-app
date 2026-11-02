@@ -418,6 +418,7 @@
   "resource.strong.offlineCopyNeeded": "Ces données Strong ne sont pas encore disponibles en ligne. Ajoutez leur copie hors ligne pour les utiliser maintenant.",
   "resource.strong.temporarilyUnavailable": "Le lexique Strong n’a pas pu être ouvert.",
   "resource.strong.noLexiconForVerse": "Aucune donnée de lexique Strong pour ce verset.",
+  "resource.strong.apocryphaComing": "Word study for the Apocrypha is coming.",
   "strongSource.unavailableMessage": "Vous avez besoin d’une Bible avec un index Strong pour afficher le lexique de ce verset.",
   "strongSource.chooseAction": "Choisir une Bible Strong",
   "Verset précédent": "Verset précédent",
