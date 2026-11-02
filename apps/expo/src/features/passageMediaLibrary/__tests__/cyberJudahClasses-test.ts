@@ -209,6 +209,14 @@ describe('classNotesToBlocks', () => {
 })
 
 describe('verse words', () => {
+  // Verse links become the app's own verses only in the CyberJudah app.
+  const profile = process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+  beforeAll(() => {
+    process.env.EXPO_PUBLIC_RESOURCE_PROFILE = 'cyberjudah'
+  })
+  afterAll(() => {
+    process.env.EXPO_PUBLIC_RESOURCE_PROFILE = profile
+  })
   const notes = [
     '## Scriptures Opened',
     '',
@@ -217,7 +225,7 @@ describe('verse words', () => {
     '> <sup>[10](/bible/genesis/17#v10)</sup> This is my covenant, which ye shall keep, between me and you and thy seed after thee; Every man child among you shall be circumcised.',
     '',
     '- Every man child among you shall be circumcised: Hold that, and go to Genesis 14.',
-    '- Abraham\'s house: not the verse\'s words.',
+    "- Abraham's house: not the verse's words.",
   ].join('\n')
 
   it('splits off the verse words a point opens on', () => {
