@@ -207,6 +207,36 @@ describe('classNotesToBlocks', () => {
   })
 })
 
+describe('verse words', () => {
+  const notes = [
+    '## Scriptures Opened',
+    '',
+    '**[Genesis 17:10](/bible/genesis/17#v10)**  *[[10:04](https://www.youtube.com/watch?v=P4cR6i32U80&t=604s)]*',
+    '',
+    '> <sup>[10](/bible/genesis/17#v10)</sup> This is my covenant, which ye shall keep, between me and you and thy seed after thee; Every man child among you shall be circumcised.',
+    '',
+    '- Every man child among you shall be circumcised: Hold that, and go to Genesis 14.',
+    '- Abraham\'s house: not the verse\'s words.',
+  ].join('\n')
+
+  it('splits off the verse words a point opens on', () => {
+    const list = classNotesToBlocks(notes, 'P4cR6i32U80').find(block => block.type === 'list')
+    expect(list).toMatchObject({
+      items: [
+        [
+          {
+            type: 'paragraph',
+            lead: 'Every man child among you shall be circumcised',
+            html: 'Hold that, and go to Genesis 14.',
+          },
+        ],
+        [{ type: 'paragraph', html: expect.stringContaining('house: not') }],
+      ],
+    })
+    if (list?.type === 'list') expect(list.items[1][0]).not.toHaveProperty('lead')
+  })
+})
+
 describe('In the News', () => {
   it('moves each timed item out of its own section into Scriptures Opened', () => {
     const seek = (t: number) => `*[[0:${t}](https://www.youtube.com/watch?v=P4cR6i32U80&t=${t}s)]*`

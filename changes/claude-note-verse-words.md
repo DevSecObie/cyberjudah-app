@@ -1,0 +1,1 @@
+- Class notes: the verse words a point opens on ("Every man child among you shall be circumcised: ...") show in gold italics, apart from what the teacher said on them, as on the approved note layout. Gold is darker on light themes so it reads.
