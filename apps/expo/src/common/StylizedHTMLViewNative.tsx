@@ -6,6 +6,7 @@ import type { HTMLViewLinkPayload } from './htmlContentTypes'
 import {
   cleanReadingHTML,
   readingEdgeStyles,
+  readingHtmlClassStyles,
   readingHtmlStyles,
   type ReadingColors,
   type ReadingTypography,
@@ -41,7 +42,7 @@ export default function StylizedHTMLViewNative({
           source={{ html: content }}
           baseStyle={{ ...typography, color: colors.text }}
           tagsStyles={readingHtmlStyles(typography, colors)}
-          classesStyles={readingEdgeStyles}
+          classesStyles={{ ...readingEdgeStyles, ...readingHtmlClassStyles(typography, colors) }}
           enableUserAgentStyles={false}
           enableExperimentalMarginCollapsing
           defaultTextProps={{ selectable: true, allowFontScaling: false }}
