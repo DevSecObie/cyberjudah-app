@@ -19,6 +19,11 @@ import { useComputedPlanItems } from '~features/plans/plan.hooks'
 import ProfileStats from '~features/profile/components/ProfileStats'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import useLanguage from '~helpers/useLanguage'
+import { useQuery } from '@tanstack/react-query'
+import {
+  loadClassLibrary,
+  readCachedClassLibrary,
+} from '~features/passageMediaLibrary/cyberJudahClasses'
 import type { MainStackProps } from '~navigation/type'
 import { useTheme } from '~themes/ThemeProvider'
 import { resolveFontFamily } from '~themes/styleValues'
@@ -64,25 +69,30 @@ function ResourceLink({
 function LearningCard({
   title,
   source,
+  rising = false,
   ...props
 }: {
   title: string
   source: ImageSource
+  /** A transparent CyberJudah lion picture drawn taller than its light panel, so it rises above the card. */
+  rising?: boolean
 } & LinkProps<keyof MainStackProps>) {
   return (
-    <div className="bs-home-learning-card">
+    <div className={rising ? 'bs-home-learning-card bs-home-learning-card-rising' : 'bs-home-learning-card'}>
       <LinkBox
         {...props}
         className="bg-reverse rounded-[18px] overflow-hidden shadow-[0_2px_7px_rgba(89,131,240,0.1)]"
       >
         <div className="bs-home-learning-body">
           <div className="bs-home-learning-image">
-            <Image
-              source={source}
-              contentFit="cover"
-              style={{ width: '100%', height: '100%' }}
-              accessible={false}
-            />
+            {!rising && (
+              <Image
+                source={source}
+                contentFit="cover"
+                style={{ width: '100%', height: '100%' }}
+                accessible={false}
+              />
+            )}
           </div>
           <HStack className="p-[16px] gap-[10px] items-center">
             <Text className="font-bold text-[16px] flex-1">{title}</Text>
@@ -92,6 +102,18 @@ function LearningCard({
           </HStack>
         </div>
       </LinkBox>
+      {/* Drawn over the card, outside its clipped corners, so the lion can rise above it. */}
+      {rising && (
+        <div className="bs-home-learning-art" aria-hidden>
+          <Image
+            source={source}
+            contentFit="contain"
+            contentPosition="bottom"
+            style={{ width: '100%', height: '100%' }}
+            accessible={false}
+          />
+        </div>
+      )}
     </div>
   )
 }
@@ -167,6 +189,21 @@ export default function DesktopHome() {
   const pushRoute = usePushRouteOnce()
   const openCommandPalette = useSetAtom(commandPaletteOpenAtom)
   const setCommandReturnFocus = useSetAtom(commandPaletteReturnFocusAtom)
+  const cyberJudah = usesCyberJudahEditorial()
+  // The Courses card shows the latest class, as on the phone (same list as the library).
+  const classLibrary = useQuery({
+    queryKey: ['cyberjudah-class-library'],
+    queryFn: () => loadClassLibrary(),
+    initialData: () => readCachedClassLibrary() ?? undefined,
+    initialDataUpdatedAt: 0,
+    enabled: cyberJudah,
+    staleTime: 5 * 60 * 1000,
+    networkMode: 'always',
+    retry: 1,
+  })
+  const latestClass = cyberJudah
+    ? classLibrary.data?.find(item => item.series === 'Sabbath classes')
+    : undefined
   const bibleProjectPlan = plans.find(
     plan => plan.id === (lang === 'fr' ? 'bible-project-plan' : 'bible-project-plan-en')
   )
@@ -207,26 +244,42 @@ export default function DesktopHome() {
               </Box>
               <Box>
                 <SectionTitle>{t('Apprendre')}</SectionTitle>
-                <div className="bs-home-learning">
+                <div className={cyberJudah ? 'bs-home-learning bs-home-learning-three' : 'bs-home-learning'}>
                   <LearningCard
                     title={t('passageMediaLibrary.title')}
-                    source={require('~assets/images/home/courses-videos.webp')}
+                    // The latest class's thumbnail fills the card; until it loads, the lion rises out of it.
+                    source={
+                      latestClass
+                        ? { uri: latestClass.thumbnailUrl, blurhash: latestClass.blurHash }
+                        : require('~assets/images/home/courses-videos.webp')
+                    }
+                    rising={!latestClass}
                     onPress={() => pushRoute({ pathname: '/(library)/passage-media' })}
                   />
-                  <LearningCard
-                    title={t('home.learning.bibleProjectPlan')}
-                    source={require('~assets/images/home/bible-project-plan.jpg')}
-                    route={bibleProjectPlan ? 'Plan' : 'Plans'}
-                    params={
-                      bibleProjectPlan
-                        ? { planId: bibleProjectPlan.id, plan: bibleProjectPlan }
-                        : undefined
-                    }
-                  />
+                  {/* Hidden for CyberJudah, kept: 4 Chapters a Day lives under Your journeys. */}
+                  {!cyberJudah && (
+                    <LearningCard
+                      title={t('home.learning.bibleProjectPlan')}
+                      source={require('~assets/images/home/bible-project-plan.jpg')}
+                      route={bibleProjectPlan ? 'Plan' : 'Plans'}
+                      params={
+                        bibleProjectPlan
+                          ? { planId: bibleProjectPlan.id, plan: bibleProjectPlan }
+                          : undefined
+                      }
+                    />
+                  )}
                   <LearningCard
                     title={t('home.desktop.timeline')}
                     source={require('~assets/images/home/bible-timeline.webp')}
+                    rising
                     route="TimelineHome"
+                  />
+                  <LearningCard
+                    title="Case studies"
+                    source={require('~assets/images/home/illustrations/dictionary-universe-v3.webp')}
+                    rising
+                    onPress={() => pushRoute({ pathname: '/(library)/case-studies' })}
                   />
                 </div>
               </Box>
@@ -238,7 +291,7 @@ export default function DesktopHome() {
               <Box className="bg-reverse rounded-[20px] p-[16px] shadow-[0_2px_7px_rgba(89,131,240,0.1)]">
                 <PlanHome compact />
               </Box>
-              {!usesCyberJudahEditorial() && (
+              {!cyberJudah && (
                 <LinkBox
                   href="https://click.audibible.app/5nmN/stephane30"
                   className="rounded-[20px] overflow-hidden p-[24px] min-h-[200px]"
