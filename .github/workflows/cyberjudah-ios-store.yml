@@ -32,8 +32,8 @@ jobs:
             echo 'Add the Firebase iOS file for io.cyberjudah.app first (see firebase/cyberjudah-production/README.md)'; exit 1; }
       - name: Install the approved store signing assets
         env:
-          CJ_IOS_CERTIFICATE: ${{ secrets.IOS_PRODUCTION_CERTIFICATE_BASE64 }}
-          CJ_IOS_PASSWORD: ${{ secrets.IOS_PRODUCTION_CERTIFICATE_PASSWORD }}
+          CJ_IOS_CERTIFICATE: ${{ secrets.IOS_STAGING_CERTIFICATE_BASE64 }}
+          CJ_IOS_PASSWORD: ${{ secrets.IOS_STAGING_CERTIFICATE_PASSWORD }}
           CJ_IOS_PROFILE: ${{ secrets.IOS_PRODUCTION_PROFILE_BASE64 }}
         run: |
           set -euo pipefail
