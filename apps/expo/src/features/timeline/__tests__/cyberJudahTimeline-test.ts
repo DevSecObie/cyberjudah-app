@@ -19,8 +19,7 @@ it('uses the same published CyberJudah periods on web and devices without readin
     await expect(getWebEvents()).resolves.toEqual(sections)
     expect(sections).toHaveLength(21)
     expect(new Set(sections.flatMap(section => section.events.map(event => event.slug))).size).toBe(
-      // 991 published, less the 48 church-doctrine cards left out (Obie, 2026-11-02).
-      943
+      991
     )
     expect(sections.some(section => section.sectionTitle === 'The American Captivity')).toBe(true)
     expect(Asset.loadAsync).not.toHaveBeenCalled()
