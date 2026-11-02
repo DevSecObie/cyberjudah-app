@@ -1,0 +1,1 @@
+- Google Play build: a signed Android App Bundle for `io.cyberjudah.app` on the production servers, with purchases off. It starts with each release merge but signs nothing until the owner approves the run, and uploads nothing to Google. Each run gets a new, higher version code. Setup steps are in `apps/expo/firebase/cyberjudah/android-signing/PLAY.md`.

@@ -8,7 +8,8 @@ const app = resolve(import.meta.dirname, '..'),
 if (!bundlePath) throw new Error('Pass the path of the built JavaScript bundle')
 const bundle = (await readFile(bundlePath)).toString('latin1')
 // The production store build checks against its own settings file.
-const production = process.env.CYBERJUDAH_IOS_TARGET === 'production'
+const production =
+  (process.env.CYBERJUDAH_TARGET || process.env.CYBERJUDAH_IOS_TARGET) === 'production'
 const settingsFile = production ? '.env.cyberjudah.production.example' : '.env.cyberjudah.example'
 const settings = Object.fromEntries(
   (await readFile(resolve(app, settingsFile), 'utf8'))

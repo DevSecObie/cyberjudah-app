@@ -1,0 +1,117 @@
+name: CyberJudah signed Android store build
+# The Google Play app (io.cyberjudah.app) on the production servers, purchases off. Kept step
+# for step with the Android job in cyberjudah-staging-builds.yml; only the settings file, the
+# signing key and the checks differ. It starts with each release merge, like the iPhone beta,
+# but the play-store environment holds the upload key and requires the owner's approval, so
+# nothing is signed until he approves the run. It builds a signed App Bundle (.aab) and uploads
+# nothing to Google: the owner uploads it in Play Console.
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/bible-strong-mobile-release]
+permissions:
+  contents: read
+concurrency:
+  group: cyberjudah-android-store-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  android-store:
+    if: github.repository == 'DevSecObie/cyberjudah-app'
+    runs-on: ubuntu-latest
+    environment: play-store
+    timeout-minutes: 120
+    env:
+      CI: '1'
+      EXPO_NO_TELEMETRY: '1'
+      SENTRY_DISABLE_AUTO_UPLOAD: 'true'
+      NODE_OPTIONS: --max-old-space-size=6144
+      CYBERJUDAH_TARGET: production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pick a new version code
+        # Play refuses a version code it has already seen. Every run of this workflow gets a new,
+        # higher one, above the staging APK's 515.
+        run: echo "CYBERJUDAH_ANDROID_VERSION_CODE=$((1000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_ENV"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Check the upload key before building
+        env:
+          CJ_KEYSTORE: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
+          CJ_SIGNING_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          test -n "$CJ_KEYSTORE" && test -n "$CJ_SIGNING_PASSWORD" || { echo 'The Play upload key secrets are missing'; exit 1; }
+          umask 077
+          # Outside the checkout, so no step can commit or upload it by accident.
+          printf '%s' "$CJ_KEYSTORE" | base64 --decode > "$RUNNER_TEMP/upload.p12"
+          # Prints only the alias and the certificate fingerprints, which are public.
+          keytool -list -v -storetype PKCS12 -keystore "$RUNNER_TEMP/upload.p12" -storepass:env CJ_SIGNING_PASSWORD -alias cyberjudah-upload \
+            | grep -E '^(Alias name|Owner|Valid|[[:space:]]*SHA(1|256):)' || { echo 'The upload key does not open with this password, or its alias is not cyberjudah-upload'; exit 1; }
+      - run: corepack enable
+      - run: yarn workspaces focus @bible-strong/expo
+      - name: Use only the CyberJudah production settings
+        run: |
+          cp apps/expo/.env.cyberjudah.production.example apps/expo/.env.local
+          # Bible Strong's own environment files must not be loadable by the release bundler.
+          rm -f apps/expo/.env.production apps/expo/.env.staging apps/expo/.env.development
+      - run: yarn workspace @bible-strong/expo typecheck
+      - run: yarn workspace @bible-strong/expo test --runInBand
+      - name: Give the CyberJudah settings to the native build
+        # As in the iPhone builds: every later process, Gradle's bundling step included, gets them.
+        run: |
+          grep -E '^(EXPO_PUBLIC_[A-Z0-9_]+|APP_NAME|BUNDLE_IDENTIFIER|IOS_GOOGLE_SERVICES_FILE|ANDROID_GOOGLE_SERVICES_FILE|EAS_BUILD_CHANNEL|OTA_URL)=' apps/expo/.env.cyberjudah.production.example | sed -E 's/^([A-Z0-9_]+)="?([^"]*)"?$/\1=\2/' >> "$GITHUB_ENV"
+          echo NODE_ENV=production >> "$GITHUB_ENV"
+      - run: yarn workspace @bible-strong/expo exec expo prebuild --platform android --no-install
+      - run: node apps/expo/scripts/verify-cyberjudah-native-config.mjs android
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: true
+      - name: Sign release builds with the upload key
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('apps/expo/android/app/build.gradle')
+          s = p.read_text()
+          assert 'signingConfig signingConfigs.debug' in s, 'Release signing block not found'
+          s = s.replace('signingConfigs {', '''signingConfigs {
+                  upload {
+                      storeFile file(System.getenv('CJ_UPLOAD_KEYSTORE'))
+                      storeType 'pkcs12'
+                      storePassword System.getenv('CJ_SIGNING_PASSWORD')
+                      keyAlias 'cyberjudah-upload'
+                      keyPassword System.getenv('CJ_SIGNING_PASSWORD')
+                  }
+          ''', 1)
+          s = s.replace('signingConfig signingConfigs.debug', 'signingConfig signingConfigs.upload')
+          p.write_text(s)
+          PY
+      - name: Build the signed App Bundle
+        working-directory: apps/expo/android
+        env:
+          CJ_UPLOAD_KEYSTORE: ${{ runner.temp }}/upload.p12
+          CJ_SIGNING_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASSWORD }}
+        run: ./gradlew bundleRelease --no-daemon --max-workers=2 -PreactNativeArchitectures=arm64-v8a,armeabi-v7a,x86_64
+      - name: Check the bundle that will ship
+        run: |
+          set -euo pipefail
+          aab=apps/expo/android/app/build/outputs/bundle/release/app-release.aab
+          # Signed with the upload key, not the debug key.
+          jarsigner -verify -certs "$aab" | grep -q 'CN=CyberJudah Upload' || { echo 'The App Bundle is not signed with the CyberJudah upload key'; exit 1; }
+          unzip -p "$aab" base/manifest/AndroidManifest.xml > /dev/null
+          unzip -p "$aab" base/assets/index.android.bundle > "$RUNNER_TEMP/index.android.bundle"
+          node apps/expo/scripts/verify-cyberjudah-bundle.mjs "$RUNNER_TEMP/index.android.bundle"
+          echo "Version code $CYBERJUDAH_ANDROID_VERSION_CODE"
+          ls -l "$aab"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CyberJudah-Google-Play-${{ env.CYBERJUDAH_ANDROID_VERSION_CODE }}
+          path: apps/expo/android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 30
+      - name: Remove the upload key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/upload.p12" "$RUNNER_TEMP/index.android.bundle"
