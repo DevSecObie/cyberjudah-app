@@ -116,7 +116,13 @@ it('shows the commentary verse words in gold that reads on light and dark pages'
   })
   const dark = { ...colors, background: 'rgb(18,18,18)', text: 'rgb(240,240,240)' }
   expect(readingHtmlClassStyles(typography, dark)['cj-verse'].color).toBe('#E0A64A')
-  expect(readingHtmlClassStyles(typography, dark)['cj-kjv'].color).toBe('rgb(156, 156, 156)')
+  expect(readingHtmlClassStyles(typography, dark)['cj-kjv'].color).toBe('#E0A64A')
+  expect(readingHtmlClassStyles(typography, colors)['cj-scripture'].color).toBe('#8A5A12')
+  expect(readingHtmlClassStyles(typography, colors)['cj-christ'].color).toBe('#CC0000')
+  expect(readingHtmlClassStyles(typography, dark)['cj-christ'].color).toBe('#FF6B6B')
+  expect(
+    cleanReadingHTML('<p class="cj-kjv">He said, <span class="cj-christ">Follow me.</span></p>')
+  ).toContain('<span class="cj-christ">Follow me.</span>')
   const css = readingHtmlCSS(typography, colors, '.x')
   expect(css).toContain('.x .cj-verse { color: #8A5A12; font-style: italic; }')
   expect(css).toContain('.x .cj-precept { border-width: 0px; border-left-width: 2px;')

@@ -125,18 +125,23 @@ const muted = (colors: ReadingColors) => {
 
 /**
  * The CyberJudah commentary's own parts, by class: the verse number and the verse words a
- * point opens on in gold (as in the class notes), a precept set off by a gold rule with its
- * scripture quieter, and the class line closing each entry.
+ * point opens on in gold (as in the class notes), scripture he quotes in gold too and Christ's
+ * words in red (Obie, 2026-11-02), a precept set off by a gold rule with its scripture, and the
+ * class line closing each entry.
  */
 export function readingHtmlClassStyles(
   typography: ReadingTypography,
   colors: ReadingColors
 ): Record<string, MixedStyleDeclaration> {
   const gold = isLight(colors.background) ? '#8A5A12' : '#E0A64A'
+  // The same red as the Bible reader's words of Christ.
+  const red = isLight(colors.background) ? '#CC0000' : '#FF6B6B'
   const small = Math.round(typography.fontSize * 0.8)
   return {
     'cj-vno': { color: gold, fontWeight: 'bold', fontSize: small },
     'cj-verse': { color: gold, fontStyle: 'italic' },
+    'cj-scripture': { color: gold, fontStyle: 'italic' },
+    'cj-christ': { color: red, fontStyle: 'italic' },
     'cj-precept': {
       borderWidth: 0,
       borderLeftWidth: 2,
@@ -148,7 +153,7 @@ export function readingHtmlClassStyles(
     },
     'cj-label': { marginTop: 0, marginBottom: Math.round(typography.fontSize * 0.4) },
     'cj-kjv': {
-      color: muted(colors),
+      color: gold,
       fontStyle: 'italic',
       marginTop: 0,
       marginBottom: Math.round(typography.fontSize * 0.4),
