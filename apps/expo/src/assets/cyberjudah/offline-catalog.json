@@ -67,7 +67,7 @@
       "installedBytes": 1661066,
       "peakInstallationBytes": 3849835,
       "strategy": "archive-extract",
-      "resourceRevision": "cj-timeline-44d9dfb398295250fa3266c55db748ed39c36db6fae8f351ed11d378e1e86b49"
+      "resourceRevision": "cj-timeline-3db09f0ccad19db59f89423e6406e234a8d5ec3c5c9a149e116d337578f06548"
     },
     "database:TIMELINE:fr": {
       "id": "database:TIMELINE:fr",
@@ -88,7 +88,7 @@
       "installedBytes": 1661066,
       "peakInstallationBytes": 3849835,
       "strategy": "archive-extract",
-      "resourceRevision": "cj-timeline-44d9dfb398295250fa3266c55db748ed39c36db6fae8f351ed11d378e1e86b49"
+      "resourceRevision": "cj-timeline-3db09f0ccad19db59f89423e6406e234a8d5ec3c5c9a149e116d337578f06548"
     },
     "strong-lexicon:entities": {
       "id": "strong-lexicon:entities",
