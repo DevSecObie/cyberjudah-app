@@ -12,4 +12,4 @@
    - `IOS_PRODUCTION_CERTIFICATE_PASSWORD`: its password.
    - `IOS_PRODUCTION_PROFILE_BASE64`: the new profile, base64.
 
-`prepare-ios-signing.py` accepts only the beta and store bundle IDs, and refuses a beta profile for the store build. `verify-cyberjudah-bundle.mjs` fails the store build if the shipped bundle names the staging server.
+`prepare-ios-signing.py` accepts only the beta and store bundle IDs, and refuses a beta profile for the store build. `verify-cyberjudah-bundle.mjs` checks the store build against its own settings file.
