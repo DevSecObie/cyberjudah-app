@@ -146,3 +146,36 @@ describe('class moments', () => {
     )
   })
 })
+
+describe('chapter classes by rank', () => {
+  it("lists the Bishops' classes first, then the Deacons', then the Captains', newest first", () => {
+    const moment = (video: string, verses: string, teacher: string, date: string) => ({
+      verses,
+      label: video,
+      url: `/classes/${video}`,
+      date,
+      video,
+      t: 10,
+      ts: '0:10',
+      teacher,
+    })
+    const { taught } = chapterClasses(
+      classesByVerse({
+        moments: [
+          moment('captainAAAA', '1', 'Captain Mattathias', '2026-10-01'),
+          moment('unknownAAAA', '2', '', '2026-10-30'),
+          moment('deaconAAAAA', '3', 'Deacon Asaph', '2026-09-01'),
+          moment('bishopOLDAA', '4', 'Bishop Nathanael', '2025-01-01'),
+          moment('bishopNEWAA', '5', 'Bishop Yawasap', '2026-10-25'),
+        ],
+      })
+    )
+    expect(taught.map(m => m.video)).toEqual([
+      'bishopNEWAA',
+      'bishopOLDAA',
+      'deaconAAAAA',
+      'captainAAAA',
+      'unknownAAAA',
+    ])
+  })
+})

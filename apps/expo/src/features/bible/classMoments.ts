@@ -65,9 +65,16 @@ export const verseNumbers = (spec?: string | null): number[] => {
   return [...new Set(out)].sort((a, b) => a - b)
 }
 
-/** The Bishops' and Deacons' teaching comes first. */
-const teacherRank = (teacher?: string | null) =>
-  /^bishop\b/i.test(teacher ?? '') ? 0 : /^deacon\b/i.test(teacher ?? '') ? 1 : 2
+/** The Bishops' teaching comes first, then the Deacons', then the Captains', then the rest. */
+const teacherRank = (teacher?: string | null) => {
+  const name = teacher ?? ''
+  if (/^bishop\b/i.test(name)) return 0
+  if (/^deacon\b/i.test(name)) return 1
+  if (/^captain\b/i.test(name)) return 2
+  return 3
+}
+const byRankNewestFirst = (a: ClassMoment, b: ClassMoment) =>
+  teacherRank(a.teacher) - teacherRank(b.teacher) || (b.date ?? '').localeCompare(a.date ?? '')
 
 /**
  * Every class that read each verse, keyed by the last verse it read: the classes whose notes
@@ -123,7 +130,10 @@ export const classesByVerse = (data: ChapterClasses | null): Record<number, Clas
   return out
 }
 
-/** A chapter's classes, once each: those whose notes teach it, then those that read it aloud. */
+/**
+ * A chapter's classes, once each: those whose notes teach it, then those that read it aloud, each
+ * list in the order of the teachers' rank.
+ */
 export const chapterClasses = (byVerse: Record<number, ClassMoment[]>) => {
   const all = Object.entries(byVerse)
     .sort(([a], [b]) => +a - +b)
@@ -137,13 +147,9 @@ export const chapterClasses = (byVerse: Record<number, ClassMoment[]>) => {
       taught.push(moment)
     }
   }
-  const rest = all
-    .filter(moment => !seen.has(moment.video))
-    .sort(
-      (a, b) =>
-        teacherRank(a.teacher) - teacherRank(b.teacher) ||
-        (b.date ?? '').localeCompare(a.date ?? '')
-    )
+  // Bishops' classes first, then Deacons', then Captains': newest first within each.
+  taught.sort(byRankNewestFirst)
+  const rest = all.filter(moment => !seen.has(moment.video)).sort(byRankNewestFirst)
   for (const moment of rest) {
     if (!seen.has(moment.video)) {
       seen.add(moment.video)
