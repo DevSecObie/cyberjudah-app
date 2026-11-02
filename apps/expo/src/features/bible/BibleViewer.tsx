@@ -1707,14 +1707,19 @@ const BibleViewer = ({
       if (!chip) return
       const entry = getCommentaryByPublicationId(chip.resourceId, chip.language)
       if (!entry) return
-      const openCommentary = (sectionId?: string) =>
+      // The verse the chip sits under, so a Bishop's page opens on that verse.
+      const anchor = Object.entries(inlinePlacement.afterVerses).find(([, chips]) =>
+        chips.includes(chip)
+      )?.[0]
+      const openCommentary = (sectionId = chip.sectionId) =>
         pushRouteOnce({
           pathname: '/commentary-entry',
           params: {
             projectionId: `${entry.id}:${chip.language}`,
             book: String(book.Numero),
             chapter: String(chapter),
-            sectionId: sectionId === undefined ? chip.sectionId : sectionId,
+            sectionId,
+            ...(anchor ? { focusVerse: anchor } : {}),
           },
         })
       if (Platform.OS !== 'web') {
