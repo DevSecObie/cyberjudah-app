@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { FlatList } from 'react-native'
 import { openInApp } from '~common/inAppBrowser'
 import Header from '~common/Header'
@@ -10,11 +10,12 @@ import { longDate } from '~features/notesExport/notePdf'
 import { useOpenSiteLink } from '~features/publishedNotes/siteLinks'
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme } from '~themes/ThemeProvider'
-import { loadBook, loadBookChapter, pageLabel, scanUrl } from './booksData'
+import { isPublicDomain, loadBook, loadBookChapter, pageLabel, scanUrl } from './booksData'
 
 /** A chapter of a book, page by page as printed, each page with the classes that read it. */
 const BookChapterScreen = () => {
   const theme = useTheme()
+  const router = useRouter()
   const { openMoment } = useOpenSiteLink()
   const { slug = '', k = '' } = useLocalSearchParams<{ slug?: string; k?: string }>()
   const index = Number(k)
@@ -58,14 +59,29 @@ const BookChapterScreen = () => {
           }
           renderItem={({ item: page }) => {
             const scan = scanUrl(book.data?.scan ?? '', data.item, page.img)
+            const pdf =
+              book.data && data.item && isPublicDomain(book.data.license)
+                ? () =>
+                    router.push({
+                      pathname: '/(explore)/book-pdf',
+                      params: {
+                        slug,
+                        item: data.item ?? '',
+                        printed: String(page.page),
+                        title: book.data?.title ?? '',
+                      },
+                    })
+                : scan
+                  ? () => openInApp(scan)
+                  : undefined
             return (
               <VStack className="pt-[18px] mt-[18px] border-t-[1px] border-border gap-[10px]">
                 <HStack className="items-center justify-between">
                   <Text className="text-primary text-[13px] font-bold">
                     {pageLabel({ volumes }, page.vol, page.page)}
                   </Text>
-                  {scan ? (
-                    <TouchableBox accessibilityRole="link" onPress={() => openInApp(scan)}>
+                  {pdf ? (
+                    <TouchableBox accessibilityRole="link" onPress={pdf}>
                       <Text className="text-primary text-[13px]">Printed page</Text>
                     </TouchableBox>
                   ) : null}

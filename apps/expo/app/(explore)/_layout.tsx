@@ -41,6 +41,7 @@ const ExploreLayout = () => {
         <Stack.Screen name="plan-entity" />
         <Stack.Screen name="book" />
         <Stack.Screen name="book-chapter" />
+        <Stack.Screen name="book-pdf" />
       </Stack>
     </ModalRouteFrame>
   )

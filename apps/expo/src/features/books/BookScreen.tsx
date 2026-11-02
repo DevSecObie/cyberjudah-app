@@ -7,6 +7,7 @@ import { openInApp } from '~common/inAppBrowser'
 import Header from '~common/Header'
 import Loading from '~common/Loading'
 import Box, { HStack, SafeAreaBox, TouchableBox, VStack } from '~common/ui/Box'
+import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
 import { useRecordHistory } from '~features/history/useRecordHistory'
 import { longDate } from '~features/notesExport/notePdf'
@@ -14,7 +15,7 @@ import { LinkRow, Section } from '~features/publishedNotes/parts'
 import { useOpenSiteLink } from '~features/publishedNotes/siteLinks'
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme } from '~themes/ThemeProvider'
-import { dataUrl, loadBook, newestReadingsFirst, pageLabel } from './booksData'
+import { dataUrl, isPublicDomain, loadBook, newestReadingsFirst, pageLabel } from './booksData'
 
 const READINGS_FIRST = 20
 
@@ -83,6 +84,28 @@ const BookScreen = () => {
           </HStack>
           {!!data.subtitle && (
             <Text className="text-[15px] leading-[22px] mt-[16px]">{data.subtitle}</Text>
+          )}
+          {isPublicDomain(data.license) && data.items.length > 0 && (
+            <HStack className="flex-wrap gap-[10px] mt-[18px]">
+              {data.items.map((item, index) => (
+                <TouchableBox
+                  key={item.id}
+                  accessibilityRole="button"
+                  onPress={() =>
+                    router.push({
+                      pathname: '/(explore)/book-pdf',
+                      params: { slug, item: item.id, title: data.title },
+                    })
+                  }
+                  className="flex-row items-center gap-[8px] rounded-full bg-primary px-[16px] py-[10px]"
+                >
+                  <FeatherIcon name="book-open" size={16} color="reverse" />
+                  <Text className="text-reverse text-[14px] font-bold">
+                    {data.items.length > 1 ? item.label || `Volume ${index + 1}` : 'Read the PDF'}
+                  </Text>
+                </TouchableBox>
+              ))}
+            </HStack>
           )}
           {readings.length > 0 && (
             <Section title="Read in class">

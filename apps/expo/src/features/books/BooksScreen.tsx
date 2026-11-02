@@ -7,7 +7,16 @@ import Loading from '~common/Loading'
 import Box, { SafeAreaBox, TouchableBox, VStack } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
-import { byClassUse, dataUrl, loadLibrary, type LibraryRow } from './booksData'
+import { openInApp } from '~common/inAppBrowser'
+import { useOpenSiteLink } from '~features/publishedNotes/siteLinks'
+import {
+  amazonSearchUrl,
+  byClassUse,
+  dataUrl,
+  IN_PRINT_BOOKS,
+  loadLibrary,
+  type LibraryRow,
+} from './booksData'
 
 const bookLine = (book: LibraryRow) =>
   [
@@ -19,6 +28,47 @@ const bookLine = (book: LibraryRow) =>
   ]
     .filter(Boolean)
     .join(' · ')
+
+/** Books still in print that the classes used: where they were used, and where to buy them. */
+const InPrint = () => {
+  const { openMoment } = useOpenSiteLink()
+  return (
+    <VStack className="mt-[28px] gap-[12px]">
+      <Text className="text-primary text-[13px] font-bold">In print</Text>
+      <Text className="text-grey text-[14px]">
+        Modern books the classes used. They are not copied here; buy them from the seller.
+      </Text>
+      {IN_PRINT_BOOKS.map(book => (
+        <VStack key={book.title} className="gap-[8px] py-[12px] border-b-[1px] border-border">
+          <Text className="text-[16px] font-medium">{book.title}</Text>
+          <Text className="text-grey text-[13px]">{book.note}</Text>
+          {book.moments.map(moment => (
+            <TouchableBox
+              key={`${moment.video}${moment.t}`}
+              accessibilityRole="button"
+              onPress={() => openMoment({ video: moment.video, t: moment.t })}
+              className="flex-row items-center gap-[8px]"
+            >
+              <FeatherIcon name="play-circle" size={16} color="primary" />
+              <Text className="text-primary text-[13px]">
+                {moment.said} · from {moment.ts}
+              </Text>
+            </TouchableBox>
+          ))}
+          <TouchableBox
+            accessibilityRole="link"
+            accessibilityHint="Opens Amazon"
+            onPress={() => openInApp(amazonSearchUrl(book.title))}
+            className="self-start flex-row items-center gap-[8px] rounded-full border-[1px] border-primary px-[14px] py-[8px] mt-[4px]"
+          >
+            <FeatherIcon name="shopping-cart" size={15} color="primary" />
+            <Text className="text-primary text-[14px] font-bold">Buy on Amazon</Text>
+          </TouchableBox>
+        </VStack>
+      ))}
+    </VStack>
+  )
+}
 
 /** The books the classes read from, the most read first, each opening its page. */
 const BooksScreen = () => {
@@ -49,9 +99,12 @@ const BooksScreen = () => {
             </Text>
           }
           ListFooterComponent={
-            <Text className="text-grey text-[12px] pt-[16px]">
-              Every book here is in the public domain, from the original printing.
-            </Text>
+            <>
+              <Text className="text-grey text-[12px] pt-[16px]">
+                The books above are read from their original printing.
+              </Text>
+              <InPrint />
+            </>
           }
           renderItem={({ item: book }) => (
             <TouchableBox

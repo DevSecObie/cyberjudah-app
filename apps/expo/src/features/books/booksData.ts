@@ -2,6 +2,11 @@
 // with every moment a class read from them. Read from CyberJudah's published data set, so a new
 // book shows up without an app update. Shapes follow cyberjudah-telegram app/src/api/data.ts.
 const DATA_ORIGIN = 'https://data.cyberjudah.io'
+/** CyberJudah's server: it hands out each public-domain book's PDF on a signed link. */
+export const API_ORIGIN = (
+  process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL ||
+  'https://cyberjudah-telegram-staging.oisrae1.workers.dev'
+).replace(/\/+$/, '')
 
 const SLUG = /^[a-z0-9][a-z0-9-]*$/i
 
@@ -106,3 +111,69 @@ export const loadBookChapter = (slug: string, k: number, fetcher?: typeof fetch)
   if (!SLUG.test(slug) || !Number.isInteger(k) || k < 0) throw new Error('CYBERJUDAH_BOOK_UNKNOWN')
   return readJson<LibraryChapter>(`/api/library/${slug}/chapter/${k}.json`, fetcher)
 }
+
+/** A book whose printing is in the public domain: only these have a PDF to read. */
+export const isPublicDomain = (license: unknown) =>
+  typeof license === 'string' && /^public domain(?:[.!\s]|$)/i.test(license.trim())
+
+export type BookPdfLink = {
+  ok: true
+  url: string
+  file: string
+  size: number | null
+  page?: number
+}
+
+/** A signed link to one volume's PDF; with a printed page number, the PDF page it falls on. */
+export const loadBookPdf = async (
+  slug: string,
+  item: string,
+  printed?: number,
+  fetcher: typeof fetch = fetch
+): Promise<BookPdfLink> => {
+  if (!SLUG.test(slug) || !/^[A-Za-z0-9._-]+$/.test(item))
+    throw new Error('CYBERJUDAH_BOOK_UNKNOWN')
+  const params = new URLSearchParams({ slug, item })
+  if (printed !== undefined) params.set('printed', String(printed))
+  const response = await fetcher(`${API_ORIGIN}/api/reader/library/pdf?${params}`, {
+    headers: { accept: 'application/json' },
+  })
+  const body = (await response.json().catch(() => undefined)) as BookPdfLink | undefined
+  if (!response.ok || !body?.ok || !body.url.startsWith(`${API_ORIGIN}/`))
+    throw new Error('CYBERJUDAH_BOOK_PDF_UNAVAILABLE')
+  return body
+}
+
+/** A book still in print that the classes used: never copied here, bought from its seller. */
+export type InPrintBook = {
+  title: string
+  note: string
+  moments: { video: string; t: number; ts: string; said: string }[]
+}
+
+/**
+ * The modern references the classes used, from the resource register's link-only works
+ * (cyberjudah-telegram docs/resources.md), with the recordings that show each in use.
+ */
+export const IN_PRINT_BOOKS: InPrintBook[] = [
+  {
+    title: "Zondervan's Compact Bible Dictionary",
+    note: 'Read in class for "ruddy" (p. 510) and "Israel".',
+    moments: [
+      { video: '-2NEChSWFds', t: 2320, ts: '38:40', said: '"Ruddy," p. 510' },
+      { video: '7x23t5fyanU', t: 1210, ts: '20:10', said: '"Israel"' },
+    ],
+  },
+  {
+    title: "Nelson's Complete Book of Bible Maps and Charts",
+    note: 'Named in class, and its Joel section read.',
+    moments: [
+      { video: '4omT-pzRYQE', t: 7046, ts: '1:57:26', said: 'The Joel section read' },
+      { video: 'X4Hm0O-_2go', t: 601, ts: '10:01', said: 'Named for historical study' },
+    ],
+  },
+]
+
+/** Amazon's search for the title: the seller chooses the edition in print. */
+export const amazonSearchUrl = (title: string) =>
+  `https://www.amazon.com/s?k=${encodeURIComponent(title)}&i=stripbooks`
