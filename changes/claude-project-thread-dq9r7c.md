@@ -12,3 +12,5 @@ Web only. The iPhone and Android apps are unchanged.
   `web:build`): the largest file goes from 23.5 MB to 17.0 MB. The whole icon set and every date
   language no longer ship.
 - The staging web build in CI uses `web:export`, so it gets the same settings.
+- Ask on web opens Ask CyberJudah, as on the phone. The web copy of the assistant screen still
+  opened Bible Strong's own assistant; it now picks the same way the phone's screen does.

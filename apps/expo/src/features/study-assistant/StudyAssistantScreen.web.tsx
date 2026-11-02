@@ -9,12 +9,14 @@ import Text from '~common/ui/Text'
 import Header from '~common/Header'
 import { useTheme } from '~themes/ThemeProvider'
 import AssistantMarkdown from './AssistantMarkdown.web'
+import CyberJudahChatScreen from './CyberJudahChatScreen'
+import { isCyberJudahAssistant } from './cyberJudahAsk'
 import { askAssistant } from './client'
 import { assistantAccessible, assistantAvailable } from './assistantConfig'
 import type { HistoryMessage } from '@bible-strong/ai-contract/contract'
 
 type Turn = { question: string; answer: string }
-export default function StudyAssistantScreen() {
+function BibleStrongAssistantScreen() {
   const { t } = useTranslation()
   const { id: userId } = useSelector(selectUserLoginInfo)
   const { colors } = useTheme()
@@ -235,4 +237,9 @@ export default function StudyAssistantScreen() {
       </KeyboardAvoidingView>
     </Box>
   )
+}
+
+// Same as the phone: a CyberJudah build opens Ask CyberJudah, Bible Strong's own build its assistant.
+export default function StudyAssistantScreen() {
+  return isCyberJudahAssistant ? <CyberJudahChatScreen /> : <BibleStrongAssistantScreen />
 }
