@@ -70,7 +70,10 @@ export const classStateFromMessage = (data: unknown): number | undefined => {
   }
 }
 
-export type ClassCommand = { func: 'playVideo' | 'pauseVideo' | 'seekTo'; args?: unknown[] }
+export type ClassCommand = {
+  func: 'playVideo' | 'pauseVideo' | 'seekTo' | 'pictureInPicture'
+  args?: unknown[]
+}
 
 /**
  * Run inside the hosted video page on the phone, beside CLASS_TIME_SCRIPT: it reports whether the
@@ -101,6 +104,12 @@ export const CLASS_CONTROL_SCRIPT = `(() => {
   })
   window.__cyberJudahCommand = (func, args) => {
     const target = frame()
+    // Picture in Picture is the iPhone's own: the video inside YouTube's frame goes into it.
+    if (func === 'pictureInPicture') {
+      if (target && target.contentWindow)
+        target.contentWindow.postMessage(JSON.stringify({ cyberJudahPictureInPicture: true }), '*')
+      return
+    }
     if (target && target.contentWindow)
       target.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args: args || [] }), '*')
   }
@@ -144,3 +153,33 @@ export const secondsOfClock = (clock?: string): number => {
     .split(':')
     .reduce((total, part) => total * 60 + Number(part), 0)
 }
+
+/**
+ * Run inside YouTube's frame on the phone: hands its video to the iPhone's own Picture in Picture
+ * when the floating window asks (CLASS_CONTROL_SCRIPT), the window YouTube's own button opens.
+ */
+export const CLASS_PICTURE_IN_PICTURE_SCRIPT = `(() => {
+  if (window.__cyberJudahPictureInPicture) return
+  window.__cyberJudahPictureInPicture = true
+  if (!/(^|\\.)youtube(-nocookie)?\\.com$/.test(location.hostname)) return
+  window.addEventListener('message', event => {
+    let data
+    try { data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data } catch (e) { return }
+    if (!data || !data.cyberJudahPictureInPicture) return
+    const video = document.querySelector('video')
+    if (!video) return
+    if (video.webkitSupportsPresentationMode && video.webkitSupportsPresentationMode('picture-in-picture'))
+      video.webkitSetPresentationMode(
+        video.webkitPresentationMode === 'picture-in-picture' ? 'inline' : 'picture-in-picture'
+      )
+    else if (video.requestPictureInPicture) video.requestPictureInPicture().catch(() => {})
+  })
+})(); true`
+
+/**
+ * The scripts for the hosted video page: the page's own scripts in the page, the Picture in
+ * Picture one in YouTube's frame. Each ends in `true`, so they are joined with semicolons.
+ */
+export const CLASS_FRAME_SCRIPT = `if (window.top === window) { ${CLASS_TIME_SCRIPT};
+${CLASS_CONTROL_SCRIPT}; } else { ${CLASS_PICTURE_IN_PICTURE_SCRIPT}; }
+true`

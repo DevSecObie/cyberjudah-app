@@ -50,6 +50,7 @@ const RoundButton = ({
     | 'pause'
     | 'rotate-ccw'
     | 'rotate-cw'
+    | 'external-link'
   size?: number
   label: string
   onPress: () => void
@@ -442,6 +443,13 @@ const DockedClassPlayer = () => {
             >
               <RoundButton icon="x" label="Close the video" onPress={close} />
               <Box className="flex-row gap-[6px]">
+                {Platform.OS === 'ios' && (
+                  <RoundButton
+                    icon="external-link"
+                    label="Picture in Picture"
+                    onPress={() => frame.current?.command({ func: 'pictureInPicture' })}
+                  />
+                )}
                 <RoundButton
                   icon={expanded ? 'minimize-2' : 'maximize-2'}
                   label={expanded ? 'Make the video smaller' : 'Make the video bigger'}
@@ -473,6 +481,16 @@ const DockedClassPlayer = () => {
                   <Box className="flex-row items-center justify-between">
                     <RoundButton icon="x" label="Close the video" onPress={close} />
                     <Box className="flex-row gap-[6px]">
+                      {Platform.OS === 'ios' && (
+                        <RoundButton
+                          icon="external-link"
+                          label="Picture in Picture"
+                          onPress={() => {
+                            frame.current?.command({ func: 'pictureInPicture' })
+                            showControls()
+                          }}
+                        />
+                      )}
                       <RoundButton
                         icon={expanded ? 'minimize-2' : 'maximize-2'}
                         label={expanded ? 'Make the video smaller' : 'Make the video bigger'}

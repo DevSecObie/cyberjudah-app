@@ -1,8 +1,7 @@
 import { forwardRef, useImperativeHandle, useRef } from 'react'
 import WebView from 'react-native-webview'
 import {
-  CLASS_CONTROL_SCRIPT,
-  CLASS_TIME_SCRIPT,
+  CLASS_FRAME_SCRIPT,
   type ClassCommand,
   classCommandScript,
   classDurationFromMessage,
@@ -37,9 +36,10 @@ const ClassVideoFrame = forwardRef<ClassVideoFrameHandle, Props>(
         allowsInlineMediaPlayback
         allowsFullscreenVideo
         mediaPlaybackRequiresUserAction={false}
-        // Each script ends in `true`: joined without a semicolon, the second would call `true(…)`
-        // and never run, leaving the window's play, pause and skip with nothing to talk to.
-        injectedJavaScript={`${CLASS_TIME_SCRIPT};\n${CLASS_CONTROL_SCRIPT}`}
+        allowsPictureInPictureMediaPlayback
+        // The page's scripts run in the page, the Picture in Picture one in YouTube's frame.
+        injectedJavaScriptForMainFrameOnly={false}
+        injectedJavaScript={CLASS_FRAME_SCRIPT}
         onMessage={event => {
           const seconds = classTimeFromMessage(event.nativeEvent.data)
           if (seconds !== undefined) onTime?.(seconds)
