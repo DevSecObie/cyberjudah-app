@@ -55,7 +55,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   userInterfaceStyle: 'automatic',
 
   android: {
-    versionCode: isCyberJudah ? 516 : 514,
+    // The Google Play build sets its own, higher code on every run (cyberjudah-android-store.yml).
+    versionCode: isCyberJudah ? Number(process.env.CYBERJUDAH_ANDROID_VERSION_CODE || 516) : 514,
     package: isCyberJudah ? 'io.cyberjudah.app' : 'com.smontlouis.biblestrong',
     googleServicesFile:
       process.env.ANDROID_GOOGLE_SERVICES_FILE ??

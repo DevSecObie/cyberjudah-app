@@ -10,6 +10,11 @@ if (platform === 'android') {
   assert(
     config.client.some(c => c.client_info.android_client_info?.package_name === 'io.cyberjudah.app')
   )
+  const gradle = await readFile(join(app, 'android/app/build.gradle'), 'utf8')
+  assert.match(gradle, /applicationId ['"]io\.cyberjudah\.app['"]/)
+  // The Google Play build must carry the version code it picked, or Play refuses the upload.
+  const versionCode = process.env.CYBERJUDAH_ANDROID_VERSION_CODE
+  if (versionCode) assert.match(gradle, new RegExp(`versionCode ${versionCode}\\b`))
 } else if (platform === 'ios') {
   const podProperties = JSON.parse(await readFile(join(app, 'ios/Podfile.properties.json'), 'utf8'))
   assert.equal(
