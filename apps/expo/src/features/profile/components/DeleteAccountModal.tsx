@@ -18,6 +18,7 @@ import Text from '~common/ui/Text'
 import FireAuth from '~helpers/FireAuth'
 import { MODAL_FOOTER_HEIGHT } from '~helpers/constants'
 import { toast } from '~helpers/toast'
+import { deleteAllPublishedStudies } from '~features/studies/publishedStudies'
 
 // Sign in with Apple reports a closed sheet as 1001 (ASAuthorizationError.canceled).
 const APPLE_CANCELED_CODES = ['1001', 'ERR_CANCELED']
@@ -53,6 +54,10 @@ const DeleteAccountModal = ({ modalRef }: DeleteAccountModalProps) => {
 
     setIsLoading(true)
     try {
+      // Studies the reader published come down with the account. The server keeps no other copy.
+      await deleteAllPublishedStudies().catch(error =>
+        console.warn('[Auth] Could not take down published studies', error)
+      )
       // The account's synced data goes with it: CyberJudah's Firebase project runs no deletion
       // function, and an Apple sign-in is revoked first (App Store guideline 5.1.1(v)).
       await deleteAccountWithData(authUser, {
