@@ -101,7 +101,6 @@ export const CLASS_CONTROL_SCRIPT = `(() => {
   })
   window.__cyberJudahCommand = (func, args) => {
     const target = frame()
-    window.ReactNativeWebView.postMessage(JSON.stringify({ classCommandHeard: func, hasFrame: !!(target && target.contentWindow) }))
     if (target && target.contentWindow)
       target.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args: args || [] }), '*')
   }
