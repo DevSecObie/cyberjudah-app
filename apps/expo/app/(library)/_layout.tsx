@@ -34,6 +34,7 @@ const LibraryLayout = () => {
       <Stack.Screen name="topics" />
       <Stack.Screen name="false-doctrines" />
       <Stack.Screen name="glossary" />
+      <Stack.Screen name="books" />
     </Stack>
   )
 }

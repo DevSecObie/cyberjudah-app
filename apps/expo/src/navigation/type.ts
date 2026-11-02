@@ -2,6 +2,7 @@ import { PrimitiveAtom } from 'jotai/vanilla'
 import { EdgeInsets } from 'react-native-safe-area-context'
 import { BibleContextDisplayMode, BibleTab, SelectedVerses, VersionCode } from 'src/state/tabs'
 import { Book } from '~assets/bible_versions/books-desc'
+import type { HistoryFilter } from '~features/history/historyModel'
 import {
   ComputedPlanItem,
   ComputedReadingSlice,
@@ -29,10 +30,6 @@ type MoreScreenProps = {
 
 type HomeScreenProps = {
   closeHome: () => void
-}
-
-type BibleSelectScreenProps = {
-  bibleAtom: PrimitiveAtom<BibleTab>
 }
 
 type VersionSelectorProps = {
@@ -147,6 +144,13 @@ type TimelineScreenProps = {
 
 type EventScreenProps = {
   slug: string
+  language?: 'fr' | 'en'
+}
+
+type MeditationScreenProps = {
+  collectionId: string
+  readingId?: string
+  date?: string
 }
 
 type ConcordanceScreenProps = {
@@ -179,7 +183,6 @@ export type MainStackProps = {
   More: MoreScreenProps
   Home: HomeScreenProps
   Profile: undefined
-  BibleSelect: BibleSelectScreenProps
   VersionSelector: VersionSelectorProps
   BibleVerseDetail: BibleVerseDetailScreenProps
   BibleVerseNotes: BibleVerseNotesScreenProps
@@ -201,7 +204,7 @@ export type MainStackProps = {
   Backup: undefined
   AutomaticBackups: undefined
   Pericope: undefined
-  History: undefined
+  History: { filter?: HistoryFilter } | undefined
   Tags: undefined
   Bookmarks: undefined
   Tag: TagScreenProps
@@ -214,15 +217,14 @@ export type MainStackProps = {
   FAQ: undefined
   Nave: NaveScreenProps
   NaveDetail: NaveDetailScreenProps
-  NaveWarning: undefined
   ToggleCompareVerses: undefined
   Plan: PlanScreenProps
   Plans: undefined
-  MyPlanList: undefined
   PlanSlice: PlanSliceScreenProps
   Timeline: TimelineScreenProps
   TimelineHome: undefined
   Event: EventScreenProps
+  Meditation: MeditationScreenProps
   Concordance: ConcordanceScreenProps
   Commentaries: CommentariesScreenProps
   CommentaryLibrary: undefined
@@ -232,6 +234,7 @@ export type MainStackProps = {
   ResourceLanguage: undefined
   BibleDefaults: undefined
   Theme: undefined
+  KeyboardShortcuts: undefined
   WordAnnotations: undefined
   EntityRelations: { endpoint: string }
 }

@@ -7,6 +7,7 @@ import type {
   StrongLexiconEntryCard,
   StrongLexiconEntity,
   StrongLexiconEntityCategory,
+  StrongLexiconListedEntity,
   StrongLexiconListRequest,
   StrongLexiconMorphology,
   StrongLexiconPage,
@@ -35,6 +36,7 @@ import {
   decodeStrongLexiconPageCursor,
   encodeStrongLexiconPageCursor,
   StrongLexiconChapterEntitiesResponseDto,
+  StrongLexiconEntitiesResponseDto,
   StrongLexiconEntryDto,
   StrongLexiconEntryCardsDto,
   StrongLexiconEntityResponseDto,
@@ -45,6 +47,7 @@ import {
 import { resolveHybridResourceSource } from './hybridResourcePolicy'
 import { ResourceAccessError, resourceAccessErrorFromHttpResponse } from './resourceAccessError'
 import { normalizeBibleSearchText } from '~helpers/bibleSearchInput'
+import { canonicalListParameter } from '~helpers/canonicalListParameter'
 
 export type {
   StrongLexiconChapterEntity,
@@ -560,6 +563,18 @@ const ENTITY_BOOK_CODES: readonly string[] =
 
 export const getTipnrBookCode = (book: number): string | undefined => ENTITY_BOOK_CODES[book - 1]
 
+type PlaceRow = {
+  uniqueName: string
+  displayName: string
+  localizedDisplayName: string | null
+  type: string
+  brief: string
+  localizedBrief: string | null
+  latitude: number
+  longitude: number
+  chapterCount: number
+}
+
 type ChapterEntityRow = {
   uniqueName: string
   displayName: string
@@ -890,6 +905,8 @@ export type StrongLexiconAccess = {
     language: ResourceLanguage,
     strongCodes?: string[]
   ) => Promise<StrongLexiconChapterEntity[]>
+  /** Every place the entity publication locates, for the map of the places of the Bible. */
+  loadPlaces: (language: ResourceLanguage) => Promise<StrongLexiconListedEntity[]>
   listEntries: (request: StrongLexiconListRequest) => Promise<StrongLexiconPage>
   search: (
     query: string,
@@ -1042,6 +1059,40 @@ export const createLocalStrongLexiconAccess = (
         )
         return rows.map(row => toChapterEntity(row, language))
       }).then(entities => entities ?? [])
+    },
+
+    async loadPlaces(language) {
+      const availability = await getRegisteredStrongLexiconAvailability('entities')
+      if (availability.status !== 'available') return []
+      return withOptionalStrongLexiconDatabase('entities', async database => {
+        const rows = await database.getAllAsync<PlaceRow>(
+          `SELECT e.uniqueName, e.displayName, e.type, e.brief,
+                tr.displayName AS localizedDisplayName, tr.brief AS localizedBrief,
+                p.latitude, p.longitude,
+                (SELECT COUNT(DISTINCT refs.book || '.' || refs.chapter)
+                   FROM EntityRefs refs WHERE refs.entityId=e.id) AS chapterCount
+           FROM Entities e
+           JOIN EntityPlaces p ON p.entityId=e.id
+           LEFT JOIN EntityTranslations tr ON tr.entityId=e.id AND tr.language=?
+          WHERE e.category='place' AND p.latitude IS NOT NULL AND p.latitude<>0
+            AND p.longitude IS NOT NULL`,
+          [language]
+        )
+        return rows.map(
+          (row): StrongLexiconListedEntity => ({
+            uniqueName: row.uniqueName,
+            name: formatStrongEntityDisplayName(
+              chooseLocalized(language, row.localizedDisplayName, row.displayName)
+            ),
+            category: 'place',
+            type: row.type,
+            brief: chooseLocalized(language, row.localizedBrief, row.brief),
+            chapterCount: row.chapterCount,
+            latitude: row.latitude,
+            longitude: row.longitude,
+          })
+        )
+      }).then(places => places ?? [])
     },
 
     async loadEntry(identity, language, options) {
@@ -1222,6 +1273,8 @@ type HttpStrongLexiconAccessOptions = {
   baseUrl: string
   fetcher?: typeof fetch
   isOnline: () => Promise<boolean>
+  /** Explains a request that failed without a response; defaults to the online gate. */
+  isOfflineFailure?: () => Promise<boolean>
   timeoutMs?: number
 }
 
@@ -1244,6 +1297,7 @@ export const createHttpStrongLexiconAccess = ({
   baseUrl,
   fetcher = fetch,
   isOnline,
+  isOfflineFailure = async () => !(await isOnline()),
   timeoutMs = 10_000,
   level = 'detailed',
 }: HttpStrongLexiconAccessOptions): StrongLexiconAccess => {
@@ -1281,7 +1335,7 @@ export const createHttpStrongLexiconAccess = ({
       if (signal?.aborted) throw error
       if (error instanceof ResourceAccessError) throw error
       throw new ResourceAccessError(
-        (await isOnline()) ? 'TEMPORARY_UNAVAILABLE' : 'NETWORK_OFFLINE'
+        (await isOfflineFailure()) ? 'NETWORK_OFFLINE' : 'TEMPORARY_UNAVAILABLE'
       )
     } finally {
       clearTimeout(timeout)
@@ -1369,9 +1423,10 @@ export const createHttpStrongLexiconAccess = ({
       }))
       const params = new URLSearchParams({
         language,
-        identities: normalizedIdentities
-          .map(identity => `${identity.kind}:${identity.code}`)
-          .join(','),
+        // Cards are matched back to each identity below: the list is sent as a set.
+        identities: canonicalListParameter(
+          normalizedIdentities.map(identity => `${identity.kind}:${identity.code}`)
+        ).join(','),
       })
       const response = await get(
         `/v1/strong-lexicon/entries/batch?${params}`,
@@ -1405,12 +1460,21 @@ export const createHttpStrongLexiconAccess = ({
       }))
     },
     async loadMorphologies(codes, language) {
-      if (!codes.length) return []
+      // The server ignores blank codes and answers each code once, under the code requested.
+      const requestedCodes = codes.map(code => code.trim()).filter(Boolean)
+      if (!requestedCodes.length) return []
       const response = await get(
-        `/v1/strong-lexicon/morphologies?${languageQuery(language)}&codes=${encodeURIComponent(codes.join(','))}`,
+        `/v1/strong-lexicon/morphologies?${languageQuery(language)}&codes=${encodeURIComponent(canonicalListParameter(requestedCodes).join(','))}`,
         StrongLexiconMorphologyResponseDto
       )
-      return [...response.morphologies]
+      // Back in the order and with the repetitions of the request.
+      const morphologiesByCode = new Map(
+        response.morphologies.map(morphology => [morphology.code, morphology])
+      )
+      return requestedCodes.flatMap(code => {
+        const morphology = morphologiesByCode.get(code)
+        return morphology ? [morphology] : []
+      })
     },
     async loadEntity(uniqueName, language) {
       try {
@@ -1428,12 +1492,29 @@ export const createHttpStrongLexiconAccess = ({
       const bookCode = getTipnrBookCode(book)
       if (!bookCode) return []
       const query = new URLSearchParams({ language })
-      if (strongCodes.length) query.set('strongCodes', strongCodes.join(','))
+      // The server reads the codes as a set.
+      const requestedCodes = canonicalListParameter(
+        strongCodes.map(code => code.trim()).filter(Boolean)
+      )
+      if (requestedCodes.length) query.set('strongCodes', requestedCodes.join(','))
       const response = await get(
         `/v1/strong-lexicon/entities/chapters/${bookCode}/${chapter}?${query}`,
         StrongLexiconChapterEntitiesResponseDto
       )
       return response.entities.map(entity => ({ ...entity, verses: [...entity.verses] }))
+    },
+    async loadPlaces(language) {
+      // The list of the whole publication, kept by the answer cache; the map keeps its places.
+      const response = await get(
+        `/v1/strong-lexicon/entities?${languageQuery(language)}`,
+        StrongLexiconEntitiesResponseDto
+      )
+      return response.entities.filter(
+        entity =>
+          entity.category === 'place' &&
+          entity.latitude !== undefined &&
+          entity.longitude !== undefined
+      )
     },
     listEntries({ signal, language, lexicalLanguage, search, prefix, limit = 100, cursor }) {
       const query = new URLSearchParams({ language, limit: String(limit) })
@@ -1621,6 +1702,12 @@ export const createHybridStrongLexiconAccess = ({
         'entities',
         () => offline.loadChapterEntities(book, chapter, language, strongCodes),
         () => online.loadChapterEntities(book, chapter, language, strongCodes)
+      ),
+    loadPlaces: language =>
+      select(
+        'entities',
+        () => offline.loadPlaces(language),
+        () => online.loadPlaces(language)
       ),
     listEntries: request =>
       searchFirstOnline(

@@ -1,16 +1,29 @@
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import { useTranslation } from 'react-i18next'
-import * as NativeUI from 'react-native'
-import { View } from 'react-native'
+import { View, TouchableOpacity, StyleSheet, type ViewStyle } from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
+import { radii } from '~common/ui/surfaces'
 import Text from '~common/ui/Text'
 import type { HighlightType } from '~redux/modules/user'
 import type { Theme as AppTheme } from '~themes'
 import { useTheme as useAppTheme, useTheme } from '~themes/ThemeProvider'
 
+// A swatch is a tile; drawn small, beside a line of text, it is a mark.
+const swatchRadius = (size: number) => (size >= 20 ? radii.tile : radii.mark)
+
+// The selected swatch is ringed by a border set off from it, so the page shows in the gap.
+const selectionOutline = (theme: AppTheme, isSelected: boolean | undefined, offset: number) =>
+  ({
+    outlineWidth: 2,
+    outlineOffset: offset,
+    outlineColor: isSelected ? theme.colors.primary : 'transparent',
+    transitionProperty: 'outlineColor',
+    transitionDuration: 300,
+  }) as ViewStyle
+
 const Touchable = (
-  componentProps: Omit<UIComponentProps<typeof NativeUI.TouchableOpacity>, 'theme'> & {
+  componentProps: Omit<UIComponentProps<typeof TouchableOpacity>, 'theme'> & {
     theme?: AppTheme
     className?: string
   }
@@ -19,17 +32,17 @@ const Touchable = (
 
   const resolvedClassName = twMerge('items-center justify-center', className)
   return (
-    <NativeUI.TouchableOpacity
+    <TouchableOpacity
       {...props}
       className={resolvedClassName}
-      style={[props.style] as UIComponentProps<typeof NativeUI.TouchableOpacity>['style']}
+      style={[props.style] as UIComponentProps<typeof TouchableOpacity>['style']}
     />
   )
 }
 
 const CircleContainer = (
   componentProps: Omit<
-    UIComponentProps<typeof NativeUI.View>,
+    UIComponentProps<typeof View>,
     keyof { color: string; size: number; isSelected?: boolean } | 'theme'
   > &
     Omit<{ color: string; size: number; isSelected?: boolean }, 'theme'> & {
@@ -43,7 +56,7 @@ const CircleContainer = (
   const { color, size, isSelected } = props
   const resolvedClassName = twMerge('overflow-visible', className)
   return (
-    <NativeUI.View
+    <View
       {...props}
       className={resolvedClassName}
       style={
@@ -51,16 +64,12 @@ const CircleContainer = (
           {
             width: size,
             height: size,
-            borderRadius: size / 3,
+            borderRadius: swatchRadius(size),
             backgroundColor: color,
-            transitionProperty: 'boxShadow',
-            transitionDuration: 300,
-            ...(isSelected && {
-              boxShadow: `0 0 0 3px ${theme.colors.reverse}, 0 0 0 5px ${theme.colors.primary}`,
-            }),
+            ...selectionOutline(theme, isSelected, 3),
           },
           props.style,
-        ] as UIComponentProps<typeof NativeUI.View>['style']
+        ] as UIComponentProps<typeof View>['style']
       }
     />
   )
@@ -68,7 +77,7 @@ const CircleContainer = (
 
 const TextContainer = (
   componentProps: Omit<
-    UIComponentProps<typeof NativeUI.View>,
+    UIComponentProps<typeof View>,
     keyof { size: number; isSelected?: boolean } | 'theme'
   > &
     Omit<{ size: number; isSelected?: boolean }, 'theme'> & { theme?: AppTheme; className?: string }
@@ -79,7 +88,7 @@ const TextContainer = (
   const { size, isSelected } = props
   const resolvedClassName = twMerge('items-center justify-center', className)
   return (
-    <NativeUI.View
+    <View
       {...props}
       className={resolvedClassName}
       style={
@@ -87,16 +96,13 @@ const TextContainer = (
           {
             width: size,
             height: size,
-            boxShadow: 'inset 0 0 2px 0 rgba(0, 0, 0, 0.15)',
-            transitionProperty: 'boxShadow',
-            transitionDuration: 300,
-            borderRadius: size / 3,
-            ...(isSelected && {
-              boxShadow: `inset 0 0 2px 0 rgba(0, 0, 0, 0.15), 0 0 0 2px ${theme.colors.reverse}, 0 0 0 4px ${theme.colors.primary}`,
-            }),
+            borderWidth: StyleSheet.hairlineWidth,
+            borderColor: theme.colors.separator,
+            borderRadius: swatchRadius(size),
+            ...selectionOutline(theme, isSelected, 2),
           },
           props.style,
-        ] as UIComponentProps<typeof NativeUI.View>['style']
+        ] as UIComponentProps<typeof View>['style']
       }
     />
   )

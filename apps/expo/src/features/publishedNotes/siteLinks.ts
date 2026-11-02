@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router'
-import { Linking } from 'react-native'
+import { openInApp } from '~common/inAppBrowser'
+
 import { getCommentaryBibleViewRoute } from '~features/commentaries/commentaryReferenceNavigation'
 import { readCachedClassLibrary } from '~features/passageMediaLibrary/cyberJudahClasses'
 import { cyberJudahSiteLinkToOsis } from '~helpers/cyberJudahSiteLinks'
@@ -58,16 +59,14 @@ export const useOpenSiteLink = () => {
       return router.push({ pathname: '/(explore)/case-study', params: { slug } })
     const video = /youtube\.com\/watch\?v=([A-Za-z0-9_-]{11})/.exec(url)?.[1]
     if (video && openClassVideo(video)) return
-    if (/^https:\/\//.test(url)) void Linking.openURL(url)
+    if (/^https:\/\//.test(url)) openInApp(url)
   }
 
   /** A moment of a class: its player when the class is in the library, else the recording. */
   const openMoment = (moment: { video: string; t?: number; note?: string }) => {
     if (openClassVideo(moment.video)) return
     if (moment.note) return open(moment.note.replace(/\?.*$/, ''))
-    void Linking.openURL(
-      `https://www.youtube.com/watch?v=${moment.video}${moment.t ? `&t=${moment.t}s` : ''}`
-    )
+    openInApp(`https://www.youtube.com/watch?v=${moment.video}${moment.t ? `&t=${moment.t}s` : ''}`)
   }
 
   return { open, openMoment }

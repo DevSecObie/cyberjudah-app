@@ -1,4 +1,5 @@
 import { getSimpleStrongModuleId } from '@bible-strong/resource-domain/strong-lexicon'
+import { titleFontStyle } from '~themes/styleValues'
 import { getPrimaryStrongLexiconAvailability } from '~features/resources/layeredStrongLexiconAccess'
 import { usePassageFilterChoices } from './usePassageFilterChoices'
 import { getSearchRateLimitNotice, searchRateLimitQueryOptions } from './searchRateLimit'
@@ -10,13 +11,12 @@ import { normalizeSearchItemFilters } from '~state/searchFilters'
 import generateUUID from '~helpers/generateUUID'
 import { useOpenInNewTab } from '~features/app-switcher/utils/useOpenInNewTab'
 import { usePassageSearch } from './usePassageSearch'
-import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme, useTheme } from '~themes/ThemeProvider'
 import PageContent, { pageContentStyle } from '~common/ui/PageContent'
 import type { ReactNode } from 'react'
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FlatList, Keyboard, TextInput } from 'react-native'
+import { FlatList, Keyboard, StyleSheet, TextInput } from 'react-native'
 import { KeyboardAwareScrollView, useKeyboardState } from '~common/KeyboardAwareScrollView'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
@@ -32,7 +32,7 @@ import {
   getSearchResultsPresentation,
   type SearchResultsSnapshot,
 } from './searchResultsPresentation'
-import Box, { HStack, TouchableBox } from '~common/ui/Box'
+import Box, { HStack, TouchableBox, usePageBottomInset } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import Paragraph from '~common/ui/Paragraph'
 import Text from '~common/ui/Text'
@@ -66,6 +66,7 @@ import SearchFacetBar from './shared/SearchFacetBar'
 import SearchSectionBlock, {
   SEARCH_SECTION_LOAD_MORE_COUNT,
   SEARCH_SECTION_PREVIEW_LIMIT,
+  SearchResultSeparator,
 } from './shared/SearchSectionBlock'
 import { type DictionarySearchRow, type NaveSearchItemRow } from './shared/searchItems'
 import type { SearchEntityResult } from './shared/searchResultTypes'
@@ -116,6 +117,7 @@ import {
   loadClassLibrary,
   readCachedClassLibrary,
 } from '~features/passageMediaLibrary/cyberJudahClasses'
+import { useWorkspaceHeaderInset } from '~features/app-switcher/workspaceHeaderInset'
 type Props = {
   searchValue: string
   setSearchValue: (value: string) => void
@@ -153,10 +155,12 @@ const SQLiteSearchScreen = ({
   onSaveDraft,
   onFiltersChange,
 }: Props) => {
+  const workspaceHeaderInset = useWorkspaceHeaderInset()
   const { t, i18n } = useTranslation()
   const theme = useTheme()
   const keyboardFooterBottom = useKeyboardFooterBottom(SEARCH_ALPHABET_FOOTER_HEIGHT)
   const router = useRouter()
+  const bottomInset = usePageBottomInset()
   const openCatalogTab = useOpenInNewTab()
   const openStudyObject = useOpenStudyObject()
   const resources = useResourceAccess()
@@ -826,7 +830,7 @@ const SQLiteSearchScreen = ({
           onPress={() => void semanticPassageQuery.refetch()}
         >
           <Text className="text-grey">{semanticSearchError}</Text>
-          <Text className="text-primary">{t('Réessayer')}</Text>
+          <Text className="text-link">{t('Réessayer')}</Text>
         </TouchableBox>
       )
     return null
@@ -938,6 +942,8 @@ const SQLiteSearchScreen = ({
   const shouldRenderSearchList = searchModel.shouldRenderSearchList
   const alphabetFooterInset = browseAlphabet ? SEARCH_ALPHABET_FOOTER_HEIGHT : 0
   const listBottomInset = alphabetFooterInset + keyboardFooterBottom
+  // The page runs under the home indicator and the tab bar: the list's end clears them too.
+  const listFooterHeight = listBottomInset + bottomInset
 
   const renderBrowseDatabaseState = () => {
     if (browseItemType === 'strong' && (strongAvailabilityQuery.isError || strongQuery.isError)) {
@@ -1270,10 +1276,10 @@ const SQLiteSearchScreen = ({
               backgroundColor: theme.colors.reverse,
             }}
             ListFooterComponent={
-              listBottomInset ? (
+              listFooterHeight ? (
                 <Box
                   className="overflow-hidden border-continuous"
-                  style={{ height: listBottomInset }}
+                  style={{ height: listFooterHeight }}
                 />
               ) : null
             }
@@ -1281,6 +1287,7 @@ const SQLiteSearchScreen = ({
             data={soloPaginatedSection.items}
             keyExtractor={item => item.id}
             renderItem={({ item }) => renderSearchResult(item)}
+            ItemSeparatorComponent={SearchResultSeparator}
             onEndReachedThreshold={0.4}
             onEndReached={() => fetchNextPage(soloPaginatedSection.id)}
             ListHeaderComponent={
@@ -1327,10 +1334,10 @@ const SQLiteSearchScreen = ({
             backgroundColor: theme.colors.reverse,
           }}
           ListFooterComponent={
-            listBottomInset ? (
+            listFooterHeight ? (
               <Box
                 className="overflow-hidden border-continuous"
-                style={{ height: listBottomInset }}
+                style={{ height: listFooterHeight }}
               />
             ) : null
           }
@@ -1408,7 +1415,7 @@ const SQLiteSearchScreen = ({
                     accessibilityRole="button"
                     className="px-[20px] py-[12px]"
                   >
-                    <Text className="text-primary">{t('Réessayer')}</Text>
+                    <Text className="text-link">{t('Réessayer')}</Text>
                   </TouchableBox>
                 ) : section.id === 'passages' ? (
                   <>
@@ -1432,7 +1439,11 @@ const SQLiteSearchScreen = ({
 
   return (
     <Box className="overflow-hidden border-continuous flex-[1]">
-      <Box testID="workspace-page-header" className="border-b-[1px] border-border">
+      <Box
+        testID="workspace-page-header"
+        className="border-separator"
+        style={{ borderBottomWidth: StyleSheet.hairlineWidth, paddingLeft: workspaceHeaderInset }}
+      >
         <PageContent>
           <HStack className="items-center gap-[4px] pl-[20px] pt-[6px] pb-[4px]">
             <Box className="flex-1 pt-[5px]">
@@ -1472,20 +1483,22 @@ const SQLiteSearchScreen = ({
       <PassageSearchFiltersSheet ref={passageFiltersRef} {...passageFilterProps} />
 
       {rateLimitNotice && (
-        <Box className="px-[20px] py-[12px] bg-light-grey">
-          <Text accessibilityLiveRegion="polite" className="text-grey text-[13px]">
-            {t(rateLimitNotice.retrying ? 'search.rateLimitedRetrying' : 'search.rateLimited', {
-              seconds: rateLimitNotice.seconds,
-            })}
-          </Text>
-        </Box>
+        <PageContent className="px-[20px] pt-[12px]">
+          <Box className="overflow-hidden border-continuous px-[14px] py-[10px] rounded-[12px] bg-light-grey">
+            <Text accessibilityLiveRegion="polite" className="text-grey text-[13px]">
+              {t(rateLimitNotice.retrying ? 'search.rateLimitedRetrying' : 'search.rateLimited', {
+                seconds: rateLimitNotice.seconds,
+              })}
+            </Text>
+          </Box>
+        </PageContent>
       )}
       {isShowingPreviousResults && currentSearchModel.isLoading ? <SearchSpinner /> : null}
       {renderContent()}
       {browseAlphabet ? (
         <Box
           className="overflow-hidden border-continuous absolute left-[0px] right-[0px] bg-reverse"
-          style={{ bottom: keyboardFooterBottom }}
+          style={{ bottom: keyboardFooterBottom, paddingBottom: bottomInset }}
         >
           {browseAlphabet}
         </Box>
@@ -1510,10 +1523,7 @@ const SearchNoResultsState = ({ query }: { query: string }) => {
           contentFit="contain"
         />
       </Box>
-      <Text
-        className="text-[18px] text-center mb-[8px]"
-        style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
-      >
+      <Text className="text-[18px] text-center mb-[8px]" style={titleFontStyle(stylingTheme)}>
         {t('Aucun résultat')}
       </Text>
       <Text className="text-tertiary text-center">

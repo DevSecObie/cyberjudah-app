@@ -1,4 +1,5 @@
 import { Redirect, type Href, useLocalSearchParams } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 
 import ResourceUnavailableView from '~features/resources/ResourceUnavailableView'
 import { IS_FORM_SHEET } from '~helpers/constants'
@@ -33,12 +34,13 @@ const firstString = (value: string | string[] | undefined): string | undefined =
   Array.isArray(value) ? value[0] : value
 
 export const PublicStrongEntryRouteScreen = ({ page }: { page: PublicStrongEntryPage }) => {
+  const { t } = useTranslation()
   const params = useLocalSearchParams<PublicStrongRouteParams>()
   const identity = parsePublicStrongCode(params.code)
   if (!identity) {
     return (
       <ResourceUnavailableView
-        title="Entrée Strong introuvable"
+        title={t('Entrée Strong introuvable')}
         failure={{ cause: 'not-found', recoveries: [] }}
       />
     )
@@ -67,12 +69,13 @@ export const PublicStrongEntryRouteScreen = ({ page }: { page: PublicStrongEntry
 }
 
 export const PublicStrongEntityRouteScreen = () => {
+  const { t } = useTranslation()
   const params = useLocalSearchParams<PublicStrongRouteParams>()
   const uniqueName = firstString(params.uniqueName)?.trim()
   if (!uniqueName) {
     return (
       <ResourceUnavailableView
-        title="Entité biblique introuvable"
+        title={t('Entité biblique introuvable')}
         failure={{ cause: 'not-found', recoveries: [] }}
       />
     )

@@ -68,6 +68,7 @@ jest.mock('react-native', () => {
   const ReactModule = jest.requireActual<typeof React>('react')
   return {
     Platform: { OS: 'ios' },
+    StyleSheet: { hairlineWidth: 1 },
     TouchableOpacity: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) =>
       ReactModule.createElement('TouchableOpacity', props, children),
   }
@@ -215,9 +216,7 @@ describe('FiltersHeader', () => {
           node.props.size === 20
       ).props.color
     ).toBe('primary')
-    expect(renderer.root.findByProps({ children: 'order' }).props.className).toContain(
-      'text-primary'
-    )
+    expect(renderer.root.findByProps({ children: 'order' }).props.className).toContain('text-link')
 
     expect(
       renderer.root.find(

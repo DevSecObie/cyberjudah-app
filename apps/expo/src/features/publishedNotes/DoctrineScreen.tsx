@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useRecordHistory } from '~features/history/useRecordHistory'
 import { useLocalSearchParams } from 'expo-router'
 import { ScrollView } from 'react-native'
 import Header from '~common/Header'
@@ -32,6 +33,18 @@ const DoctrineScreen = () => {
   })
   const d = entry.data
 
+  // Reopened from Pick up and History, like Bible Strong's own pages.
+  useRecordHistory(
+    entry.data?.name
+      ? {
+          type: 'cyberjudah',
+          kind: 'doctrine',
+          title: entry.data.name,
+          pathname: '/(explore)/false-doctrine',
+          params: { slug },
+        }
+      : null
+  )
   return (
     <SafeAreaBox className="overflow-hidden border-continuous bg-reverse">
       <Header hasBackButton title={d?.name ?? 'False Doctrines'} />

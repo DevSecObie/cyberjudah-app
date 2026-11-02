@@ -2,6 +2,7 @@ import { useLocalSearchParams } from 'expo-router'
 import { entityContext } from '~features/study-assistant/referenceContext'
 import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
 import { useQuery } from '@tanstack/react-query'
+import { staticResourceQueryOptions } from '~helpers/queryOptions'
 import { useTranslation } from 'react-i18next'
 
 import { useResourceAccess } from '~features/resources/resourceAccess'
@@ -33,12 +34,14 @@ const StrongEntityRouteScreen = ({ context, entityKey, isFormSheet = false }: Pr
     queryKey: ['strong-lexicon', 'availability', 'entities'],
     queryFn: () => resources.strongLexicon.getModuleAvailability('entities'),
     networkMode: 'always',
+    ...staticResourceQueryOptions,
   })
   const entityQuery = useQuery({
     queryKey: ['strong-lexicon', 'entity', language, entityKey],
     queryFn: () => resources.strongLexicon.loadEntity(entityKey!, language),
     enabled: Boolean(entityKey && availabilityQuery.data?.status === 'available'),
     networkMode: 'always',
+    ...staticResourceQueryOptions,
   })
   useAssistantResourceContext('panel', entityContext(entityQuery.data, language))
   const availability = availabilityQuery.data ?? {
@@ -48,6 +51,7 @@ const StrongEntityRouteScreen = ({ context, entityKey, isFormSheet = false }: Pr
 
   return (
     <StrongEntryRouteScaffold
+      className="bg-canvas"
       context={context}
       entryState={entryState}
       isFormSheet={isFormSheet}
@@ -66,6 +70,7 @@ const StrongEntityRouteScreen = ({ context, entityKey, isFormSheet = false }: Pr
         onOpenStrong={navigation.openStrong}
         onOpenEntityProfile={navigation.openEntity}
         onOpenEntityRelation={navigation.openEntityRelation}
+        onOpenMap={focus => navigation.openMap({ focus })}
       />
     </StrongEntryRouteScaffold>
   )

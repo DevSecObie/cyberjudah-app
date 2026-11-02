@@ -7,6 +7,7 @@ import Loading from '~common/Loading'
 import Box, { HStack, SafeAreaBox, TouchableBox, VStack } from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import { glossarySections, loadGlossary } from './classTeaching'
+import ClassVideoEmbed from '~features/passageMediaLibrary/ClassVideoEmbed'
 import { clock, useOpenSiteLink } from './siteLinks'
 
 /** The words the classes use, A to Z: each defined, its scriptures, and where it is taught. */
@@ -95,15 +96,14 @@ const GlossaryScreen = () => {
                 </HStack>
               )}
               {item.taught.map(moment => (
-                <TouchableBox
+                <ClassVideoEmbed
                   key={`${moment.video}@${moment.seconds}`}
-                  accessibilityRole="link"
-                  onPress={() => openMoment({ video: moment.video, t: moment.seconds })}
-                >
-                  <Text className="text-grey text-[13px]" numberOfLines={1}>
-                    ▶ {moment.title} · {clock(moment.seconds)}
-                  </Text>
-                </TouchableBox>
+                  videoId={moment.video}
+                  start={moment.seconds}
+                  title={moment.title}
+                  meta={`from ${clock(moment.seconds)}`}
+                  onOpenClass={() => openMoment({ video: moment.video, t: moment.seconds })}
+                />
               ))}
             </VStack>
           )}

@@ -44,6 +44,10 @@ export type CyberJudahClass = ResolvedPassageMediaLibraryItem & {
   notesPath: string
   /** Up on YouTube, its notes not written yet: the video plays and the notes follow. */
   pending?: boolean
+  /** When the class went live, from the classroom's verified broadcast starts. */
+  broadcastAt?: string
+  /** Its place in the channel feed, which lists a day's classes as they were taught. */
+  feedIndex?: number
 }
 
 /** One of the classroom channel's newest uploads. */
@@ -78,7 +82,8 @@ const collectionOf = (feed: Feed, collection: string): ClassCollection => {
 /** Every published class with a video, filed by collection in the Telegram app's order, newest first. */
 export const toClassLibrary = (
   feeds: Partial<Record<Feed, unknown>>,
-  recent: RecentClassVideo[] = []
+  recent: RecentClassVideo[] = [],
+  broadcasts: Record<string, ClassBroadcast> = {}
 ): CyberJudahClass[] => {
   const seen = new Set<string>()
   const classes: CyberJudahClass[] = []
@@ -158,8 +163,46 @@ export const toClassLibrary = (
       pending: true,
     })
   }
+  // Dated by the day each class went live, as the Telegram app dates them (orderTeachings).
+  const feedAt = new Map(recent.map((upload, at) => [upload?.video, at]))
+  for (const item of classes) {
+    const at = broadcasts[item.providerId]?.broadcastAt
+    if (at && /^\d{4}-\d{2}-\d{2}T/.test(at) && Number.isFinite(Date.parse(at))) {
+      item.broadcastAt = at
+      item.date = liveDayOf(at)
+      item.year = item.date.slice(0, 4)
+    }
+    const feedIndex = feedAt.get(item.providerId)
+    if (feedIndex !== undefined) item.feedIndex = feedIndex
+  }
   const rank = (series: ClassCollection) => CLASS_COLLECTIONS.indexOf(series)
-  return classes.sort((a, b) => rank(a.series) - rank(b.series) || b.date.localeCompare(a.date))
+  return classes.sort((a, b) => rank(a.series) - rank(b.series) || byLiveOrder(a, b))
+}
+
+export type ClassBroadcast = { date: string; broadcastAt: string }
+
+/** The calendar day an instant falls on, on this phone. */
+const liveDayOf = (at: string) =>
+  new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(
+    new Date(at)
+  )
+
+/**
+ * The Telegram app's order (shared/teaching-order.mjs): newest day first; within a day the
+ * latest broadcast first, then classes with no verified start in the channel feed's order,
+ * then the rest as listed.
+ */
+export const byLiveOrder = (a: CyberJudahClass, b: CyberJudahClass) => {
+  const day = (b.date || '').localeCompare(a.date || '')
+  if (day) return day
+  const aTime = Date.parse(a.broadcastAt || '')
+  const bTime = Date.parse(b.broadcastAt || '')
+  const aKnown = Number.isFinite(aTime)
+  const bKnown = Number.isFinite(bTime)
+  if (aKnown || bKnown) return aKnown && bKnown ? bTime - aTime : aKnown ? -1 : 1
+  if (a.feedIndex === undefined || b.feedIndex === undefined)
+    return a.feedIndex === b.feedIndex ? 0 : a.feedIndex !== undefined ? -1 : 1
+  return a.feedIndex - b.feedIndex
 }
 
 /** The classroom channel's newest uploads; none when the server can't say (the list still loads). */
@@ -170,10 +213,14 @@ export const loadRecentClassVideos = async (
     const response = await fetcher(`${API_ORIGIN}/api/app/channel/recent`, {
       headers: { accept: 'application/json' },
     })
-    if (!response.ok) return []
+    if (!response.ok) {
+      console.warn('[Classes] recent uploads unavailable', response.status)
+      return []
+    }
     const body = (await response.json()) as { videos?: unknown }
     return Array.isArray(body?.videos) ? (body.videos as RecentClassVideo[]) : []
-  } catch {
+  } catch (error) {
+    console.warn('[Classes] recent uploads failed', error)
     return []
   }
 }
@@ -231,13 +278,14 @@ export const loadClassLibrary = async (
     if (!response.ok) throw new Error(`CYBERJUDAH_CLASSES_UNAVAILABLE:${response.status}`)
     return response.json()
   }
-  const [classes, captains, history, recent] = await Promise.all([
+  const [classes, captains, history, recent, broadcasts] = await Promise.all([
     read('/search/classes.json'),
     read('/search/captains.json').catch(() => []),
     read('/api/history/index.json').catch(() => []),
     loadRecentClassVideos(fetcher),
+    read('/api/classes/broadcasts.json').catch(() => ({})),
   ])
-  const library = toClassLibrary({ classes, captains, history }, recent)
+  const library = toClassLibrary({ classes, captains, history }, recent, broadcasts)
   if (!library.length) throw new Error('CYBERJUDAH_CLASSES_EMPTY')
   storage.set(CACHE_KEY, JSON.stringify(library))
   return library
@@ -439,7 +487,13 @@ const blocksToHtml = (lines: string[], videoId: string): string => {
  */
 export type NoteBlock =
   | { type: 'heading'; level: number; html: string }
-  | { type: 'paragraph'; html: string; variant?: 'label' | 'passage' }
+  | {
+      type: 'paragraph'
+      html: string
+      variant?: 'label' | 'passage'
+      /** The verse's own words a point opens on ("verse words: what was said"), shown in gold. */
+      lead?: string
+    }
   | { type: 'rule' }
   | { type: 'reading'; blocks: NoteBlock[] }
   | { type: 'quote'; blocks: NoteBlock[] }
@@ -711,9 +765,56 @@ const flowInClassOrder = (blocks: NoteBlock[]): NoteBlock[] => {
   return out
 }
 
+const wordsOf = (html: string) =>
+  plainText(html.replace(/<sup\b[^>]*>.*?<\/sup>/g, ' '))
+    .toLowerCase()
+    .replace(/[^a-z ]+/g, ' ')
+    // The KJV's spelling and the notes' can differ: worshipped/worshiped, honoured/honored.
+    .replace(/([a-z])\1/g, '$1')
+    .replace(/our\b/g, 'or')
+    .split(/\s+/)
+    .filter(Boolean)
+    .join(' ')
+
+const verseWordsOf = (blocks: NoteBlock[]): string =>
+  blocks
+    .map(block =>
+      block.type === 'paragraph'
+        ? wordsOf(block.html)
+        : 'blocks' in block
+          ? verseWordsOf(block.blocks)
+          : ''
+    )
+    .join(' ')
+
+/**
+ * Each point opens on the words of the verse it comments on ("verse words: what was said"). Split
+ * those words off as the paragraph's lead when they are the verse's own, quoted just above, so
+ * they can be shown apart from what was said on them.
+ */
+const withVerseWords = (blocks: NoteBlock[], verse = ''): NoteBlock[] => {
+  let current = verse
+  return blocks.map(block => {
+    if (block.type === 'verse') {
+      current = verseWordsOf(block.blocks)
+      return block
+    }
+    if (block.type === 'list')
+      return { ...block, items: block.items.map(item => withVerseWords(item, current)) }
+    if (block.type === 'reading' || block.type === 'quote' || block.type === 'aside')
+      return { ...block, blocks: withVerseWords(block.blocks, current) }
+    if (block.type !== 'paragraph' || block.variant || !current) return block
+    const split = /^([^<:]{3,220}?):\s+([\s\S]+)$/.exec(block.html)
+    if (!split) return block
+    const words = wordsOf(split[1])
+    if (!words || !` ${current} `.includes(` ${words} `)) return block
+    return { ...block, lead: split[1], html: split[2] }
+  })
+}
+
 /** The notes as blocks for the app's own components. */
 export const classNotesToBlocks = (markdown: string, videoId: string): NoteBlock[] =>
-  flowInClassOrder(blocksOf(notesLines(markdown), videoId))
+  flowInClassOrder(withVerseWords(blocksOf(notesLines(markdown), videoId)))
 
 /** The notes as HTML: headings, scripture quotes, precepts nested under each verse. */
 export const classNotesToHtml = (markdown: string, videoId: string): string =>
@@ -751,3 +852,9 @@ export const loadClassNoteBlocks = async (
 
 export const getCachedClassById = (workId: string): CyberJudahClass | null =>
   readCachedClassLibrary()?.find(item => item.workId === workId) ?? null
+
+/** The class to feature, as the Telegram app picks its latest class: the newest to go live. */
+export const featuredSabbathClass = (classes: CyberJudahClass[]): CyberJudahClass | undefined =>
+  classes
+    .filter(item => item.series === 'Sabbath classes' || item.series === 'Shows')
+    .sort(byLiveOrder)[0]

@@ -1,6 +1,5 @@
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import React from 'react'
-import * as NativeUI from 'react-native'
 import {
   FlatListProps,
   FlatList as RNFlatList,
@@ -8,8 +7,8 @@ import {
   StyleSheet,
   ViewStyle,
 } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { twMerge } from '~common/ui/classNames'
+import { usePageBottomInset } from './Box'
 
 import useDeviceOrientation, { Orientation } from '~helpers/useDeviceOrientation'
 import type { Theme as AppTheme } from '~themes'
@@ -22,22 +21,16 @@ type StyledFlatListProps = {
 }
 
 const FlatList = (
-  componentProps: Omit<
-    UIComponentProps<typeof NativeUI.FlatList>,
-    keyof StyledFlatListProps | 'theme'
-  > &
+  componentProps: Omit<UIComponentProps<typeof RNFlatList>, keyof StyledFlatListProps | 'theme'> &
     Omit<StyledFlatListProps, 'theme'> & { theme?: AppTheme; className?: string }
 ) => {
   const contextTheme = useAppTheme()
   const { theme: themeOverride, className, ...props } = componentProps
   const theme = themeOverride ?? contextTheme
   const { orientation, bg } = props
-  const resolvedClassName = twMerge(
-    'pb-[30px] rounded-tl-[30px] rounded-tr-[30px] w-[100%] ml-auto mr-auto',
-    className
-  )
+  const resolvedClassName = twMerge('pb-[30px] w-[100%] ml-auto mr-auto', className)
   return (
-    <NativeUI.FlatList
+    <RNFlatList
       {...props}
       className={resolvedClassName}
       style={
@@ -49,12 +42,12 @@ const FlatList = (
             ...(orientation.tablet && {
               marginTop: 20,
               marginBottom: 50,
-              borderBottomLeftRadius: 30,
-              borderBottomRightRadius: 30,
+              borderBottomLeftRadius: 24,
+              borderBottomRightRadius: 24,
             }),
           },
           props.style,
-        ] as UIComponentProps<typeof NativeUI.FlatList>['style']
+        ] as UIComponentProps<typeof RNFlatList>['style']
       }
     />
   )
@@ -72,11 +65,11 @@ const AnimatedFlatList = <T,>({
   ref,
   ...props
 }: AnimatedFlatListProps<T>) => {
-  const insets = useSafeAreaInsets()
+  const bottomInset = usePageBottomInset()
   const orientation = useDeviceOrientation()
   const style = {
     ...pageContentStyle,
-    paddingBottom: 10 + insets.bottom,
+    paddingBottom: 10 + bottomInset,
     ...StyleSheet.flatten(contentContainerStyle),
   }
 

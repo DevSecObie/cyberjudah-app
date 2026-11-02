@@ -92,24 +92,24 @@
     },
     "strong-lexicon:entities": {
       "id": "strong-lexicon:entities",
-      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/bible_entities.cyberjudah.sqlite.zip?sha256=d22a1e41c39d9d20bf1bfe36ead7b6755a9eba188cfd9471d1e6c1e7b857eadb",
+      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/bible_entities.cyberjudah.sqlite.zip?sha256=a611706b4b253630f6582d0921daca27ca0176986523437843cc3263570a0949",
       "file": "bible_entities.cyberjudah.sqlite.zip",
       "entry": "bible_entities.cyberjudah.sqlite",
       "entries": {
         "canonical": {
           "entry": "bible_entities.cyberjudah.sqlite",
-          "sha256": "40a0e29ff17ef0c32d01d959df02546a2ce108eab449b7737a565532f606f6fd",
-          "bytes": 4452352
+          "sha256": "133a1d253065df587a4208482a6ee4f73204ad9405811766ab9293c5344c7467",
+          "bytes": 4460544
         }
       },
-      "archiveSha256": "d22a1e41c39d9d20bf1bfe36ead7b6755a9eba188cfd9471d1e6c1e7b857eadb",
-      "archiveBytes": 853037,
-      "contentSha256": "40a0e29ff17ef0c32d01d959df02546a2ce108eab449b7737a565532f606f6fd",
-      "contentBytes": 4452352,
-      "installedBytes": 4452352,
-      "peakInstallationBytes": 9757741,
+      "archiveSha256": "a611706b4b253630f6582d0921daca27ca0176986523437843cc3263570a0949",
+      "archiveBytes": 853645,
+      "contentSha256": "133a1d253065df587a4208482a6ee4f73204ad9405811766ab9293c5344c7467",
+      "contentBytes": 4460544,
+      "installedBytes": 4460544,
+      "peakInstallationBytes": 9774733,
       "strategy": "archive-extract",
-      "resourceRevision": "cj-entities-b701875483820bd0186b6a2ee40d8265672162b70c6112c019b2fd32bf462e23"
+      "resourceRevision": "cj-entities-57f013847d403a7344790dc47a4aa15f327899811c574f734625c52661511c5a"
     },
     "database:JEWISH_ENCYCLOPEDIA:en": {
       "id": "database:JEWISH_ENCYCLOPEDIA:en",

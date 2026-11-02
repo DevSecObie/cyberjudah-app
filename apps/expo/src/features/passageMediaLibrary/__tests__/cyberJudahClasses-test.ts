@@ -10,6 +10,7 @@ jest.mock('~helpers/storage', () => ({
 
 import {
   classNotesToBlocks,
+  featuredSabbathClass,
   filterClassLibrary,
   getCachedClassById,
   liveClassBanner,
@@ -207,6 +208,44 @@ describe('classNotesToBlocks', () => {
   })
 })
 
+describe('verse words', () => {
+  // Verse links become the app's own verses only in the CyberJudah app.
+  const profile = process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+  beforeAll(() => {
+    process.env.EXPO_PUBLIC_RESOURCE_PROFILE = 'cyberjudah'
+  })
+  afterAll(() => {
+    process.env.EXPO_PUBLIC_RESOURCE_PROFILE = profile
+  })
+  const notes = [
+    '## Scriptures Opened',
+    '',
+    '**[Genesis 17:10](/bible/genesis/17#v10)**  *[[10:04](https://www.youtube.com/watch?v=P4cR6i32U80&t=604s)]*',
+    '',
+    '> <sup>[10](/bible/genesis/17#v10)</sup> This is my covenant, which ye shall keep, between me and you and thy seed after thee; Every man child among you shall be circumcised.',
+    '',
+    '- Every man child among you shall be circumcised: Hold that, and go to Genesis 14.',
+    "- Abraham's house: not the verse's words.",
+  ].join('\n')
+
+  it('splits off the verse words a point opens on', () => {
+    const list = classNotesToBlocks(notes, 'P4cR6i32U80').find(block => block.type === 'list')
+    expect(list).toMatchObject({
+      items: [
+        [
+          {
+            type: 'paragraph',
+            lead: 'Every man child among you shall be circumcised',
+            html: 'Hold that, and go to Genesis 14.',
+          },
+        ],
+        [{ type: 'paragraph', html: expect.stringContaining('house: not') }],
+      ],
+    })
+    if (list?.type === 'list') expect(list.items[1][0]).not.toHaveProperty('lead')
+  })
+})
+
 describe('In the News', () => {
   it('moves each timed item out of its own section into Scriptures Opened', () => {
     const seek = (t: number) => `*[[0:${t}](https://www.youtube.com/watch?v=P4cR6i32U80&t=${t}s)]*`
@@ -268,5 +307,23 @@ describe('notes HTML', () => {
         y: 100,
       },
     ])
+  })
+})
+
+describe('featuredSabbathClass', () => {
+  const cls = (title: string, date: string, broadcastAt?: string, series = 'Sabbath classes') =>
+    ({ title, date, broadcastAt, series }) as unknown as Parameters<
+      typeof featuredSabbathClass
+    >[0][number]
+
+  it('features the class that went live last, as the Telegram app does', () => {
+    const classes = [
+      cls('Morning', '2026-10-31', '2026-10-31T14:00:00Z'),
+      cls('Evening', '2026-10-31', '2026-10-31T22:00:00Z'),
+      cls('Afternoon', '2026-10-31', '2026-10-31T18:00:00Z'),
+      cls('Older', '2026-10-24', '2026-10-24T22:00:00Z'),
+      cls('Captain', '2026-11-01', undefined, 'Captains'),
+    ]
+    expect(featuredSabbathClass(classes)?.title).toBe('Evening')
   })
 })

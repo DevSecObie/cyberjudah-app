@@ -213,7 +213,6 @@ jest.mock('~common/ui/Paragraph', () => ({
   __esModule: true,
   default: ({ children }: React.PropsWithChildren) => <>{children}</>,
 }))
-jest.mock('~common/ui/RoundedCorner', () => () => null)
 jest.mock('~common/ui/Text', () => ({
   __esModule: true,
   default: ({ children }: React.PropsWithChildren) => <>{children}</>,

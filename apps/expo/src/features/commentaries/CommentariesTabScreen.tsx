@@ -3,8 +3,9 @@ import { commentaryCollectionContext } from '~features/study-assistant/resourceC
 import CommentIcon from '~common/CommentIcon'
 import { pageContentStyle } from '~common/ui/PageContent'
 import { useQuery } from '@tanstack/react-query'
+import { staticResourceQueryOptions } from '~helpers/queryOptions'
 import MenuView from '~features/commentaries/CommentaryMenu'
-import React, { useEffect } from 'react'
+import React, { useEffect, useEffectEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ScrollView } from 'react-native'
 import Empty from '~common/Empty'
@@ -39,6 +40,7 @@ import { useSheetFooterInset } from '~common/sheet'
 import { getCommentaryScrollBottomInset } from './commentaryScrollInsets'
 import { getCommentaryResourceRoute } from './commentaryResourceNavigation'
 import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
+import { useRecordHistory } from '~features/history/useRecordHistory'
 import ResourceVerseContext, {
   useResourceVerseContext,
 } from '~features/bible/resources/ResourceVerseContext'
@@ -64,6 +66,7 @@ const useComments = (verse: string) => {
     enabled: validVerse && selectedResources.length > 0,
     networkMode: 'always',
     retry: false,
+    ...staticResourceQueryOptions,
   })
 
   return {
@@ -141,6 +144,8 @@ const CommentariesTabScreen = ({
     unavailableResources,
   })
   const verseFormatted = verseStringToObject([verse])
+  // The verse resources sheet embeds this screen without its header: only a full screen is a visit.
+  useRecordHistory(hasHeader && verseFormatted ? { type: 'commentary', verse } : null)
 
   const { title: requestedHeaderTitle } = verseFormatted
     ? formatVerseContent([verse])
@@ -177,20 +182,17 @@ const CommentariesTabScreen = ({
     bottomBarHeight,
     sheetFooterInset,
   })
+  const updateTitle = useEffectEvent((title: string) => {
+    setTitle(title)
+  })
   useEffect(() => {
-    setTitle(displayedContent.headerTitle)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    updateTitle(displayedContent.headerTitle)
   }, [displayedContent.headerTitle])
   return (
     <>
       {hasHeader && (
-        <>
-          <Box
-            className="overflow-hidden border-continuous bg-reverse"
-            style={{ paddingTop: insets.top }}
-          />
+        <Box className="bg-canvas" style={{ paddingTop: insets.top }}>
           <Header
-            background
             hasBackButton={hasBackButton}
             title={displayedContent.headerTitle}
             rightComponent={
@@ -230,11 +232,11 @@ const CommentariesTabScreen = ({
               </MenuView>
             }
           />
-        </>
+        </Box>
       )}
 
       <ScrollView
-        style={{ backgroundColor: theme.colors.lightGrey }}
+        style={{ backgroundColor: theme.colors.canvas }}
         contentContainerStyle={[
           pageContentStyle,
           { maxWidth: 600, paddingBottom: scrollBottomInset },

@@ -1,0 +1,1 @@
+- Studies: Publish now puts the study on CyberJudah's own server (cyberjudah-telegram published studies) instead of Bible Strong, with "Update the published copy" for later changes; Export to PDF is made on the phone and shared through the share sheet; both are back in the study editor's menu. Deleting the account takes published studies down.

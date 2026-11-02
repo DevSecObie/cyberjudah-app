@@ -1,15 +1,16 @@
+import PageContent from '~common/ui/PageContent'
+import { openInApp } from '~common/inAppBrowser'
+import type { LayoutChangeEvent } from 'react-native'
 import { getReadingTypography, type ReadingTypography } from '~common/readingHtml'
 import { useReferencePreview } from '~features/bibleReferencePreview/state'
-import { twMerge } from '~common/ui/classNames'
 
-import PageContent from '~common/ui/PageContent'
-import { Image } from 'expo-image'
+import { ListSeparator } from '~common/ui/ListSection'
+import { StudyRowsCard } from '~common/ui/StudySection'
+import { formatStrongDisplayCode } from '~helpers/strongIdentities'
 import { useTheme } from '~themes/ThemeProvider'
 import React from 'react'
 import {
-  Linking,
   Text as NativeText,
-  type LayoutChangeEvent,
   type NativeSyntheticEvent,
   type TextLayoutEventData,
 } from 'react-native'
@@ -22,7 +23,7 @@ import {
   normalizeExternalContextLinks,
   removeLegacySpacerImages,
 } from '~common/stylizedHtmlUtils'
-import Box, { HStack, TouchableBox, VStack } from '~common/ui/Box'
+import { HStack, TouchableBox, VStack } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
 import type {
@@ -32,14 +33,21 @@ import type {
 } from '~features/resources/strongLexiconAccess'
 import { linkifyStrongEditorialBibleReferences } from './strongEditorialHtml'
 import { getScaledStrongTextStyle, type StrongReadingTypography } from './strongEditorialHtmlStyles'
-import { isStrongEditorialPreviewOverflowing } from './strongDetailPreview'
-import { getStrongEntityAvatarSource } from './strongEntityAvatars'
+import {
+  getStrongEditorialPreviewHtml,
+  isStrongEditorialPreviewOverflowing,
+} from './strongDetailPreview'
+import StrongEntityAvatar from './StrongEntityAvatar'
+import { useEntityPortraitCatalog } from './entityPortraitManifest'
+import { getEntityPortraitText } from './entityPortraits'
 import { withoutRepeatedSummary } from './strongEntityArticle'
 import { isStrongOriginalUnnamed } from './strongOriginalPresentation'
+
 export const StrongEyebrow = ({ children }: { children: React.ReactNode }) => (
   <Text className="text-primary text-[11px] font-bold uppercase">{children}</Text>
 )
 
+/** A titled section of an entity page (CyberJudah's person sections use it). */
 export const StrongEditorialSection = ({
   title,
   children,
@@ -84,56 +92,7 @@ export const StrongEditorialSection = ({
   </VStack>
 )
 
-export const StrongLevelSwitch = <T extends string>({
-  options,
-  value,
-  onChange,
-}: {
-  options: { value: T; label: string }[]
-  value: T
-  onChange: (value: T) => void
-}) => (
-  <HStack className="overflow-hidden border-continuous bg-light-grey rounded-[10px] p-[2px] gap-[2px]">
-    {options.map(option => {
-      const selected = option.value === value
-      return (
-        <TouchableBox
-          key={option.value}
-          accessibilityRole="button"
-          accessibilityLabel={option.label}
-          accessibilityState={{ selected }}
-          onPress={() => onChange(option.value)}
-          activeOpacity={0.7}
-          className={twMerge(
-            'overflow-hidden border-continuous flex-[1] items-center rounded-[8px] py-[6px]',
-            selected && 'bg-reverse'
-          )}
-        >
-          <Text className={twMerge('text-[13px] font-bold', !selected && 'text-tertiary')}>
-            {option.label}
-          </Text>
-        </TouchableBox>
-      )
-    })}
-  </HStack>
-)
-
-export const StrongPreviewLink = ({ label, onPress }: { label: string; onPress: () => void }) => (
-  <TouchableBox
-    className="overflow-hidden border-continuous mt-[2px]"
-    onPress={onPress}
-    activeOpacity={0.7}
-    accessibilityRole="button"
-    accessibilityLabel={label}
-  >
-    <HStack className="overflow-hidden border-continuous items-center gap-[5px] py-[8px]">
-      <Text className="text-primary font-bold text-[14px]">{label}</Text>
-      <FeatherIcon name="chevron-right" color="primary" size={15} />
-    </HStack>
-  </TouchableBox>
-)
-
-export const StrongLexicalRelationCard = ({
+export const StrongLexicalRelationRow = ({
   relation,
   readingTypography,
   onPress,
@@ -141,28 +100,31 @@ export const StrongLexicalRelationCard = ({
   relation: StrongLexiconRelation
   readingTypography: StrongReadingTypography
   onPress: () => void
-}) => (
-  <TouchableBox
-    className="overflow-hidden border-continuous"
-    onPress={onPress}
-    activeOpacity={0.7}
-    accessibilityRole="link"
-    accessibilityLabel={`${relation.gloss}, ${relation.stepCode}`}
-  >
-    <HStack className="overflow-hidden border-continuous bg-light-grey rounded-[17px] px-[15px] py-[13px] items-center gap-[12px]">
-      <VStack className="overflow-hidden border-continuous flex-[1] gap-[3px]">
-        <Text className="text-tertiary text-[12px]">
-          {relation.label} · {relation.stepCode}
+}) => {
+  const code = formatStrongDisplayCode(relation.stepCode)
+  return (
+    <TouchableBox
+      className="flex-row items-center gap-[12px] px-[16px] py-[11px]"
+      onPress={onPress}
+      activeOpacity={0.7}
+      accessibilityRole="link"
+      accessibilityLabel={`${relation.gloss}, ${code}`}
+    >
+      <VStack className="flex-[1] gap-[2px]">
+        <Text className="text-[15px]" numberOfLines={2}>
+          {relation.gloss || relation.transliteration}
         </Text>
-        <Text className="font-bold text-[16px]">{relation.gloss || relation.transliteration}</Text>
+        <Text className="text-[13px] text-grey" numberOfLines={1}>
+          {relation.label} · {code}
+        </Text>
       </VStack>
       {!isStrongOriginalUnnamed(relation.original) && (
         <Text style={getScaledStrongTextStyle(18, 24, readingTypography)}>{relation.original}</Text>
       )}
-      <FeatherIcon name="chevron-right" size={16} color="tertiary" />
-    </HStack>
-  </TouchableBox>
-)
+      <FeatherIcon name="chevron-right" size={18} color="grey" />
+    </TouchableBox>
+  )
+}
 
 type StrongEditorialHtmlProps = {
   typography?: ReadingTypography
@@ -203,7 +165,7 @@ export const StrongEditorialHtml = ({
           onOpenStrong(target.slice('strong://'.length))
           return
         }
-        if (/^https?:\/\//iu.test(target)) Linking.openURL(target)
+        if (/^https?:\/\//iu.test(target)) openInApp(target)
       }}
     />
   )
@@ -227,7 +189,7 @@ const openEditorialPreviewLink = (
     onOpenStrong(target.slice('strong://'.length))
     return
   }
-  if (/^https?:\/\//iu.test(target)) Linking.openURL(target)
+  if (/^https?:\/\//iu.test(target)) openInApp(target)
 }
 
 const renderEditorialPreviewNodes = (
@@ -282,6 +244,9 @@ const renderEditorialPreviewNodes = (
     return <React.Fragment key={key}>{children}</React.Fragment>
   })
 
+// More characters than a line of the preview holds, even on a wide screen.
+const PREVIEW_TEXT_PER_LINE = 160
+
 export const StrongEditorialPreview = ({
   value,
   readingTypography,
@@ -300,18 +265,23 @@ export const StrongEditorialPreview = ({
   const preview = useReferencePreview()
   const theme = useTheme()
   if (!value) return null
+  const html = removeLegacySpacerImages(value)
+  // Only what the lines can show: a text cut there overflows them anyway.
+  const previewHtml = getStrongEditorialPreviewHtml(html, numberOfLines * PREVIEW_TEXT_PER_LINE)
+  const isCut = previewHtml.length < html.length
   const document = parseDocument(
-    linkifyStrongEditorialBibleReferences(removeLegacySpacerImages(value), theme.colors.primary),
+    linkifyStrongEditorialBibleReferences(previewHtml, theme.colors.primary),
     { decodeEntities: true }
   )
   const fullText = DomUtils.textContent(document)
   const reportOverflow = (event: NativeSyntheticEvent<TextLayoutEventData>) => {
     onOverflowChange?.(
-      isStrongEditorialPreviewOverflowing(
-        fullText,
-        event.nativeEvent.lines.map(line => line.text),
-        numberOfLines
-      )
+      isCut ||
+        isStrongEditorialPreviewOverflowing(
+          fullText,
+          event.nativeEvent.lines.map(line => line.text),
+          numberOfLines
+        )
     )
   }
 
@@ -338,7 +308,11 @@ export const StrongEditorialPreview = ({
   )
 }
 
-const getEntityLabel = (category: string, type: string, t: TFunction<'translation', undefined>) => {
+export const getEntityLabel = (
+  category: string,
+  type: string,
+  t: TFunction<'translation', undefined>
+) => {
   if (category === 'person') return t('strongDetail.entity.person')
   if (category === 'place') return t('strongDetail.entity.place')
   if (category === 'group') return t('strongDetail.entity.group')
@@ -348,8 +322,8 @@ const getEntityLabel = (category: string, type: string, t: TFunction<'translatio
 
 const entityCardPresentation = (compact: boolean) =>
   compact
-    ? { avatarSize: 40, nameClassName: 'font-bold text-[16px]' }
-    : { avatarSize: 48, nameClassName: 'font-bold text-[20px]' }
+    ? { avatarSize: 40, nameClassName: 'font-semibold text-[16px]' }
+    : { avatarSize: 48, nameClassName: 'font-semibold text-[20px]' }
 
 const resolveEntityEditorialTypography = (
   readingTypography: StrongReadingTypography,
@@ -362,24 +336,39 @@ const resolveEntityEditorialTypography = (
     readingTypography.lineHeight
   )
 
+/**
+ * An entity's avatar, name and description. `plain` leaves out its Strong numbers, `showsKind`
+ * the kind of entity when the title above already says it; the page sets it in a card. `featured`
+ * gives a painted entity a larger portrait, its title and its roles; `hidesHeader` leaves only the
+ * description, under a profile's own head.
+ */
 export const StrongEntitySummaryCard = ({
   entity,
   expanded = false,
   plain = false,
   compact = false,
+  showsKind = true,
+  eyebrowDetail,
+  featured = false,
+  hidesHeader = false,
+  language,
   previewLines,
   editorialTypography,
   readingTypography,
   onOpenBibleReference,
   onOpenStrong,
-  eyebrowDetail,
 }: {
   entity: StrongLexiconEntity
-  /** Shown after the kind of entity, such as the person's tribe ("Tribe of Levi"). */
-  eyebrowDetail?: string
   expanded?: boolean
   plain?: boolean
   compact?: boolean
+  showsKind?: boolean
+  /** Shown after the kind of entity, such as the person's tribe ("Tribe of Levi"). */
+  eyebrowDetail?: string
+  featured?: boolean
+  hidesHeader?: boolean
+  /** The language of the portrait's title and roles; the app's by default. */
+  language?: string
   /** Truncates the short description; the full text stays on the entity page. */
   previewLines?: number
   editorialTypography?: ReadingTypography
@@ -387,64 +376,78 @@ export const StrongEntitySummaryCard = ({
   onOpenBibleReference: (osis: string) => void
   onOpenStrong: (stepCode: string) => void
 }) => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const catalog = useEntityPortraitCatalog()
   const detailedDescription = withoutRepeatedSummary(
     entity.articleHtml || entity.summaryHtml,
     entity.shortDescription
   )
-  const presentation = entityCardPresentation(compact)
+  const portrait = featured ? catalog?.entities[entity.uniqueName] : undefined
+  const textLanguage = language ?? i18n.language
+  const presentation = portrait
+    ? { avatarSize: 72, nameClassName: 'font-semibold text-[20px]' }
+    : entityCardPresentation(compact)
+  const roles = (portrait?.roles ?? []).flatMap(role =>
+    catalog?.roles[role] ? [getEntityPortraitText(catalog.roles[role], textLanguage)] : []
+  )
   const resolvedEditorialTypography = resolveEntityEditorialTypography(
     readingTypography,
     editorialTypography
   )
 
   return (
-    <VStack
-      className={twMerge(
-        'overflow-hidden border-continuous',
-        twMerge(
-          expanded || plain ? '' : 'bg-light-grey',
-          'overflow-hidden border-continuous gap-[13px]'
-        )
+    <VStack className="overflow-hidden border-continuous gap-[13px]">
+      {!hidesHeader && (
+        <HStack className="overflow-hidden border-continuous gap-[12px] items-center">
+          <StrongEntityAvatar
+            uniqueName={entity.uniqueName}
+            category={entity.category}
+            type={entity.type}
+            size={presentation.avatarSize}
+          />
+          <VStack className="overflow-hidden border-continuous flex-[1] gap-[2px]">
+            <Text className={presentation.nameClassName}>{entity.name}</Text>
+            {!!portrait?.title && (
+              <Text className="text-[15px] text-grey" style={{ fontFamily: 'Literata Book' }}>
+                {getEntityPortraitText(portrait.title, textLanguage)}
+              </Text>
+            )}
+            {portrait ? (
+              <Text className="text-[13px] text-grey">
+                {[getEntityLabel(entity.category, entity.type, t), ...roles].join(' · ')}
+              </Text>
+            ) : (
+              showsKind && (
+                <Text className="text-[13px] text-grey">
+                  {[getEntityLabel(entity.category, entity.type, t), eyebrowDetail]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </Text>
+              )
+            )}
+            {!plain && (
+              <HStack className="overflow-hidden border-continuous gap-[6px] flex-wrap mt-[4px]">
+                {entity.strongCodes.map(code => (
+                  // The chip is set on a card: the canvas is the recessed level in every theme.
+                  <TouchableBox
+                    className="overflow-hidden border-continuous bg-canvas rounded-full px-[9px] py-[3px] flex-row items-center gap-[2px]"
+                    key={code}
+                    onPress={() => onOpenStrong(code)}
+                    activeOpacity={0.7}
+                    accessibilityRole="link"
+                    accessibilityLabel={formatStrongDisplayCode(code)}
+                  >
+                    <Text className="text-grey text-[12px] font-semibold">
+                      {formatStrongDisplayCode(code)}
+                    </Text>
+                    <FeatherIcon name="chevron-right" color="grey" size={11} />
+                  </TouchableBox>
+                ))}
+              </HStack>
+            )}
+          </VStack>
+        </HStack>
       )}
-      style={{ padding: expanded || plain ? 0 : 18 }}
-    >
-      <HStack className="overflow-hidden border-continuous gap-[12px] items-center">
-        <Image
-          source={getStrongEntityAvatarSource(entity.category, entity.type, entity.uniqueName)}
-          style={{
-            width: presentation.avatarSize,
-            height: presentation.avatarSize,
-            borderRadius: presentation.avatarSize / 2,
-          }}
-          contentFit="contain"
-        />
-        <VStack className="overflow-hidden border-continuous flex-[1] gap-[3px]">
-          <StrongEyebrow>
-            {[getEntityLabel(entity.category, entity.type, t), eyebrowDetail]
-              .filter(Boolean)
-              .join(' · ')}
-          </StrongEyebrow>
-          <Text className={presentation.nameClassName}>{entity.name}</Text>
-          {!plain && (
-            <HStack className="overflow-hidden border-continuous gap-[6px] flex-wrap">
-              {entity.strongCodes.map(code => (
-                <TouchableBox
-                  className="overflow-hidden border-continuous bg-light-grey rounded-[10px] px-[7px] py-[3px] flex-row items-center gap-[2px]"
-                  key={code}
-                  onPress={() => onOpenStrong(code)}
-                  activeOpacity={0.7}
-                  accessibilityRole="link"
-                  accessibilityLabel={code}
-                >
-                  <Text className="text-tertiary text-[11px] font-bold">{code}</Text>
-                  <FeatherIcon name="chevron-right" color="tertiary" size={10} />
-                </TouchableBox>
-              ))}
-            </HStack>
-          )}
-        </VStack>
-      </HStack>
       {!!entity.shortDescription && previewLines ? (
         <StrongEditorialPreview
           value={entity.shortDescription}
@@ -462,20 +465,15 @@ export const StrongEntitySummaryCard = ({
         />
       ) : null}
       {expanded && !!detailedDescription && (
-        <Box
-          className="border-continuous overflow-hidden border-border"
-          style={{
-            paddingTop: entity.shortDescription ? 13 : 0,
-            borderTopWidth: entity.shortDescription ? 1 : 0,
-          }}
-        >
+        <>
+          {!!entity.shortDescription && <ListSeparator inset={0} />}
           <StrongEditorialHtml
             value={detailedDescription}
             typography={resolvedEditorialTypography}
             onOpenBibleReference={onOpenBibleReference}
             onOpenStrong={onOpenStrong}
           />
-        </Box>
+        </>
       )}
     </VStack>
   )
@@ -494,39 +492,34 @@ export const StrongEntityRelationList = ({
   if (!relations.length) return null
 
   return (
-    <VStack className="overflow-hidden border-continuous gap-[8px]">
+    <StudyRowsCard>
       {relations.map(relation => (
         <TouchableBox
-          className="overflow-hidden border-continuous"
+          className="flex-row items-center gap-[12px] px-[16px] py-[11px]"
           key={`${relation.relation}:${relation.targetUniqueName ?? relation.targetName}`}
           onPress={() => onOpenEntity(relation)}
           disabled={!relation.targetUniqueName}
           activeOpacity={0.7}
-          style={[
-            { opacity: !relation.targetUniqueName ? 0.6 : 1 },
-            [{ opacity: !relation.targetUniqueName ? 0.6 : 1 }],
-          ]}
+          style={{ opacity: !relation.targetUniqueName ? 0.6 : 1 }}
         >
-          <HStack className="overflow-hidden border-continuous bg-light-grey rounded-[14px] px-[13px] py-[11px] gap-[10px] items-center">
-            <VStack className="overflow-hidden border-continuous flex-[1] gap-[2px]">
-              <Text className="font-bold">{relation.targetName}</Text>
-              <Text className="text-tertiary text-[11px]">
-                {t(relationLabelKey(relation.relation), {
-                  defaultValue: relation.relation,
-                })}
-              </Text>
-            </VStack>
-            {!!relation.targetStepCodes?.length && (
-              <Text className="text-tertiary text-[11px]">
-                {relation.targetStepCodes.join(' · ')}
-              </Text>
-            )}
-            {!!relation.targetUniqueName && (
-              <FeatherIcon name="chevron-right" size={15} color="tertiary" />
-            )}
-          </HStack>
+          <VStack className="flex-[1] gap-[2px]">
+            <Text className="text-[15px]">{relation.targetName}</Text>
+            <Text className="text-grey text-[13px]">
+              {t(relationLabelKey(relation.relation), {
+                defaultValue: relation.relation,
+              })}
+            </Text>
+          </VStack>
+          {!!relation.targetStepCodes?.length && (
+            <Text className="text-grey text-[13px]">
+              {relation.targetStepCodes.map(formatStrongDisplayCode).join(' · ')}
+            </Text>
+          )}
+          {!!relation.targetUniqueName && (
+            <FeatherIcon name="chevron-right" size={18} color="grey" />
+          )}
         </TouchableBox>
       ))}
-    </VStack>
+    </StudyRowsCard>
   )
 }

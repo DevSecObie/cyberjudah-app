@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { AppState, Linking, Pressable } from 'react-native'
+import { openInApp } from '~common/inAppBrowser'
+import { AppState, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import Box, { HStack } from '~common/ui/Box'
 import Text from '~common/ui/Text'
@@ -143,12 +144,12 @@ export default function AskCreditsCard({
         </Text>
       )}
       <HStack className="mt-3 gap-4">
-        <Pressable onPress={() => void Linking.openURL('https://cyberjudah.io/app/privacy')}>
+        <Pressable onPress={() => openInApp('https://cyberjudah.io/app/privacy')}>
           <Text className="text-xs text-grey">
             {t('askCredits.privacy', { defaultValue: 'Privacy' })}
           </Text>
         </Pressable>
-        <Pressable onPress={() => void Linking.openURL('https://cyberjudah.io/app/terms')}>
+        <Pressable onPress={() => openInApp('https://cyberjudah.io/app/terms')}>
           <Text className="text-xs text-grey">
             {t('askCredits.terms', { defaultValue: 'Terms' })}
           </Text>

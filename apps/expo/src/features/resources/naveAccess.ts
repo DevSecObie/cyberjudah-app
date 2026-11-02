@@ -3,6 +3,7 @@ import loadNaveByRandom from '~helpers/loadNaveByRandom'
 import loadNaveBySearch from '~helpers/loadNaveBySearch'
 import loadNaveByVerset from '~helpers/loadNaveByVerset'
 import loadNaveItem from '~helpers/loadNaveItem'
+import { localizeNaveTopic } from '~features/nave/naveReferenceNames'
 import {
   mapLocalResourceError,
   ResourceAccessError,
@@ -142,6 +143,8 @@ type HttpNaveAccessOptions = {
   baseUrl: string
   fetcher?: typeof fetch
   isOnline: () => Promise<boolean>
+  /** Explains a request that failed without a response; defaults to the online gate. */
+  isOfflineFailure?: () => Promise<boolean>
   timeoutMs?: number
 }
 
@@ -161,6 +164,7 @@ export const createHttpNaveAccess = ({
   baseUrl,
   fetcher = fetch,
   isOnline,
+  isOfflineFailure = async () => !(await isOnline()),
   timeoutMs = 10_000,
 }: HttpNaveAccessOptions): NaveAccess => {
   const normalizedBaseUrl = normalizeBaseUrl(baseUrl)
@@ -186,7 +190,7 @@ export const createHttpNaveAccess = ({
       if (signal?.aborted) throw error
       if (error instanceof ResourceAccessError) throw error
       throw new ResourceAccessError(
-        (await isOnline()) ? 'TEMPORARY_UNAVAILABLE' : 'NETWORK_OFFLINE'
+        (await isOfflineFailure()) ? 'NETWORK_OFFLINE' : 'TEMPORARY_UNAVAILABLE'
       )
     } finally {
       clearTimeout(timeout)
@@ -508,7 +512,7 @@ export const createHybridNaveAccess = ({
         lang,
         () => offline.loadItem(nameLower, lang),
         () => online.loadItem(nameLower, lang)
-      )
+      ).then(topic => localizeNaveTopic(topic, lang))
     },
     loadByVerse: (verse, language) => {
       const lang = languageOrFrench(language)
@@ -524,7 +528,7 @@ export const createHybridNaveAccess = ({
         lang,
         () => offline.loadRandom(lang),
         () => online.loadRandom(lang)
-      )
+      ).then(topic => localizeNaveTopic(topic, lang))
     },
   }
 }

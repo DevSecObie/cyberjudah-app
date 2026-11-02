@@ -1,11 +1,17 @@
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import React from 'react'
-import * as NativeUI from 'react-native'
-import { ScrollViewProps, StyleProp, StyleSheet, ViewStyle } from 'react-native'
+import {
+  ScrollViewProps,
+  StyleProp,
+  StyleSheet,
+  ViewStyle,
+  ScrollView as NativeScrollView,
+} from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
 import type { Theme as AppTheme } from '~themes'
 import { useTheme as useAppTheme, useTheme } from '~themes/ThemeProvider'
+import { usePageBottomInset } from './Box'
 import { pageContentStyle } from './PageContent'
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -18,7 +24,7 @@ type StyledScrollViewProps = {
 
 const ScrollView = (
   componentProps: Omit<
-    UIComponentProps<typeof NativeUI.ScrollView>,
+    UIComponentProps<typeof NativeScrollView>,
     keyof StyledScrollViewProps | 'theme'
   > &
     Omit<StyledScrollViewProps, 'theme'> & { theme?: AppTheme; className?: string }
@@ -29,7 +35,7 @@ const ScrollView = (
   const { orientation, backgroundColor } = props
   const resolvedClassName = twMerge('ml-auto mr-auto w-[100%]', className)
   return (
-    <NativeUI.ScrollView
+    <NativeScrollView
       {...props}
       className={resolvedClassName}
       style={
@@ -41,12 +47,12 @@ const ScrollView = (
             ...(orientation.tablet && {
               marginTop: 20,
               marginBottom: 50,
-              borderBottomLeftRadius: 30,
-              borderBottomRightRadius: 30,
+              borderBottomLeftRadius: 24,
+              borderBottomRightRadius: 24,
             }),
           },
           props.style,
-        ] as UIComponentProps<typeof NativeUI.ScrollView>['style']
+        ] as UIComponentProps<typeof NativeScrollView>['style']
       }
     />
   )
@@ -71,11 +77,11 @@ export const HomeScrollView = ({
     <ScrollView
       {...props}
       orientation={orientation}
-      backgroundColor="lightGrey"
+      backgroundColor="canvas"
       showsVerticalScrollIndicator={showsVerticalScrollIndicator}
       contentContainerStyle={{
         ...(!props.horizontal && pageContentStyle),
-        backgroundColor: theme.colors.lightGrey,
+        backgroundColor: theme.colors.canvas,
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
         ...StyleSheet.flatten(contentContainerStyle),
@@ -100,7 +106,7 @@ const AppScrollView = ({
   ...props
 }: AppScrollViewProps) => {
   const orientation = useDeviceOrientation()
-  const insets = useSafeAreaInsets()
+  const bottomInset = usePageBottomInset()
 
   return (
     <ScrollView
@@ -110,7 +116,7 @@ const AppScrollView = ({
       contentContainerStyle={{
         ...(!props.horizontal && pageContentStyle),
         paddingTop: 20,
-        paddingBottom: 10 + insets.bottom,
+        paddingBottom: 10 + bottomInset,
         ...StyleSheet.flatten(contentContainerStyle),
       }}
     >

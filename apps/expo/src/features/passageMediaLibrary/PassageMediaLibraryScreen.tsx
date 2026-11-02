@@ -30,6 +30,7 @@ import {
   loadClassLibrary,
   readCachedClassLibrary,
   type CyberJudahClass,
+  featuredSabbathClass,
 } from './cyberJudahClasses'
 // Editorial order of the 19 episodes published in BibleProject's
 // "How to Read the Bible" collection.
@@ -137,7 +138,7 @@ const PassageMediaLibraryScreen = () => {
     !filters.teacher &&
     !filters.year &&
     !filters.collection
-  const featured = unfiltered ? classes.find(item => item.series === 'Sabbath classes') : undefined
+  const featured = unfiltered ? featuredSabbathClass(classes) : undefined
   const seriesSections = useMemo(
     () => getClassSections(classes, filters, featured),
     [classes, filters, featured]

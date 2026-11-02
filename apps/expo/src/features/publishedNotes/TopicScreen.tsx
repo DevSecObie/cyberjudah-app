@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useRecordHistory } from '~features/history/useRecordHistory'
 import { useLocalSearchParams } from 'expo-router'
 import { useState } from 'react'
 import { ScrollView } from 'react-native'
@@ -10,10 +11,43 @@ import { longDate } from '~features/notesExport/notePdf'
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme } from '~themes/ThemeProvider'
 import { loadTopic } from './classTeaching'
+import ClassVideoEmbed, {
+  secondsOfClock,
+  useClassVideoOf,
+} from '~features/passageMediaLibrary/ClassVideoEmbed'
 import { LinkRow, Scripture, Section } from './parts'
 import { useOpenSiteLink } from './siteLinks'
 
 const THREAD_FIRST = 12
+
+/** A class that opened the scripture: its video embedded at that moment, or a row to the class. */
+const ClassMoment = ({
+  item,
+  onOpen,
+}: {
+  item: { url: string; title: string; t?: number; ts?: string; date?: string; teacher?: string }
+  onOpen: () => void
+}) => {
+  const video = useClassVideoOf(item.url)
+  const meta = [longDate(item.date), item.teacher, item.ts ? `from ${item.ts}` : '']
+    .filter(Boolean)
+    .join(' · ')
+  return video ? (
+    <ClassVideoEmbed
+      videoId={video}
+      start={item.t ?? secondsOfClock(item.ts)}
+      title={item.title}
+      meta={meta}
+      onOpenClass={onOpen}
+    />
+  ) : (
+    <LinkRow
+      meta={[item.ts, longDate(item.date), item.teacher].filter(Boolean).join(' · ')}
+      title={item.title}
+      onPress={onOpen}
+    />
+  )
+}
 
 /** A topic: the scriptures the classes opened on it in Bible order, then its classes and cases. */
 const TopicScreen = () => {
@@ -34,6 +68,18 @@ const TopicScreen = () => {
   const notes = data?.items.filter(item => item.kind !== 'case') ?? []
   const cases = data?.items.filter(item => item.kind === 'case') ?? []
 
+  // Reopened from Pick up and History, like Bible Strong's own pages.
+  useRecordHistory(
+    topic.data?.label
+      ? {
+          type: 'cyberjudah',
+          kind: 'topic',
+          title: topic.data.label,
+          pathname: '/(explore)/topic',
+          params: { slug },
+        }
+      : null
+  )
   return (
     <SafeAreaBox className="overflow-hidden border-continuous bg-reverse">
       <Header hasBackButton title={data?.label ?? 'Topic'} />
@@ -63,13 +109,10 @@ const TopicScreen = () => {
                     onOpen={open}
                   />
                   {stop.classes.slice(0, 3).map(item => (
-                    <LinkRow
+                    <ClassMoment
                       key={`${item.url}${item.t ?? ''}`}
-                      meta={[item.ts, longDate(item.date), item.teacher]
-                        .filter(Boolean)
-                        .join(' · ')}
-                      title={item.title}
-                      onPress={() => open(item.url)}
+                      item={item}
+                      onOpen={() => open(item.url)}
                     />
                   ))}
                 </VStack>

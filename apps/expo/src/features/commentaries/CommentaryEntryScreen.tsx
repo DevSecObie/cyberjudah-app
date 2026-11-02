@@ -1,22 +1,25 @@
 import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
+import { openInApp } from '~common/inAppBrowser'
 import { commentaryContext } from '~features/study-assistant/resourceContext'
 import { useQuery } from '@tanstack/react-query'
+import { staticResourceQueryOptions } from '~helpers/queryOptions'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { Linking } from 'react-native'
+
 import countLsgChapters from '~assets/bible_versions/countLsgChapters'
 import Header from '~common/Header'
 import Loading from '~common/Loading'
 import StylizedHTMLView from '~common/SwitchableHTMLView'
 import { getCommentaryShare } from './shareCommentary'
 import ScrollView from '~common/ui/ScrollView'
-import Box from '~common/ui/Box'
+import Box, { usePageBottomInset } from '~common/ui/Box'
+import Card from '~common/ui/Card'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
 import ResourceUnavailableView from '~features/resources/ResourceUnavailableView'
 import { useResourceAccess } from '~features/resources/resourceAccess'
 import { resourceFailureFromAccessError } from '~features/resources/resourceFailure'
-import { getBook } from '~helpers/bibleBookCatalog'
+import { getCommentaryBookLabel } from './commentaryBookLabel'
 import { IS_FORM_SHEET } from '~helpers/constants'
 import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
 import CommentaryResourceHeaderActions from './CommentaryResourceHeaderActions'
@@ -31,8 +34,15 @@ import {
   type CommentaryScreenRouteParams,
 } from './commentaryResourceParams'
 import CommentaryEntryNavigation from './CommentaryEntryNavigation'
+import ClassVideoEmbed, {
+  type ClassVideoEmbedHandle,
+} from '~features/passageMediaLibrary/ClassVideoEmbed'
+import { classMomentOf, firstClassMomentIn } from './commentaryClassMoment'
 import { groupCommentarySectionsForVerse } from './commentaryResourceNavigation'
 import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
+import { useRecordHistory } from '~features/history/useRecordHistory'
+import { getCommentaryResourceHistoryEntry } from './commentaryResourceHistory'
+import BishopsVerseCommentary, { isBishopCommentary } from './BishopsVerseCommentary'
 const CommentaryEntryScreen = ({
   routeParams,
   onOpenChapter,
@@ -53,7 +63,9 @@ const CommentaryEntryScreen = ({
   const pushRouteOnce = usePushRouteOnce()
   const { t } = useTranslation()
   const canGoBackInStack = useCanGoBackInStack()
+  const bottomInset = usePageBottomInset()
   const scrollRef = React.useRef<React.ComponentRef<typeof ScrollView>>(null)
+  const classVideoRef = React.useRef<ClassVideoEmbedHandle>(null)
   const query = useQuery({
     queryKey: [
       'commentary-resource-chapter',
@@ -71,6 +83,7 @@ const CommentaryEntryScreen = ({
     enabled: Boolean(parsed && params.sectionId),
     networkMode: 'always',
     retry: false,
+    ...staticResourceQueryOptions,
   })
 
   useAssistantResourceContext(
@@ -80,10 +93,19 @@ const CommentaryEntryScreen = ({
       query.data?.sections.find(item => item.id === params.sectionId)
     )
   )
+  useRecordHistory(
+    params.sectionId
+      ? getCommentaryResourceHistoryEntry(
+          parsed,
+          params.sectionId,
+          query.data?.sections.find(item => item.id === params.sectionId)
+        )
+      : null
+  )
 
   if (!parsed || !params.sectionId) {
     return (
-      <FormSheetScreen isFormSheet={IS_FORM_SHEET}>
+      <FormSheetScreen className="bg-canvas" isFormSheet={IS_FORM_SHEET}>
         <ResourceUnavailableView
           title={t('commentaries.resource.invalid')}
           failure={{ cause: 'not-found', recoveries: [] }}
@@ -107,21 +129,31 @@ const CommentaryEntryScreen = ({
   const sectionIndex = orderedSections.findIndex(candidate => candidate.id === params.sectionId)
   const previousSection = sectionIndex > 0 ? orderedSections[sectionIndex - 1] : undefined
   const nextSection = sectionIndex >= 0 ? orderedSections[sectionIndex + 1] : undefined
-  const bookLabel = t(getBook(book)?.Nom ?? String(book))
+  const bookLabel = getCommentaryBookLabel(book)
+  // The class this entry was taken from, embedded under it at the moment it was taught.
+  const classMoment = section ? firstClassMomentIn(section.content) : undefined
   const passage = section
     ? `${bookLabel} ${chapter}:${section.rangeStartVerse}${
         section.rangeEndVerse !== section.rangeStartVerse ? `–${section.rangeEndVerse}` : ''
       }`
     : `${bookLabel} ${chapter}`
+  // A Bishop's verse opens on every Bishop who taught it, one card per class.
+  const bishopVerse =
+    section && isBishopCommentary(projection.resourceId) && section.rangeStartVerse > 0
+      ? focusVerse !== undefined &&
+        focusVerse >= section.rangeStartVerse &&
+        focusVerse <= section.rangeEndVerse
+        ? focusVerse
+        : section.rangeStartVerse
+      : undefined
 
   return (
-    <FormSheetScreen isFormSheet={IS_FORM_SHEET}>
-      <Box className="overflow-hidden border-continuous flex-[1] bg-light-grey">
+    <FormSheetScreen className="bg-canvas" isFormSheet={IS_FORM_SHEET}>
+      <Box className="overflow-hidden border-continuous flex-[1] bg-canvas">
         <Header
-          background
           hasBackButton={IS_FORM_SHEET ? canGoBackInStack : true}
-          title={entry.author}
-          subTitle={passage}
+          title={bishopVerse ? `${bookLabel} ${chapter}:${bishopVerse}` : entry.author}
+          subTitle={bishopVerse ? t('commentaries.bishops.title') : passage}
           rightComponent={
             <Box className="overflow-hidden border-continuous mr-[4px]">
               <CommentaryResourceHeaderActions
@@ -161,10 +193,20 @@ const CommentaryEntryScreen = ({
             title={t('commentaries.resource.sectionMissing')}
             failure={{ cause: 'not-found', recoveries: [] }}
           />
+        ) : bishopVerse ? (
+          <ScrollView contentContainerStyle={{ maxWidth: 600, padding: 18, paddingBottom: 44 }}>
+            <BishopsVerseCommentary
+              book={book}
+              chapter={chapter}
+              verse={bishopVerse}
+              initialResourceId={projection.resourceId}
+            />
+          </ScrollView>
         ) : (
           <ScrollView
             ref={scrollRef}
-            contentContainerStyle={{ maxWidth: 600, padding: 18, paddingBottom: 44 }}
+            backgroundColor="canvas"
+            contentContainerStyle={{ maxWidth: 600, padding: 18, paddingBottom: 44 + bottomInset }}
           >
             <CommentaryRoomIntro
               compact
@@ -184,17 +226,7 @@ const CommentaryEntryScreen = ({
                     })
               }
             />
-            <Box
-              className="overflow-hidden border-continuous bg-reverse rounded-[20px] px-[18px] py-[18px]"
-              style={{
-                shadowColor: 'rgb(89,131,240)',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 7,
-                elevation: 1,
-                overflow: 'visible',
-              }}
-            >
+            <Card className="px-[18px] py-[18px]">
               <CommentaryEntryNavigation
                 hasPrevious={Boolean(previousSection)}
                 hasNext={Boolean(nextSection)}
@@ -231,14 +263,31 @@ const CommentaryEntryScreen = ({
                   selectable
                   value={section.content}
                   onLinkPress={href => {
+                    // The entry's timestamp plays the class below, from that moment.
+                    const moment = classMomentOf(href)
+                    if (moment && moment.videoId === classMoment?.videoId) {
+                      classVideoRef.current?.playAt(moment.start)
+                      return
+                    }
                     const osis = commentaryHrefToOsis(href)
                     const route = osis ? getCommentaryBibleViewRoute(osis) : undefined
                     if (route) pushRouteOnce(route)
-                    else if (/^https?:\/\//iu.test(href)) void Linking.openURL(href)
+                    else if (/^https?:\/\//iu.test(href)) openInApp(href)
                   }}
                 />
+                {classMoment ? (
+                  <Box className="mt-[16px]">
+                    <ClassVideoEmbed
+                      key={section.id}
+                      ref={classVideoRef}
+                      videoId={classMoment.videoId}
+                      start={classMoment.start}
+                      bare
+                    />
+                  </Box>
+                ) : null}
               </Box>
-            </Box>
+            </Card>
           </ScrollView>
         )}
       </Box>

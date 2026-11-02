@@ -24,7 +24,7 @@ import RenameModal from '~common/RenameModal'
 import SearchFilterModal from '~common/SearchFilterModal'
 import { Tag } from '~common/types'
 import Border from '~common/ui/Border'
-import Box from '~common/ui/Box'
+import Box, { usePageBottomInset } from '~common/ui/Box'
 import FabButton from '~common/ui/FabButton'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
 import Text from '~common/ui/Text'
@@ -51,7 +51,7 @@ const Chip = (
   const { theme: _themeOverride, className, ...props } = componentProps
 
   const resolvedClassName = twMerge(
-    'rounded-[20px] bg-border pt-[3px] pb-[3px] pl-[7px] pr-[7px] mr-[5px] mb-[5px] mt-[5px]',
+    'rounded-full bg-light-grey pt-[3px] pb-[3px] pl-[8px] pr-[8px] mr-[5px] mb-[5px] mt-[5px]',
     className
   )
   return (
@@ -87,49 +87,49 @@ const TagItem = ({ item, setOpen }: TagItemProps) => {
             <Box className="overflow-hidden border-continuous flex-row">
               {!!strongsNumber && (
                 <Chip>
-                  <Text className="text-[10px] text-default">
+                  <Text className="text-[12px] text-grey">
                     {strongsNumber} {t('strong', { count: strongsNumber })}
                   </Text>
                 </Chip>
               )}
               {!!wordsNumber && (
                 <Chip>
-                  <Text className="text-[10px] text-default">
+                  <Text className="text-[12px] text-grey">
                     {wordsNumber} {t('dictionnaire', { count: wordsNumber })}
                   </Text>
                 </Chip>
               )}
               {!!navesNumber && (
                 <Chip>
-                  <Text className="text-[10px] text-default">
+                  <Text className="text-[12px] text-grey">
                     {navesNumber} {t('nave', { count: navesNumber })}
                   </Text>
                 </Chip>
               )}
               {!!highlightsNumber && (
                 <Chip>
-                  <Text className="text-[10px] text-default">
+                  <Text className="text-[12px] text-grey">
                     {highlightsNumber} {t('surbrillance', { count: highlightsNumber })}
                   </Text>
                 </Chip>
               )}
               {!!notesNumber && (
                 <Chip>
-                  <Text className="text-[10px] text-default">
+                  <Text className="text-[12px] text-grey">
                     {notesNumber} {t('note', { count: notesNumber })}
                   </Text>
                 </Chip>
               )}
               {!!studiesNumber && (
                 <Chip>
-                  <Text className="text-[10px] text-default">
+                  <Text className="text-[12px] text-grey">
                     {studiesNumber} {t('étude', { count: studiesNumber })}
                   </Text>
                 </Chip>
               )}
               {!!linksNumber && (
                 <Chip>
-                  <Text className="text-[10px] text-default">
+                  <Text className="text-[12px] text-grey">
                     {linksNumber} {t('lien', { count: linksNumber })}
                   </Text>
                 </Chip>
@@ -139,7 +139,7 @@ const TagItem = ({ item, setOpen }: TagItemProps) => {
           <TagOptionsPanel tag={item.tag} />
         </Box>
       </Link>
-      <Border className="mx-[10px]" />
+      <Border className="ml-[20px]" />
     </Box>
   )
 }
@@ -153,6 +153,7 @@ const TagsScreen = ({ isFormSheet = false }: TagsScreenProps) => {
   const { t } = useTranslation()
   const canGoBackInStack = useCanGoBackInStack()
   const hasBackButton = isFormSheet ? canGoBackInStack : true
+  const bottomInset = usePageBottomInset()
   const tagRows = useSelector(selectTagListRows)
   const [queryState, setQueryState] = useAtom(tagListQueryAtom)
   const [isOpen, setOpen] = useState<Tag | undefined>(undefined)
@@ -264,7 +265,7 @@ const TagsScreen = ({ isFormSheet = false }: TagsScreenProps) => {
             data={result}
             renderItem={({ item }) => <TagItem setOpen={setOpen} item={item} />}
             keyExtractor={item => item.id}
-            contentContainerStyle={[pageContentStyle, { paddingBottom: 70 }]}
+            contentContainerStyle={[pageContentStyle, { paddingBottom: 80 + bottomInset }]}
           />
         ) : (
           <Empty

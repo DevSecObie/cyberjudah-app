@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useRecordHistory } from '~features/history/useRecordHistory'
 import { useLocalSearchParams } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { ScrollView } from 'react-native'
@@ -26,6 +27,18 @@ export default function LawSectionScreen() {
     if (lawTop != null)
       scrollRef.current?.scrollTo({ y: Math.max(0, lawTop - 12), animated: false })
   }, [lawTop])
+  // Reopened from Pick up and History, like Bible Strong's own pages.
+  useRecordHistory(
+    section.data
+      ? {
+          type: 'cyberjudah',
+          kind: 'law',
+          title: `${section.data.id} · ${section.data.title}`,
+          pathname: '/(explore)/law-section',
+          params: { id, law },
+        }
+      : null
+  )
   return (
     <SafeAreaBox className="overflow-hidden border-continuous bg-reverse">
       <Header

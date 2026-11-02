@@ -10,6 +10,11 @@ if (platform === 'android') {
   assert(
     config.client.some(c => c.client_info.android_client_info?.package_name === 'io.cyberjudah.app')
   )
+  const gradle = await readFile(join(app, 'android/app/build.gradle'), 'utf8')
+  assert.match(gradle, /applicationId ['"]io\.cyberjudah\.app['"]/)
+  // The Google Play build must carry the version code it picked, or Play refuses the upload.
+  const versionCode = process.env.CYBERJUDAH_ANDROID_VERSION_CODE
+  if (versionCode) assert.match(gradle, new RegExp(`versionCode ${versionCode}\\b`))
 } else if (platform === 'ios') {
   const podProperties = JSON.parse(await readFile(join(app, 'ios/Podfile.properties.json'), 'utf8'))
   assert.equal(
@@ -32,6 +37,9 @@ if (platform === 'android') {
     )
   )
   assert.equal(config.PROJECT_ID, 'cyberjudah-app')
-  assert.equal(config.BUNDLE_ID, 'io.cyberjudah.app.dev')
+  const target = process.env.CYBERJUDAH_IOS_TARGET || 'staging'
+  const bundles = { staging: 'io.cyberjudah.app.dev', production: 'io.cyberjudah.app' }
+  assert(bundles[target], 'CYBERJUDAH_IOS_TARGET must be staging or production')
+  assert.equal(config.BUNDLE_ID, bundles[target])
 } else throw new Error('Choose android or ios')
 console.log(`${platform}: CyberJudah Firebase project and application identity verified`)

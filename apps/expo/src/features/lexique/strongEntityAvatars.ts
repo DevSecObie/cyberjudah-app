@@ -1,22 +1,42 @@
-import { getStrongEntityAvatarKey } from './strongEntityPresentation'
+import { getStrongEntityAvatarKey, type StrongEntityAvatarKey } from './strongEntityPresentation'
 import { CYBERJUDAH_PORTRAITS } from './cyberJudahPortraits'
 import { ISRAELITE_GROUPS } from './israeliteGroups'
 import { JUDAH_PEOPLE } from './judahPeople'
 import { PEOPLE_NATIONS, type PeopleNation } from './peopleNations'
 
-export const ENTITY_AVATAR_IMAGES = {
-  male: require('~assets/images/entity-avatars/male.png'),
-  female: require('~assets/images/entity-avatars/female.png'),
-  group: require('~assets/images/entity-avatars/group.png'),
-  place: require('~assets/images/entity-avatars/place.png'),
-  supernatural: require('~assets/images/entity-avatars/supernatural.png'),
-  time: require('~assets/images/entity-avatars/time.png'),
-  musical: require('~assets/images/entity-avatars/musical.png'),
-  other: require('~assets/images/entity-avatars/other.png'),
-  title: require('~assets/images/entity-avatars/title.png'),
-  language: require('~assets/images/entity-avatars/language.png'),
-  star: require('~assets/images/entity-avatars/star.png'),
-}
+// Grey clay figures for the entities without a portrait (ADR-0089): five for people and groups, so that
+// neighbours in a chapter differ, one for the other avatar keys.
+export const ENTITY_PLACEHOLDER_IMAGES = {
+  male: [
+    require('~assets/images/entity-avatars/male-1.webp'),
+    require('~assets/images/entity-avatars/male-2.webp'),
+    require('~assets/images/entity-avatars/male-3.webp'),
+    require('~assets/images/entity-avatars/male-4.webp'),
+    require('~assets/images/entity-avatars/male-5.webp'),
+  ],
+  female: [
+    require('~assets/images/entity-avatars/female-1.webp'),
+    require('~assets/images/entity-avatars/female-2.webp'),
+    require('~assets/images/entity-avatars/female-3.webp'),
+    require('~assets/images/entity-avatars/female-4.webp'),
+    require('~assets/images/entity-avatars/female-5.webp'),
+  ],
+  group: [
+    require('~assets/images/entity-avatars/group-1.webp'),
+    require('~assets/images/entity-avatars/group-2.webp'),
+    require('~assets/images/entity-avatars/group-3.webp'),
+    require('~assets/images/entity-avatars/group-4.webp'),
+    require('~assets/images/entity-avatars/group-5.webp'),
+  ],
+  place: [require('~assets/images/entity-avatars/place-1.webp')],
+  supernatural: [require('~assets/images/entity-avatars/supernatural-1.webp')],
+  time: [require('~assets/images/entity-avatars/time-1.webp')],
+  musical: [require('~assets/images/entity-avatars/musical-1.webp')],
+  other: [require('~assets/images/entity-avatars/other-1.webp')],
+  title: [require('~assets/images/entity-avatars/title-1.webp')],
+  language: [require('~assets/images/entity-avatars/language-1.webp')],
+  star: [require('~assets/images/entity-avatars/star-1.webp')],
+} satisfies Record<StrongEntityAvatarKey, unknown[]>
 
 // Groups in clay: Israel's own (the tribes, their families, the Levites, the Jews) for Israel, and
 // each other people's own nation. The same group always gets the same one.
@@ -176,4 +196,11 @@ export const getStrongEntityAvatarSource = (category: string, type: string, uniq
     (getStrongEntityAvatarKey(category, type) === 'male' ||
       getStrongEntityAvatarKey(category, type) === 'female') &&
     personAvatar(uniqueName, getStrongEntityAvatarKey(category, type) as 'male' | 'female')) ||
-  ENTITY_AVATAR_IMAGES[getStrongEntityAvatarKey(category, type)]
+  ENTITY_PLACEHOLDER_IMAGES[getStrongEntityAvatarKey(category, type)][0]
+
+/**
+ * Bible Strong 28's name for an entity's picture when it has no painted portrait. CyberJudah
+ * shows its own figures (ours above) for every entity, so the two names give the same picture.
+ */
+export const getStrongEntityPlaceholderSource = (category: string, type: string, seed: string) =>
+  getStrongEntityAvatarSource(category, type, seed)

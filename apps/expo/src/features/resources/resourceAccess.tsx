@@ -1,4 +1,11 @@
 import cyberJudahTimeline from '~assets/cyberjudah/timeline-publication.json'
+import { isStudyLinksInstalled, localStudyLinksAccess } from './studyLinksLocal'
+import {
+  createHttpStudyLinksAccess,
+  createHybridStudyLinksAccess,
+  type StudyLinksAccess,
+  unavailableStudyLinksAccess,
+} from './studyLinksAccess'
 import { createLayeredStrongLexiconAccess } from './layeredStrongLexiconAccess'
 import { createLocalStrongLexiconAccess } from './strongLexiconAccess'
 import { localCommentaryReading } from './commentaryReadingLocal'
@@ -10,6 +17,7 @@ import { commentaryReadingCache } from './commentaryReadingCache'
 import { createContext, useContext, type ReactNode } from 'react'
 import Constants from 'expo-constants'
 import { onlineManager } from '@tanstack/react-query'
+import { isLikelyOfflineAfterFailure } from '~helpers/useConnection'
 import { Platform } from 'react-native'
 import {
   createBibleContentAccess,
@@ -119,6 +127,7 @@ export type ResourceAccessRegistry = {
   strongBible: StrongBibleResourceAccess
   interlinearBible: InterlinearBibleResourceAccess
   timeline: TimelineAccess
+  studyLinks: StudyLinksAccess
   commentaryReading: CommentaryReadingAccess
   commentary: CommentaryAccess
   offlineCopies: {
@@ -163,6 +172,7 @@ const onlineBibleChapterAdapter = resourceApiBaseUrl
         baseUrl: resourceApiBaseUrl,
         fetcher: resourceApiFetch,
         isOnline: async () => onlineManager.isOnline(),
+        isOfflineFailure: isLikelyOfflineAfterFailure,
       })
     )
   : unavailableHttpBibleChapterAdapter
@@ -180,6 +190,7 @@ const onlineNaveAccess = resourceApiBaseUrl
         baseUrl: resourceApiBaseUrl,
         fetcher: resourceApiFetch,
         isOnline: async () => onlineManager.isOnline(),
+        isOfflineFailure: isLikelyOfflineAfterFailure,
       })
     )
   : unavailableHttpNaveAccess
@@ -202,6 +213,7 @@ const commentaryAccess = createCommentaryAccess({
         baseUrl: resourceApiBaseUrl,
         fetcher: resourceApiFetch,
         isOnline: async () => onlineManager.isOnline(),
+        isOfflineFailure: isLikelyOfflineAfterFailure,
       })
     : undefined,
   isOnline: async () => onlineManager.isOnline(),
@@ -220,6 +232,7 @@ const onlineDictionaryAccess = resourceApiBaseUrl
         baseUrl: resourceApiBaseUrl,
         fetcher: resourceApiFetch,
         isOnline: async () => onlineManager.isOnline(),
+        isOfflineFailure: isLikelyOfflineAfterFailure,
       })
     )
   : unavailableHttpDictionaryAccess
@@ -237,6 +250,7 @@ const onlineStrongBibleAdapter = resourceApiBaseUrl
         baseUrl: resourceApiBaseUrl,
         fetcher: resourceApiFetch,
         isOnline: async () => onlineManager.isOnline(),
+        isOfflineFailure: isLikelyOfflineAfterFailure,
         bibleChapterAdapter,
         datasetIdForVersion:
           process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
@@ -267,6 +281,7 @@ const onlineInterlinearBibleAdapter = resourceApiBaseUrl
         baseUrl: resourceApiBaseUrl,
         fetcher: resourceApiFetch,
         isOnline: async () => onlineManager.isOnline(),
+        isOfflineFailure: isLikelyOfflineAfterFailure,
         bibleChapterAdapter,
         baseChapterAdapter: onlineBibleChapterAdapter,
       })
@@ -291,6 +306,7 @@ const detailedStrongLexiconAccess = createHybridStrongLexiconAccess({
           baseUrl: resourceApiBaseUrl,
           fetcher: resourceApiFetch,
           isOnline: async () => onlineManager.isOnline(),
+          isOfflineFailure: isLikelyOfflineAfterFailure,
         })
       )
     : localStrongLexiconAccess,
@@ -307,6 +323,7 @@ const simpleStrongLexiconAccess = createHybridStrongLexiconAccess({
           baseUrl: resourceApiBaseUrl,
           fetcher: resourceApiFetch,
           isOnline: async () => onlineManager.isOnline(),
+          isOfflineFailure: isLikelyOfflineAfterFailure,
           level: 'simple',
         })
       )
@@ -334,6 +351,7 @@ const onlineBibleSearchAccess = resourceApiBaseUrl
         fetcher: resourceApiFetch,
         versions: [...remotelyReadableBibleVersions],
         isOnline: async () => onlineManager.isOnline(),
+        isOfflineFailure: isLikelyOfflineAfterFailure,
       })
     )
   : localBibleSearchAccess
@@ -378,6 +396,7 @@ const onlineTimelineAccess = resourceApiBaseUrl
             : undefined,
         fetcher: resourceApiFetch,
         isOnline: async () => onlineManager.isOnline(),
+        isOfflineFailure: isLikelyOfflineAfterFailure,
       })
     )
   : localTimelineAccess
@@ -416,6 +435,13 @@ export const defaultResourceAccess: ResourceAccessRegistry = {
   strongLexicon: strongLexiconAccess,
   strongBible: strongBibleAccess,
   interlinearBible: interlinearBibleAccess,
+  studyLinks: createHybridStudyLinksAccess({
+    offline: localStudyLinksAccess,
+    online: resourceApiBaseUrl
+      ? createHttpStudyLinksAccess({ baseUrl: resourceApiBaseUrl, fetcher: resourceApiFetch })
+      : unavailableStudyLinksAccess,
+    isInstalled: isStudyLinksInstalled,
+  }),
   timeline: createHybridTimelineAccess({
     offline: offlineSource('Timeline', localTimelineAccess),
     online: onlineTimelineAccess,

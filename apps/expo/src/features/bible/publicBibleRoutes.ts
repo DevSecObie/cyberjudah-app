@@ -6,7 +6,12 @@ import { BHG_INTERLINEAR_IDENTITY } from '~helpers/interlinearBiblePublicationCa
 import { isStrongCapableBibleVersion } from '~helpers/strongBiblePublications'
 import { getSupportedOsisBookId } from '~helpers/osisReference'
 
-export type PublicBiblePresentation = 'text' | 'strong' | 'reverse-interlinear' | 'interlinear'
+export type PublicBiblePresentation =
+  | 'text'
+  | 'strong'
+  | 'transliteration'
+  | 'reverse-interlinear'
+  | 'interlinear'
 
 export type PublicBiblePassage = {
   startVerse: number
@@ -130,6 +135,7 @@ export const parsePublicBibleRoute = (
   const presentationSegment = segments[position]
   if (
     presentationSegment === 'strong' ||
+    presentationSegment === 'transliteration' ||
     presentationSegment === 'reverse-interlinear' ||
     presentationSegment === 'interlinear'
   ) {

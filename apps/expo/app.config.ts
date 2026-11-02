@@ -1,14 +1,30 @@
 import { ExpoConfig, ConfigContext } from 'expo/config'
 
 const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
-// CyberJudah keeps its own TestFlight version while using Bible Strong's 27.2 mobile UI.
-const APP_VERSION = isCyberJudah ? '28.2.0' : '27.2.0'
+// CyberJudah keeps its own TestFlight version; 28.3 is its first on Bible Strong 28 (Expo 58).
+const APP_VERSION = isCyberJudah ? '28.3.0' : '28.0.1'
 // Patch releases share a runtime and receive the same OTA updates. Any native change must
 // ship in a new major or minor version, which creates a new runtime.
 const [majorVersion, minorVersion] = APP_VERSION.split('.')
 const RUNTIME_VERSION = `${majorVersion}.${minorVersion}`
+// The owner's live-editing dev app ("CyberJudah Preview"), installed next to TestFlight builds.
+const isCyberJudahPreview = process.env.BUNDLE_IDENTIFIER === 'io.cyberjudah.app.preview'
 // CyberJudah's own Expo project (free tier), used only for over-the-air updates.
 const CYBERJUDAH_EAS_PROJECT_ID = 'ee1c2f69-3a80-46c5-b67d-7f4a75def656'
+
+// Icon fonts built into the Android app. Loaded at run time, a font file an update copied can
+// be empty on disk, and every icon of that family stays blank. Each family is named as
+// @expo/vector-icons checks it with Font.isLoaded, so the icons never load it again. The plugin
+// resolves the path as a module when it is not a file of the project.
+const vectorIconFont = (fontFamily: string, file: string) => ({
+  fontFamily,
+  fontDefinitions: [
+    {
+      path: `@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/${file}`,
+      weight: 400,
+    },
+  ],
+})
 
 // The families of public pages a link opens in the application.
 const PUBLIC_RESOURCE_PATHS = [
@@ -39,7 +55,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   userInterfaceStyle: 'automatic',
 
   android: {
-    versionCode: isCyberJudah ? 515 : 511,
+    // The Google Play build sets its own, higher code on every run (cyberjudah-android-store.yml).
+    versionCode: isCyberJudah ? Number(process.env.CYBERJUDAH_ANDROID_VERSION_CODE || 516) : 514,
     package: isCyberJudah ? 'io.cyberjudah.app' : 'com.smontlouis.biblestrong',
     googleServicesFile:
       process.env.ANDROID_GOOGLE_SERVICES_FILE ??
@@ -71,7 +88,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       process.env.BUNDLE_IDENTIFIER ??
       (isCyberJudah ? 'io.cyberjudah.app.dev' : 'com.smontlouis.biblestrong.dev'),
     appleTeamId: isCyberJudah ? process.env.CYBERJUDAH_APPLE_TEAM_ID : undefined,
-    buildNumber: isCyberJudah ? '310' : '297',
+    buildNumber: isCyberJudah ? '311' : '301',
     googleServicesFile:
       process.env.IOS_GOOGLE_SERVICES_FILE ??
       (isCyberJudah
@@ -111,11 +128,21 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     ...(isCyberJudah ? ['./plugins/withCyberJudahBilling.js'] : []),
     'expo-sharing',
-    'expo-router',
+    // The web export splits each screen into its own file: as one file it passes Cloudflare's
+    // 25 MB limit, and a phone browser would download every screen before showing the first.
+    ['expo-router', { asyncRoutes: { web: true, default: false } }],
     'expo-asset',
     'expo-image',
     'expo-sqlite',
-    'expo-audio',
+    [
+      'expo-audio',
+      {
+        // App Review asks each permission to say what it is for.
+        microphonePermission: isCyberJudah
+          ? 'CyberJudah uses the microphone only while you hold the mic in Ask, to write down the question you speak.'
+          : 'Allow $(PRODUCT_NAME) to access your microphone',
+      },
+    ],
     // CocoaPods, not SPM: RNFirebase 26 rejects SPM with our static frameworks linkage.
     ['@react-native-firebase/app', { ios: { disableSPM: true } }],
     './plugins/withFirebaseAppCheckSwiftBridge.js',
@@ -152,6 +179,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       'expo-font',
       {
         fonts: ['./src/assets/fonts/LiterataBook-Regular.otf', './src/assets/fonts/Inter-Bold.ttf'],
+        android: {
+          fonts: [
+            vectorIconFont('feather', 'Feather.ttf'),
+            vectorIconFont('ionicons', 'Ionicons.ttf'),
+          ],
+        },
       },
     ],
     [
@@ -208,26 +241,35 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   // CyberJudah's testers get JS-only fixes over the air: downloaded in the background at launch
   // and applied on the next launch. Every update must be signed with the private key that pairs
   // with certs/certificate.pem; that key never enters this repository.
-  updates: isCyberJudah
-    ? {
-        enabled: true,
-        url: `https://u.expo.dev/${CYBERJUDAH_EAS_PROJECT_ID}`,
-        checkAutomatically: 'ON_LOAD',
-        fallbackToCacheTimeout: 0,
-        codeSigningCertificate: './certs/certificate.pem',
-        codeSigningMetadata: { keyid: 'main', alg: 'rsa-v1_5-sha256' },
-        requestHeaders: {
-          'expo-channel-name': process.env.EAS_BUILD_CHANNEL || 'staging',
+  // The CyberJudah Preview dev app loads unsigned code straight from Metro, so it takes no
+  // over-the-air updates; the code-signing check would refuse every Metro bundle.
+  updates: isCyberJudahPreview
+    ? { enabled: false }
+    : isCyberJudah
+      ? {
+          enabled: true,
+          url: `https://u.expo.dev/${CYBERJUDAH_EAS_PROJECT_ID}`,
+          checkAutomatically: 'ON_LOAD',
+          fallbackToCacheTimeout: 0,
+          codeSigningCertificate: './certs/certificate.pem',
+          codeSigningMetadata: { keyid: 'main', alg: 'rsa-v1_5-sha256' },
+          requestHeaders: {
+            'expo-channel-name': process.env.EAS_BUILD_CHANNEL || 'staging',
+          },
+        }
+      : {
+          // Bible Strong's own update server (Open OTA on Cloudflare), see docs/adr/0085.
+          url: 'https://updates.bible-strong.app/manifest',
+          checkAutomatically: 'NEVER',
+          // Only builds with a channel (staging, production) receive updates.
+          ...(process.env.EAS_BUILD_CHANNEL && {
+            codeSigningCertificate: './certs/certificate.pem',
+            codeSigningMetadata: { keyid: 'main', alg: 'rsa-v1_5-sha256' },
+          }),
+          requestHeaders: {
+            'expo-channel-name': process.env.EAS_BUILD_CHANNEL,
+          },
         },
-      }
-    : {
-        enabled: true,
-        url: 'https://u.expo.dev/fdf72b90-346b-11e9-ad9a-255491359311',
-        checkAutomatically: 'NEVER',
-        requestHeaders: {
-          'expo-channel-name': process.env.EAS_BUILD_CHANNEL,
-        },
-      },
   experiments: {
     reactCompiler: true,
   },

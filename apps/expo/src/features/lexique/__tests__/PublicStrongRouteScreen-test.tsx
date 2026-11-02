@@ -6,6 +6,7 @@ jest.mock('expo-router', () => ({
   useLocalSearchParams: () => mockParams,
 }))
 jest.mock('~features/resources/ResourceUnavailableView', () => 'ResourceUnavailableView')
+jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }))
 jest.mock('~helpers/constants', () => ({ IS_FORM_SHEET: true }))
 jest.mock('../StrongMainScreen', () => 'StrongMainScreen')
 jest.mock('../StrongConcordanceRouteScreen', () => 'StrongConcordanceRouteScreen')

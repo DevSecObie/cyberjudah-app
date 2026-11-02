@@ -1,6 +1,7 @@
 import type { EntitySlice } from '~common/types'
 
 type Route = { pathname: string; params: Record<string, string> }
+type Location = { planId: string; readingSliceId: string; entitySliceId: string }
 
 const range = (start: number, end: number) =>
   Array.from({ length: end - start + 1 }, (_, index) => start + index)
@@ -35,32 +36,29 @@ const getVersesRoute = (verses: string): Route | undefined => {
   }
 }
 
+/** A passage keeps its place in the plan, so that the reader can lead on to what follows. */
+const withLocation = (route: Route | undefined, location: Location): Route | undefined =>
+  route && { ...route, params: { ...route.params, ...location } }
+
 /** A passage opens the Bible reader in plan mode; a text, an image or a video has its own page. */
 export const getPlanEntityRoute = ({
-  planId,
-  readingSliceId,
-  entitySliceId,
   slice,
-}: {
-  planId: string
-  readingSliceId: string
-  entitySliceId: string
-  slice: EntitySlice
-}): Route | undefined => {
+  ...location
+}: Location & { slice: EntitySlice }): Route | undefined => {
   switch (slice.type) {
     case 'Chapter':
-      return getChaptersRoute(slice.chapters)
+      return withLocation(getChaptersRoute(slice.chapters), location)
     case 'Verse':
-      return getVersesRoute(slice.verses)
+      return withLocation(getVersesRoute(slice.verses), location)
     case 'Text':
       if (slice.notePath)
         return { pathname: '/(explore)/published-note', params: { path: slice.notePath } }
-      return { pathname: '/plan-entity', params: { planId, readingSliceId, entitySliceId } }
+      return { pathname: '/plan-entity', params: location }
     case 'Quiz':
-      return { pathname: '/plan-quiz', params: { planId, readingSliceId, entitySliceId } }
+      return { pathname: '/plan-quiz', params: location }
     case 'Image':
     case 'Video':
-      return { pathname: '/plan-entity', params: { planId, readingSliceId, entitySliceId } }
+      return { pathname: '/plan-entity', params: location }
     default:
       return undefined
   }

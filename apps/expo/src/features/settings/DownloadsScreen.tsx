@@ -7,7 +7,9 @@ import Loading from '~common/Loading'
 import MultipleChoiceFilterModal from '~common/MultipleChoiceFilterModal'
 import SearchFilterModal from '~common/SearchFilterModal'
 import { type SheetRef } from '~common/sheet'
-import Box from '~common/ui/Box'
+import Box, { usePageBottomInset } from '~common/ui/Box'
+import { twMerge } from '~common/ui/classNames'
+import { ListSeparator } from '~common/ui/ListSection'
 import Container from '~common/ui/Container'
 import SectionList from '~common/ui/SectionList'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
@@ -18,6 +20,8 @@ import type { StatusFilter, LangFilter } from './components/FilterChipRow'
 import DownloadSectionHeader from './components/DownloadSectionHeader'
 import DownloadSubsectionHeader from './components/DownloadSubsectionHeader'
 import DownloadManagementFooter from './components/DownloadManagementFooter'
+import EntityPortraitPackCard from './components/EntityPortraitPackCard'
+import { DOWNLOAD_LIST_LAYOUT } from './components/downloadListLayout'
 import { AvailableUpdatesSheet, AvailableUpdatesWidget } from './components/AvailableUpdatesWidget'
 import { type ResourceLanguage } from '~helpers/databaseTypes'
 import { offlineResourceRegistry } from '~features/resources/resourceAvailability'
@@ -26,7 +30,8 @@ import { useStrongIndexLexiconModuleId } from '~features/resources/useStrongInde
 import { resourceNeedsUpdate } from '~features/resources/availableUpdates'
 import { useMarkAvailableUpdatesSeen } from '~features/resources/useAvailableUpdates'
 import { createOfflineCopyDownloadPlan, dedupeDownloadItems } from '~helpers/downloadItemFactory'
-import { parseOfflineCopyId } from '~helpers/offlineCopy'
+import { createOfflineCopyId, parseOfflineCopyId } from '~helpers/offlineCopy'
+import { isStrongCapableBibleVersion } from '~helpers/strongBiblePublications'
 import { useDownloadQueue } from '~helpers/useDownloadQueue'
 import useLanguage from '~helpers/useLanguage'
 import { toast } from '~helpers/toast'
@@ -148,6 +153,7 @@ const DownloadsScreen = () => {
   const lang = useLanguage()
   const resources = useResourceAccess()
   const isConnected = useConnection()
+  const bottomInset = usePageBottomInset()
   const searchRef = React.useRef<SheetRef>(null)
   const statusRef = React.useRef<SheetRef>(null)
   const languageRef = React.useRef<SheetRef>(null)
@@ -175,7 +181,7 @@ const DownloadsScreen = () => {
   const [collapsedSubsections, setCollapsedSubsections] = useState<Set<string>>(() => new Set())
 
   const {
-    downloadedSet,
+    downloadedSet: installedSet,
     invalidSet,
     needsUpdateSet,
     strongAvailability,
@@ -185,6 +191,22 @@ const DownloadsScreen = () => {
     isAvailabilityError,
     refreshDownloadedItems,
   } = useDownloadedItems()
+  // CyberJudah's one Bible row stands for the text and its Strong's numbers together: it shows as
+  // downloaded only once both are on the phone, and a tap fetches whichever is missing.
+  const downloadedSet = usesCyberJudahEditorial()
+    ? new Set(
+        Array.from(installedSet).filter(id => {
+          const identity = parseOfflineCopyId(id)
+          return (
+            identity?.kind !== 'bible' ||
+            !isStrongCapableBibleVersion(identity.versionId) ||
+            installedSet.has(
+              createOfflineCopyId({ kind: 'strong-bible-index', versionId: identity.versionId })
+            )
+          )
+        })
+      )
+    : installedSet
   const allSections = buildDownloadCatalogSections(lang, t, dictionaryCatalogQuery.data ?? [])
   const allSectionKeys = allSections.map(section => section.key).join(',')
   const collapseSourceKey = `${lang}:${allSectionKeys}`
@@ -330,7 +352,19 @@ const DownloadsScreen = () => {
             strongLexiconAvailability.get('core')?.status === 'available',
         })
       case 'bible':
+        if (usesCyberJudahEditorial() && isStrongCapableBibleVersion(identity.versionId)) {
+          return createOfflineCopyDownloadPlan(
+            { kind: 'strong-bible-index', versionId: identity.versionId },
+            {
+              availabilityStatus:
+                strongAvailability.get(identity.versionId)?.status ?? 'base-missing',
+              strongIndexLexiconModuleId,
+            }
+          )
+        }
+        return createOfflineCopyDownloadPlan(identity)
       case 'dictionary-directory':
+      case 'study-links':
       case 'commentary':
       case 'database':
         return createOfflineCopyDownloadPlan(identity)
@@ -533,7 +567,7 @@ const DownloadsScreen = () => {
   }
 
   return (
-    <Container>
+    <Container className="bg-canvas">
       <FiltersHeader
         hasBackButton
         title={t('downloads.title')}
@@ -582,18 +616,24 @@ const DownloadsScreen = () => {
         />
       ) : (
         <SectionList<DisplayDownloadItem, UnifiedSection>
+          bg="canvas"
           sections={displaySections}
           keyExtractor={(item: DisplayDownloadItem) => item.occurrenceKey}
           stickySectionHeadersEnabled={false}
-          contentContainerStyle={{ paddingBottom: 100 }}
+          contentContainerStyle={{ paddingTop: 16, paddingBottom: 100 + bottomInset }}
           ListHeaderComponent={
             <>
               <StorageSummaryCard />
-              {usesCyberJudahEditorial() && <ClassIndexDownloadCard />}
+              {/* CyberJudah keeps its own portraits, so Bible Strong's portrait pack is left out. */}
+              {usesCyberJudahEditorial() ? null : (
+                <EntityPortraitPackCard downloadsDisabled={!isConnected} />
+              )}
               <AvailableUpdatesWidget
                 count={itemsToUpdate.length}
                 onPress={() => updatesRef.current?.present()}
               />
+              {/* The classes, as the first section of the list, in the same card as the rest. */}
+              {usesCyberJudahEditorial() ? <ClassIndexDownloadCard /> : null}
             </>
           }
           renderSectionHeader={({ section }) => {
@@ -625,20 +665,32 @@ const DownloadsScreen = () => {
             const isSubsectionCollapsed =
               !hasActiveFilters && collapsedSubsections.has(subsectionCollapseKey)
             const isNestedDependency = item.parentItemId !== undefined
-            const hasDependency = section.data.some(
-              sectionItem => sectionItem.parentItemId === item.id
-            )
-            const hasFollowingSibling =
-              item.parentItemId !== undefined &&
-              section.data[index + 1]?.parentItemId === item.parentItemId
+            const isFirst = index === 0
+            const isLast = index === section.data.length - 1
             const bibleVersionId = identity.kind === 'bible' ? identity.versionId : undefined
             const resourceIdentity = resourceIdentityFromOfflineCopy(identity)
             const relatedResources = bibleVersionId
               ? getBibleRelatedPublicationResources(bibleVersionId)
               : undefined
 
+            // Each item is one slice of its section's card: the first and the last round it.
             return (
-              <>
+              <Box
+                className={twMerge(
+                  'border-continuous mx-[20px] bg-surface',
+                  isFirst && 'rounded-t-[16px] overflow-hidden',
+                  isLast && 'rounded-b-[16px] overflow-hidden mb-[22px]'
+                )}
+              >
+                {!isFirst && (item.startsSubsection || !isNestedDependency) && (
+                  <ListSeparator
+                    inset={
+                      item.startsSubsection
+                        ? DOWNLOAD_LIST_LAYOUT.cardPaddingHorizontal
+                        : DOWNLOAD_LIST_LAYOUT.itemTextInset
+                    }
+                  />
+                )}
                 {item.startsSubsection && (
                   <DownloadSubsectionHeader
                     title={item.subsectionTitle}
@@ -654,6 +706,9 @@ const DownloadsScreen = () => {
                     onToggleSelectAll={() => toggleSelectAll(subsectionItems)}
                     onToggleCollapse={() => toggleSubsectionCollapse(subsectionCollapseKey)}
                   />
+                )}
+                {item.startsSubsection && !isSubsectionCollapsed && (
+                  <ListSeparator inset={DOWNLOAD_LIST_LAYOUT.itemTextInset} />
                 )}
                 {!isSubsectionCollapsed && (
                   <DownloadableItem
@@ -674,8 +729,6 @@ const DownloadsScreen = () => {
                     needsUpdate={itemNeedsUpdate(item)}
                     isInvalid={invalidSet.has(item.id)}
                     variant={isNestedDependency ? 'dependency' : 'standard'}
-                    hasDependency={hasDependency}
-                    hasFollowingSibling={hasFollowingSibling}
                     onlineAccessStatus={
                       resourceIdentity
                         ? resources.capabilities.getOnlineAccess(resourceIdentity).status
@@ -684,7 +737,7 @@ const DownloadsScreen = () => {
                     downloadsDisabled={!isConnected}
                   />
                 )}
-              </>
+              </Box>
             )
           }}
         />

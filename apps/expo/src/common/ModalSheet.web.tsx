@@ -3,11 +3,12 @@ import { Modal } from '@heroui/react/modal'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '~themes/ThemeProvider'
 import { webThemeVariables } from '~themes/webThemeVariables'
-import { webFontFamily } from '~helpers/webFontFamily'
+import { webFontFamily, webTitleFontStyle } from '~helpers/webFontFamily'
 import { FeatherIcon } from './ui/Icon'
 import type { ModalSheetProps } from './ModalSheet'
 import './modal-sheet.css'
 import { readSheetHeader } from './readSheetHeader'
+import { WithoutWorkspaceHeaderInset } from '~features/app-switcher/workspaceHeaderInset'
 
 export default function ModalSheet({
   ref,
@@ -51,6 +52,10 @@ export default function ModalSheet({
       presentAt: present,
       resizeTo: () => {},
       dismiss: close,
+      dismissThen: action => {
+        close()
+        action()
+      },
       close,
       forceClose: close,
     }
@@ -91,9 +96,7 @@ export default function ModalSheet({
                 </button>
               )}
               {heading?.leftComponent}
-              <Modal.Heading style={{ fontFamily: webFontFamily(theme.fontFamily.title) }}>
-                {title}
-              </Modal.Heading>
+              <Modal.Heading style={webTitleFontStyle(theme)}>{title}</Modal.Heading>
               {heading?.rightComponent}
               {dismissible && (
                 <button className="bs-modal-close" aria-label={t('Fermer')} onClick={close}>
@@ -103,7 +106,9 @@ export default function ModalSheet({
             </Modal.Header>
             {heading?.subTitle && <div className="bs-modal-subtitle">{heading.subTitle}</div>}
             {heading?.children}
-            <Modal.Body className="bs-modal-body">{children}</Modal.Body>
+            <Modal.Body className="bs-modal-body">
+              <WithoutWorkspaceHeaderInset>{children}</WithoutWorkspaceHeaderInset>
+            </Modal.Body>
             {Footer && (
               <Modal.Footer className="bs-modal-footer">
                 <Footer />

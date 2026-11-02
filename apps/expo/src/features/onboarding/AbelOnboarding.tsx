@@ -1,5 +1,5 @@
-import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme, useTheme } from '~themes/ThemeProvider'
+import { titleFontStyle } from '~themes/styleValues'
 import { Feather } from '@expo/vector-icons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Pressable, useWindowDimensions } from 'react-native'
@@ -45,6 +45,16 @@ import { createSceneTwoLexique, getSceneTwoNodeColor } from './abel/scenes/Scene
 type AbelOnboardingProps = {
   completionMode?: 'confirmation' | 'handoff'
   onComplete: () => void
+}
+
+// What each scene waits for, said under its phrase.
+const SCENE_HINT_KEYS: Record<string, string | undefined> = {
+  'scene-one': 'onboarding.abel.sceneOne.hint',
+  'scene-two': 'onboarding.abel.sceneTwo.hint',
+  'scene-three': 'onboarding.abel.sceneThree.hint',
+  'scene-four': 'onboarding.abel.sceneFour.hint',
+  'scene-five': 'onboarding.abel.sceneFive.hint',
+  'scene-six': 'onboarding.abel.sceneSix.hint',
 }
 
 const OCCURRENCE_FILTER_ORDER: OccurrenceFilterId[] = ['vanity', 'idol', 'breath']
@@ -153,10 +163,7 @@ const StrongCarouselPrompt = ({
   const renderPrompt = (prompt: string) => (
     <Text
       className="text-[25px] leading-[32px] text-center"
-      style={[
-        { fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) },
-        { fontFamily: 'Literata Book' },
-      ]}
+      style={[titleFontStyle(stylingTheme), { fontFamily: 'Literata Book' }]}
     >
       {prompt}
     </Text>
@@ -421,10 +428,7 @@ const AbelOnboarding = ({ completionMode = 'handoff', onComplete }: AbelOnboardi
               >
                 <Feather name="check" size={30} color={theme.colors.primary} />
               </AnimatedBox>
-              <Text
-                className="text-[27px] text-center"
-                style={{ fontFamily: resolveFontFamily(stylingTheme.fontFamily.title) }}
-              >
+              <Text className="text-[27px] text-center" style={titleFontStyle(stylingTheme)}>
                 {t('onboarding.abel.complete')}
               </Text>
             </VStack>
@@ -564,13 +568,19 @@ const AbelOnboarding = ({ completionMode = 'handoff', onComplete }: AbelOnboardi
                   {
                     fontSize: currentScene.id === 'scene-one' ? 32 : isFinalScene ? 22 : 25,
                     lineHeight: currentScene.id === 'scene-one' ? 38 : isFinalScene ? 26 : 32,
-                    fontFamily: resolveFontFamily(stylingTheme.fontFamily.title),
+                    ...titleFontStyle(stylingTheme),
                   },
                   { fontFamily: 'Literata Book' },
                 ]}
               >
                 {t(promptKey)}
               </Text>
+              {SCENE_HINT_KEYS[currentScene.id] && (
+                // Each scene waits for a tap on what it shows; say so, or the screen looks stuck.
+                <Text className="text-center text-grey text-[14px] mt-[8px]">
+                  {t(SCENE_HINT_KEYS[currentScene.id]!)}
+                </Text>
+              )}
             </AnimatedBox>
           )}
         </Box>

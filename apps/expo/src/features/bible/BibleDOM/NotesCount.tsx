@@ -1,16 +1,16 @@
-import Ionicons from '@expo/vector-icons/Ionicons'
+import Feather from '@expo/vector-icons/Feather'
+import { personalContentIcons } from '~common/personalContent'
+import { resolveUniverseColors } from '~themes/universeColors'
 import { styled } from 'goober'
 import { RootState } from '~redux/modules/reducer'
 import { RootStyles } from './BibleDOMWrapper'
-import { isDarkTheme } from './utils'
+import { referenceHalo } from './referenceHalo'
 import { getDisabledStyles } from './disabledStyles'
 
 const Div = styled('span')<RootStyles & { isDisabled?: boolean }>(
   ({ settings: { theme, colors }, isDisabled }) => ({
     backgroundColor: colors[theme].reverse,
-    boxShadow: isDarkTheme(theme)
-      ? `0 0 10px 0 rgba(255, 255, 255, 0.1)`
-      : `0 0 10px 0 rgba(0, 0, 0, 0.2)`,
+    ...referenceHalo(theme),
     borderRadius: '8px',
     padding: '4px 8px 4px 6px',
     wordBreak: 'break-word',
@@ -52,9 +52,9 @@ interface Props {
 const NotesCount = ({ count, settings, onClick, isDisabled }: Props) => {
   return (
     <Div settings={settings} onClick={() => onClick()} isDisabled={isDisabled}>
-      <Ionicons
-        color={settings.colors[settings.theme].quart}
-        name="document-text-outline"
+      <Feather
+        color={resolveUniverseColors(settings.colors[settings.theme], 'notes').foreground}
+        name={personalContentIcons.notes}
         size={16}
       />
       <Count settings={settings}>{count}</Count>

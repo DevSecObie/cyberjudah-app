@@ -1,8 +1,7 @@
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import { forwardRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import * as NativeUI from 'react-native'
-import { TouchableOpacity } from 'react-native'
+import { TouchableOpacity, View } from 'react-native'
 import { twMerge } from '~common/ui/classNames'
 
 import { SheetHeader, SheetScrollView, type SheetRef } from '~common/sheet'
@@ -16,20 +15,18 @@ import { useBottomBarHeightInTab } from '~features/app-switcher/context/TabConte
 import { useAllColors } from '~helpers/useColorName'
 
 const ColorCircle = (
-  componentProps: Omit<UIComponentProps<typeof NativeUI.View>, keyof { color: string } | 'theme'> &
+  componentProps: Omit<UIComponentProps<typeof View>, keyof { color: string } | 'theme'> &
     Omit<{ color: string }, 'theme'> & { theme?: AppTheme; className?: string }
 ) => {
   const { theme: _themeOverride, className, ...props } = componentProps
 
   const { color } = props
-  const resolvedClassName = twMerge('w-[24px] h-[24px] rounded-[6px] mr-[12px]', className)
+  const resolvedClassName = twMerge('w-[24px] h-[24px] rounded-[8px] mr-[12px]', className)
   return (
-    <NativeUI.View
+    <View
       {...props}
       className={resolvedClassName}
-      style={
-        [{ backgroundColor: color }, props.style] as UIComponentProps<typeof NativeUI.View>['style']
-      }
+      style={[{ backgroundColor: color }, props.style] as UIComponentProps<typeof View>['style']}
     />
   )
 }

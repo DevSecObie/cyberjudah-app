@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react'
+import i18n from '~i18n'
 
 import withLoginModal from '~common/withLoginModal'
 
@@ -39,7 +40,7 @@ const StudiesTabScreen = ({
     setStudyTab(
       produce(draft => {
         draft.data.studyId = undefined
-        draft.title = 'Études'
+        draft.title = i18n.t('Études')
       })
     )
   }, [setStudyTab])

@@ -7,6 +7,8 @@ import { twMerge } from '~common/ui/classNames'
 import { SheetFooter, SheetHeader, SheetTextInput, SheetView, type SheetRef } from '~common/sheet'
 import Sheet from '~common/ModalSheet'
 import { deleteCurrentAuthUser, getCurrentAuthUser } from '~helpers/firebaseAuthRuntime'
+import { revokeAppleSignInIfLinked } from '~helpers/appleAccountRevoke'
+import { deleteAccountWithData } from '~helpers/deleteAccountData'
 import type { Theme as AppTheme } from '~themes'
 import { useTheme } from '~themes/ThemeProvider'
 
@@ -16,6 +18,10 @@ import Text from '~common/ui/Text'
 import FireAuth from '~helpers/FireAuth'
 import { MODAL_FOOTER_HEIGHT } from '~helpers/constants'
 import { toast } from '~helpers/toast'
+import { deleteAllPublishedStudies } from '~features/studies/publishedStudies'
+
+// Sign in with Apple reports a closed sheet as 1001 (ASAuthorizationError.canceled).
+const APPLE_CANCELED_CODES = ['1001', 'ERR_CANCELED']
 
 type DeleteAccountModalProps = {
   modalRef: React.RefObject<SheetRef | null>
@@ -48,14 +54,25 @@ const DeleteAccountModal = ({ modalRef }: DeleteAccountModalProps) => {
 
     setIsLoading(true)
     try {
-      await deleteCurrentAuthUser()
+      // Studies the reader published come down with the account. The server keeps no other copy.
+      await deleteAllPublishedStudies().catch(error =>
+        console.warn('[Auth] Could not take down published studies', error)
+      )
+      // The account's synced data goes with it: CyberJudah's Firebase project runs no deletion
+      // function, and an Apple sign-in is revoked first (App Store guideline 5.1.1(v)).
+      await deleteAccountWithData(authUser, {
+        revokeProvider: revokeAppleSignInIfLinked,
+        deleteLogin: deleteCurrentAuthUser,
+      })
       handleClose()
       FireAuth.logout()
     } catch (error: unknown) {
       setIsLoading(false)
       const authError = error as { code?: string; message?: string }
       console.error('[Auth] Delete error:', authError.code, authError.message)
-      if (authError.code === 'auth/requires-recent-login') {
+      if (APPLE_CANCELED_CODES.includes(authError.code ?? '')) {
+        // The reader closed the Apple sheet: nothing was deleted.
+      } else if (authError.code === 'auth/requires-recent-login') {
         toast.warning(t('app.deleteAccountRequiresRecentLogin'))
       } else {
         toast.error(authError.message || t('Erreur'))
@@ -129,7 +146,7 @@ const StyledInput = (
   const { theme: _themeOverride, className, ...props } = componentProps
 
   const resolvedClassName = twMerge(
-    'bg-light-grey rounded-[10px] px-[15px] py-[14px] text-[16px] text-default',
+    'text-default h-[48px] border-border border-[2px] rounded-[12px] px-[15px] text-[16px]',
     className
   )
   return (

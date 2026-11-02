@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useRecordHistory } from '~features/history/useRecordHistory'
 import { useLocalSearchParams } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { ScrollView } from 'react-native'
@@ -29,6 +30,18 @@ export default function PreceptScreen() {
   const opened = at
     ? precept.data?.refs.find(scripture => scriptureHasVerse(scripture, at))
     : undefined
+  // Reopened from Pick up and History, like Bible Strong's own pages.
+  useRecordHistory(
+    precept.data?.title
+      ? {
+          type: 'cyberjudah',
+          kind: 'precept',
+          title: precept.data.title,
+          pathname: '/(explore)/precept',
+          params: { slug },
+        }
+      : null
+  )
   return (
     <SafeAreaBox className="overflow-hidden border-continuous bg-reverse">
       <Header hasBackButton background title={precept.data?.title ?? 'Precept'} />
