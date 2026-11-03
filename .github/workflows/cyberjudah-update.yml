@@ -1,8 +1,10 @@
 name: Publish CyberJudah app update
 
 # Manual only, like Bible Strong's expo-update-production.yml (docs/adr/0085): sends the app's
-# JavaScript to our own Open OTA server at updates.cyberjudah.io. Every publish waits for the
-# owner's approval through the app-store environment.
+# JavaScript to our own Open OTA server at updates.cyberjudah.io. Every staging or production
+# publish waits for the owner's approval through the app-store environment. A preview publish
+# reaches only the owner's CyberJudah Preview app (channel "preview", iPhone) and runs in the
+# ota-preview environment, so a change can be checked on the phone without the Mac.
 on:
   workflow_dispatch:
     inputs:
@@ -10,7 +12,7 @@ on:
         description: Which builds receive it
         required: true
         type: choice
-        options: [staging, production]
+        options: [preview, staging, production]
       message:
         description: What the update changes (defaults to the last commit)
         required: false
@@ -29,7 +31,7 @@ jobs:
     if: github.repository == 'DevSecObie/cyberjudah-app'
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    environment: app-store
+    environment: ${{ inputs.channel == 'preview' && 'ota-preview' || 'app-store' }}
     steps:
       - name: Check for the publish token
         env:
