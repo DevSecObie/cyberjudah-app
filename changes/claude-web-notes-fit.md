@@ -1,0 +1,2 @@
+- 4 Chapters a Day: a day's study note now opens on the plan's own reading page, as every Bible Strong plan text does, with the day's next step under it. It is still ticked once read to the end.
+- The study note page, the class page and the class list now fit the pane they are in. On a wide screen with panes side by side (the web app), they used to run past the pane's edges.
