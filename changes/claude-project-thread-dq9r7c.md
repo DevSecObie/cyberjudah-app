@@ -1,2 +1,3 @@
 - Topics, Glossary, False doctrines, Encyclopedia, Case studies, Precepts, The law and Books are laid out on Bible Strong's own list and study page components (Nave, Lexicon, Dictionary, commentary library and room), with our data. Glossary keeps its class videos embedded.
 - Library's 4 Chapters a Day opens the reading plan.
+- The rebuilt detail pages (topics, glossary, false doctrines, case studies, precepts, the law, books) open as Bible Strong's Nave entry does: on iPhone the page is the sheet itself, part way up and pulled to full height, with a back button only once a page is stacked.

@@ -21,6 +21,8 @@ import { useRecordHistory } from '~features/history/useRecordHistory'
 import { longDate } from '~features/notesExport/notePdf'
 import { useOpenSiteLink } from '~features/publishedNotes/siteLinks'
 import { dataUrl, isPublicDomain, loadBook, newestReadingsFirst, pageLabel } from './booksData'
+import { IS_FORM_SHEET } from '~helpers/constants'
+import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
 
 const READINGS_FIRST = 20
 
@@ -52,6 +54,7 @@ const RoomTag = ({
 /** A book: its room card, its chapters, and every moment a class read from it. */
 const BookScreen = () => {
   const router = useRouter()
+  const canGoBackInStack = useCanGoBackInStack()
   const { openMoment } = useOpenSiteLink()
   const { slug = '' } = useLocalSearchParams<{ slug?: string }>()
   const [allReadings, setAllReadings] = useState(false)
@@ -80,9 +83,12 @@ const BookScreen = () => {
   )
 
   return (
-    <FormSheetScreen className="bg-canvas">
+    <FormSheetScreen className="bg-canvas" isFormSheet={IS_FORM_SHEET}>
       <Box className="overflow-hidden border-continuous flex-[1] bg-canvas">
-        <Header hasBackButton title={data?.title ?? 'Book'} />
+        <Header
+          hasBackButton={IS_FORM_SHEET ? canGoBackInStack : true}
+          title={data?.title ?? 'Book'}
+        />
         {book.isPending ? (
           <Loading />
         ) : data ? (

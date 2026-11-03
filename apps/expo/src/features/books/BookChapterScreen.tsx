@@ -21,6 +21,8 @@ import { useOpenSiteLink } from '~features/publishedNotes/siteLinks'
 import { titleFontStyle } from '~themes/styleValues'
 import { useTheme } from '~themes/ThemeProvider'
 import { isPublicDomain, loadBook, loadBookChapter, pageLabel, scanUrl } from './booksData'
+import { IS_FORM_SHEET } from '~helpers/constants'
+import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
 
 /** A paragraph whose scriptures are links, as the reading card's verse links. */
 const LinkedParagraph = ({ text, onOsis }: { text: string; onOsis: (osis: string) => void }) => {
@@ -53,6 +55,7 @@ const LinkedParagraph = ({ text, onOsis }: { text: string; onOsis: (osis: string
 const BookChapterScreen = () => {
   const theme = useTheme()
   const router = useRouter()
+  const canGoBackInStack = useCanGoBackInStack()
   const { openMoment } = useOpenSiteLink()
   const { slug = '', k = '' } = useLocalSearchParams<{ slug?: string; k?: string }>()
   const index = Number(k)
@@ -81,9 +84,12 @@ const BookChapterScreen = () => {
   }
 
   return (
-    <FormSheetScreen className="bg-canvas">
+    <FormSheetScreen className="bg-canvas" isFormSheet={IS_FORM_SHEET}>
       <Box className="overflow-hidden border-continuous flex-[1] bg-canvas">
-        <Header hasBackButton title={book.data?.title ?? title} />
+        <Header
+          hasBackButton={IS_FORM_SHEET ? canGoBackInStack : true}
+          title={book.data?.title ?? title}
+        />
         {chapter.isPending ? (
           <Loading />
         ) : data ? (

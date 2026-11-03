@@ -29,6 +29,8 @@ import { cyberJudahSiteLinkToOsis } from '~helpers/cyberJudahSiteLinks'
 import { titleFontStyle } from '~themes/styleValues'
 import { useTheme } from '~themes/ThemeProvider'
 import { resolveUniverseColors } from '~themes/universeColors'
+import { IS_FORM_SHEET } from '~helpers/constants'
+import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
 
 /** The Bible Strong page a CyberJudah page copies, which sets its icon and colour. */
 export type StudyKind = 'nave' | 'dictionary' | 'strong' | 'commentary'
@@ -366,10 +368,13 @@ export const StudyPage = ({
     [initialJump]
   )
   const shownJumps = jumps?.filter(Boolean) ?? []
+  // As Bible Strong's Nave entry: on iPhone the page is the (explore) form sheet itself, which
+  // opens part way up and pulls to full height; the back button shows once a page is stacked.
+  const canGoBackInStack = useCanGoBackInStack()
   return (
-    <FormSheetScreen className="bg-canvas">
+    <FormSheetScreen className="bg-canvas" isFormSheet={IS_FORM_SHEET}>
       <Box className="overflow-hidden border-continuous flex-[1] bg-canvas">
-        <Header hasBackButton title={headerTitle} />
+        <Header hasBackButton={IS_FORM_SHEET ? canGoBackInStack : true} title={headerTitle} />
         {isPending ? (
           <Loading />
         ) : !title ? (
