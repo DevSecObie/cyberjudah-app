@@ -11,6 +11,7 @@ import {
 } from 'react-native'
 import { useTheme } from '~themes/ThemeProvider'
 import type { NoteBlock } from './cyberJudahClasses'
+import { ClassStudyHeader, VerseEntities } from './ClassNotesDeeper'
 
 // A class's notes drawn with the app's own views, a block at a time, so a class of any length
 // lays out like any other list. The look follows the website's notes and Bible Strong's verse
@@ -133,6 +134,14 @@ const renderInline = (
       </NativeText>
     )
   })
+
+/** A reading's opening line names the book read in class: the book's title is set in italics. */
+const italicBookTitle = (html: string) =>
+  html.replace(
+    /^Reading from (.+?)(\s*\([^)]*\))?(\s*<a class="ts"|$)/,
+    (_match, title: string, aside = '', rest: string) =>
+      `Reading from <i>${title}</i>${aside}${rest}`
+  )
 
 const Inline = ({
   html,
@@ -294,7 +303,12 @@ const Block = ({
           <Blocks blocks={block.blocks} colors={colors} onLink={onLink} nested />
         </View>
       )
-    case 'reading':
+    case 'reading': {
+      const [opening, ...rest] = block.blocks
+      const blocks =
+        opening?.type === 'paragraph' && /^Reading from /.test(opening.html)
+          ? [{ ...opening, html: italicBookTitle(opening.html) }, ...rest]
+          : block.blocks
       return (
         <View
           style={{
@@ -307,9 +321,10 @@ const Block = ({
             marginBottom: 16,
           }}
         >
-          <Blocks blocks={block.blocks} colors={colors} onLink={onLink} nested />
+          <Blocks blocks={blocks} colors={colors} onLink={onLink} nested />
         </View>
       )
+    }
     case 'list':
       return (
         <View style={{ marginBottom: 12 }}>
@@ -401,7 +416,7 @@ const Block = ({
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 }}>
             {!!block.title && (
-              <NativeText style={{ color: colors.text, fontSize: 15, fontWeight: '600' }}>
+              <NativeText style={{ color: colors.text, fontSize: 18, fontWeight: '700' }}>
                 {decode(block.title)}
               </NativeText>
             )}
@@ -455,6 +470,8 @@ const Block = ({
               )
             )}
           </View>
+          {/* The people and places this scripture names. */}
+          {!nested && <VerseEntities target={block.target} />}
           <View style={{ position: 'absolute', right: 14, bottom: 12 }}>
             <Feather name="arrow-right" size={18} color={colors.text} />
           </View>
@@ -514,6 +531,7 @@ export default function ClassNotesList({
   header,
   width,
   onFinished,
+  topics,
 }: {
   blocks: NoteBlock[]
   onLinkPress: OnLink
@@ -521,6 +539,8 @@ export default function ClassNotesList({
   width: number
   /** Called once the last block of the notes has come into view. */
   onFinished?: () => void
+  /** The class's topics (slugs), shown with its people and places at the head of the notes. */
+  topics?: string[]
 }) {
   const theme = useTheme()
   const colors = useNoteColors()
@@ -536,7 +556,14 @@ export default function ClassNotesList({
     <FlatList
       data={blocks}
       keyExtractor={(_, index) => String(index)}
-      ListHeaderComponent={header}
+      ListHeaderComponent={
+        <View>
+          {header}
+          <View style={{ width, alignSelf: 'center' }}>
+            <ClassStudyHeader blocks={blocks} topics={topics} />
+          </View>
+        </View>
+      }
       renderItem={({ item }) => (
         <View style={{ width, alignSelf: 'center' }}>
           <Block block={item} colors={colors} onLink={onLinkPress} />
