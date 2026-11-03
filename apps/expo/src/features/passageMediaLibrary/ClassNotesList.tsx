@@ -1,4 +1,6 @@
 import { Feather } from '@expo/vector-icons'
+import { osisToBibleReferenceTarget } from '~helpers/bcvParser'
+import verseToReference from '~helpers/verseToReference'
 import React, { type ReactElement, type ReactNode, useMemo, useRef, useState } from 'react'
 import {
   FlatList,
@@ -426,7 +428,7 @@ const Block = ({
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 }}>
             {!!block.title && (
-              <NativeText style={{ color: colors.text, fontSize: 15, fontWeight: '600' }}>
+              <NativeText style={{ color: colors.text, fontSize: 18, fontWeight: '700' }}>
                 {decode(block.title)}
               </NativeText>
             )}
@@ -511,6 +513,17 @@ const Blocks = ({
  * moment in grey, then one card with "Play from" on top, the verses in gold, the people and places
  * they name, each point under them, and the passage in the Bible at the foot.
  */
+/** A readable reference ("Malachi 3:16") for a verse that came without its own title. */
+const referenceOf = (target?: string) => {
+  const reference = target ? osisToBibleReferenceTarget(target) : undefined
+  if (!reference) return undefined
+  const verses = reference.focusVerses?.length ? reference.focusVerses : [reference.verse]
+  return (
+    verseToReference(verses.map(verse => `${reference.book}-${reference.chapter}-${verse}`)) ||
+    undefined
+  )
+}
+
 const ScriptureCard = ({
   group,
   colors,
@@ -529,6 +542,23 @@ const ScriptureCard = ({
     )
   group.blocks.forEach((block, b) => {
     if (block.type === 'verse') {
+      // The scripture's title always stands right above its text.
+      const title = block.title ?? referenceOf(block.target) ?? group.title
+      if (title)
+        add(
+          `${b}.title`,
+          <Pressable
+            accessibilityRole="link"
+            accessibilityHint="Opens the passage in the Bible"
+            disabled={!block.target}
+            onPress={() => onLink(`bible://${block.target}`)}
+            style={({ pressed }) => ({ opacity: pressed ? 0.62 : 1 })}
+          >
+            <NativeText style={{ color: colors.text, fontSize: 18, fontWeight: '700' }}>
+              {decode(title)}
+            </NativeText>
+          </Pressable>
+        )
       block.blocks.forEach((inner, i) =>
         add(
           `${b}.${i}`,
@@ -553,10 +583,10 @@ const ScriptureCard = ({
       add(`${b}`, <Block block={block} colors={colors} onLink={onLink} nested />)
     }
   })
-  const label = [group.title, group.seek?.label].filter(Boolean).join(' · ')
+  const label = group.title
   return (
     <View style={{ marginTop: 22, marginBottom: 4 }}>
-      {!!label && <SectionTitle>{decode(label)}</SectionTitle>}
+      {!!label && <SectionTitle scripture>{decode(label)}</SectionTitle>}
       <Card>
         {!!group.seek && (
           <CardLink
@@ -567,13 +597,6 @@ const ScriptureCard = ({
           />
         )}
         {rows}
-        {!!group.target && (
-          <CardLink
-            position="bottom"
-            label={`${group.title ? decode(group.title) : 'The passage'} in the Bible`}
-            onPress={() => onLink(`bible://${group.target}`)}
-          />
-        )}
       </Card>
     </View>
   )
