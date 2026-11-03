@@ -1,3 +1,4 @@
+import { buildCommentaryResourceSections } from '@bible-strong/resource-domain/contracts/commentarySections'
 /* eslint-disable import/first */
 
 jest.mock('expo-file-system/legacy', () => ({ getInfoAsync: jest.fn() }))
@@ -437,9 +438,57 @@ describe('commentary access', () => {
     })
 
     await expect(http.loadResourceChapter('cyberjudah', 'en', 1, 1)).resolves.toEqual({
-      1: '<h3>One</h3><h3>Two</h3>',
+      1: '<h3>One</h3><hr><h3>Two</h3>',
       2: 'Three',
     })
+  })
+
+  it('keeps a teaching on a range of verses as one section beside the teachings on one verse', async () => {
+    const range =
+      '<p><b class="cj-vno">43</b> Range</p><p class="cj-cite">Class A · Oct 3, 2026</p>'
+    const single =
+      '<p><b class="cj-vno">48</b> Single</p><p class="cj-cite">Class B · Jan 1, 2025</p>'
+    const fetcher = jest.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            resource: {
+              kind: 'commentary',
+              resourceId: 'bishop-nathanyel',
+              language: 'en',
+              revision: 'r1',
+            },
+            book: 5,
+            chapter: 28,
+            serializedComments: JSON.stringify({
+              43: [range],
+              44: [range],
+              45: [range],
+              46: [range],
+              47: [range],
+              48: [range, single],
+            }),
+          }),
+          { status: 200, headers: { 'content-type': 'application/json' } }
+        )
+    )
+    const http = createHttpCommentaryChapterSource({
+      baseUrl: 'https://resources.example/',
+      fetcher,
+      isOnline: async () => true,
+    })
+    const comments = await http.loadResourceChapter('bishop-nathanyel', 'en', 5, 28)
+    const sections = buildCommentaryResourceSections({
+      entry: { id: 'bishop-nathanyel', publicationId: 'bishop-nathanyel' },
+      language: 'en',
+      book: 5,
+      chapter: 28,
+      comments,
+    })
+    expect(sections.map(({ id, content }) => [id, content])).toEqual([
+      ['bishop-nathanyel-en-5-28-43-48', range],
+      ['bishop-nathanyel-en-5-28-48-48', single],
+    ])
   })
 
   it('requests and validates compact commentary coverage from the resource API', async () => {
