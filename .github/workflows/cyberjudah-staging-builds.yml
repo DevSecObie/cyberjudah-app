@@ -37,6 +37,7 @@ jobs:
   android:
     if: github.repository == 'DevSecObie/cyberjudah-app'
     runs-on: ubuntu-latest
+    environment: testflight
     timeout-minutes: 90
     env:
       CI: '1'
