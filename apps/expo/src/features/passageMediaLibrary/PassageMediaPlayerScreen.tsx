@@ -36,7 +36,7 @@ import { getCommentaryBibleViewRoute } from '~features/commentaries/commentaryRe
 import ClassNotesList from './ClassNotesList'
 import ClassNotesPdfButton from '~features/notesExport/ClassNotesPdfButton'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
-import { CLASS_SEEK_PREFIX, getCachedClassById, loadClassNoteBlocks } from './cyberJudahClasses'
+import { CLASS_SEEK_PREFIX, getCachedClassById, loadClassNote } from './cyberJudahClasses'
 const YOUTUBE_PLAYER_BASE_URL =
   'https://lonelycpp.github.io/react-native-youtube-iframe/iframe_v2.html'
 
@@ -94,8 +94,8 @@ const PassageMediaPlayerScreen = () => {
     notesPath
   )
   const notes = useQuery({
-    queryKey: ['cyberjudah-class-note-blocks', notesPath],
-    queryFn: () => loadClassNoteBlocks(notesPath, item?.providerId ?? ''),
+    queryKey: ['cyberjudah-class-note', notesPath],
+    queryFn: () => loadClassNote(notesPath, item?.providerId ?? ''),
     enabled: !!notesPath,
     staleTime: 60 * 60 * 1000,
     networkMode: 'always',
@@ -290,7 +290,8 @@ const PassageMediaPlayerScreen = () => {
                 load says so and can be tried again, rather than leaving the space empty. */}
             {notes.data ? (
               <ClassNotesList
-                blocks={notes.data}
+                blocks={notes.data.blocks}
+                topics={notes.data.topics}
                 width={playerWidth}
                 onLinkPress={href => {
                   if (href.startsWith(CLASS_SEEK_PREFIX)) {

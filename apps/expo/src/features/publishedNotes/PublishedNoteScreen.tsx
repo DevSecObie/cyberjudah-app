@@ -75,6 +75,7 @@ const PublishedNoteScreen = () => {
         // The note in the app's own views, laid out a block at a time as it scrolls.
         <ClassNotesList
           blocks={note.data.blocks}
+          topics={note.data.topics}
           width={contentWidth}
           onLinkPress={open}
           // Reaching the last block is reading the note; the plan ticks it on the way back.
