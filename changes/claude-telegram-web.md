@@ -1,0 +1,1 @@
+- Telegram can open web.cyberjudah.io as its Mini App: the page tells Telegram it is ready, signs the reader into their Telegram account with the launch data CyberJudah's server checks, opens the chapter a shared link points at, and Telegram's back button goes back. Outside Telegram nothing changes and Telegram's script is not loaded.
