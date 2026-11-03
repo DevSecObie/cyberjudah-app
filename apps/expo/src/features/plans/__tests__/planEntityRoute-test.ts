@@ -49,6 +49,9 @@ describe('getPlanEntityRoute', () => {
     }
 
     expect(route({ type: 'Text', id: 'a', description: 'Méditation' })).toEqual(page)
+    expect(route({ type: 'Text', id: 'a', description: '', notePath: '/study/genesis/1' })).toEqual(
+      page
+    )
     expect(route({ type: 'Image', id: 'a', src: 'cover' })).toEqual(page)
     expect(route({ type: 'Video', id: 'a', title: 'Vidéo', url: 'https://example.com' })).toEqual(
       page

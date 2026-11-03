@@ -63,6 +63,8 @@ const PassageMediaPlayerScreen = () => {
   const language =
     requestedLanguage === 'fr' || requestedLanguage === 'en' ? requestedLanguage : preferredLanguage
   const { width: windowWidth } = useWindowDimensions()
+  // The pane's own width: on a wide screen the page shares the window with other panes.
+  const [paneWidth, setPaneWidth] = useState(windowWidth)
   const [playerError, setPlayerError] = useState<string>()
   const classPlayerRef = useRef<{ injectJavaScript: (script: string) => void } | null>(null)
   const [dockedClass, setDockedClass] = useAtom(dockedClassAtom)
@@ -101,7 +103,7 @@ const PassageMediaPlayerScreen = () => {
     networkMode: 'always',
     retry: 1,
   })
-  const playerWidth = Math.min(windowWidth - 32, 720)
+  const playerWidth = Math.min(paneWidth - 32, 720)
   const playerHeight = (playerWidth * 9) / 16
   const videoId = item?.providerId ?? ''
   const playingInWindow = usesCyberJudahEditorial() && dockedClass?.videoId === videoId
@@ -145,7 +147,10 @@ const PassageMediaPlayerScreen = () => {
   )
   return (
     <FormSheetScreen isFormSheet={IS_FORM_SHEET}>
-      <Box className="overflow-hidden border-continuous flex-[1] bg-reverse">
+      <Box
+        className="overflow-hidden border-continuous flex-[1] bg-reverse"
+        onLayout={({ nativeEvent }) => setPaneWidth(nativeEvent.layout.width)}
+      >
         <Header
           background
           title={item?.title ?? t('passageMediaLibrary.playerTitle')}

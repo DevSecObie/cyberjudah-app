@@ -17,6 +17,8 @@ import { editorialContext } from '~features/study-assistant/editorialContext'
 import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
 import { goBackOrHome } from '~navigation/goBackOrHome'
 import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
+import { usePublishedNote } from '~features/publishedNotes/PublishedNoteScreen'
+import { finishReading, noteReadingKey } from './finishedReading'
 import { getEntitySliceTitle } from './entitySliceTitle'
 import { useComputedPlan } from './plan.hooks'
 import { getEntitySliceKey } from './planProgress'
@@ -54,6 +56,15 @@ const PlanEntityScreen = ({ isFormSheet = false }: PlanEntityScreenProps) => {
   useAssistantResourceContext('panel', editorialContext(plan, reading))
   const dayStep = usePlanDayStep(slice ? { planId, readingSliceId, entitySliceId } : undefined)
   const goBack = () => goBackOrHome(router)
+  // A day's study note counts as read once it has loaded and been scrolled to its end (or fits).
+  const notePath = slice?.type === 'Text' ? (slice.notePath ?? '') : ''
+  const note = usePublishedNote(notePath)
+  const scroll = React.useRef({ height: 0, offset: 0, content: 0 })
+  const checkNoteFinished = () => {
+    const { height, offset, content } = scroll.current
+    if (notePath && !note.isPending && height > 0 && height + offset >= content - 80)
+      finishReading(noteReadingKey(notePath))
+  }
   const canGoBackInStack = useCanGoBackInStack()
   // In the sheet, an element opened from the plan is closed by the sheet itself.
   const hasBackButton = isFormSheet ? canGoBackInStack : true
@@ -113,6 +124,23 @@ const PlanEntityScreen = ({ isFormSheet = false }: PlanEntityScreenProps) => {
           maxWidth: READING_TEXT_MAX_WIDTH + PLAN_READING_HORIZONTAL_PADDING * 2,
           paddingTop: 24,
           paddingBottom: 32 + bottomInset,
+        }}
+        scrollEventThrottle={200}
+        onLayout={({ nativeEvent }) => {
+          scroll.current.height = nativeEvent.layout.height
+          checkNoteFinished()
+        }}
+        onContentSizeChange={(_, contentHeight) => {
+          scroll.current.content = contentHeight
+          checkNoteFinished()
+        }}
+        onScroll={({ nativeEvent }) => {
+          scroll.current = {
+            height: nativeEvent.layoutMeasurement.height,
+            offset: nativeEvent.contentOffset.y,
+            content: nativeEvent.contentSize.height,
+          }
+          checkNoteFinished()
         }}
       >
         <Slice {...slice} planLanguage={plan.lang} />
