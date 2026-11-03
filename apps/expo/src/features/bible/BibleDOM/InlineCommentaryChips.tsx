@@ -104,7 +104,7 @@ export default function InlineCommentaryChips({
               <span style={{ color: colors.default, fontSize: 13, fontWeight: 600 }}>
                 {chip.label}
               </span>
-              {chip.rangeStartVerse > 0 && (
+              {(chip.sectionCount > 1 || chip.rangeStartVerse > 0) && (
                 <span
                   style={{
                     fontSize: 11,
@@ -114,8 +114,11 @@ export default function InlineCommentaryChips({
                     padding: '2px 6px',
                   }}
                 >
-                  {/* The verses, never a count of entries (no counts on screens). */}
-                  {`${chip.rangeStartVerse}${chip.rangeEndVerse !== chip.rangeStartVerse ? `–${chip.rangeEndVerse}` : ''}`}
+                  {chip.sectionCount > 1
+                    ? `· ${chip.sectionCount}`
+                    : chip.rangeStartVerse > 0
+                      ? `${chip.rangeStartVerse}${chip.rangeEndVerse !== chip.rangeStartVerse ? `–${chip.rangeEndVerse}` : ''}`
+                      : ''}
                 </span>
               )}
             </span>
