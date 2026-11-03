@@ -1,0 +1,1 @@
+- The CyberJudah Preview app can run without the owner's Mac: a new `cyberjudah-preview` build profile builds it on Expo's servers on its own "preview" channel, and the "Publish CyberJudah app update" workflow gains a `preview` choice that sends a branch's JavaScript to updates.cyberjudah.io for that app only. The Mac's Metro Preview keeps working as before. Builds on #47.
