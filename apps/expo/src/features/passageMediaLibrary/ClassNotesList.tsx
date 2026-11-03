@@ -1,7 +1,5 @@
 import { Feather } from '@expo/vector-icons'
-import { osisToBibleReferenceTarget } from '~helpers/bcvParser'
-import verseToReference from '~helpers/verseToReference'
-import React, { type ReactElement, type ReactNode, useMemo, useRef, useState } from 'react'
+import React, { type ReactElement, type ReactNode, useRef, useState } from 'react'
 import {
   FlatList,
   type ViewToken,
@@ -13,16 +11,7 @@ import {
 } from 'react-native'
 import { useTheme } from '~themes/ThemeProvider'
 import type { NoteBlock } from './cyberJudahClasses'
-import {
-  Card,
-  CardLink,
-  ClassStudyHeader,
-  groupScriptures,
-  Row,
-  type ScriptureGroup,
-  useDeeperColors,
-  VerseEntities,
-} from './ClassNotesDeeper'
+import { ClassStudyHeader, VerseEntities } from './ClassNotesDeeper'
 
 // A class's notes drawn with the app's own views, a block at a time, so a class of any length
 // lays out like any other list. The look follows the website's notes and Bible Strong's verse
@@ -481,6 +470,8 @@ const Block = ({
               )
             )}
           </View>
+          {/* The people and places this scripture names. */}
+          {!nested && <VerseEntities target={block.target} />}
           <View style={{ position: 'absolute', right: 14, bottom: 12 }}>
             <Feather name="arrow-right" size={18} color={colors.text} />
           </View>
@@ -506,98 +497,6 @@ const Blocks = ({
     ))}
   </>
 )
-
-/**
- * A scripture the class opened, as Go Deeper lays out a study under a verse: its reference and
- * moment in grey, then one card with "Play from" on top, the verses in gold, the people and places
- * they name, each point under them, and the passage in the Bible at the foot.
- */
-/** A readable reference ("Malachi 3:16") for a verse that came without its own title. */
-const referenceOf = (target?: string) => {
-  const reference = target ? osisToBibleReferenceTarget(target) : undefined
-  if (!reference) return undefined
-  const verses = reference.focusVerses?.length ? reference.focusVerses : [reference.verse]
-  return (
-    verseToReference(verses.map(verse => `${reference.book}-${reference.chapter}-${verse}`)) ||
-    undefined
-  )
-}
-
-const ScriptureCard = ({
-  group,
-  colors,
-  onLink,
-}: {
-  group: ScriptureGroup
-  colors: Colors
-  onLink: OnLink
-}) => {
-  const rows: ReactNode[] = []
-  const add = (key: string, node: ReactNode) =>
-    rows.push(
-      <Row key={key} first={rows.length === 0}>
-        {node}
-      </Row>
-    )
-  group.blocks.forEach((block, b) => {
-    if (block.type === 'verse') {
-      // The scripture's title always stands right above its text.
-      const title = block.title ?? referenceOf(block.target) ?? group.title
-      if (title)
-        add(
-          `${b}.title`,
-          <Pressable
-            accessibilityRole="link"
-            accessibilityHint="Opens the passage in the Bible"
-            disabled={!block.target}
-            onPress={() => onLink(`bible://${block.target}`)}
-            style={({ pressed }) => ({ opacity: pressed ? 0.62 : 1 })}
-          >
-            <NativeText style={{ color: colors.text, fontSize: 18, fontWeight: '700' }}>
-              {decode(title)}
-            </NativeText>
-          </Pressable>
-        )
-      block.blocks.forEach((inner, i) =>
-        add(
-          `${b}.${i}`,
-          inner.type === 'paragraph' ? (
-            <Inline
-              html={stripSeek(inner.html).replace(/<\/?a\b[^>]*>/g, '')}
-              colors={colors}
-              onLink={onLink}
-              style={{ color: colors.verse, fontStyle: 'italic' }}
-            />
-          ) : (
-            <Block block={inner} colors={colors} onLink={onLink} nested />
-          )
-        )
-      )
-      rows.push(<VerseEntities key={`${b}.people`} target={block.target} />)
-    } else if (block.type === 'list') {
-      block.items.forEach((item, i) =>
-        add(`${b}.${i}`, <Blocks blocks={item} colors={colors} onLink={onLink} nested />)
-      )
-    } else {
-      add(`${b}`, <Block block={block} colors={colors} onLink={onLink} nested />)
-    }
-  })
-  return (
-    <View style={{ marginTop: 22, marginBottom: 4 }}>
-      <Card>
-        {!!group.seek && (
-          <CardLink
-            position="top"
-            icon="play"
-            label={`Play from ${group.seek.label}`}
-            onPress={() => onLink(decode(group.seek!.href))}
-          />
-        )}
-        {rows}
-      </Card>
-    </View>
-  )
-}
 
 const useNoteColors = (): Colors => {
   const theme = useTheme()
@@ -643,20 +542,19 @@ export default function ClassNotesList({
   /** The class's topics (slugs), shown with its people and places at the head of the notes. */
   topics?: string[]
 }) {
-  const deeper = useDeeperColors()
+  const theme = useTheme()
   const colors = useNoteColors()
-  const items = useMemo(() => groupScriptures(blocks), [blocks])
   // The list keeps the first handler it is given; the latest callback is read through a ref.
   const finished = useRef(onFinished)
   finished.current = onFinished
-  const lastIndex = useRef(items.length - 1)
-  lastIndex.current = items.length - 1
+  const lastIndex = useRef(blocks.length - 1)
+  lastIndex.current = blocks.length - 1
   const onViewable = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
     if (viewableItems.some(item => item.index === lastIndex.current)) finished.current?.()
   }).current
   return (
     <FlatList
-      data={items}
+      data={blocks}
       keyExtractor={(_, index) => String(index)}
       ListHeaderComponent={
         <View>
@@ -668,20 +566,16 @@ export default function ClassNotesList({
       }
       renderItem={({ item }) => (
         <View style={{ width, alignSelf: 'center' }}>
-          {item.type === 'scripture' ? (
-            <ScriptureCard group={item} colors={colors} onLink={onLinkPress} />
-          ) : (
-            <Block block={item} colors={colors} onLink={onLinkPress} />
-          )}
+          <Block block={item} colors={colors} onLink={onLinkPress} />
         </View>
       )}
       onViewableItemsChanged={onViewable}
       viewabilityConfig={VIEWABILITY}
-      initialNumToRender={8}
+      initialNumToRender={12}
       windowSize={7}
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{ paddingTop: 16, paddingBottom: 48 }}
-      style={{ flex: 1, backgroundColor: deeper.canvas }}
+      style={{ flex: 1, backgroundColor: theme.colors.reverse }}
     />
   )
 }
