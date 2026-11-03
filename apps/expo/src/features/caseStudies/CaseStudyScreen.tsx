@@ -4,6 +4,9 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useState, type ReactNode } from 'react'
 import { ScrollView } from 'react-native'
 import { useOpenSiteLink } from '~features/publishedNotes/siteLinks'
+import { ChipRow, JumpSection, ScriptureRow, StudyPage } from '~features/publishedNotes/studyKit'
+import { ListRow } from '~common/ui/ListSection'
+import { StudyMoreRow } from '~common/ui/StudySection'
 import Header from '~common/Header'
 import Loading from '~common/Loading'
 import Box, { HStack, SafeAreaBox, TouchableBox, VStack } from '~common/ui/Box'
@@ -23,40 +26,7 @@ import { caseSlugOf, kindName, loadCaseStudy, type CaseScripture } from './caseS
 import ClassVideoEmbed, { useClassVideoOf } from '~features/passageMediaLibrary/ClassVideoEmbed'
 
 const SCRIPTURE_FIRST = 4
-const SCRIPTURE_MORE = 6
 const SHOWN_VERSES = 8
-
-const Section = ({
-  title,
-  count,
-  children,
-}: {
-  title: string
-  count?: number
-  children: ReactNode
-}) => (
-  <VStack className="mt-[26px] pt-[22px] border-t-[1px] border-border gap-[12px]">
-    <Text className="text-primary text-[13px] font-bold">
-      {title}
-      {count ? <Text className="text-tertiary text-[13px]"> · {count}</Text> : null}
-    </Text>
-    {children}
-  </VStack>
-)
-
-const Row = ({ title, meta, onPress }: { title: string; meta?: string; onPress: () => void }) => (
-  <TouchableBox
-    accessibilityRole="link"
-    onPress={onPress}
-    className="flex-row items-center gap-[10px] py-[11px] border-b-[1px] border-border"
-  >
-    <VStack className="flex-[1] gap-[2px]">
-      {!!meta && <Text className="text-primary text-[12px] font-bold">{meta}</Text>}
-      <Text className="text-[15px]">{title}</Text>
-    </VStack>
-    <FeatherIcon name="chevron-right" size={18} color="tertiary" />
-  </TouchableBox>
-)
 
 /** Case text with every scripture reference in it opening the passage in the Bible. */
 const RefText = ({
@@ -101,7 +71,7 @@ const PersonRow = ({ id, name, onPress }: { id: string; name: string; onPress: (
     <TouchableBox
       accessibilityRole="link"
       onPress={onPress}
-      className="flex-row items-center gap-[12px] py-[9px] border-b-[1px] border-border"
+      className="flex-row items-center gap-[12px] px-[16px] py-[9px]"
     >
       <Image
         source={getStrongEntityAvatarSource(type === 'Group' ? 'group' : 'person', type, id)}
@@ -110,38 +80,6 @@ const PersonRow = ({ id, name, onPress }: { id: string; name: string; onPress: (
       />
       <Text className="flex-[1] text-[16px]">{name}</Text>
       <FeatherIcon name="chevron-right" size={18} color="tertiary" />
-    </TouchableBox>
-  )
-}
-
-/** One of the case's passages: its first verses (all of it in the reader). */
-const Scripture = ({ scripture, onOpen }: { scripture: CaseScripture; onOpen: () => void }) => {
-  const theme = useTheme()
-  const verses = scripture.text.slice(0, SHOWN_VERSES)
-  return (
-    <TouchableBox
-      accessibilityRole="link"
-      onPress={onOpen}
-      className="rounded-[16px] border-[1px] border-border p-[16px] gap-[10px]"
-    >
-      <HStack className="items-center justify-between">
-        <Text className="font-bold text-[17px]">{scripture.label}</Text>
-        <Text className="text-tertiary text-[12px] font-bold">KJV</Text>
-      </HStack>
-      <Box style={{ borderLeftWidth: 3, borderLeftColor: theme.colors.border, paddingLeft: 14 }}>
-        <Text
-          className="text-[17px] leading-[27px]"
-          style={{ fontFamily: resolveFontFamily(theme.fontFamily.title) }}
-        >
-          {verses.map(verse => (
-            <Text key={verse.verse} className="text-[17px] leading-[27px]">
-              <Text className="text-primary text-[11px] font-bold">{verse.verse} </Text>
-              {verse.text}{' '}
-            </Text>
-          ))}
-          {scripture.text.length > verses.length ? '…' : ''}
-        </Text>
-      </Box>
     </TouchableBox>
   )
 }
@@ -165,7 +103,7 @@ const TaughtIn = ({
       />
     </Box>
   ) : (
-    <Row title={taught.title} meta={taught.range} onPress={onOpen} />
+    <ListRow label={taught.title} description={taught.range} onPress={onOpen} />
   )
 }
 
@@ -231,59 +169,92 @@ const CaseStudyScreen = () => {
         }
       : null
   )
+  const jumps = k
+    ? [
+        { id: 'charge', label: blessing ? 'Kept' : 'Charge' },
+        ...(offense.length ? [{ id: 'offense', label: blessing ? 'Obedience' : 'Offense' }] : []),
+        ...(judgment.length ? [{ id: 'judgment', label: blessing ? 'Blessing' : 'Judgment' }] : []),
+        ...(refs.length ? [{ id: 'scriptures', label: 'Scriptures' }] : []),
+        ...(k.lawsResolved?.length ? [{ id: 'law', label: 'Law' }] : []),
+        ...(k.people?.length ? [{ id: 'people', label: 'People' }] : []),
+      ]
+    : undefined
   return (
-    <SafeAreaBox className="overflow-hidden border-continuous bg-reverse">
-      <Header hasBackButton background title={k?.name ?? 'Case study'} />
-      {study.isPending ? (
-        <Loading />
-      ) : !k ? (
-        <Box className="py-[60px] px-[20px] items-center">
-          <Text className="text-grey text-center">
-            This case did not load. Check your connection.
-          </Text>
-        </Box>
-      ) : (
-        <ScrollView
-          contentContainerStyle={{
-            padding: 20,
-            paddingBottom: 60,
-            maxWidth: 640,
-            alignSelf: 'center',
-            width: '100%',
-          }}
-        >
-          <Text className="text-primary text-[12px] font-bold">
-            {[kindName(k.kind), k.era, k.code].filter(Boolean).join(' · ')}
-          </Text>
-          <Text
-            className="text-[26px] leading-[32px] mt-[6px]"
-            style={{ fontFamily: resolveFontFamily(theme.fontFamily.title) }}
-          >
-            {k.name}
-          </Text>
-          <Text
-            className={`text-[15px] font-bold mt-[6px] ${blessing ? 'text-success' : 'text-quart'}`}
-          >
-            {k.verdictLabel ?? k.verdict}
-          </Text>
-          <VStack className="mt-[16px] rounded-[14px] bg-light-grey p-[16px] gap-[4px]">
-            <Text className="text-tertiary text-[12px] font-bold">
-              {blessing ? 'What was kept' : 'The charge'}
-            </Text>
+    <StudyPage
+      kind="strong"
+      kindLabel="Case study"
+      headerTitle="Case Studies"
+      title={k?.name}
+      subtitle={
+        k ? [k.code, k.era, k.verdictLabel ?? k.verdict].filter(Boolean).join(' · ') : undefined
+      }
+      jumps={jumps}
+      isPending={study.isPending}
+      isError={study.isError}
+      errorMessage="This case did not load. Check your connection."
+    >
+      {k && (
+        <>
+          <JumpSection id="charge" title={blessing ? 'What was kept' : 'The charge'}>
             <RefText text={k.charge} className="text-[17px] leading-[25px]" onOpenOsis={openOsis} />
-          </VStack>
-          {!!k.summary && (
-            <Box className="mt-[16px]">
+            {!!k.summary && (
               <RefText
                 text={k.summary}
                 className="text-[16px] leading-[25px]"
                 onOpenOsis={openOsis}
               />
-            </Box>
+            )}
+          </JumpSection>
+          {offense.length > 0 && (
+            <JumpSection id="offense" title={blessing ? 'The obedience' : 'The offense'}>
+              {prose(offense)}
+            </JumpSection>
           )}
-
+          {judgment.length > 0 && (
+            <JumpSection id="judgment" title={blessing ? 'The blessing' : 'The judgment'}>
+              {prose(judgment)}
+            </JumpSection>
+          )}
+          {refs.length > 0 && (
+            <JumpSection id="scriptures" title="Scriptures" surface="rows">
+              {[
+                ...refs.slice(0, shown).map(ref => (
+                  <ScriptureRow
+                    key={ref.label}
+                    label={ref.label}
+                    text={
+                      ref.text
+                        .slice(0, SHOWN_VERSES)
+                        .map(verse => verse.text)
+                        .join(' ') + (ref.text.length > SHOWN_VERSES ? ' …' : '')
+                    }
+                    onPress={() => openVerse(ref.url)}
+                  />
+                )),
+                ...(shown < refs.length
+                  ? [
+                      <StudyMoreRow
+                        key="more"
+                        label="All the scriptures"
+                        onPress={() => setShown(refs.length)}
+                      />,
+                    ]
+                  : []),
+              ]}
+            </JumpSection>
+          )}
+          {!!k.lawsResolved?.length && (
+            <JumpSection id="law" title="The law" surface="rows">
+              {k.lawsResolved.map(law => (
+                <VStack key={law.id} className="px-[16px] py-[12px] gap-[4px]">
+                  <Text className="text-grey text-[13px] font-bold">{law.id}</Text>
+                  <Text className="text-[15px] leading-[22px]">{law.text}</Text>
+                </VStack>
+              ))}
+            </JumpSection>
+          )}
           {!!k.people?.length && (
-            <Section title="People in this case">
+            <JumpSection id="people" title="People in this case" surface="rows">
               {k.people.map(person => (
                 <PersonRow
                   key={person.id}
@@ -294,91 +265,49 @@ const CaseStudyScreen = () => {
                   }
                 />
               ))}
-            </Section>
-          )}
-          {offense.length > 0 && (
-            <Section title={blessing ? 'The obedience' : 'The offense'}>{prose(offense)}</Section>
-          )}
-          {judgment.length > 0 && (
-            <Section title={blessing ? 'The blessing' : 'The judgment'}>{prose(judgment)}</Section>
-          )}
-          {refs.length > 0 && (
-            <Section title="Scripture" count={refs.length}>
-              {refs.slice(0, shown).map(ref => (
-                <Scripture key={ref.label} scripture={ref} onOpen={() => openVerse(ref.url)} />
-              ))}
-              {shown < refs.length && (
-                <TouchableBox
-                  accessibilityRole="button"
-                  onPress={() => setShown(shown + SCRIPTURE_MORE)}
-                >
-                  <Text className="text-primary text-[14px] font-bold">
-                    Show {Math.min(SCRIPTURE_MORE, refs.length - shown)} more
-                    <Text className="text-tertiary text-[14px]"> · {refs.length - shown} left</Text>
-                  </Text>
-                </TouchableBox>
-              )}
-            </Section>
-          )}
-          {!!k.lawsResolved?.length && (
-            <Section title="The law">
-              {k.lawsResolved.map(law => (
-                <VStack key={law.id} className="py-[8px] gap-[2px]">
-                  <Text className="text-primary text-[12px] font-bold">{law.id}</Text>
-                  <Text className="text-[15px] leading-[22px]">{law.text}</Text>
-                </VStack>
-              ))}
-            </Section>
+            </JumpSection>
           )}
           {!!k.preceptsResolved?.some(precept => precept.url) && (
-            <Section title="Precepts">
-              <HStack className="flex-wrap gap-[8px]">
-                {k.preceptsResolved
+            <JumpSection id="precepts" title="Precepts" surface="none">
+              <ChipRow
+                chips={k.preceptsResolved
                   .filter(precept => precept.url)
-                  .map(precept => (
-                    <TouchableBox
-                      key={precept.slug}
-                      accessibilityRole="link"
-                      onPress={() => site(precept.url!)}
-                      className="rounded-[14px] bg-light-grey px-[12px] py-[6px]"
-                    >
-                      <Text className="text-[14px]">{precept.title}</Text>
-                    </TouchableBox>
-                  ))}
-              </HStack>
-            </Section>
+                  .map(precept => ({ key: precept.url!, label: precept.title }))}
+                onPress={site}
+              />
+            </JumpSection>
           )}
           {!!k.related?.some(related => related.url) && (
-            <Section title="Related cases">
+            <JumpSection id="related" title="Related cases" surface="rows">
               {k.related
                 .filter(related => related.url)
                 .map(related => (
-                  <Row
+                  <ListRow
                     key={related.slug}
-                    title={related.name}
-                    meta={related.desc || related.charge}
+                    label={related.name}
+                    description={related.desc || related.charge}
                     onPress={() => openPage(related.url!)}
                   />
                 ))}
-            </Section>
+            </JumpSection>
           )}
           {!!k.taught?.length && (
-            <Section title="Taught in">
+            <JumpSection id="taught" title="Taught in" surface="none">
               {k.taught.map(taught => (
                 <TaughtIn key={taught.url} taught={taught} onOpen={() => openPage(taught.url)} />
               ))}
-            </Section>
+            </JumpSection>
           )}
           {!!k.see?.length && (
-            <Section title="See also">
+            <JumpSection id="see" title="See also" surface="rows">
               {k.see.map(see => (
-                <Row key={see.url} title={see.title} onPress={() => site(see.url)} />
+                <ListRow key={see.url} label={see.title} onPress={() => site(see.url)} />
               ))}
-            </Section>
+            </JumpSection>
           )}
-        </ScrollView>
+        </>
       )}
-    </SafeAreaBox>
+    </StudyPage>
   )
 }
 

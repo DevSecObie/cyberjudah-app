@@ -1,57 +1,28 @@
 import { useQuery } from '@tanstack/react-query'
-import { useRecordHistory } from '~features/history/useRecordHistory'
 import { useLocalSearchParams } from 'expo-router'
 import { useState } from 'react'
-import { ScrollView } from 'react-native'
-import Header from '~common/Header'
-import Loading from '~common/Loading'
-import Box, { SafeAreaBox, TouchableBox, VStack } from '~common/ui/Box'
+import { ListRow } from '~common/ui/ListSection'
+import { StudyMoreRow } from '~common/ui/StudySection'
 import Text from '~common/ui/Text'
+import { useRecordHistory } from '~features/history/useRecordHistory'
 import { longDate } from '~features/notesExport/notePdf'
-import { resolveFontFamily } from '~themes/styleValues'
-import { useTheme } from '~themes/ThemeProvider'
-import { loadTopic } from './classTeaching'
-import ClassVideoEmbed, {
-  secondsOfClock,
-  useClassVideoOf,
-} from '~features/passageMediaLibrary/ClassVideoEmbed'
-import { LinkRow, Scripture, Section } from './parts'
+import { loadTopic, type ThreadStop } from './classTeaching'
 import { useOpenSiteLink } from './siteLinks'
+import { JumpSection, ScriptureRow, StudyPage } from './studyKit'
 
 const THREAD_FIRST = 12
 
-/** A class that opened the scripture: its video embedded at that moment, or a row to the class. */
-const ClassMoment = ({
-  item,
-  onOpen,
-}: {
-  item: { url: string; title: string; t?: number; ts?: string; date?: string; teacher?: string }
-  onOpen: () => void
-}) => {
-  const video = useClassVideoOf(item.url)
-  const meta = [longDate(item.date), item.teacher, item.ts ? `from ${item.ts}` : '']
+/** The class that opened a scripture: who taught it, the class, and the moment. */
+const openedBy = (stop: ThreadStop) => {
+  const first = stop.classes[0]
+  if (!first) return ''
+  return [first.teacher, first.title, first.ts ? `from ${first.ts}` : '']
     .filter(Boolean)
     .join(' · ')
-  return video ? (
-    <ClassVideoEmbed
-      videoId={video}
-      start={item.t ?? secondsOfClock(item.ts)}
-      title={item.title}
-      meta={meta}
-      onOpenClass={onOpen}
-    />
-  ) : (
-    <LinkRow
-      meta={[item.ts, longDate(item.date), item.teacher].filter(Boolean).join(' · ')}
-      title={item.title}
-      onPress={onOpen}
-    />
-  )
 }
 
-/** A topic: the scriptures the classes opened on it in Bible order, then its classes and cases. */
+/** A topic on Bible Strong's Nave topic page: its scriptures in Bible order, then its classes. */
 const TopicScreen = () => {
-  const theme = useTheme()
   const { slug = '' } = useLocalSearchParams<{ slug?: string }>()
   const { open } = useOpenSiteLink()
   const [allThread, setAllThread] = useState(false)
@@ -70,100 +41,97 @@ const TopicScreen = () => {
 
   // Reopened from Pick up and History, like Bible Strong's own pages.
   useRecordHistory(
-    topic.data?.label
+    data?.label
       ? {
           type: 'cyberjudah',
           kind: 'topic',
-          title: topic.data.label,
+          title: data.label,
           pathname: '/(explore)/topic',
           params: { slug },
         }
       : null
   )
+
   return (
-    <SafeAreaBox className="overflow-hidden border-continuous bg-reverse">
-      <Header hasBackButton title={data?.label ?? 'Topic'} />
-      {topic.isPending ? (
-        <Loading />
-      ) : data ? (
-        <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
-          <Text
-            className="text-[26px] leading-[32px]"
-            style={{ fontFamily: resolveFontFamily(theme.fontFamily.title) }}
-          >
-            {data.label}
-          </Text>
-          {thread.length > 0 && (
-            <Section title="The Thread">
-              <Text className="text-grey text-[14px]">
-                The scriptures the classes opened on this, in Bible order.
-              </Text>
-              {(allThread ? thread : thread.slice(0, THREAD_FIRST)).map(stop => (
-                <VStack key={`${stop.url}${stop.label}`} className="gap-[6px]">
-                  <Scripture
-                    scripture={{
-                      label: stop.label,
-                      url: stop.url,
-                      text: [{ verse: 0, text: stop.text }],
-                    }}
-                    onOpen={open}
-                  />
-                  {stop.classes.slice(0, 3).map(item => (
-                    <ClassMoment
-                      key={`${item.url}${item.t ?? ''}`}
-                      item={item}
-                      onOpen={() => open(item.url)}
-                    />
-                  ))}
-                </VStack>
-              ))}
-              {!allThread && thread.length > THREAD_FIRST && (
-                <TouchableBox accessibilityRole="button" onPress={() => setAllThread(true)}>
-                  <Text className="text-primary text-[15px] font-bold">All the scriptures</Text>
-                </TouchableBox>
-              )}
-            </Section>
-          )}
-          {notes.length > 0 && (
-            <Section title="Classes and Episodes">
-              {notes.map(item => (
-                <LinkRow
-                  key={item.url}
-                  meta={[
-                    item.kind === 'captains' ? 'Captains' : 'Class',
-                    longDate(item.date),
-                    item.teacher,
-                  ]
-                    .filter(Boolean)
-                    .join(' · ')}
-                  title={item.title}
-                  onPress={() => open(item.url)}
-                />
-              ))}
-            </Section>
-          )}
-          {cases.length > 0 && (
-            <Section title="Cases">
-              {cases.map(item => (
-                <LinkRow
-                  key={item.url}
-                  meta={item.verdict}
-                  title={item.title}
-                  sub={item.charge}
-                  onPress={() => open(item.url)}
-                />
-              ))}
-            </Section>
-          )}
-        </ScrollView>
-      ) : (
-        <Box className="py-[60px] px-[20px] items-center">
-          <Text className="text-grey text-center">
-            This topic did not load. Check your connection.
-          </Text>
-        </Box>
+    <StudyPage
+      kind="nave"
+      kindLabel="Topic"
+      headerTitle="Topics"
+      title={data?.label}
+      isPending={topic.isPending}
+      isError={topic.isError}
+      errorMessage="This topic did not load. Check your connection."
+      jumps={[
+        ...(thread.length ? [{ id: 'scriptures', label: 'Scriptures' }] : []),
+        ...(notes.length ? [{ id: 'classes', label: 'Classes' }] : []),
+        ...(cases.length ? [{ id: 'cases', label: 'Cases' }] : []),
+      ]}
+    >
+      {thread.length > 0 && (
+        <JumpSection id="scriptures" title="Scriptures" surface="rows">
+          {[
+            ...(allThread ? thread : thread.slice(0, THREAD_FIRST)).map(stop => (
+              <ScriptureRow
+                key={`${stop.url}${stop.label}`}
+                label={stop.label}
+                text={stop.text}
+                onPress={() => open(stop.url)}
+                footer={
+                  stop.classes[0] ? (
+                    <Text
+                      className="text-[13px] text-grey"
+                      numberOfLines={2}
+                      onPress={() => open(stop.classes[0].url)}
+                    >
+                      {openedBy(stop)}
+                    </Text>
+                  ) : null
+                }
+              />
+            )),
+            ...(!allThread && thread.length > THREAD_FIRST
+              ? [
+                  <StudyMoreRow
+                    key="more"
+                    label="All the scriptures"
+                    onPress={() => setAllThread(true)}
+                  />,
+                ]
+              : []),
+          ]}
+        </JumpSection>
       )}
-    </SafeAreaBox>
+      {notes.length > 0 && (
+        <JumpSection id="classes" title="Classes" surface="rows">
+          {notes.map(item => (
+            <ListRow
+              key={item.url}
+              label={item.title}
+              description={[
+                item.kind === 'captains' ? 'Captains' : '',
+                item.teacher,
+                longDate(item.date),
+              ]
+                .filter(Boolean)
+                .join(' · ')}
+              onPress={() => open(item.url)}
+            />
+          ))}
+        </JumpSection>
+      )}
+      {cases.length > 0 && (
+        <JumpSection id="cases" title="Cases" surface="rows">
+          {cases.map(item => (
+            <ListRow
+              key={item.url}
+              label={item.title}
+              description={[item.verdict, item.charge].filter(Boolean).join(' · ')}
+              onPress={() => open(item.url)}
+            />
+          ))}
+        </JumpSection>
+      )}
+    </StudyPage>
   )
 }
 
