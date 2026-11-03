@@ -180,12 +180,9 @@ const FullAppRuntime = ({ theme }: FullAppRuntimeProps) => {
                         />
                         <Stack.Screen
                           name="(commentary)"
-                          // Opens like every other sheet from the reader (Obie, 2026-11-03): half
-                          // height first over the page, pulled up to full, as (explore) does.
                           options={createFormSheetOptions(theme, {
                             contentStyle: { bottom: 0 },
-                            sheetAllowedDetents:
-                              Platform.OS === 'ios' && Platform.isPad ? [1] : [0.45, 1],
+                            sheetAllowedDetents: [1],
                             sheetLargestUndimmedDetentIndex: 0,
                           })}
                         />
