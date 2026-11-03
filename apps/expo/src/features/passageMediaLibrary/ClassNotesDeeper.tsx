@@ -24,11 +24,10 @@ import { resourceQueryKeys } from '~helpers/resourceQueryKeys'
 import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
 import { useTheme } from '~themes/ThemeProvider'
 import type { NoteBlock } from './cyberJudahClasses'
-export { groupScriptures, type ScriptureGroup } from './classNotesGroups'
 
-// The class notes in the look of Bible Strong's Go Deeper study (FocusVerseStudy, ADR-0088): a
-// small grey title over each scripture, its card with thin lines between rows and blue links,
-// and the people and places its verses name. Drawn with the app's own views, one list row per card.
+// The people, places and topics of a class, for its notes: chips as Bible Strong's Go Deeper study
+// (FocusVerseStudy, ADR-0088) shows them under a verse. At the head of the notes for the whole
+// class, and under each scripture for the people and places its verses name.
 
 export type DeeperColors = {
   text: string
@@ -37,23 +36,6 @@ export type DeeperColors = {
   surface: string
   canvas: string
   separator: string
-}
-
-const Row = ({ first, children }: { first?: boolean; children: ReactNode }) => {
-  const { separator } = useDeeperColors()
-  return (
-    <View
-      style={{
-        marginLeft: 16,
-        paddingVertical: 12,
-        paddingRight: 16,
-        borderTopWidth: first ? 0 : StyleSheet.hairlineWidth,
-        borderTopColor: separator,
-      }}
-    >
-      {children}
-    </View>
-  )
 }
 
 export const useDeeperColors = (): DeeperColors => {
@@ -69,52 +51,6 @@ export const useDeeperColors = (): DeeperColors => {
   }
 }
 
-/** A blue line of a card: "▶ Play from 8:06 ›" on top, "Malachi 3:16 in the Bible ›" below. */
-export const CardLink = ({
-  label,
-  icon,
-  onPress,
-  position,
-}: {
-  label: string
-  icon?: 'play'
-  onPress: () => void
-  position: 'top' | 'bottom'
-}) => {
-  const colors = useDeeperColors()
-  return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={onPress}
-      style={({ pressed }) => ({
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-        paddingHorizontal: 16,
-        paddingVertical: 13,
-        borderTopWidth: position === 'bottom' ? StyleSheet.hairlineWidth : 0,
-        borderBottomWidth: position === 'top' ? StyleSheet.hairlineWidth : 0,
-        borderColor: colors.separator,
-        opacity: pressed ? 0.55 : 1,
-      })}
-    >
-      {icon === 'play' && <Feather name="play" size={13} color={colors.link} />}
-      <NativeText
-        style={{
-          flex: 1,
-          color: colors.link,
-          fontSize: 15,
-          fontWeight: '500',
-          fontVariant: ['tabular-nums'],
-        }}
-      >
-        {label}
-      </NativeText>
-      <Feather name="chevron-right" size={16} color={colors.link} />
-    </Pressable>
-  )
-}
-
 /** The grey title over a card, as Go Deeper names each of its sections. */
 export const SectionTitle = ({ children }: { children: ReactNode }) => {
   const colors = useDeeperColors()
@@ -124,17 +60,6 @@ export const SectionTitle = ({ children }: { children: ReactNode }) => {
     </NativeText>
   )
 }
-
-export const Card = ({ children }: { children: ReactNode }) => {
-  const colors = useDeeperColors()
-  return (
-    <View style={{ backgroundColor: colors.surface, borderRadius: 12, overflow: 'hidden' }}>
-      {children}
-    </View>
-  )
-}
-
-export { Row }
 
 const verseSetOf = (target: string) => {
   const reference = osisToBibleReferenceTarget(target)
@@ -222,7 +147,7 @@ const EntityChip = ({
         paddingLeft: 3,
         paddingRight: 12,
         borderRadius: 12,
-        backgroundColor: onCard ? colors.canvas : colors.surface,
+        backgroundColor: onCard ? colors.surface : colors.canvas,
         opacity: pressed ? 0.55 : 1,
       })}
     >
@@ -257,7 +182,7 @@ export const VerseEntities = ({ target }: { target?: string }) => {
   )
   if (!named.length) return null
   return (
-    <Row>
+    <View style={{ marginTop: 6 }}>
       <Chips>
         {named.slice(0, 8).map(entity => (
           <EntityChip
@@ -270,7 +195,7 @@ export const VerseEntities = ({ target }: { target?: string }) => {
           />
         ))}
       </Chips>
-    </Row>
+    </View>
   )
 }
 
