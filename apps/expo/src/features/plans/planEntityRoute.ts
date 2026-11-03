@@ -50,12 +50,10 @@ export const getPlanEntityRoute = ({
       return withLocation(getChaptersRoute(slice.chapters), location)
     case 'Verse':
       return withLocation(getVersesRoute(slice.verses), location)
-    case 'Text':
-      if (slice.notePath)
-        return { pathname: '/(explore)/published-note', params: { path: slice.notePath } }
-      return { pathname: '/plan-entity', params: location }
     case 'Quiz':
       return { pathname: '/plan-quiz', params: location }
+    // A day's study note opens on the plan's own text page too, as every Bible Strong plan text does.
+    case 'Text':
     case 'Image':
     case 'Video':
       return { pathname: '/plan-entity', params: location }

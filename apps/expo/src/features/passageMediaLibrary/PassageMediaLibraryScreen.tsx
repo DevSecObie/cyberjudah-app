@@ -115,6 +115,8 @@ const PassageMediaLibraryScreen = () => {
   const router = useRouter()
   const language = useLanguage()
   const { width: windowWidth } = useWindowDimensions()
+  // The pane's own width: on a wide screen the page shares the window with other panes.
+  const [paneWidth, setPaneWidth] = useState(windowWidth)
   const cyberJudah = usesCyberJudahEditorial()
   // CyberJudah lists every published class, read live and kept for offline opens.
   const classLibrary = useQuery({
@@ -255,7 +257,7 @@ const PassageMediaLibraryScreen = () => {
     },
   ]
   const episodes = getHowToReadTheBibleEpisodes(library)
-  const contentWidth = Math.min(windowWidth, 760)
+  const contentWidth = Math.min(paneWidth, 760)
   const thumbnailWidth = Math.min(176, Math.max(128, (contentWidth - 40) * 0.38))
   const sections: LibrarySection[] = insideSection
     ? [...seriesSections, insideSection]
@@ -278,7 +280,10 @@ const PassageMediaLibraryScreen = () => {
   }
 
   return (
-    <SafeAreaBox className="overflow-hidden border-continuous bg-reverse">
+    <SafeAreaBox
+      className="overflow-hidden border-continuous bg-reverse"
+      onLayout={({ nativeEvent }) => setPaneWidth(nativeEvent.layout.width)}
+    >
       {classes.length ? (
         <FiltersHeader
           hasBackButton

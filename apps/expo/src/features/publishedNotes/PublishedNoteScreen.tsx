@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useRecordHistory } from '~features/history/useRecordHistory'
 import { useLocalSearchParams } from 'expo-router'
+import { useState } from 'react'
 import { ScrollView, useWindowDimensions } from 'react-native'
 import Header from '~common/Header'
 import Loading from '~common/Loading'
@@ -43,7 +44,9 @@ const PublishedNoteScreen = () => {
   const theme = useTheme()
   const { open } = useOpenSiteLink()
   const { path = '' } = useLocalSearchParams<{ path?: string }>()
-  const { width } = useWindowDimensions()
+  const { width: windowWidth } = useWindowDimensions()
+  // The pane's own width: on a wide screen the page shares the window with other panes.
+  const [width, setWidth] = useState(windowWidth)
   const note = usePublishedNote(path)
   const contentWidth = Math.min(width - 32, 720)
   // A day's note not published yet: the chapter itself is read in its place, never left out.
@@ -63,7 +66,10 @@ const PublishedNoteScreen = () => {
       : null
   )
   return (
-    <SafeAreaBox className="overflow-hidden border-continuous bg-reverse">
+    <SafeAreaBox
+      className="overflow-hidden border-continuous bg-reverse"
+      onLayout={({ nativeEvent }) => setWidth(nativeEvent.layout.width)}
+    >
       <Header
         hasBackButton
         title={note.data?.title ?? chapter?.title ?? ''}
