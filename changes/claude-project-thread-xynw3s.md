@@ -1,0 +1,5 @@
+- Class notes (class player and published note pages) keep today's layout and add the class's people, places and topics at the top, as chips with portraits; a tap opens the entity card or the topic.
+- Each scripture in the notes shows the people and places its verses name, under the verse.
+- Scripture titles in the notes are larger and bold.
+- The title of a book read in class is set in italics (after "Reading from").
+- Drawn with the app's own views (no web view per block); the list stays virtualized.

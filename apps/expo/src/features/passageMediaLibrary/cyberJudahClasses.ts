@@ -842,6 +842,21 @@ export const loadClassNotes = async (
   fetcher: typeof fetch = fetch
 ): Promise<string> => classNotesToHtml((await loadPublishedNote(notesPath, fetcher)).body, videoId)
 
+/** A class's notes as the app's own blocks, with the topics the class is filed under. */
+export const loadClassNote = async (
+  notesPath: string,
+  videoId: string,
+  fetcher: typeof fetch = fetch
+): Promise<{ blocks: NoteBlock[]; topics: string[] }> => {
+  const note = await loadPublishedNote(notesPath, fetcher)
+  return {
+    blocks: classNotesToBlocks(note.body, videoId),
+    topics: Array.isArray(note.topics)
+      ? note.topics.filter(topic => typeof topic === 'string')
+      : [],
+  }
+}
+
 /** A class's notes as the app's own blocks. */
 export const loadClassNoteBlocks = async (
   notesPath: string,
