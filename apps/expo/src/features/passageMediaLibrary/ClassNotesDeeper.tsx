@@ -116,29 +116,10 @@ export const CardLink = ({
 }
 
 /** The grey title over a card, as Go Deeper names each of its sections. */
-export const SectionTitle = ({
-  children,
-  scripture,
-}: {
-  children: ReactNode
-  /** A scripture's title: bolder and larger than the other section titles. */
-  scripture?: boolean
-}) => {
+export const SectionTitle = ({ children }: { children: ReactNode }) => {
   const colors = useDeeperColors()
   return (
-    <NativeText
-      style={
-        scripture
-          ? {
-              marginHorizontal: 4,
-              marginBottom: 8,
-              fontSize: 18,
-              fontWeight: '700',
-              color: colors.text,
-            }
-          : { marginHorizontal: 4, marginBottom: 8, fontSize: 13, color: colors.muted }
-      }
-    >
+    <NativeText style={{ marginHorizontal: 4, marginBottom: 8, fontSize: 13, color: colors.muted }}>
       {children}
     </NativeText>
   )
