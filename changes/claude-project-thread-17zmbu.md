@@ -29,3 +29,12 @@ Obie flagged Edomites wearing Judah figures (2026-11-03) and approved these on t
   Strong's grey group.
 
 Only `peopleNations.ts` and `israeliteGroups.ts` change; how figures are chosen does not.
+
+## New clay figures (Obie OK'd 2026-11-03)
+
+- Egypt (Mizraim): man, woman and group redrawn as dark Sudanese Africans ("the Egyptians were the
+  Africans today, the ones in Sudan").
+- Elam: man, woman and group redrawn as East Indians ("Elam is who the East Indians are today").
+- Israel man #3 redrawn darker, as Gad (Native American) on the 12 tribes chart.
+
+Same clay style and blue ground, 256 px, drawn in Higgsfield ("CyberJudah People Avatars").
