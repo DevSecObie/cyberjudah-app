@@ -260,6 +260,11 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
                 label="4 Chapters a Day"
               />
               <ListRow
+                onPress={() => router.push('/(library)/scripture-clips')}
+                icon={<FeatherIcon name="film" size={18} color="grey" />}
+                label="Scripture Clips (preview)"
+              />
+              <ListRow
                 onPress={() => router.push('/(library)/encyclopedia')}
                 icon={<FeatherIcon name="book" size={18} color="grey" />}
                 label="Encyclopedia"
