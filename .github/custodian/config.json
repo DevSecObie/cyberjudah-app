@@ -41,5 +41,14 @@
       "critical": false
     }
   ],
-  "environment_secrets_note": "Store signing secrets live in the app-store and play-store environments, which this report does not enter. Store submission is on hold, so build results here are reported, never acted on."
+  "environment_secrets_note": "Store submission is on hold, so build results here are reported, never acted on.",
+  "production_only_secrets": [
+    "IOS_STAGING_CERTIFICATE_BASE64",
+    "IOS_STAGING_CERTIFICATE_PASSWORD",
+    "IOS_STAGING_PROFILE_BASE64",
+    "ANDROID_STAGING_KEYSTORE_BASE64",
+    "ANDROID_STAGING_KEYSTORE_PASSWORD",
+    "OTA_PUBLISH_TOKEN",
+    "SENTRY_AUTH_TOKEN"
+  ]
 }
