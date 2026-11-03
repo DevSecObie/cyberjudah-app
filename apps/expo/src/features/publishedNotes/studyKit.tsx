@@ -240,7 +240,13 @@ export const LetterListScreen = ({
           )}
         </Box>
         {!search && !groups && (
-          <AlphabetList color="quint" letter={current} setLetter={setLetter} />
+          <AlphabetList
+            // Mounted again once the list loads, so the alphabet starts on its first letter.
+            key={all[0]?.title ?? ''}
+            color="quint"
+            letter={current}
+            setLetter={setLetter}
+          />
         )}
       </Box>
     </FormSheetScreen>

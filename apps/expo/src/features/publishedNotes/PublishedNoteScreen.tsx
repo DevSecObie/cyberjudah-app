@@ -21,7 +21,6 @@ import ChapterSlice from '~features/plans/PlanSliceScreen/ChapterSlice'
 import { noteChapter } from './noteChapter'
 import { useOpenSiteLink } from './siteLinks'
 import { StudyHeading } from './studyKit'
-import Card from '~common/ui/Card'
 
 const KIND: Record<string, string> = { study: '4 Chapters a Day', encyclopedia: 'Encyclopedia' }
 
@@ -54,7 +53,6 @@ const PublishedNoteScreen = () => {
   // A day's note not published yet: the chapter itself is read in its place, never left out.
   const chapter = note.isError ? noteChapter(path) : undefined
   const isEncyclopedia = path.startsWith('/encyclopedia')
-  const summary = (note.data as { summary?: string } | undefined)?.summary
 
   // Reopened from Pick up and History, like Bible Strong's own pages.
   useRecordHistory(
@@ -93,18 +91,13 @@ const PublishedNoteScreen = () => {
           header={
             isEncyclopedia ? (
               // An encyclopedia entry opens as Bible Strong's dictionary entry: its kind, its
-              // title, its summary in a card, then the entry book by book.
+              // title, then the entry book by book (its summary opens the body).
               <VStack className="gap-[16px] mb-[12px] self-center" style={{ width: contentWidth }}>
                 <StudyHeading
                   kind="dictionary"
                   kindLabel="Encyclopedia"
                   title={note.data.title ?? ''}
                 />
-                {!!summary && (
-                  <Card>
-                    <Text className="text-[16px] leading-[24px] p-[16px]">{summary}</Text>
-                  </Card>
-                )}
               </VStack>
             ) : (
               <VStack className="gap-[6px] mb-[12px] self-center" style={{ width: contentWidth }}>
