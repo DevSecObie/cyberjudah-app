@@ -1,0 +1,1 @@
+- Web: the Biblical entities (people, places and groups) open on web.cyberjudah.io, read online from our server like every other resource.

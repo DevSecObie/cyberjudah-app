@@ -120,7 +120,9 @@ const languages = new Set<ResourceLanguage>(
 const strongLexiconModules = new Set(
   resourceApiBaseUrl
     ? process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
-      ? ['core']
+      ? // The People module (people, places, groups) is served online from the same file the
+        // phone app downloads, as Bible Strong's web app reads its entities online.
+        ['core', 'entities']
       : ['core', 'resources', 'entities', 'simple-fr', 'simple-en']
     : []
 )
