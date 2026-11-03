@@ -1,0 +1,10 @@
+version: 2
+updates:
+  # Keeps the commit-pinned actions in .github/workflows up to date, one reviewed PR a month.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    labels:
+      - dependencies
+      - github-actions

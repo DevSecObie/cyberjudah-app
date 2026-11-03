@@ -24,7 +24,7 @@ jobs:
       CYBERJUDAH_APPLE_TEAM_ID: M8DUMWBXLH
       CYBERJUDAH_IOS_TARGET: production
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
       - run: python3 apps/expo/scripts/test-ios-signing.py
       - name: Require the store app's Firebase file
         run: |
@@ -54,7 +54,7 @@ jobs:
           mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
           cp "$RUNNER_TEMP/store.mobileprovision" "$HOME/Library/MobileDevice/Provisioning Profiles/CyberJudah-Store.mobileprovision"
           security find-identity -v -p codesigning "$RUNNER_TEMP/store.keychain-db"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4.4.0
         with:
           node-version: 22
       - run: corepack enable
@@ -104,7 +104,7 @@ jobs:
           codesign --verify --deep --strict "$app"
           node apps/expo/scripts/verify-cyberjudah-bundle.mjs "$app/main.jsbundle"
           xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/CyberJudah-Store.xcarchive" -exportOptionsPlist "$RUNNER_TEMP/ios-signing/ExportOptions.plist" -exportPath "$RUNNER_TEMP/CyberJudah-Store-IPA" > "$RUNNER_TEMP/ios-export.log" 2>&1 || { tail -100 "$RUNNER_TEMP/ios-export.log"; exit 1; }
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
         if: always()
         with:
           name: CyberJudah-store-iPhone-signed
