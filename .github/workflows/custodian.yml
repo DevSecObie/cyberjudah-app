@@ -70,7 +70,7 @@ jobs:
 
   branches:
     if: >-
-      github.event_name == 'schedule' ||
+      (github.event_name == 'schedule' && github.event.schedule == '7 12 * * *') ||
       (github.event_name == 'workflow_dispatch' && inputs.task == 'branches')
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -95,7 +95,7 @@ jobs:
     needs: [branches]
     if: >-
       ${{ !cancelled() && (
-      github.event_name == 'schedule' ||
+      (github.event_name == 'schedule' && github.event.schedule == '7 12 * * *') ||
       (github.event_name == 'workflow_dispatch' && inputs.task == 'health') ||
       (github.event_name == 'workflow_run' && github.event.workflow_run.event != 'pull_request')) }}
     runs-on: ubuntu-latest
@@ -114,15 +114,4 @@ jobs:
       - name: Update the Deployment health issue
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          # true/false only: the expression is evaluated by GitHub, so no value reaches the runner.
-          CUSTODIAN_SECRETS_PRESENT: |
-            {
-              "IOS_STAGING_CERTIFICATE_BASE64": ${{ secrets.IOS_STAGING_CERTIFICATE_BASE64 != '' }},
-              "IOS_STAGING_CERTIFICATE_PASSWORD": ${{ secrets.IOS_STAGING_CERTIFICATE_PASSWORD != '' }},
-              "IOS_STAGING_PROFILE_BASE64": ${{ secrets.IOS_STAGING_PROFILE_BASE64 != '' }},
-              "ANDROID_STAGING_KEYSTORE_BASE64": ${{ secrets.ANDROID_STAGING_KEYSTORE_BASE64 != '' }},
-              "ANDROID_STAGING_KEYSTORE_PASSWORD": ${{ secrets.ANDROID_STAGING_KEYSTORE_PASSWORD != '' }},
-              "OTA_PUBLISH_TOKEN": ${{ secrets.OTA_PUBLISH_TOKEN != '' }},
-              "SENTRY_AUTH_TOKEN": ${{ secrets.SENTRY_AUTH_TOKEN != '' }}
-            }
         run: python3 .github/custodian/custodian.py health
