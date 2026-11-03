@@ -25,8 +25,7 @@ function widgetOf(source: CyberJudahSource, slot: number): StudyWidget | undefin
   }
   const title = source.title.slice(0, 120)
   const person = /^\/person\/([a-z0-9-]+)$/.exec(path)?.[1]
-  if (person)
-    return { id, kind: 'person_profile', title, entityKey: person, language: 'en' }
+  if (person) return { id, kind: 'person_profile', title, entityKey: person, language: 'en' }
   if (source.kind === 'place' && source.entity)
     return { id, kind: 'place_profile', title, entityKey: source.entity, language: 'en' }
   const code = /^\/strongs\/([HG]\d{1,5})$/i.exec(path)?.[1]?.toUpperCase()

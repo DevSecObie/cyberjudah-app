@@ -10,9 +10,9 @@ const source = (n: number, url: string, kind = 'reference', entity?: string) => 
 
 describe("Bible Strong's cards in Ask", () => {
   it('reads the cited numbers from the answer and its Sources list', () => {
-    expect([...citedNumbers('A fact [2]. Another [11].\nroot = StudyAnswer([Sources([4, 5])])')]).toEqual([
-      2, 11, 4, 5,
-    ])
+    expect([
+      ...citedNumbers('A fact [2]. Another [11].\nroot = StudyAnswer([Sources([4, 5])])'),
+    ]).toEqual([2, 11, 4, 5])
   })
 
   it("maps cited people, places, Strong's words, Timeline events and Nave topics to cards", () => {

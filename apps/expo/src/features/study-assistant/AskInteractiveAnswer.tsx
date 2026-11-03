@@ -229,7 +229,10 @@ export function isInteractiveStudySafe(program: string, sources: CyberJudahSourc
  * sources the answer cites, shown once the answer is complete. */
 function BibleStrongCards({ turn, streaming }: { turn: ChatTurn; streaming: boolean }) {
   if (streaming) return null
-  const widgets = askStudyWidgets(turn.sources, citedNumbers(`${turn.ui ?? ''}\n${turn.answer ?? ''}`))
+  const widgets = askStudyWidgets(
+    turn.sources,
+    citedNumbers(`${turn.ui ?? ''}\n${turn.answer ?? ''}`)
+  )
   if (!widgets.length) return null
   return (
     <Box className="mt-4 gap-3">
