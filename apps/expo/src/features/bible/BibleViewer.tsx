@@ -1707,10 +1707,6 @@ const BibleViewer = ({
       if (!chip) return
       const entry = getCommentaryByPublicationId(chip.resourceId, chip.language)
       if (!entry) return
-      // The verse the chip sits under, so a Bishop's page opens on that verse.
-      const anchor = Object.entries(inlinePlacement.afterVerses).find(([, chips]) =>
-        chips.includes(chip)
-      )?.[0]
       const openCommentary = (sectionId = chip.sectionId) =>
         pushRouteOnce({
           pathname: '/commentary-entry',
@@ -1719,7 +1715,6 @@ const BibleViewer = ({
             book: String(book.Numero),
             chapter: String(chapter),
             sectionId,
-            ...(anchor ? { focusVerse: anchor } : {}),
           },
         })
       if (Platform.OS !== 'web') {
