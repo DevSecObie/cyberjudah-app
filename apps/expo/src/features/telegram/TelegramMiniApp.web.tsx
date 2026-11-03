@@ -5,7 +5,7 @@ import { useNavigationContainerRef, useRouter } from 'expo-router'
 import { useEffect } from 'react'
 import { API_ORIGIN } from '~features/books/booksData'
 import FireAuth from '~helpers/FireAuth'
-import { readTelegramLaunch, startParamToRoute } from './telegramLaunch'
+import { isTelegramHost, readTelegramLaunch, startParamToRoute } from './telegramLaunch'
 
 type TelegramWebApp = {
   initData: string
@@ -29,12 +29,25 @@ const LAUNCH =
   typeof window === 'undefined'
     ? {}
     : readTelegramLaunch(window.location.hash, window.location.search)
-const IN_TELEGRAM = Boolean(LAUNCH.tgWebAppData)
+// Launch data alone is not enough: a link carrying someone else's launch data, opened in a normal
+// browser, must not sign the reader into that other account.
+const IN_TELEGRAM =
+  Boolean(LAUNCH.tgWebAppData) && typeof window !== 'undefined' && isTelegramHost(window as never)
 
 if (IN_TELEGRAM) {
   // Telegram's script reads its launch data from the address, or from here once the address changed.
   try {
     window.sessionStorage.setItem('__telegram__initParams', JSON.stringify(LAUNCH))
+  } catch {}
+  // Keep the launch data out of the browser history once it is saved.
+  try {
+    if (/tgWebApp/.test(window.location.hash)) {
+      window.history.replaceState(
+        window.history.state,
+        '',
+        window.location.pathname + window.location.search
+      )
+    }
   } catch {}
 }
 

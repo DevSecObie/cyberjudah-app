@@ -32,3 +32,21 @@ export const startParamToRoute = (param: string | undefined): string | null => {
   const first = verses?.match(/^\d+/)?.[0]
   return `/bible/${book}/${chapter}${first ? `/${first}` : ''}`
 }
+
+type HostWindow = {
+  parent?: unknown
+  TelegramWebviewProxy?: unknown
+  external?: unknown
+}
+
+/**
+ * True only when the page really runs inside a Telegram client: the phone apps' webview bridge,
+ * Telegram Desktop's bridge, or Telegram Web's frame. Launch data in the address alone is not
+ * enough, because anyone can put someone else's launch data in a link and open it in a browser.
+ */
+export const isTelegramHost = (win: HostWindow): boolean => {
+  if (win.TelegramWebviewProxy) return true
+  const external = win.external as { notify?: unknown } | undefined
+  if (external && typeof external === 'object' && 'notify' in external) return true
+  return win.parent != null && win.parent !== win
+}
