@@ -1,1 +1,2 @@
 - Classes are never credited to CyberJudah: the class player's line, the class moments under the verses and Ask's book cards show the teacher (or nothing), and a class note's PDF leaves the author blank when no teacher is on record.
+- The classes that taught a verse or a person list the Bishops in order (Nathanyel, Yawasap, Kani), then the Deacons, the Captains and the rest, with Zakai's last.

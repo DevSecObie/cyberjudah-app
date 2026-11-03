@@ -1,6 +1,8 @@
 // A person's page from CyberJudah's published People data, the one the Telegram app shows: their
 // family with the verses that state it, what the classes taught on them, the classes that read of
 // them and the related case studies.
+import { classTeacherRank } from '~helpers/classTeacherRank'
+
 const DATA_ORIGIN = 'https://data.cyberjudah.io'
 
 export type PersonLink = { id: string; name: string; verses?: string[]; note?: string }
@@ -59,9 +61,8 @@ export const howWeKnow = (person: CyberJudahPerson) =>
     (person[key] ?? []).filter(link => link?.id && link.name).map(link => ({ label, link }))
   )
 
-// The Bishops' and Deacons' teaching comes first, then the newest.
-const teacherRank = (teacher = '') =>
-  /^bishop/i.test(teacher) ? 0 : /^deacon/i.test(teacher) ? 1 : 2
+// Obie's class order (Bishops Nathanyel, Yawasap, Kani, Deacons, Captains; Zakai last), then the newest.
+const teacherRank = classTeacherRank
 export const orderTeachings = (taught: PersonTeaching[]) =>
   [...taught].sort(
     (a, b) =>
