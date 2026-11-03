@@ -20,6 +20,8 @@ import { finishReading, noteReadingKey } from '~features/plans/finishedReading'
 import ChapterSlice from '~features/plans/PlanSliceScreen/ChapterSlice'
 import { noteChapter } from './noteChapter'
 import { useOpenSiteLink } from './siteLinks'
+import { StudyHeading } from './studyKit'
+import Card from '~common/ui/Card'
 
 const KIND: Record<string, string> = { study: '4 Chapters a Day', encyclopedia: 'Encyclopedia' }
 
@@ -51,6 +53,8 @@ const PublishedNoteScreen = () => {
   const contentWidth = Math.min(width - 32, 720)
   // A day's note not published yet: the chapter itself is read in its place, never left out.
   const chapter = note.isError ? noteChapter(path) : undefined
+  const isEncyclopedia = path.startsWith('/encyclopedia')
+  const summary = (note.data as { summary?: string } | undefined)?.summary
 
   // Reopened from Pick up and History, like Bible Strong's own pages.
   useRecordHistory(
@@ -72,7 +76,7 @@ const PublishedNoteScreen = () => {
     >
       <Header
         hasBackButton
-        title={note.data?.title ?? chapter?.title ?? ''}
+        title={isEncyclopedia ? 'Encyclopedia' : (note.data?.title ?? chapter?.title ?? '')}
         rightComponent={path && !chapter ? <ClassNotesPdfButton notesPath={path} /> : undefined}
       />
       {note.isPending ? (
@@ -87,19 +91,36 @@ const PublishedNoteScreen = () => {
           // Reaching the last block is reading the note; the plan ticks it on the way back.
           onFinished={() => finishReading(noteReadingKey(path))}
           header={
-            <VStack className="gap-[6px] mb-[12px] self-center" style={{ width: contentWidth }}>
-              <Text
-                className="text-[24px] leading-[30px]"
-                style={{ fontFamily: resolveFontFamily(theme.fontFamily.title) }}
-              >
-                {note.data.title}
-              </Text>
-              <Text className="text-grey text-[14px]">
-                {[KIND[note.data.kind ?? ''], longDate(note.data.date), note.data.teacher]
-                  .filter(Boolean)
-                  .join(' · ')}
-              </Text>
-            </VStack>
+            isEncyclopedia ? (
+              // An encyclopedia entry opens as Bible Strong's dictionary entry: its kind, its
+              // title, its summary in a card, then the entry book by book.
+              <VStack className="gap-[16px] mb-[12px] self-center" style={{ width: contentWidth }}>
+                <StudyHeading
+                  kind="dictionary"
+                  kindLabel="Encyclopedia"
+                  title={note.data.title ?? ''}
+                />
+                {!!summary && (
+                  <Card>
+                    <Text className="text-[16px] leading-[24px] p-[16px]">{summary}</Text>
+                  </Card>
+                )}
+              </VStack>
+            ) : (
+              <VStack className="gap-[6px] mb-[12px] self-center" style={{ width: contentWidth }}>
+                <Text
+                  className="text-[24px] leading-[30px]"
+                  style={{ fontFamily: resolveFontFamily(theme.fontFamily.title) }}
+                >
+                  {note.data.title}
+                </Text>
+                <Text className="text-grey text-[14px]">
+                  {[KIND[note.data.kind ?? ''], longDate(note.data.date), note.data.teacher]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </Text>
+              </VStack>
+            )
           }
         />
       ) : chapter ? (

@@ -1,13 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
-import { FlatList } from 'react-native'
-import Header from '~common/Header'
-import Loading from '~common/Loading'
-import Box, { SafeAreaBox, TouchableBox } from '~common/ui/Box'
-import Text from '~common/ui/Text'
+import { useMemo } from 'react'
 import { loadDoctrines } from './classTeaching'
+import { LetterListScreen } from './studyKit'
 
-/** False doctrines, A to Z: each claim answered from scripture and the classes (as in Telegram). */
+/** False doctrines, A to Z, on Bible Strong's Nave list. */
 const DoctrinesScreen = () => {
   const router = useRouter()
   const rows = useQuery({
@@ -17,41 +14,23 @@ const DoctrinesScreen = () => {
     networkMode: 'always',
     retry: 1,
   })
-
+  const listRows = useMemo(
+    () => rows.data?.map(row => ({ key: row.slug, label: row.name })),
+    [rows.data]
+  )
+  const claims = useMemo(() => new Map(rows.data?.map(r => [r.slug, r.claim])), [rows.data])
   return (
-    <SafeAreaBox className="overflow-hidden border-continuous bg-reverse">
-      <Header hasBackButton title="False Doctrines" />
-      {rows.isPending ? (
-        <Loading />
-      ) : (
-        <FlatList
-          data={rows.data ?? []}
-          keyExtractor={item => item.slug}
-          contentContainerStyle={{ paddingBottom: 48 }}
-          renderItem={({ item }) => (
-            <TouchableBox
-              accessibilityRole="button"
-              className="px-[20px] py-[14px] border-b-[1px] border-border gap-[3px]"
-              onPress={() =>
-                router.push({ pathname: '/(explore)/false-doctrine', params: { slug: item.slug } })
-              }
-            >
-              <Text className="font-bold text-[16px]">{item.name}</Text>
-              <Text className="text-grey text-[14px]" numberOfLines={2}>
-                {item.claim}
-              </Text>
-            </TouchableBox>
-          )}
-          ListEmptyComponent={
-            <Box className="py-[60px] px-[20px] items-center">
-              <Text className="text-grey text-center">
-                The false doctrines did not load. Check your connection.
-              </Text>
-            </Box>
-          }
-        />
-      )}
-    </SafeAreaBox>
+    <LetterListScreen
+      title="False Doctrines"
+      rows={listRows}
+      isPending={rows.isPending}
+      isError={rows.isError}
+      searchPlaceholder="Search a doctrine"
+      errorMessage="The false doctrines did not load. Check your connection."
+      emptyMessage="No doctrine found."
+      matches={(slug, q) => (claims.get(slug) ?? '').toLowerCase().includes(q)}
+      onOpen={slug => router.push({ pathname: '/(explore)/false-doctrine', params: { slug } })}
+    />
   )
 }
 

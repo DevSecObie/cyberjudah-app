@@ -1,27 +1,56 @@
+// A book, laid out as a Bible Strong commentary room: its room card (CommentaryRoomIntro) with the
+// cover, title, year, what it is, its tags and its rights, then its chapters and the moments a
+// class read from it as StudySection rows. Only the data is ours.
 import { useQuery } from '@tanstack/react-query'
 import { Image } from 'expo-image'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useState } from 'react'
-import { ScrollView } from 'react-native'
-import { openInApp } from '~common/inAppBrowser'
+import { ScrollView, StyleSheet } from 'react-native'
 import Header from '~common/Header'
 import Loading from '~common/Loading'
-import Box, { HStack, SafeAreaBox, TouchableBox, VStack } from '~common/ui/Box'
-import { FeatherIcon } from '~common/ui/Icon'
+import { openInApp } from '~common/inAppBrowser'
+import Box, { TouchableBox } from '~common/ui/Box'
+import Card from '~common/ui/Card'
+import { twMerge } from '~common/ui/classNames'
+import FormSheetScreen from '~common/ui/FormSheetScreen'
+import { ListRow } from '~common/ui/ListSection'
+import PageContent from '~common/ui/PageContent'
+import { STUDY_COLUMN_MAX_WIDTH, StudyMoreRow, StudySection } from '~common/ui/StudySection'
 import Text from '~common/ui/Text'
 import { useRecordHistory } from '~features/history/useRecordHistory'
 import { longDate } from '~features/notesExport/notePdf'
-import { LinkRow, Section } from '~features/publishedNotes/parts'
 import { useOpenSiteLink } from '~features/publishedNotes/siteLinks'
-import { resolveFontFamily } from '~themes/styleValues'
-import { useTheme } from '~themes/ThemeProvider'
 import { dataUrl, isPublicDomain, loadBook, newestReadingsFirst, pageLabel } from './booksData'
 
 const READINGS_FIRST = 20
 
-/** A book: what it is, every moment a class read from it, and its chapters to read. */
+/** A rounded tag of the room card, as Bible Strong's CommentaryTag. */
+const RoomTag = ({
+  label,
+  emphasized = false,
+  onPress,
+}: {
+  label: string
+  emphasized?: boolean
+  onPress?: () => void
+}) => (
+  <TouchableBox
+    disabled={!onPress}
+    onPress={onPress}
+    accessibilityRole={onPress ? 'button' : undefined}
+    className={twMerge(
+      'overflow-hidden border-continuous px-[10px] py-[6px] rounded-full',
+      emphasized ? 'bg-light-primary' : 'bg-canvas'
+    )}
+  >
+    <Text className={twMerge(emphasized ? 'text-link' : 'text-default', 'text-[12px]')}>
+      {label}
+    </Text>
+  </TouchableBox>
+)
+
+/** A book: its room card, its chapters, and every moment a class read from it. */
 const BookScreen = () => {
-  const theme = useTheme()
   const router = useRouter()
   const { openMoment } = useOpenSiteLink()
   const { slug = '' } = useLocalSearchParams<{ slug?: string }>()
@@ -36,6 +65,7 @@ const BookScreen = () => {
   })
   const data = book.data
   const readings = data ? newestReadingsFirst(data.reads) : []
+  const pdfs = data && isPublicDomain(data.license) ? data.items : []
 
   useRecordHistory(
     data?.title
@@ -50,134 +80,155 @@ const BookScreen = () => {
   )
 
   return (
-    <SafeAreaBox className="overflow-hidden border-continuous bg-reverse">
-      <Header hasBackButton title={data?.title ?? 'Book'} />
-      {book.isPending ? (
-        <Loading />
-      ) : data ? (
-        <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
-          <HStack className="gap-[16px] items-start">
-            {data.cover ? (
-              <Image
-                source={{ uri: dataUrl(data.cover) }}
-                style={{ width: 96, height: 136, borderRadius: 8 }}
-                contentFit="cover"
-                accessible={false}
-              />
-            ) : null}
-            <VStack className="flex-[1] gap-[6px]">
-              <Text
-                className="text-[24px] leading-[30px]"
-                style={{ fontFamily: resolveFontFamily(theme.fontFamily.title) }}
-              >
-                {data.title}
-              </Text>
-              <Text className="text-grey text-[14px]">
-                {[data.author, data.year].filter(Boolean).join(', ')}
-              </Text>
-              {data.classes > 0 && (
-                <Text className="text-primary text-[13px] font-bold">
-                  Read in {data.classes} {data.classes === 1 ? 'class' : 'classes'}
-                </Text>
-              )}
-            </VStack>
-          </HStack>
-          {!!data.subtitle && (
-            <Text className="text-[15px] leading-[22px] mt-[16px]">{data.subtitle}</Text>
-          )}
-          {isPublicDomain(data.license) && data.items.length > 0 && (
-            <HStack className="flex-wrap gap-[10px] mt-[18px]">
-              {data.items.map((item, index) => (
-                <TouchableBox
-                  key={item.id}
-                  accessibilityRole="button"
-                  onPress={() =>
-                    router.push({
-                      pathname: '/(explore)/book-pdf',
-                      params: { slug, item: item.id, title: data.title },
-                    })
-                  }
-                  className="flex-row items-center gap-[8px] rounded-full bg-primary px-[16px] py-[10px]"
+    <FormSheetScreen className="bg-canvas">
+      <Box className="overflow-hidden border-continuous flex-[1] bg-canvas">
+        <Header hasBackButton title={data?.title ?? 'Book'} />
+        {book.isPending ? (
+          <Loading />
+        ) : data ? (
+          <ScrollView
+            contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 60 }}
+          >
+            <PageContent style={{ maxWidth: STUDY_COLUMN_MAX_WIDTH }}>
+              <Card className="px-[18px] py-[17px]">
+                <Box className="overflow-hidden border-continuous flex-row items-center gap-[14px]">
+                  <Box
+                    className="rounded-[6px] overflow-hidden bg-canvas"
+                    style={{ width: 56, height: 78 }}
+                  >
+                    {data.cover ? (
+                      <Image
+                        source={{ uri: dataUrl(data.cover) }}
+                        style={{ width: 56, height: 78 }}
+                        contentFit="cover"
+                        accessible={false}
+                      />
+                    ) : null}
+                  </Box>
+                  <Box className="overflow-hidden border-continuous flex-[1] gap-[3px]">
+                    <Text className="text-[19px] leading-[23px] font-semibold" numberOfLines={3}>
+                      {data.title}
+                    </Text>
+                    <Text className="text-grey text-[13px]" numberOfLines={2}>
+                      {[data.author, data.year].filter(Boolean).join(', ')}
+                    </Text>
+                  </Box>
+                </Box>
+                <Box
+                  className="border-continuous overflow-hidden mt-[16px] pt-[16px] border-separator"
+                  style={{ borderTopWidth: StyleSheet.hairlineWidth }}
                 >
-                  <FeatherIcon name="book-open" size={16} color="reverse" />
-                  <Text className="text-reverse text-[14px] font-bold">
-                    {data.items.length > 1 ? item.label || `Volume ${index + 1}` : 'Read the PDF'}
-                  </Text>
-                </TouchableBox>
-              ))}
-            </HStack>
-          )}
-          {readings.length > 0 && (
-            <Section title="Read in class">
-              {(allReadings ? readings : readings.slice(0, READINGS_FIRST)).map(reading => (
-                <LinkRow
-                  key={`${reading.video}${reading.t}`}
-                  meta={[longDate(reading.date), reading.teacher, `from ${reading.ts}`]
-                    .filter(Boolean)
-                    .join(' · ')}
-                  title={reading.title}
-                  sub={pageLabel(data, reading.vol, reading.page)}
-                  onPress={() =>
-                    openMoment({
-                      video: reading.video,
-                      t: reading.t,
-                      note: reading.url ?? undefined,
-                    })
-                  }
-                />
-              ))}
-              {!allReadings && readings.length > READINGS_FIRST && (
-                <TouchableBox accessibilityRole="button" onPress={() => setAllReadings(true)}>
-                  <Text className="text-primary text-[15px] font-bold">
-                    All {readings.length} moments
-                  </Text>
-                </TouchableBox>
-              )}
-            </Section>
-          )}
-          {data.chapters.length > 0 && (
-            <Section title="Chapters">
-              {data.chapters.map(chapter => (
-                <LinkRow
-                  key={chapter.k}
-                  meta={[
-                    data.volumes > 1 || chapter.volume !== data.title ? chapter.volume : '',
-                    `${pageLabel(data, chapter.vol, chapter.page)}`,
-                    chapter.reads
-                      ? `read ${chapter.reads} ${chapter.reads === 1 ? 'time' : 'times'} in class`
-                      : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' · ')}
-                  title={[chapter.n, chapter.title].filter(Boolean).join('. ')}
-                  onPress={() =>
-                    router.push({
-                      pathname: '/(explore)/book-chapter',
-                      params: { slug, k: String(chapter.k) },
-                    })
-                  }
-                />
-              ))}
-            </Section>
-          )}
-          <Box className="mt-[26px] gap-[4px]">
-            {!!data.publisher && <Text className="text-grey text-[12px]">{data.publisher}</Text>}
-            {!!data.license && <Text className="text-grey text-[12px]">{data.license}</Text>}
-            {!!data.source && (
-              <TouchableBox accessibilityRole="link" onPress={() => openInApp(data.source)}>
-                <Text className="text-primary text-[12px]">The printed original</Text>
-              </TouchableBox>
+                  {!!data.subtitle && (
+                    <Text className="text-[15px] leading-[22px] text-default">{data.subtitle}</Text>
+                  )}
+                  <Box className="overflow-hidden border-continuous flex-row flex-wrap mt-[15px] gap-[8px]">
+                    <RoomTag emphasized label="English" />
+                    {pdfs.map((item, index) => (
+                      <RoomTag
+                        key={item.id}
+                        label={pdfs.length > 1 ? item.label || `Volume ${index + 1}` : 'PDF'}
+                        onPress={() =>
+                          router.push({
+                            pathname: '/(explore)/book-pdf',
+                            params: { slug, item: item.id, title: data.title },
+                          })
+                        }
+                      />
+                    ))}
+                  </Box>
+                </Box>
+                {(!!data.publisher || !!data.license || !!data.source) && (
+                  <Box
+                    className="border-continuous overflow-hidden mt-[16px] pt-[14px] border-separator gap-[4px]"
+                    style={{ borderTopWidth: StyleSheet.hairlineWidth }}
+                  >
+                    {!!data.publisher && (
+                      <Text className="text-tertiary text-[12px] leading-[17px]">
+                        {data.publisher}
+                      </Text>
+                    )}
+                    {!!data.license && (
+                      <Text className="text-tertiary text-[12px] leading-[17px]">
+                        {data.license}
+                      </Text>
+                    )}
+                    {!!data.source && (
+                      <TouchableBox accessibilityRole="link" onPress={() => openInApp(data.source)}>
+                        <Text className="text-link text-[12px]">The printed original</Text>
+                      </TouchableBox>
+                    )}
+                  </Box>
+                )}
+              </Card>
+            </PageContent>
+            {data.chapters.length > 0 && (
+              <StudySection title="Chapters" surface="rows" className="mt-[10px]">
+                {data.chapters.map(chapter => (
+                  <ListRow
+                    key={chapter.k}
+                    label={[chapter.n, chapter.title].filter(Boolean).join('. ')}
+                    description={[
+                      data.volumes > 1 || chapter.volume !== data.title ? chapter.volume : '',
+                      pageLabel(data, chapter.vol, chapter.page),
+                    ]
+                      .filter(Boolean)
+                      .join(' · ')}
+                    onPress={() =>
+                      router.push({
+                        pathname: '/(explore)/book-chapter',
+                        params: { slug, k: String(chapter.k) },
+                      })
+                    }
+                  />
+                ))}
+              </StudySection>
             )}
+            {readings.length > 0 && (
+              <StudySection title="Read in class" surface="rows">
+                {[
+                  ...(allReadings ? readings : readings.slice(0, READINGS_FIRST)).map(reading => (
+                    <ListRow
+                      key={`${reading.video}${reading.t}`}
+                      label={reading.title}
+                      description={[
+                        longDate(reading.date),
+                        reading.teacher,
+                        pageLabel(data, reading.vol, reading.page),
+                        `from ${reading.ts}`,
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                      onPress={() =>
+                        openMoment({
+                          video: reading.video,
+                          t: reading.t,
+                          note: reading.url ?? undefined,
+                        })
+                      }
+                    />
+                  )),
+                  ...(!allReadings && readings.length > READINGS_FIRST
+                    ? [
+                        <StudyMoreRow
+                          key="more"
+                          label="All the moments"
+                          onPress={() => setAllReadings(true)}
+                        />,
+                      ]
+                    : []),
+                ]}
+              </StudySection>
+            )}
+          </ScrollView>
+        ) : (
+          <Box className="py-[60px] px-[20px] items-center">
+            <Text className="text-grey text-center">
+              This book did not load. Check your connection.
+            </Text>
           </Box>
-        </ScrollView>
-      ) : (
-        <Box className="py-[60px] px-[20px] items-center">
-          <Text className="text-grey text-center">
-            This book did not load. Check your connection.
-          </Text>
-        </Box>
-      )}
-    </SafeAreaBox>
+        )}
+      </Box>
+    </FormSheetScreen>
   )
 }
 

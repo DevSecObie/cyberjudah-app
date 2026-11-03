@@ -1,124 +1,52 @@
 import { useQuery } from '@tanstack/react-query'
-import { useMemo, useState } from 'react'
-import { SectionList } from 'react-native'
-import PanelSearch from '~common/ContextualPanel/PanelSearch'
-import FiltersHeader from '~common/FiltersHeader'
-import Loading from '~common/Loading'
-import Box, { HStack, SafeAreaBox, TouchableBox, VStack } from '~common/ui/Box'
-import Text from '~common/ui/Text'
-import { glossarySections, loadGlossary } from './classTeaching'
-import ClassVideoEmbed from '~features/passageMediaLibrary/ClassVideoEmbed'
-import { clock, useOpenSiteLink } from './siteLinks'
+import { useRouter } from 'expo-router'
+import { useMemo } from 'react'
+import { loadGlossary } from './classTeaching'
+import { LetterListScreen } from './studyKit'
 
-/** The words the classes use, A to Z: each defined, its scriptures, and where it is taught. */
-const GlossaryScreen = () => {
-  const { open, openMoment } = useOpenSiteLink()
-  const glossary = useQuery({
+export const useGlossary = () =>
+  useQuery({
     queryKey: ['cyberjudah-glossary'],
     queryFn: () => loadGlossary(),
     staleTime: 60 * 60 * 1000,
     networkMode: 'always',
     retry: 1,
   })
-  const [query, setQuery] = useState('')
-  const sections = useMemo(
-    () => glossarySections(glossary.data?.entries, query),
-    [glossary.data, query]
-  )
 
+/** The words the classes use, A to Z, on Bible Strong's Lexicon list. */
+const GlossaryScreen = () => {
+  const router = useRouter()
+  const glossary = useGlossary()
+  const entries = glossary.data?.entries
+  const rows = useMemo(
+    () =>
+      entries?.map(entry => ({
+        key: entry.slug,
+        label: entry.term,
+        chips: ['Glossary', ...entry.aliases.slice(0, 1)],
+      })),
+    [entries]
+  )
+  const bySlug = useMemo(() => new Map(entries?.map(e => [e.slug, e])), [entries])
   return (
-    <SafeAreaBox className="overflow-hidden border-continuous bg-reverse">
-      <FiltersHeader
-        hasBackButton
-        title="Glossary"
-        onReset={() => setQuery('')}
-        filters={[
-          {
-            key: 'search',
-            icon: 'search',
-            label: 'Search',
-            value: query.trim() || undefined,
-            active: !!query.trim(),
-            onPress: () => {},
-            content: () => <PanelSearch value={query} onChange={setQuery} />,
-          },
-        ]}
-      />
-      {glossary.isPending ? (
-        <Loading />
-      ) : (
-        <SectionList
-          sections={sections}
-          keyExtractor={item => item.slug}
-          stickySectionHeadersEnabled
-          contentContainerStyle={{ paddingBottom: 48 }}
-          ListHeaderComponent={
-            glossary.data?.about ? (
-              <Box className="px-[20px] pt-[16px] pb-[8px]">
-                <Text className="text-grey text-[14px]">{glossary.data.about}</Text>
-              </Box>
-            ) : null
-          }
-          renderSectionHeader={({ section }) => (
-            <Box className="bg-light-grey px-[20px] py-[8px]">
-              <Text className="text-[13px] font-bold text-tertiary">{section.title}</Text>
-            </Box>
-          )}
-          renderItem={({ item }) => (
-            <VStack className="px-[20px] py-[14px] border-b-[1px] border-border gap-[6px]">
-              <Text className="font-bold text-[16px]">
-                {item.term}
-                {item.aliases.length ? (
-                  <Text className="text-grey text-[14px]"> · also {item.aliases.join(', ')}</Text>
-                ) : null}
-              </Text>
-              <Text className="text-[15px] leading-[22px]">{item.definition}</Text>
-              {(item.scripture.length > 0 || item.see.length > 0) && (
-                <HStack className="flex-wrap gap-x-[12px] gap-y-[4px]">
-                  {item.scripture.map(ref => (
-                    <TouchableBox
-                      key={ref.label}
-                      accessibilityRole="link"
-                      onPress={() => open(ref.url)}
-                    >
-                      <Text className="text-primary text-[14px] font-bold">{ref.label}</Text>
-                    </TouchableBox>
-                  ))}
-                  {item.see.map(ref => (
-                    <TouchableBox
-                      key={ref.url}
-                      accessibilityRole="link"
-                      onPress={() => open(ref.url)}
-                    >
-                      <Text className="text-primary text-[14px]">See {ref.title}</Text>
-                    </TouchableBox>
-                  ))}
-                </HStack>
-              )}
-              {item.taught.map(moment => (
-                <ClassVideoEmbed
-                  key={`${moment.video}@${moment.seconds}`}
-                  videoId={moment.video}
-                  start={moment.seconds}
-                  title={moment.title}
-                  meta={`from ${clock(moment.seconds)}`}
-                  onOpenClass={() => openMoment({ video: moment.video, t: moment.seconds })}
-                />
-              ))}
-            </VStack>
-          )}
-          ListEmptyComponent={
-            <Box className="py-[60px] px-[20px] items-center">
-              <Text className="text-grey text-center">
-                {glossary.isError
-                  ? 'The glossary did not load. Check your connection.'
-                  : 'No word matches.'}
-              </Text>
-            </Box>
-          }
-        />
-      )}
-    </SafeAreaBox>
+    <LetterListScreen
+      title="Glossary"
+      rows={rows}
+      isPending={glossary.isPending}
+      isError={glossary.isError}
+      searchPlaceholder="Search a word"
+      errorMessage="The glossary did not load. Check your connection."
+      emptyMessage="No word matches."
+      matches={(slug, q) => {
+        const entry = bySlug.get(slug)
+        return (
+          !!entry &&
+          (entry.aliases.some(a => a.toLowerCase().includes(q)) ||
+            entry.definition.toLowerCase().includes(q))
+        )
+      }}
+      onOpen={slug => router.push({ pathname: '/(explore)/glossary-word', params: { slug } })}
+    />
   )
 }
 
