@@ -76,7 +76,9 @@ export default function BookWidget({ widget }: { widget: Descriptor }) {
                     {item.title}
                   </Text>
                   <Text className="text-grey text-[12px]">
-                    {item.attributionLabel} · {formatPassageMediaDuration(item.durationSeconds)}
+                    {[item.attributionLabel, formatPassageMediaDuration(item.durationSeconds)]
+                      .filter(Boolean)
+                      .join(' · ')}
                   </Text>
                 </Box>
                 <FeatherIcon name="arrow-up-right" size={15} color="grey" />

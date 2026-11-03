@@ -472,7 +472,8 @@ export async function classNotePdf(note: PublishedNote, { site = SITE } = {}) {
   const title = String(note.title ?? 'Class notes')
   const pdf = await createWriter({
     title,
-    author: note.teacher || 'CyberJudah',
+    // A class is never credited to CyberJudah: no teacher on record leaves the author blank.
+    author: note.teacher ?? '',
     subject: `${COLLECTION[note.kind ?? ''] ?? 'Note'}${note.date ? `, ${longDate(note.date)}` : ''}`,
   })
   pdf.head(

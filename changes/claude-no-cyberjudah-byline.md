@@ -1,0 +1,1 @@
+- Classes are never credited to CyberJudah: the class player's line, the class moments under the verses and Ask's book cards show the teacher (or nothing), and a class note's PDF leaves the author blank when no teacher is on record.

@@ -184,7 +184,7 @@ const toMedia = (
   return {
     workId,
     editionId: workId,
-    attributionLabel: 'CyberJudah',
+    attributionLabel: '',
     reference: moment.verses.includes(':')
       ? `${bookName} ${moment.verses}`
       : `${bookName} ${chapter}:${moment.verses}`,
