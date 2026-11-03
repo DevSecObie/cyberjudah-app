@@ -151,13 +151,15 @@ export const LetterListScreen = ({
   const [letter, setLetter] = useState('a')
   const [search, setSearch] = useState('')
   const all = useMemo(() => groups ?? toSections(rows ?? []), [groups, rows])
+  // A list with no entry under the chosen letter opens at its first letter instead.
+  const current = all.some(section => section.title === letter) ? letter : (all[0]?.title ?? letter)
   const hasChips = all.some(section => section.data.some(row => row.chips?.some(Boolean)))
   const rowHeight = hasChips ? CHIP_ROW_HEIGHT : ROW_HEIGHT
   const sections = useMemo(() => {
     const q = search.trim().toLowerCase()
     if (!q && groups) return all
     if (!q) {
-      const own = all.filter(section => section.title === letter)
+      const own = all.filter(section => section.title === current)
       return own.length ? own : []
     }
     return all
@@ -168,7 +170,7 @@ export const LetterListScreen = ({
         ),
       }))
       .filter(section => section.data.length)
-  }, [all, letter, search, matches, groups])
+  }, [all, current, search, matches, groups])
   const getItemLayout = useMemo(
     () =>
       sectionListGetItemLayout({
@@ -237,7 +239,9 @@ export const LetterListScreen = ({
             />
           )}
         </Box>
-        {!search && !groups && <AlphabetList color="quint" letter={letter} setLetter={setLetter} />}
+        {!search && !groups && (
+          <AlphabetList color="quint" letter={current} setLetter={setLetter} />
+        )}
       </Box>
     </FormSheetScreen>
   )
