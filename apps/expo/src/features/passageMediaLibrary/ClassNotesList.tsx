@@ -20,7 +20,6 @@ import {
   groupScriptures,
   Row,
   type ScriptureGroup,
-  SectionTitle,
   useDeeperColors,
   VerseEntities,
 } from './ClassNotesDeeper'
@@ -583,10 +582,8 @@ const ScriptureCard = ({
       add(`${b}`, <Block block={block} colors={colors} onLink={onLink} nested />)
     }
   })
-  const label = group.title
   return (
     <View style={{ marginTop: 22, marginBottom: 4 }}>
-      {!!label && <SectionTitle scripture>{decode(label)}</SectionTitle>}
       <Card>
         {!!group.seek && (
           <CardLink
