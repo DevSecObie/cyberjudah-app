@@ -17,6 +17,8 @@ export type PublishedNote = {
   teacher?: string
   url?: string
   body?: string
+  /** The topics the class is filed under, by slug. */
+  topics?: string[]
 }
 
 /** One of the reader's own notes: its words are plain text, never Markdown. */

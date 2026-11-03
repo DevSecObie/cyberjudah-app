@@ -1,0 +1,6 @@
+- Class notes (class player and published note pages) take the look of Bible Strong's Go Deeper study: each scripture the class opened sits in its own card under a small grey title, with "Play from" the class moment at the top of the card, the verse in gold, the points taught on it in rows, and a link to the passage in the Bible at the bottom.
+- The people and places named in each scripture's verses show as chips with their portraits under the verse; tapping one opens its entity card.
+- The top of the notes adds "People in this class", "Places" and "Topics" chips, from the scriptures quoted and the note's topics.
+- The title of a book read in class is set in italics (after "Reading from").
+- Drawn with the app's own views, one list row per card (no web view per card), so the list stays virtualized.
+- Note: the Go Deeper look holds verse studies in Bible Strong; using it for class notes is ours.
