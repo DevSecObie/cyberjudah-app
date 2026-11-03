@@ -9,7 +9,7 @@ const [majorVersion, minorVersion] = APP_VERSION.split('.')
 const RUNTIME_VERSION = `${majorVersion}.${minorVersion}`
 // The owner's live-editing dev app ("CyberJudah Preview"), installed next to TestFlight builds.
 const isCyberJudahPreview = process.env.BUNDLE_IDENTIFIER === 'io.cyberjudah.app.preview'
-// CyberJudah's own Expo project (free tier), used only for over-the-air updates.
+// CyberJudah's own Expo project (free tier). Over-the-air updates come from updates.cyberjudah.io.
 const CYBERJUDAH_EAS_PROJECT_ID = 'ee1c2f69-3a80-46c5-b67d-7f4a75def656'
 
 // Icon fonts built into the Android app. Loaded at run time, a font file an update copied can
@@ -248,7 +248,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     : isCyberJudah
       ? {
           enabled: true,
-          url: `https://u.expo.dev/${CYBERJUDAH_EAS_PROJECT_ID}`,
+          // Our own Open OTA server on Cloudflare, as Bible Strong does (docs/adr/0085): EAS Update's
+          // free plan stops serving updates past 1,000 readers a month.
+          url: 'https://updates.cyberjudah.io/manifest',
           checkAutomatically: 'ON_LOAD',
           fallbackToCacheTimeout: 0,
           codeSigningCertificate: './certs/certificate.pem',
