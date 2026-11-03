@@ -1,6 +1,6 @@
-import { formatMoment, searchSaidInClass } from '../saidInClass'
-
 jest.mock('~helpers/firebaseAuthRuntime', () => ({ getCurrentAuthUser: () => null }))
+
+import { formatMoment, searchSaidInClass } from '../saidInClass'
 
 const user = { getIdToken: async () => 'token' } as never
 

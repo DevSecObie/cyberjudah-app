@@ -114,7 +114,7 @@ const Scrubber = ({
           setDragAt(null)
         },
       }),
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   )
   const shown = dragAt ?? Math.min(time, duration)

@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
-import Box, { TouchableBox, VStack } from '~common/ui/Box'
+import { TouchableBox, VStack } from '~common/ui/Box'
+import Box from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
