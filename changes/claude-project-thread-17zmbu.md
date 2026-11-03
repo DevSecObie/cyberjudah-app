@@ -13,3 +13,19 @@ shown in the CyberJudah build, but they shipped inside it.
   onboarding pictures stay.
 - `apps/site` (Bible Strong's marketing site, not shipped) still names `events.txt` in its layout
   script; it is not part of the app.
+
+## Clay figures follow the genealogies (data only)
+
+Obie flagged Edomites wearing Judah figures (2026-11-03) and approved these on the clay figure sheet:
+
+- The kings and dukes of Edom (Genesis 36: Teman, Kenaz, Korah and the rest), Hadad the Edomite and
+  Genubath, Herod's brothers named Philip and Herodias' daughter, and the Greek and Roman rulers
+  that had been missed now wear the Edom figure.
+- Canaanites, Amorites, Hittites, men of Tyre and Sidon, and Seir the Horite's family wear Canaan.
+  Moab, Ammon, Syria (Aram) and Assyria get their own nations, and the Ethiopians and the kings of
+  Midian get Cush. Heber the Kenite and Jael get Cush, like Hobab, and the kings and princes of
+  Persia and Media get Elam.
+- The families of Israel in Numbers 26 (and the Korhites) show the Israel group instead of Bible
+  Strong's grey group.
+
+Only `peopleNations.ts` and `israeliteGroups.ts` change; how figures are chosen does not.
