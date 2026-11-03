@@ -1,0 +1,45 @@
+{
+  "label": "custodian",
+  "health_issue_title": "Deployment health",
+  "owner_mention": "@DevSecObie",
+  "recent_days": 14,
+  "max_deletions_per_run": 100,
+  "stale_pr_hours": 48,
+  "inactive_environment_days": 30,
+  "keep_branches": [
+    "cyberjudah",
+    "codex/bible-strong-mobile-release"
+  ],
+  "required_secrets": [],
+  "endpoints": [],
+  "watch_workflows": [
+    {
+      "name": "iPhone build on merge (TestFlight)",
+      "file": "cyberjudah-ios-signed.yml",
+      "branch": "codex/bible-strong-mobile-release",
+      "critical": false
+    },
+    {
+      "name": "Android and web staging builds",
+      "file": "cyberjudah-staging-builds.yml",
+      "branch": "codex/bible-strong-mobile-release",
+      "critical": false
+    },
+    {
+      "name": "iPhone store build (on hold)",
+      "file": "cyberjudah-ios-store.yml",
+      "critical": false
+    },
+    {
+      "name": "Android store build (on hold)",
+      "file": "cyberjudah-android-store.yml",
+      "critical": false
+    },
+    {
+      "name": "Production app update",
+      "file": "expo-update-production.yml",
+      "critical": false
+    }
+  ],
+  "environment_secrets_note": "Store signing secrets live in the app-store and play-store environments, which this report does not enter. Store submission is on hold, so build results here are reported, never acted on."
+}

@@ -1,0 +1,128 @@
+name: custodian
+
+# Deployment manager and repository custodian (.github/custodian/README.md).
+#   * Daily, and after every production deploy: one "Deployment health" issue with the latest
+#     deploys, runs waiting for approval, environments, live endpoints, which secrets are set or
+#     expiring, and pull requests waiting more than 48 hours. A comment is added only when
+#     something new turns red.
+#   * When a pull request merges: its branch is deleted, if nobody pushed to it after the merge,
+#     no open pull request uses it, and it is not protected or on the keep list (codex/*,
+#     *revenuecat*, release/*, staging*, archive/* ...). A daily sweep catches any it missed.
+#     Older merged branches are cleared only when you run this workflow by hand with "backlog".
+# It never merges, deploys, approves a deployment, deletes an environment, or reads a secret's
+# value into a log. Production deploys keep the production environment's Approve gate.
+
+on:
+  pull_request:
+    types: [closed]
+  schedule:
+    - cron: "7 12 * * *"
+  # After each production deploy finishes, refresh the report (and, for a deploy that failed
+  # after going live, propose a revert).
+  workflow_run:
+    workflows: ["CyberJudah signed iPhone store build", "CyberJudah signed Android store build", "Publish Expo Production Update"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      task:
+        description: "What to run"
+        type: choice
+        options: [health, branches]
+        default: health
+      backlog:
+        description: "branches: include every merged branch, not only the last 14 days"
+        type: boolean
+        default: false
+      delete:
+        description: "branches: really delete (off = only list what would go)"
+        type: boolean
+        default: false
+
+permissions: {}
+
+concurrency:
+  group: custodian-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || github.event_name }}
+  cancel-in-progress: false
+
+jobs:
+  merged-branch:
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          # The custodian's own code always comes from the default branch, never from the PR.
+          ref: ${{ github.event.repository.default_branch }}
+          sparse-checkout: .github/custodian
+          persist-credentials: false
+      - name: Delete the merged branch if it is safe to
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: python3 .github/custodian/custodian.py branches mode=pr delete=true "branch=$HEAD_REF"
+
+  branches:
+    if: >-
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_dispatch' && inputs.task == 'branches')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          sparse-checkout: .github/custodian
+          persist-credentials: false
+      - name: Clean up merged branches
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          MODE: ${{ inputs.backlog && 'backlog' || 'recent' }}
+          # The daily run deletes recent merges on its own; a run by hand only lists unless "delete" is on.
+          DELETE: ${{ github.event_name == 'schedule' || inputs.delete }}
+        run: python3 .github/custodian/custodian.py branches "mode=$MODE" "delete=$DELETE"
+
+  health:
+    # Runs after the sweep on the daily run (whatever the sweep's result), on its own otherwise.
+    needs: [branches]
+    if: >-
+      ${{ !cancelled() && (
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_dispatch' && inputs.task == 'health') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.event != 'pull_request')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+      deployments: read
+      issues: write
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          sparse-checkout: .github/custodian
+          persist-credentials: false
+      - name: Update the Deployment health issue
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          # true/false only: the expression is evaluated by GitHub, so no value reaches the runner.
+          CUSTODIAN_SECRETS_PRESENT: |
+            {
+              "IOS_STAGING_CERTIFICATE_BASE64": ${{ secrets.IOS_STAGING_CERTIFICATE_BASE64 != '' }},
+              "IOS_STAGING_CERTIFICATE_PASSWORD": ${{ secrets.IOS_STAGING_CERTIFICATE_PASSWORD != '' }},
+              "IOS_STAGING_PROFILE_BASE64": ${{ secrets.IOS_STAGING_PROFILE_BASE64 != '' }},
+              "ANDROID_STAGING_KEYSTORE_BASE64": ${{ secrets.ANDROID_STAGING_KEYSTORE_BASE64 != '' }},
+              "ANDROID_STAGING_KEYSTORE_PASSWORD": ${{ secrets.ANDROID_STAGING_KEYSTORE_PASSWORD != '' }},
+              "OTA_PUBLISH_TOKEN": ${{ secrets.OTA_PUBLISH_TOKEN != '' }},
+              "SENTRY_AUTH_TOKEN": ${{ secrets.SENTRY_AUTH_TOKEN != '' }}
+            }
+        run: python3 .github/custodian/custodian.py health
