@@ -18,6 +18,8 @@ import AskSourceCards from './AskSourceCards'
 import AskStudyCards from './AskStudyCards'
 import AskVerseComparison from './AskVerseComparison'
 import { askStudyCardsData } from './askStudyCardsData'
+import { askStudyWidgets, citedNumbers } from './askStudyWidgets'
+import StudyWidget from './widgets/StudyWidget'
 import { linkedAnswer, type ChatTurn } from './cyberJudahConversations'
 import { sourceLink, type CyberJudahSource } from './cyberJudahAsk'
 import { STUDY_DESTINATIONS, studyDestinations, type StudyDestination } from './askStudyNavigation'
@@ -223,6 +225,23 @@ export function isInteractiveStudySafe(program: string, sources: CyberJudahSourc
   }
 }
 
+/** Bible Strong's own assistant cards (person, place, Strong's word, Timeline, Nave) for the
+ * sources the answer cites, shown once the answer is complete. */
+function BibleStrongCards({ turn, streaming }: { turn: ChatTurn; streaming: boolean }) {
+  if (streaming) return null
+  const widgets = askStudyWidgets(turn.sources, citedNumbers(`${turn.ui ?? ''}\n${turn.answer ?? ''}`))
+  if (!widgets.length) return null
+  return (
+    <Box className="mt-4 gap-3">
+      {widgets.map(widget => (
+        <StudyBoundary key={widget.id} fallback={null}>
+          <StudyWidget widget={widget} />
+        </StudyBoundary>
+      ))}
+    </Box>
+  )
+}
+
 class StudyBoundary extends Component<
   { children: ReactNode; fallback: ReactNode },
   { failed: boolean }
@@ -260,6 +279,7 @@ export default function AskInteractiveAnswer({
           }}
         />
       )}
+      <BibleStrongCards turn={turn} streaming={streaming} />
       <AskStudyCards turn={turn} streaming={streaming} />
     </>
   )
@@ -283,6 +303,7 @@ export default function AskInteractiveAnswer({
           publishObservability={false}
         />
       </StudyBoundary>
+      <BibleStrongCards turn={turn} streaming={streaming} />
     </StudyContext.Provider>
   )
 }
