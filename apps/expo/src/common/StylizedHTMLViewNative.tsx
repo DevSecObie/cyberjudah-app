@@ -5,7 +5,6 @@ import { View } from 'react-native'
 import type { HTMLViewLinkPayload } from './htmlContentTypes'
 import {
   cleanReadingHTML,
-  readingHtmlClassStyles,
   readingHtmlStyles,
   type ReadingColors,
   type ReadingTypography,
@@ -38,7 +37,6 @@ export default function StylizedHTMLViewNative({
           source={{ html: content }}
           baseStyle={{ ...typography, color: colors.text }}
           tagsStyles={readingHtmlStyles(typography, colors)}
-          classesStyles={readingHtmlClassStyles(typography, colors)}
           enableUserAgentStyles={false}
           enableExperimentalMarginCollapsing
           defaultTextProps={{ selectable: true, allowFontScaling: false }}

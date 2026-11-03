@@ -1,1 +1,0 @@
-- Bishops' commentary (look A, approved by the owner 2026-11-02): the verse number and verse words in gold, as in the class notes (darker gold on light themes), each precept set off by a gold rule with its scripture quieter, and the class line closing each entry smaller and set apart. Needs the matching server change (cyberjudah-telegram, branch claude/project-thread-wwy0xi).

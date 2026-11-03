@@ -113,12 +113,10 @@ const decodeSerializedComments = (value: string): SerializedCommentaryChapter =>
       throw new Error('COMMENTARY_CHAPTER_INVALID')
     }
     // CyberJudah serves several teachings on one verse as a list of sections; they read in order.
-    // Each stays its own section (split again at the rule), so a teaching on a range of verses
-    // keeps its range and the id the reading index gave it, instead of running into the next.
     const entries = Object.entries(decoded).map(([verse, content]) => [
       verse,
       Array.isArray(content) && content.every(part => typeof part === 'string')
-        ? content.join('<hr>')
+        ? content.join('')
         : content,
     ])
     if (entries.some(([verse, content]) => !/^\d+$/u.test(verse) || typeof content !== 'string')) {
