@@ -11,6 +11,9 @@ jest.mock('expo-router', () => ({
   useRouter: () => mockRouter,
   useNavigation: () => mockNavigation,
 }))
+jest.mock('expo-router/react-navigation', () => ({
+  NavigationRouteContext: jest.requireActual('react').createContext(undefined),
+}))
 jest.mock('~navigation/pageTransition', () => ({
   navigateWithPageTransition: (...args: [string, () => void]) => mockTransition(...args),
 }))
@@ -21,6 +24,7 @@ jest.mock('react-native', () => {
   return {
     TouchableOpacity: (props: Record<string, unknown>) =>
       ReactModule.createElement('TouchableOpacity', props),
+    Platform: { OS: 'ios' },
     StyleSheet: { flatten: (style: unknown) => style },
   }
 })
