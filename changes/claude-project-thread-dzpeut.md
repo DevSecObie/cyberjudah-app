@@ -1,3 +1,4 @@
 - First-run offline setup offers the classes: "The classes" (the notes of every published class, searchable offline) is listed first in the Explore folder, checked with the KJV by default, and downloads beside the other resources.
 - Biblical entities and The Jewish Encyclopedia are now offered in the offline setup: the entities module installs on its own, and dictionaries install without the shared index this catalog does not publish.
 - The class library download estimate is 61 MB (was 56 MB).
+- An English Strong's lexicon is published for offline use (strong_lexicon.simple-en.sqlite, built by scripts/build-cyberjudah-strong-lexicon.mjs from the same Strong's dictionaries the server reads online). The "Understand the words" folder now offers it and the KJV with Strong's numbers. The "Original languages" folder stays empty until an original-language Bible is published.

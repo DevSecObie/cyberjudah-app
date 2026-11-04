@@ -460,28 +460,32 @@ const isPublishedSelection = (selection: OnboardingResourceSelection): boolean =
 const isPublishedOption = (option: OfflineSetupOption): boolean =>
   option.selections.every(isPublishedSelection)
 
+const onlyPublishedSections = (sections: OfflineSetupSection[]): OfflineSetupSection[] =>
+  sections
+    .map(section => ({
+      ...section,
+      options: section.options.filter(isPublishedOption),
+      groups: section.groups
+        ?.map(group => ({ ...group, options: group.options.filter(isPublishedOption) }))
+        .filter(group => group.options.length > 0),
+    }))
+    .filter(section => section.options.length > 0 || section.groups?.length)
+
 export const getOfflineSetupFolderSections = (
   folderId: OfflineSetupFolderId,
   lang: ResourceLanguage
 ): OfflineSetupSection[] => {
   if (IS_CYBERJUDAH) {
     if (folderId === 'read-bible') return flattenResourceSections(getReadableBibleSections(lang))
-    // The CyberJudah publication has no offline lexicon or original-language dataset yet.
-    // Keep the upstream folders and only offer complete, published download choices.
-    if (folderId === 'understand-words') return []
-    if (folderId === 'original-languages') return []
-    return getExploreSections(lang)
-      .map(section => ({
-        ...section,
-        options: section.options.filter(isPublishedOption),
-        groups: section.groups
-          ?.map(group => ({
-            ...group,
-            options: group.options.filter(isPublishedOption),
-          }))
-          .filter(group => group.options.length > 0),
-      }))
-      .filter(section => section.options.length > 0 || section.groups?.length)
+    // Keep the upstream folders and offer only the download choices this catalog publishes.
+    if (folderId === 'understand-words')
+      return onlyPublishedSections(flattenResourceSections(getStrongSections(lang)))
+    // Offered once this build carries an original-language Bible.
+    if (folderId === 'original-languages')
+      return versions.BHG
+        ? onlyPublishedSections(flattenResourceSections(getOriginalLanguageSections(lang)))
+        : []
+    return onlyPublishedSections(getExploreSections(lang))
   }
   switch (folderId) {
     case 'read-bible':

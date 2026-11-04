@@ -89,4 +89,15 @@ describe('CyberJudah offline setup', () => {
       options.some(option => option.id === 'dictionary:jewish-encyclopedia:JEWISH_ENCYCLOPEDIA:en')
     ).toBe(true)
   })
+
+  it('offers the English Strong lexicon and the KJV with Strong numbers to understand the words', () => {
+    const options = loadPresets()
+      .getOfflineSetupFolderSections('understand-words', 'en')
+      .flatMap(section => section.options)
+      .map(option => option.id)
+
+    expect(options).toContain('strong-lexicon:simple-en')
+    expect(options).toContain('bible-strong:KJV')
+    expect(options).not.toContain('strong-lexicon:core')
+  })
 })

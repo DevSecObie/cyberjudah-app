@@ -2,7 +2,7 @@
   "format": "bible-strong-mobile-resource-catalog",
   "schemaVersion": 1,
   "generatedAt": "2026-10-30T03:32:29.671Z",
-  "resourceCount": 6,
+  "resourceCount": 7,
   "resources": {
     "bible:KJV": {
       "id": "bible:KJV",
@@ -131,6 +131,27 @@
       "installedBytes": 65773568,
       "peakInstallationBytes": 154159670,
       "strategy": "archive-extract"
+    },
+    "strong-lexicon:simple-en": {
+      "id": "strong-lexicon:simple-en",
+      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/databases/strong_lexicon.simple-en.sqlite.zip?sha256=f8679c9c11d440d4fe17988156fd3e90b7529044b93f31d54bc1396863a5b04b",
+      "file": "databases/strong_lexicon.simple-en.sqlite.zip",
+      "entry": "strong_lexicon.simple-en.sqlite",
+      "entries": {
+        "canonical": {
+          "entry": "strong_lexicon.simple-en.sqlite",
+          "sha256": "d35640d5be903b18ac510d30f5b445a7b1a84679efad6945ec385d88fd7b4646",
+          "bytes": 4218880
+        }
+      },
+      "archiveSha256": "f8679c9c11d440d4fe17988156fd3e90b7529044b93f31d54bc1396863a5b04b",
+      "archiveBytes": 1329091,
+      "contentSha256": "d35640d5be903b18ac510d30f5b445a7b1a84679efad6945ec385d88fd7b4646",
+      "contentBytes": 4218880,
+      "installedBytes": 4218880,
+      "peakInstallationBytes": 9766851,
+      "strategy": "archive-extract",
+      "resourceRevision": "cj-strong-lexicon-simple-en-56322e6946d5ea24f1fa8228"
     }
   }
 }
