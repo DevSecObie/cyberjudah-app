@@ -11,6 +11,7 @@ import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
 import { useRecordHistory } from '~features/history/useRecordHistory'
 import { longDate } from '~features/notesExport/notePdf'
+import ClassVideoEmbed from '~features/passageMediaLibrary/ClassVideoEmbed'
 import { LinkRow, Section } from '~features/publishedNotes/parts'
 import { useOpenSiteLink } from '~features/publishedNotes/siteLinks'
 import { resolveFontFamily } from '~themes/styleValues'
@@ -110,21 +111,29 @@ const BookScreen = () => {
           {readings.length > 0 && (
             <Section title="Read in class">
               {(allReadings ? readings : readings.slice(0, READINGS_FIRST)).map(reading => (
-                <LinkRow
-                  key={`${reading.video}${reading.t}`}
-                  meta={[longDate(reading.date), reading.teacher, `from ${reading.ts}`]
-                    .filter(Boolean)
-                    .join(' · ')}
-                  title={reading.title}
-                  sub={pageLabel(data, reading.vol, reading.page)}
-                  onPress={() =>
-                    openMoment({
-                      video: reading.video,
-                      t: reading.t,
-                      note: reading.url ?? undefined,
-                    })
-                  }
-                />
+                // The class plays right here from the moment it read the book; the caption opens it.
+                <Box key={`${reading.video}${reading.t}`} className="mb-[16px]">
+                  <ClassVideoEmbed
+                    videoId={reading.video}
+                    start={reading.t}
+                    title={reading.title}
+                    meta={[
+                      longDate(reading.date),
+                      reading.teacher,
+                      `from ${reading.ts}`,
+                      pageLabel(data, reading.vol, reading.page),
+                    ]
+                      .filter(Boolean)
+                      .join(' · ')}
+                    onOpenClass={() =>
+                      openMoment({
+                        video: reading.video,
+                        t: reading.t,
+                        note: reading.url ?? undefined,
+                      })
+                    }
+                  />
+                </Box>
               ))}
               {!allReadings && readings.length > READINGS_FIRST && (
                 <TouchableBox accessibilityRole="button" onPress={() => setAllReadings(true)}>

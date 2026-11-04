@@ -7,6 +7,7 @@ import Loading from '~common/Loading'
 import Box, { HStack, TouchableBox, VStack, SafeAreaBox } from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import { longDate } from '~features/notesExport/notePdf'
+import ClassVideoEmbed from '~features/passageMediaLibrary/ClassVideoEmbed'
 import { useOpenSiteLink } from '~features/publishedNotes/siteLinks'
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme } from '~themes/ThemeProvider'
@@ -87,27 +88,28 @@ const BookChapterScreen = () => {
                   ) : null}
                 </HStack>
                 {page.reads.map(reading => (
-                  <TouchableBox
+                  // The class plays right here from the moment it read this page.
+                  <ClassVideoEmbed
                     key={`${reading.video}${reading.t}`}
-                    accessibilityRole="button"
-                    onPress={() =>
+                    videoId={reading.video}
+                    start={reading.t}
+                    title={reading.title}
+                    meta={[
+                      'Read in class',
+                      longDate(reading.date),
+                      reading.teacher,
+                      `from ${reading.ts}`,
+                    ]
+                      .filter(Boolean)
+                      .join(' · ')}
+                    onOpenClass={() =>
                       openMoment({
                         video: reading.video,
                         t: reading.t,
                         note: reading.url ?? undefined,
                       })
                     }
-                    className="rounded-[10px] px-[12px] py-[8px]"
-                    style={{ backgroundColor: 'rgba(89, 131, 240, 0.08)' }}
-                  >
-                    <Text className="text-primary text-[12px] font-bold">
-                      Read in class ·{' '}
-                      {[longDate(reading.date), reading.teacher, `from ${reading.ts}`]
-                        .filter(Boolean)
-                        .join(' · ')}
-                    </Text>
-                    <Text className="text-[14px]">{reading.title}</Text>
-                  </TouchableBox>
+                  />
                 ))}
                 <Text selectable className="text-[16px] leading-[25px]">
                   {page.text}
