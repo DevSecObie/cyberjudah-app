@@ -1,4 +1,5 @@
 import ReadingReminders from '~features/daily-reading/ReadingReminders'
+import NewClassAlerts from '~features/newClassAlerts/NewClassAlerts'
 import AssistantLauncher from '~features/study-assistant/AssistantLauncher'
 import WorkspaceLayout from '~features/app-switcher/WorkspaceLayout'
 import { SheetProvider } from '~common/sheet'
@@ -66,6 +67,7 @@ const PostMigrationStartup = ({ children }: { children: ReactNode }) => {
     <>
       {children}
       <ReadingReminders />
+      <NewClassAlerts />
       {resourcesReady && <DeferredVerseOfTheDayPrefetch />}
       {resourcesReady && <ClassIndexKeeper />}
     </>
