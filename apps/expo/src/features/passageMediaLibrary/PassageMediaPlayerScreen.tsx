@@ -81,7 +81,7 @@ const PassageMediaPlayerScreen = () => {
           providerId: video,
           title: videoTitle ?? '',
           durationSeconds: 0,
-          attributionLabel: 'CyberJudah',
+          attributionLabel: '',
         } as unknown as NonNullable<ReturnType<typeof getPassageMediaById>>)
       : null
   // A class's notes come from the class library, even when the catalog also lists the video.
