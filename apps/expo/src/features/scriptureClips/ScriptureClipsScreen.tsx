@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   FlatList,
   Pressable,
+  Share,
   StyleSheet,
   Text,
   View,
@@ -12,11 +13,12 @@ import {
 import { SystemBars } from 'react-native-edge-to-edge'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useSelector } from 'react-redux'
-import Sheet from '~common/ModalSheet'
-import { SheetScrollView, type SheetRef } from '~common/sheet'
+import { Sheet, SheetView, type SheetRef } from '~common/sheet'
 import { FeatherIcon } from '~common/ui/Icon'
 import ThemedText from '~common/ui/Text'
 import dayData from '~assets/cyberjudah/scripture-clips/genesis-1-4.json'
+import ActionItem from '~features/bible/SelectedVersesModal/components/ActionItem'
+import ActionsLayout from '~features/bible/SelectedVersesModal/components/ActionsLayout'
 import { formatPassageMediaDuration, getPassageMediaEmbedUrl } from '~features/bible/passageMedia'
 import ClassVideoFrame, {
   type ClassVideoFrameHandle,
@@ -240,9 +242,9 @@ const ScriptureClipsScreen = () => {
           {clip?.c}:{clip?.v}
         </Text>
       </View>
-      <Sheet ref={sheet} modalTitle={sheetClip ? `${day.book} ${sheetClip.c}:${sheetClip.v}` : ''}>
-        <SheetScrollView>
-          {sheetClip && (
+      <Sheet ref={sheet} backdrop={false}>
+        {sheetClip && (
+          <SheetView style={{ flex: 0, paddingTop: 10 }}>
             <View style={styles.sheetBody}>
               <ThemedText style={styles.sheetTitle}>
                 {day.book} {sheetClip.c}:{sheetClip.v}
@@ -276,25 +278,38 @@ const ScriptureClipsScreen = () => {
                   )}
                 </Pressable>
               )}
-              <View style={styles.sheetActions}>
-                <Pressable
-                  style={styles.sheetButton}
-                  onPress={() => sheet.current?.dismissThen(() => open(chapterPath(sheetClip)))}
-                >
-                  <ThemedText style={styles.sheetButtonText}>Read chapter</ThemedText>
-                </Pressable>
-                <Pressable
-                  style={styles.sheetButton}
-                  onPress={() =>
-                    sheet.current?.dismissThen(() => open(`/study/${day.slug}/${sheetClip.c}`))
-                  }
-                >
-                  <ThemedText style={styles.sheetButtonText}>Study note</ThemedText>
-                </Pressable>
-              </View>
             </View>
-          )}
-        </SheetScrollView>
+            <ActionsLayout width={width}>
+              <ActionItem
+                name="book-open"
+                label="Chapter"
+                onPress={() => sheet.current?.dismissThen(() => open(chapterPath(sheetClip)))}
+              />
+              <ActionItem
+                name="file-text"
+                label="Study note"
+                onPress={() =>
+                  sheet.current?.dismissThen(() => open(`/study/${day.slug}/${sheetClip.c}`))
+                }
+              />
+              <ActionItem
+                name="play-circle"
+                label="Class"
+                onPress={() => sheet.current?.dismissThen(() => openClass(sheetClip))}
+              />
+              <ActionItem
+                name="share-2"
+                label="Share"
+                onPress={() =>
+                  Share.share({
+                    message: `${day.book} ${sheetClip.c}:${sheetClip.v} ${sheetClip.text}`,
+                  })
+                }
+              />
+            </ActionsLayout>
+            <View style={{ height: insets.bottom + 12 }} />
+          </SheetView>
+        )}
       </Sheet>
     </View>
   )
@@ -409,15 +424,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   pillText: { color: '#0b1624', fontWeight: '700', fontSize: 12, fontVariant: ['tabular-nums'] },
-  sheetActions: { flexDirection: 'row', gap: 10 },
-  sheetButton: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderRadius: 12,
-    backgroundColor: 'rgba(127,127,127,0.18)',
-  },
-  sheetButtonText: { fontSize: 14, fontWeight: '600' },
 })
 
 export default ScriptureClipsScreen
