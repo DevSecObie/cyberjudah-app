@@ -66,7 +66,7 @@ export const verseNumbers = (spec?: string | null): number[] => {
 }
 
 /** The Bishops' teaching comes first, then the Deacons', then the Captains', then the rest; Zakai's last. */
-const teacherRank = (teacher?: string | null) => {
+export const teacherRank = (teacher?: string | null) => {
   const name = teacher ?? ''
   if (/^bishop\b/i.test(name)) return 0
   if (/^deacon\b/i.test(name)) return 1
