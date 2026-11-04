@@ -52,7 +52,8 @@
         "ANDROID_GOOGLE_SERVICES_FILE": "./firebase/cyberjudah/google-services.json",
         "IOS_GOOGLE_SERVICES_FILE": "./firebase/cyberjudah/GoogleService-Info.plist",
         "EXPO_PUBLIC_ASK_PURCHASES_ENABLED": "false",
-        "CYBERJUDAH_APPLE_TEAM_ID": "M8DUMWBXLH"
+        "CYBERJUDAH_APPLE_TEAM_ID": "M8DUMWBXLH",
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
       }
     },
     "production": {
