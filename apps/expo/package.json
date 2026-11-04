@@ -3,7 +3,7 @@
   "version": "28.0.1",
   "main": "expo-router/entry",
   "scripts": {
-    "eas-build-pre-install": "corepack enable",
+    "eas-build-pre-install": "corepack enable && if [ \"$EAS_BUILD_PROFILE\" = production ]; then rm -f .env.production .env.staging .env.development; fi",
     "start": "expo start --dev-client",
     "update:staging": "dotenv -c staging -- sh -c 'EXPO_NO_BUNDLE_SPLITTING=true expo export --platform ios --platform android --source-maps --output-dir dist && open-ota publish --skip-export --dist dist --branch staging \"$@\" && sentry-expo-upload-sourcemaps dist' --",
     "update:rollback-to-embedded:staging": "dotenv -c staging -- open-ota rollback-to-embedded --branch staging",
