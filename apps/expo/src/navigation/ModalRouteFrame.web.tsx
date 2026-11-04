@@ -15,6 +15,7 @@ import { FeatherIcon } from '~common/ui/Icon'
 import { floatingShadow } from '~common/ui/surfaces'
 import { useWorkspaceRoutePanel, workspacePanelClosingAtom } from './useWorkspaceRoutePanel'
 import { WithoutWorkspaceHeaderInset } from '~features/app-switcher/workspaceHeaderInset'
+import WorkspacePanelResizer from './WorkspacePanelResizer.web'
 
 const ModalRouteFrame = ({ children }: { children: ReactNode }) => {
   const { enabled, open, panelWidth, reservedWidth, closeTarget } = useWorkspaceRoutePanel()
@@ -98,6 +99,7 @@ const ModalRouteFrame = ({ children }: { children: ReactNode }) => {
             <WithoutWorkspaceHeaderInset>{children}</WithoutWorkspaceHeaderInset>
           </Box>
         </Box>
+        {enabled && open && reservedWidth > 0 && <WorkspacePanelResizer panelWidth={panelWidth} />}
       </Box>
     </Box>
   )

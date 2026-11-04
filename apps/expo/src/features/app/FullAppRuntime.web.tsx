@@ -3,7 +3,11 @@ import { trackAnalyticsScreen } from '~helpers/analytics'
 import WorkspaceAnalytics from '~features/app-switcher/WorkspaceAnalytics.web'
 import ReferencePreviewHost from '~features/bibleReferencePreview/ReferencePreviewHost'
 import ConfirmDialogHost from '~common/ConfirmDialog/ConfirmDialogHost.web'
-import { useWorkspaceRoutePanel } from '~navigation/useWorkspaceRoutePanel'
+import { useAtomValue } from 'jotai'
+import {
+  useWorkspaceRoutePanel,
+  workspacePanelResizingAtom,
+} from '~navigation/useWorkspaceRoutePanel'
 import WorkspaceLayout from '~features/app-switcher/WorkspaceLayout'
 import * as Sentry from '@sentry/react-native'
 import { Stack, useLocalSearchParams, usePathname, useSegments } from 'expo-router'
@@ -52,6 +56,7 @@ const NavigationTracking = () => {
 
 const FullAppRuntime = ({ theme }: { theme: Theme }) => {
   const panel = useWorkspaceRoutePanel()
+  const panelResizing = useAtomValue(workspacePanelResizingAtom)
   useEffect(() => {
     void TrackPlayer.registerPlaybackService(() => PlaybackService)
   }, [])
@@ -72,7 +77,7 @@ const FullAppRuntime = ({ theme }: { theme: Theme }) => {
                       marginRight: panel.open ? panel.reservedWidth : 0,
                       ...{
                         transitionProperty: 'margin-right',
-                        transitionDuration: '240ms',
+                        transitionDuration: panelResizing ? '0ms' : '240ms',
                         transitionTimingFunction: 'cubic-bezier(0.2, 0, 0, 1)',
                       },
                     },

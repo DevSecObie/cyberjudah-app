@@ -1,0 +1,1 @@
+- Web: drag the side panel's edge to make it wider or narrower; double-click puts back the default width, and the browser remembers the width.
