@@ -109,6 +109,11 @@ const MigrationModal = () => {
         failedLabels || 'N/A'
       }\nErreur: ${progress.error || 'N/A'}\n\nMerci de votre aide.`
     )
+    // CyberJudah readers report problems on CyberJudah's own issue page, not to Bible Strong.
+    if (process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah') {
+      Linking.openURL('https://github.com/DevSecObie/cyberjudah-app/issues')
+      return
+    }
     Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`)
   }
 
