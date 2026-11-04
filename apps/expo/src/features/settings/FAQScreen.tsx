@@ -268,7 +268,13 @@ const FAQScreen = () => {
                   </Box>
                 </HStack>
                 <Button
-                  onPress={() => Linking.openURL('mailto:stephane@lestudio316.com')}
+                  onPress={() =>
+                    Linking.openURL(
+                      isCyberJudah
+                        ? 'https://github.com/DevSecObie/cyberjudah-app/issues'
+                        : 'mailto:stephane@lestudio316.com'
+                    )
+                  }
                   rightIcon={
                     <FeatherIcon
                       name="arrow-right"

@@ -9,8 +9,8 @@ export type {
 } from '@bible-strong/resource-catalog/commentaries'
 export const COMMENTARY_CATALOG: readonly CommentaryCatalogEntry[] =
   process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
-    ? // One commentary per Bishop, each holding only his own teaching from the classes (Obie,
-      // 2026-10-31). Other teachers follow once the Bishops' commentaries are complete.
+    ? // One commentary per Bishop, each holding only his own teaching from the classes
+      // (2026-10-31). Other teachers follow once the Bishops' commentaries are complete.
       (['Bishop Nathanyel', 'Bishop Yawasap', 'Bishop Kani'] as const).map(name => {
         const id = name.toLowerCase().replace(' ', '-')
         return {

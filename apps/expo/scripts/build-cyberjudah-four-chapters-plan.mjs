@@ -188,7 +188,7 @@ const fillVideos = (file, readAlong = false) => {
 }
 const fillSources = [
   fillVideos('four-chapters-a-day-videos-extra.tsv'),
-  // The channel's sessions read the chapters straight through, with no breakdown (Obie: "Read
+  // The channel's sessions read the chapters straight through, with no breakdown ("Read
   // along" options), so they are named that way.
   fillVideos('four-chapters-a-day-videos-channel.tsv', true),
 ]

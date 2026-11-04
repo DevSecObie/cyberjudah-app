@@ -61,7 +61,7 @@ export const howWeKnow = (person: CyberJudahPerson) =>
     (person[key] ?? []).filter(link => link?.id && link.name).map(link => ({ label, link }))
   )
 
-// Obie's class order (Bishops Nathanyel, Yawasap, Kani, Deacons, Captains; Zakai last), then the newest.
+// Class order (Bishops Nathanyel, Yawasap, Kani, Deacons, Captains; Zakai last), then the newest.
 const teacherRank = classTeacherRank
 export const orderTeachings = (taught: PersonTeaching[]) =>
   [...taught].sort(

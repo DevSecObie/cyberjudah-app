@@ -1,0 +1,1 @@
+- Repo text states each rule or source itself, without naming who asked for or approved it: code comments, one test name, the avatars README and changelogs reworded. No behavior changes.

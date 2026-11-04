@@ -1,6 +1,6 @@
 import { classTeacherRank } from '../classTeacherRank'
 
-test('the Bishops in Obie’s order, then Deacons, Captains, the rest, and Zakai last', () => {
+test('the Bishops in class order, then Deacons, Captains, the rest, and Zakai last', () => {
   const teachers = [
     'Zakai',
     'Captain Yahn',

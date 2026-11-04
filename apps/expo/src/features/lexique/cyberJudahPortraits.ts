@@ -1,6 +1,6 @@
 // Generated from DevSecObie/cyberjudah-telegram app/scripts/timeline-portraits.json: the approved
 // per-person portraits the Telegram app shows, for the People records with the same id. Its
-// Cain's line was taken down on 2026-10-26 and restored on 2026-10-29, as Obie chose; Naamah stays
+// Cain's line was taken down on 2026-10-26 and restored on 2026-10-29; Naamah stays
 // held back.
 /* eslint-disable */
 export const CYBERJUDAH_PORTRAITS: Record<string, number> = {
@@ -209,8 +209,8 @@ export const CYBERJUDAH_PORTRAITS: Record<string, number> = {
   'zillah-gen-4-19': require('~assets/images/people/zillah-gen-4-19.webp'),
   'jabal-gen-4-20': require('~assets/images/people/jabal-gen-4-20.webp'),
   'jubal-gen-4-21': require('~assets/images/people/jubal-gen-4-21.webp'),
-  // Generated in the CyberJudah People Avatars project but never hosted, added on 2026-10-29 as Obie
-  // directed, each given to the record its prompt describes.
+  // Generated in the CyberJudah People Avatars project but never hosted, added on 2026-10-29,
+  // each given to the record its prompt describes.
   'abidan-num-1-11': require('~assets/images/people/abidan-num-1-11.jpg'),
   'abinadab-1sa-31-2': require('~assets/images/people/abinadab-1sa-31-2.jpg'),
   'abiram-num-16-1': require('~assets/images/people/abiram-num-16-1.jpg'),

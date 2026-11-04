@@ -1,0 +1,1 @@
+- Help links (FAQ "Need help" and the data-migration error) open CyberJudah's issue page instead of emailing Bible Strong's developer.

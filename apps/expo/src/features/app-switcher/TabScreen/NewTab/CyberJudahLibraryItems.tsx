@@ -47,7 +47,7 @@ export const CYBERJUDAH_LIBRARY: LibraryEntry[] = [
     title: '4 Chapters',
     description: 'The daily reading plan',
     icon: 'file-text',
-    // Opens the 4 Chapters a Day plan itself (Obie's pick, 2026-11-03), not the list of notes.
+    // Opens the 4 Chapters a Day plan itself (since 2026-11-03), not the list of notes.
     pathname: '/plan?planId=cyberjudah-four-chapters-a-day',
   },
   {
