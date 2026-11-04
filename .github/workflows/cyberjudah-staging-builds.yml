@@ -17,6 +17,8 @@ jobs:
       CI: '1'
       EXPO_NO_TELEMETRY: '1'
       SENTRY_DISABLE_AUTO_UPLOAD: 'true'
+      # The web export peaks near 7 GB and runs out of memory at Node's default ~4 GB heap.
+      NODE_OPTIONS: --max-old-space-size=8192
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

@@ -1,0 +1,1 @@
+- CI: the staging web export gets an 8 GB Node heap, so it no longer runs out of memory.
