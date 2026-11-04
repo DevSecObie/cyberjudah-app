@@ -108,6 +108,20 @@ describe('CyberJudah offline setup', () => {
       .flatMap(section => section.options)
       .map(option => option.id)
 
-    expect(options).toEqual(['bible:BHG', 'bible-interlinear:en'])
+    expect(options).toEqual(['bible:BHG', 'strong-lexicon:resources', 'bible-interlinear:en'])
+  })
+
+  it('offers the Brown-Driver-Briggs Hebrew lexicon on its own to understand the words', () => {
+    const options = loadPresets()
+      .getOfflineSetupFolderSections('understand-words', 'en')
+      .flatMap(section => section.options)
+
+    expect(options.find(option => option.id === 'strong-lexicon:resources')).toMatchObject({
+      labelKey: 'offlineSetup.resources.hebrewDictionary',
+      selections: [{ kind: 'strong-lexicon', moduleId: 'resources' }],
+    })
+    expect(
+      options.find(option => option.id === 'strong-lexicon:resources')?.requires
+    ).toBeUndefined()
   })
 })

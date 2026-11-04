@@ -1287,6 +1287,8 @@
   "offlineSetup.option.greekDictionaryDescription": "Detailed classical Greek entries for Greek Strong entries.",
   "offlineSetup.resources.entities": "Biblical entities",
   "offlineSetup.option.entitiesDescription": "People, places, groups, and other entities connected to biblical words.",
+  "offlineSetup.resources.hebrewDictionary": "Hebrew dictionary (Brown-Driver-Briggs)",
+  "offlineSetup.option.hebrewDictionaryDescription": "The full Brown-Driver-Briggs entry for each Hebrew word, under its Strong's definition.",
   "offlineSetup.resources.classes": "The classes",
   "offlineSetup.option.classesDescription": "The notes of every published class, to read and search without a connection.",
   "offlineSetup.section.classes": "Classes",

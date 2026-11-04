@@ -105,8 +105,10 @@ const isCatalogEntry = (value: unknown): value is MobileResourceCatalogEntry => 
         (entry.id === 'strong-lexicon:core' ||
           entry.id === 'strong-lexicon:simple-fr' ||
           entry.id === 'strong-lexicon:simple-en' ||
-          // CyberJudah's People module stands alone (see requiresStrongLexiconCore).
-          (isCyberJudah && entry.id === 'strong-lexicon:entities') ||
+          // CyberJudah's People and Hebrew lexicon modules stand alone (see
+          // requiresStrongLexiconCore).
+          (isCyberJudah &&
+            (entry.id === 'strong-lexicon:entities' || entry.id === 'strong-lexicon:resources')) ||
           (typeof entry.coreRevision === 'string' && entry.coreRevision.length > 0)))) &&
     hasValidTextDeclaration(entry) &&
     isPositiveByteCount(entry.installedBytes) &&

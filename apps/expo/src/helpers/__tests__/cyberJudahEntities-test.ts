@@ -89,7 +89,7 @@ describe('CyberJudah People module', () => {
       const { validateStrongLexiconModuleDatabase } = await import('../strongLexiconModules')
       const { requiresStrongLexiconCore } = await import('../strongLexiconCore')
       expect(requiresStrongLexiconCore('entities')).toBe(false)
-      expect(requiresStrongLexiconCore('resources')).toBe(true)
+      expect(requiresStrongLexiconCore('resources')).toBe(false)
       await expect(
         validateStrongLexiconModuleDatabase('entities', adapter, async () => ({
           status: 'missing',

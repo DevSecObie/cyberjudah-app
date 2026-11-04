@@ -350,6 +350,7 @@ def write_zip(path, name, data):
     with zipfile.ZipFile(path, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         info = zipfile.ZipInfo(name, ZIP_DATE)
         info.compress_type = zipfile.ZIP_DEFLATED
+        info.external_attr = 0o100644 << 16  # a regular file, as the app's archive check requires
         archive.writestr(info, data)
     return path.read_bytes()
 

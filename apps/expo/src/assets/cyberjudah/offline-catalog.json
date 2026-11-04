@@ -2,7 +2,7 @@
   "format": "bible-strong-mobile-resource-catalog",
   "schemaVersion": 1,
   "generatedAt": "2026-10-30T03:32:29.671Z",
-  "resourceCount": 9,
+  "resourceCount": 10,
   "resources": {
     "bible:KJV": {
       "id": "bible:KJV",
@@ -134,7 +134,7 @@
     },
     "strong-lexicon:simple-en": {
       "id": "strong-lexicon:simple-en",
-      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/databases/strong_lexicon.simple-en.sqlite.zip?sha256=f8679c9c11d440d4fe17988156fd3e90b7529044b93f31d54bc1396863a5b04b",
+      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/databases/strong_lexicon.simple-en.sqlite.zip?sha256=459c5ddab56ed876d0ac41c62f588c0fa810fec7bf767ce8207bac2b75a4ebc4",
       "file": "databases/strong_lexicon.simple-en.sqlite.zip",
       "entry": "strong_lexicon.simple-en.sqlite",
       "entries": {
@@ -144,7 +144,7 @@
           "bytes": 4218880
         }
       },
-      "archiveSha256": "f8679c9c11d440d4fe17988156fd3e90b7529044b93f31d54bc1396863a5b04b",
+      "archiveSha256": "459c5ddab56ed876d0ac41c62f588c0fa810fec7bf767ce8207bac2b75a4ebc4",
       "archiveBytes": 1329091,
       "contentSha256": "d35640d5be903b18ac510d30f5b445a7b1a84679efad6945ec385d88fd7b4646",
       "contentBytes": 4218880,
@@ -155,7 +155,7 @@
     },
     "bible:BHG": {
       "id": "bible:BHG",
-      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/BHG.json.zip?sha256=14b3731f4e5e461b16c9fdd3ebff36d0aa4079b76810f37f313de37515d89636",
+      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/BHG.json.zip?sha256=ab91f7c23a3e91732823ab2abf36205fcd3b90567f45f61d37f0acd19d5515bd",
       "file": "BHG.json.zip",
       "entry": "BHG.json",
       "entries": {
@@ -165,7 +165,7 @@
           "bytes": 9013920
         }
       },
-      "archiveSha256": "14b3731f4e5e461b16c9fdd3ebff36d0aa4079b76810f37f313de37515d89636",
+      "archiveSha256": "ab91f7c23a3e91732823ab2abf36205fcd3b90567f45f61d37f0acd19d5515bd",
       "archiveBytes": 1851335,
       "contentSha256": "6a64b1d4d8c9865e9d98d40cd359fdac762a42f1fbb0c620e70a6f526243d794",
       "contentBytes": 9013920,
@@ -177,7 +177,7 @@
     },
     "bible-interlinear:BHG:en": {
       "id": "bible-interlinear:BHG:en",
-      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/databases/bible-bhg-interlinear-en.sqlite.zip?sha256=e5c1fa20a1ef2ae604ef03b8f895833f3f78e5e366d767c98714c01b6098c10b",
+      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/databases/bible-bhg-interlinear-en.sqlite.zip?sha256=0f5bd77744659cc8f152bd3d76d7b318f30d3d69b5c5f8ea9417f8f3f51df407",
       "file": "databases/bible-bhg-interlinear-en.sqlite.zip",
       "entry": "bible-bhg-interlinear-en.sqlite",
       "entries": {
@@ -187,7 +187,7 @@
           "bytes": 37036032
         }
       },
-      "archiveSha256": "e5c1fa20a1ef2ae604ef03b8f895833f3f78e5e366d767c98714c01b6098c10b",
+      "archiveSha256": "0f5bd77744659cc8f152bd3d76d7b318f30d3d69b5c5f8ea9417f8f3f51df407",
       "archiveBytes": 14069755,
       "contentSha256": "0bb43b90b9bc799bad7942b9d4a845d00fb2b3dc6c9bca0843959cc206276ca4",
       "contentBytes": 37036032,
@@ -196,6 +196,27 @@
       "strategy": "archive-extract",
       "textRevision": "1eea4e4d68d6009562a0e1a09902070d9503b98f9deb23cb8aa9f65c00ac4467",
       "textSha256": "1eea4e4d68d6009562a0e1a09902070d9503b98f9deb23cb8aa9f65c00ac4467"
+    },
+    "strong-lexicon:resources": {
+      "id": "strong-lexicon:resources",
+      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/databases/strong_lexicon.resources.sqlite.zip?sha256=9f40acb68b3035a1e0315c8b09770d65e462eb2d86d24b60c7268e6486c50957",
+      "file": "databases/strong_lexicon.resources.sqlite.zip",
+      "entry": "strong_lexicon.resources.sqlite",
+      "entries": {
+        "canonical": {
+          "entry": "strong_lexicon.resources.sqlite",
+          "sha256": "fe3ff674e8430bc792a0b398f6f71678c8bd2e1faa82b96412d846a4823a9f5c",
+          "bytes": 3911680
+        }
+      },
+      "archiveSha256": "9f40acb68b3035a1e0315c8b09770d65e462eb2d86d24b60c7268e6486c50957",
+      "archiveBytes": 593546,
+      "contentSha256": "fe3ff674e8430bc792a0b398f6f71678c8bd2e1faa82b96412d846a4823a9f5c",
+      "contentBytes": 3911680,
+      "installedBytes": 3911680,
+      "peakInstallationBytes": 8416906,
+      "strategy": "archive-extract",
+      "resourceRevision": "cj-strong-lexicon-resources-62d693464d0f06c08deb7897"
     }
   }
 }

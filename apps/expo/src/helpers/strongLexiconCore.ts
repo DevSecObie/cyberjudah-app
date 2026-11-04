@@ -19,7 +19,15 @@ export const cyberJudahEntitiesArtifact: CatalogArtifact | undefined =
     ? (cyberJudahCatalog.resources as Record<string, CatalogArtifact>)['strong-lexicon:entities']
     : undefined
 
+// CyberJudah's Hebrew lexicon (Brown-Driver-Briggs) is tied to the entries of its own English
+// Strong's lexicon, so it too stands alone.
+export const cyberJudahResourcesArtifact: CatalogArtifact | undefined =
+  process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+    ? (cyberJudahCatalog.resources as Record<string, CatalogArtifact>)['strong-lexicon:resources']
+    : undefined
+
 /** Whether a lexicon module is built against, and installed after, the lexicon core. */
 export const requiresStrongLexiconCore = (moduleId: StrongLexiconModuleId): boolean =>
   !isStandaloneStrongModule(moduleId) &&
-  !(moduleId === 'entities' && cyberJudahEntitiesArtifact?.resourceRevision)
+  !(moduleId === 'entities' && cyberJudahEntitiesArtifact?.resourceRevision) &&
+  !(moduleId === 'resources' && cyberJudahResourcesArtifact?.resourceRevision)

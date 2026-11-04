@@ -80,6 +80,28 @@ const ENTITIES_SELECTIONS: OnboardingResourceSelection[] = ENTITIES_REQUIRE_CORE
   : [{ kind: 'strong-lexicon', moduleId: 'entities' }]
 const ENTITIES_REQUIRES = ENTITIES_REQUIRE_CORE ? ['strong-lexicon:core'] : undefined
 
+// CyberJudah's dictionary module is its Hebrew lexicon, read with its own Strong's lexicon.
+const RESOURCES_REQUIRE_CORE = requiresStrongLexiconCore('resources')
+const RESOURCES_OPTION: OfflineSetupOption = RESOURCES_REQUIRE_CORE
+  ? {
+      id: 'strong-lexicon:resources',
+      label: '',
+      labelKey: 'offlineSetup.resources.greekDictionary',
+      descriptionKey: 'offlineSetup.option.greekDictionaryDescription',
+      requires: ['strong-lexicon:core'],
+      selections: [
+        { kind: 'strong-lexicon', moduleId: 'core' },
+        { kind: 'strong-lexicon', moduleId: 'resources' },
+      ],
+    }
+  : {
+      id: 'strong-lexicon:resources',
+      label: '',
+      labelKey: 'offlineSetup.resources.hebrewDictionary',
+      descriptionKey: 'offlineSetup.option.hebrewDictionaryDescription',
+      selections: [{ kind: 'strong-lexicon', moduleId: 'resources' }],
+    }
+
 const getBibleLabel = (versionId: string, lang: ResourceLanguage): string => {
   const version = versions[versionId]
   return lang === 'en' ? (version.name_en ?? version.name) : version.name
@@ -285,19 +307,23 @@ const getStrongSections = (lang: ResourceLanguage): OfflineSetupSection[] => {
           descriptionKey: 'offlineSetup.option.strongLexiconDescription',
           selections: [{ kind: 'strong-lexicon', moduleId: 'core' }],
         },
-        ...(['resources', 'entities'] as const).map(moduleId => ({
-          id: `strong-lexicon:${moduleId}`,
-          label: '',
-          labelKey:
-            moduleId === 'resources'
-              ? 'offlineSetup.resources.greekDictionary'
-              : 'offlineSetup.resources.entities',
-          requires: ['strong-lexicon:core'],
-          selections: [
-            { kind: 'strong-lexicon' as const, moduleId: 'core' as const },
-            { kind: 'strong-lexicon' as const, moduleId },
-          ],
-        })),
+        ...(['resources', 'entities'] as const).map(moduleId =>
+          moduleId === 'resources' && !RESOURCES_REQUIRE_CORE
+            ? RESOURCES_OPTION
+            : {
+                id: `strong-lexicon:${moduleId}`,
+                label: '',
+                labelKey:
+                  moduleId === 'resources'
+                    ? 'offlineSetup.resources.greekDictionary'
+                    : 'offlineSetup.resources.entities',
+                requires: ['strong-lexicon:core'],
+                selections: [
+                  { kind: 'strong-lexicon' as const, moduleId: 'core' as const },
+                  { kind: 'strong-lexicon' as const, moduleId },
+                ],
+              }
+        ),
       ],
     },
     ...getBibleFolderCatalogSections('strong', lang).map(section => ({
@@ -411,17 +437,7 @@ const getOriginalLanguageSections = (lang: ResourceLanguage): OfflineSetupSectio
         descriptionKey: 'offlineSetup.option.strongLexiconDescription',
         selections: [{ kind: 'strong-lexicon', moduleId: 'core' }],
       },
-      {
-        id: 'strong-lexicon:resources',
-        label: '',
-        labelKey: 'offlineSetup.resources.greekDictionary',
-        descriptionKey: 'offlineSetup.option.greekDictionaryDescription',
-        requires: ['strong-lexicon:core'],
-        selections: [
-          { kind: 'strong-lexicon', moduleId: 'core' },
-          { kind: 'strong-lexicon', moduleId: 'resources' },
-        ],
-      },
+      RESOURCES_OPTION,
     ],
   },
   {
