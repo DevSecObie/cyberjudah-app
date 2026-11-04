@@ -452,6 +452,12 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
               <Text className="text-[13px] text-grey">{t('app.deleteAccount')}</Text>
             </LinkItem>
           )}
+          {isCyberJudah && (
+            <Text className="text-[13px] text-grey py-[8px]">
+              CyberJudah is an independent study project. It is not affiliated with, endorsed by, or
+              speaking for Israel United in Christ (IUIC).
+            </Text>
+          )}
         </Box>
 
         {__DEV__ && Platform.OS !== 'web' && (

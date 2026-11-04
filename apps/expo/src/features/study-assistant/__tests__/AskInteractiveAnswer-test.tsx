@@ -26,6 +26,7 @@ jest.mock('../AssistantMarkdown', () => ({ __esModule: true, default: mockHost('
 jest.mock('../AskSourceCards', () => ({ __esModule: true, default: mockHost('Sources') }))
 jest.mock('../AskStudyCards', () => ({ __esModule: true, default: mockHost('Legacy') }))
 jest.mock('../AskVerseComparison', () => ({ __esModule: true, default: mockHost('Scriptures') }))
+jest.mock('../widgets/StudyWidget', () => ({ __esModule: true, default: mockHost('Card') }))
 
 const turn: ChatTurn = {
   id: 'a',
@@ -120,4 +121,25 @@ it('shows a supported factual answer without an automatic teacher disclaimer or 
   )
   expect(JSON.stringify(tree.toJSON())).not.toMatch(/askStudy\.(noTeaching|teaching|context)/)
   await act(async () => tree.unmount())
+})
+
+it("shows Bible Strong's own card for a cited person once the answer is complete", async () => {
+  let tree!: ReactTestRenderer
+  await act(async () => {
+    tree = create(<AskInteractiveAnswer turn={turn} streaming />)
+  })
+  expect(tree.root.findAll(n => n.type === ('Card' as never))).toHaveLength(0)
+  await act(async () => {
+    tree.update(<AskInteractiveAnswer turn={turn} streaming={false} />)
+  })
+  const cards = tree.root.findAll(n => n.type === ('Card' as never))
+  expect(cards.map(c => c.props.widget)).toEqual([
+    {
+      id: 'w1',
+      kind: 'person_profile',
+      title: 'Abraham',
+      entityKey: 'abraham-gen-11-26',
+      language: 'en',
+    },
+  ])
 })
