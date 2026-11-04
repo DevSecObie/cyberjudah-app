@@ -13,6 +13,7 @@ import {
   createInterlinearSidecarDownloadItem,
   createStrongSidecarDownloadItem,
 } from '~helpers/downloadItemFactory'
+import { getInterlinearBiblePublication } from '~helpers/interlinearBiblePublications'
 
 export interface UnifiedDownloadItem {
   id: string
@@ -46,23 +47,26 @@ export function buildBibleItems(
     if (version.id === 'BHG') {
       return [
         base,
-        ...(['fr', 'en'] as ResourceLanguage[]).map(locale => {
-          return {
-            id: createOfflineCopyId({
-              kind: 'interlinear-index',
-              versionId: 'BHG',
-              language: locale,
-            }),
-            name: `${t('downloads.interlinearIndexName')} · ${t(
-              `versionCatalog.language.${locale}`
-            )}`,
-            subtitle: t('downloads.interlinearAttribution'),
-            parentItemId: base.id,
-            estimatedSize: createInterlinearSidecarDownloadItem(locale).estimatedSize,
-            lang: 'other' as const,
-            searchText: `BHG STEP interlinear ${locale}`.toLowerCase(),
+        // Only the indexes the catalog publishes: CyberJudah publishes an English index alone.
+        ...(Object.keys(getInterlinearBiblePublication().indexes) as ResourceLanguage[]).map(
+          locale => {
+            return {
+              id: createOfflineCopyId({
+                kind: 'interlinear-index',
+                versionId: 'BHG',
+                language: locale,
+              }),
+              name: `${t('downloads.interlinearIndexName')} · ${t(
+                `versionCatalog.language.${locale}`
+              )}`,
+              subtitle: t('downloads.interlinearAttribution'),
+              parentItemId: base.id,
+              estimatedSize: createInterlinearSidecarDownloadItem(locale).estimatedSize,
+              lang: 'other' as const,
+              searchText: `BHG STEP interlinear ${locale}`.toLowerCase(),
+            }
           }
-        }),
+        ),
       ]
     }
 

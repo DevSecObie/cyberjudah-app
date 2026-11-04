@@ -6,3 +6,8 @@
 - A Hebrew lexicon is published for offline use: the Brown-Driver-Briggs entry of each Hebrew Strong's number (transcription by the Open Scriptures Hebrew Bible Project), shown under the Strong's definition and offered in "Understand the words" and "Original languages". It stands alone, like the People module, without Bible Strong's lexicon core.
 - The offline lexicon archives are written as regular files, which the app's archive check requires before installing.
 - The CyberJudah offline setup shows no counts: a folder reads "Chosen" or "Tap to choose", and its review line gives only the size. The "Original languages" folder describes what it holds (the Hebrew and Greek texts, the King James English under each word, and the Brown-Driver-Briggs Hebrew dictionary).
+
+## Downloads lists only published interlinear indexes
+
+- The Downloads screen lists a BHG interlinear index only for the languages the catalog publishes. CyberJudah publishes an English index, so no French row is offered.
+- Verified: full Jest suite (573 suites) and `tsc --noEmit` pass.
