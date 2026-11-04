@@ -67,32 +67,50 @@ def short_meaning(code):
     return re.sub(r'^(?:to|a|an|the)\s+', '', text.strip()).strip(' .')[:24]
 
 
+def kjv_renderings(code):
+    """The KJV renderings Strong's dictionary lists for a number, as plain words."""
+    text = re.sub(r'\[[^\]]*\]|\([^)]*\)|[+]', '', (strongs.get(code) or {}).get('kjv', ''))
+    out = []
+    for item in re.split(r'[,;.]', text):
+        item = re.sub(r'\s+', ' ', item).strip().lower()
+        if item and re.fullmatch(r"[a-z' -]+", item) and item not in out:
+            out.append(item)
+    return out
+
+
 def kjv_glosses():
-    """The rendering the KJV most often gives each Strong's number, when the KJV tags show it
-    clearly and the dictionary's own list of KJV renderings has that word."""
-    counts = defaultdict(Counter)
+    """The rendering the KJV gives each Strong's number: the phrase its KJV tags most often show,
+    when the dictionary's own list of KJV renderings has that word; else the listed rendering the
+    tagged verses use most; else the first listed rendering; else the dictionary's first meaning."""
+    counts, words_seen = defaultdict(Counter), defaultdict(Counter)
     for path in sorted((STRONGS / 'tags').glob('*.json')):
         for verses in json.loads(path.read_text()).values():
             for phrases in verses.values():
                 for phrase, codes in phrases:
+                    words = re.sub(r"[^\w'\- ]", '', phrase).lower().split()
+                    for raw in codes:
+                        words_seen[re.sub(r'^([HG])0*', r'\1', raw)].update(words)
                     if len(codes) != 1:
                         continue
                     code = re.sub(r'^([HG])0*', r'\1', codes[0])
-                    words = re.sub(r"[^\w'\- ]", '', phrase).lower().split()
                     while len(words) > 1 and words[0] in SMALL:
                         words = words[1:]
                     if words:
                         counts[code][' '.join(words[:3])] += 1
     glosses = {}
     for code in strongs:
+        listed = kjv_renderings(code)
         renderings = set(re.findall(r'[a-z]+', (strongs[code].get('kjv') or '').lower()))
         ranked = [(phrase, n) for phrase, n in counts[code].most_common()
                   if not renderings or all(w in renderings or w in SMALL for w in phrase.split())]
         total = sum(counts[code].values())
+        scored = sorted(listed, key=lambda item: -min(words_seen[code][w] for w in item.split()))
         if ranked and ranked[0][1] * 5 >= total:
             glosses[code] = ranked[0][0]
+        elif scored and min(words_seen[code][w] for w in scored[0].split()):
+            glosses[code] = scored[0]
         else:
-            glosses[code] = short_meaning(code)
+            glosses[code] = listed[0] if listed else short_meaning(code)
     glosses.update(FIXED)
     return glosses
 
