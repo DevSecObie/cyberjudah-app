@@ -1,1 +1,1 @@
-- Lexicon tab: Apocrypha verses (books 67 and on) now say "Word study for the Apocrypha is coming." instead of showing a blank tab. Obie approved for build 311 on 2026-11-02.
+- Lexicon tab: Apocrypha verses (books 67 and on) now say "Word study for the Apocrypha is coming." instead of showing a blank tab. Approved for build 311 on 2026-11-02.

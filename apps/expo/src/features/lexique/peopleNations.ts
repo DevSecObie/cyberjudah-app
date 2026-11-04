@@ -4,7 +4,7 @@
 // Ham's sons are Cush, Mizraim, Phut and Canaan, and so on). The Greeks and Romans, the Herods and
 // the Greek kings of the Maccabees are Edom, but not the Israelites called Greeks because Israel was
 // in Greek captivity (Titus, Cornelius, Paul's helpers). Cain's line is Edom ("the seed of Cain is
-// Esau today"), and Midian is Cush (Zipporah of Midian is "the Ethiopian woman"). Obie's picks
+// Esau today"), and Midian is Cush (Zipporah of Midian is "the Ethiopian woman"). Picks
 // (2026-11-03): the kings and dukes of Edom (Genesis 36) are Edom, Seir the Horite's family is Canaan,
 // Heber the Kenite and Jael are Cush like Hobab, and Persia and the Medes are Elam. Everyone else is
 // shown as an Israelite.

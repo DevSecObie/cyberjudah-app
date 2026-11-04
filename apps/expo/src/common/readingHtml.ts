@@ -148,7 +148,7 @@ const muted = (colors: ReadingColors) => {
 /**
  * The CyberJudah commentary's own parts, by class: the verse number and the verse words a
  * point opens on in gold (as in the class notes), scripture he quotes in gold too and Christ's
- * words in red (Obie, 2026-11-02), a precept set off by a gold rule with its scripture, and the
+ * words in red (2026-11-02), a precept set off by a gold rule with its scripture, and the
  * class line closing each entry.
  */
 export function readingHtmlClassStyles(

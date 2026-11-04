@@ -1,6 +1,6 @@
 # Remove the last Bible Strong pictures and timeline file from the app
 
-Obie asked (2026-11-01) to drop every Bible Strong file still packed in the app. None of these were
+2026-11-01: drop every Bible Strong file still packed in the app. None of these were
 shown in the CyberJudah build, but they shipped inside it.
 
 - Timeline: Bible Strong's 13 period paintings and its `events.txt` timeline file are gone. The
@@ -16,7 +16,7 @@ shown in the CyberJudah build, but they shipped inside it.
 
 ## Clay figures follow the genealogies (data only)
 
-Obie flagged Edomites wearing Judah figures (2026-11-03) and approved these on the clay figure sheet:
+Edomites were wearing Judah figures (flagged 2026-11-03); these were approved on the clay figure sheet:
 
 - The kings and dukes of Edom (Genesis 36: Teman, Kenaz, Korah and the rest), Hadad the Edomite and
   Genubath, Herod's brothers named Philip and Herodias' daughter, and the Greek and Roman rulers
@@ -30,7 +30,7 @@ Obie flagged Edomites wearing Judah figures (2026-11-03) and approved these on t
 
 Only `peopleNations.ts` and `israeliteGroups.ts` change; how figures are chosen does not.
 
-## New clay figures (Obie OK'd 2026-11-03)
+## New clay figures (approved 2026-11-03)
 
 - Egypt (Mizraim): man, woman and group redrawn as dark Sudanese Africans ("the Egyptians were the
   Africans today, the ones in Sudan").
