@@ -55,7 +55,7 @@ strongs = {
 SMALL = set('''a an and as at be but by for from he her him his i in is it its me my no not o of on or our
 shall she so that the their them they this thou thy to unto upon us was we were which who will with ye you'''.split())
 # Words the KJV does not translate, or translates with whatever the sentence needs.
-FIXED = {'H853': '', 'G3588': 'the'}
+FIXED = {'H853': '', 'G3588': 'the', 'H3068': 'LORD'}
 
 
 def short_meaning(code):
@@ -67,13 +67,17 @@ def short_meaning(code):
     return re.sub(r'^(?:to|a|an|the)\s+', '', text.strip()).strip(' .')[:24]
 
 
+# A word capitalized only because it starts a verse.
+VERBS_AT_START = {'then', 'now', 'behold', 'therefore', 'when', 'if', 'neither', 'nor', 'yea', 'also', 'thus', 'let'}
+
+
 def kjv_renderings(code):
     """The KJV renderings Strong's dictionary lists for a number, as plain words."""
     text = re.sub(r'\[[^\]]*\]|\([^)]*\)|[+]', '', (strongs.get(code) or {}).get('kjv', ''))
     out = []
     for item in re.split(r'[,;.]', text):
-        item = re.sub(r'\s+', ' ', item).strip().lower()
-        if item and re.fullmatch(r"[a-z' -]+", item) and item not in out:
+        item = re.sub(r'\s+', ' ', item).strip()
+        if item and re.fullmatch(r"[A-Za-z' -]+", item) and item not in out:
             out.append(item)
     return out
 
@@ -82,21 +86,23 @@ def kjv_glosses():
     """The rendering the KJV gives each Strong's number: the phrase its KJV tags most often show,
     when the dictionary's own list of KJV renderings has that word; else the listed rendering the
     tagged verses use most; else the first listed rendering; else the dictionary's first meaning."""
-    counts, words_seen = defaultdict(Counter), defaultdict(Counter)
+    counts, words_seen, cased = defaultdict(Counter), defaultdict(Counter), defaultdict(Counter)
     for path in sorted((STRONGS / 'tags').glob('*.json')):
         for verses in json.loads(path.read_text()).values():
             for phrases in verses.values():
                 for phrase, codes in phrases:
-                    words = re.sub(r"[^\w'\- ]", '', phrase).lower().split()
+                    original = re.sub(r"[^\w'\- ]", '', phrase).split()
+                    words = [w.lower() for w in original]
                     for raw in codes:
                         words_seen[re.sub(r'^([HG])0*', r'\1', raw)].update(words)
                     if len(codes) != 1:
                         continue
                     code = re.sub(r'^([HG])0*', r'\1', codes[0])
                     while len(words) > 1 and words[0] in SMALL:
-                        words = words[1:]
+                        words, original = words[1:], original[1:]
                     if words:
                         counts[code][' '.join(words[:3])] += 1
+                        cased[' '.join(words[:3])][' '.join(original[:3])] += 1
     glosses = {}
     for code in strongs:
         listed = kjv_renderings(code)
@@ -104,10 +110,16 @@ def kjv_glosses():
         ranked = [(phrase, n) for phrase, n in counts[code].most_common()
                   if not renderings or all(w in renderings or w in SMALL for w in phrase.split())]
         total = sum(counts[code].values())
-        scored = sorted(listed, key=lambda item: -min(words_seen[code][w] for w in item.split()))
+        seen = lambda item: min(words_seen[code][w] for w in item.lower().split())
+        scored = sorted(listed, key=lambda item: -seen(item))
         if ranked and ranked[0][1] * 5 >= total:
-            glosses[code] = ranked[0][0]
-        elif scored and min(words_seen[code][w] for w in scored[0].split()):
+            # As the KJV prints it: "God", "LORD", "Israel".
+            glosses[code] = cased[ranked[0][0]].most_common(1)[0][0]
+            if glosses[code].isupper() and glosses[code] not in ('LORD', 'GOD'):
+                glosses[code] = glosses[code].lower()
+            elif glosses[code][:1].isupper() and glosses[code].lower().split()[0] in SMALL | VERBS_AT_START:
+                glosses[code] = glosses[code][0].lower() + glosses[code][1:]
+        elif scored and seen(scored[0]):
             glosses[code] = scored[0]
         else:
             glosses[code] = listed[0] if listed else short_meaning(code)
