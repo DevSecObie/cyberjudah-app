@@ -479,8 +479,16 @@ def cmd_health(cfg, args):
 
     status = "🟢 All clear" if not problems else "🔴 Needs attention: " + "; ".join(problems)
     body = f"## {status}\n\n" + "\n".join(lines)
-    issue = upsert_issue(cfg, body, problems)
-    send_alerts(cfg, issue, problems, others)
+    try:
+        issue = upsert_issue(cfg, body, problems)
+    except ApiError as e:
+        if e.status != 410:
+            raise
+        # Issues are turned off in this repository: the report lives only in the run's summary.
+        issue = None
+        body += "\n\n_Issues are turned off in this repository, so this report is kept only in the run summary._"
+    if issue:
+        send_alerts(cfg, issue, problems, others)
     summary(body)
     return 0
 
@@ -544,7 +552,8 @@ def other_repos(cfg):
         try:
             items = gh("GET", f"/repos/{repo}/issues?state=open&labels={urllib.parse.quote(cfg.get('label', 'custodian'))}&per_page=20")
         except ApiError as e:
-            lines.append(f"- {repo}: could not read ({e.status})")
+            lines.append(f"- {repo}: issues are turned off there; see its custodian run summary" if e.status == 410
+                         else f"- {repo}: could not read ({e.status})")
             continue
         issue = next((i for i in items if i["title"] == title and "pull_request" not in i), None)
         if not issue:
@@ -825,11 +834,15 @@ def cmd_revert(cfg, args):
 
 def comment_somewhere(cfg, pr, text):
     target = pr["number"] if pr else None
-    if target is None:
-        issue = find_issue(cfg)
-        target = issue["number"] if issue else None
-    if target:
-        gh("POST", f"/repos/{REPO}/issues/{target}/comments", {"body": text})
+    try:
+        if target is None:
+            issue = find_issue(cfg)
+            target = issue["number"] if issue else None
+        if target:
+            gh("POST", f"/repos/{REPO}/issues/{target}/comments", {"body": text})
+    except ApiError as e:
+        if e.status != 410:
+            raise
     summary(text)
 
 
