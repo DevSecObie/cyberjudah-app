@@ -1,0 +1,3 @@
+- Adds Privacy Policy (/privacy), Terms of Use (/terms) and Support (/support) pages to the CyberJudah build. On the web they replace the "Unmatched Route" screen.
+- The More tab's Privacy Policy and Terms links, and the Ask credits card links, open these pages in the app instead of an external site.
+- The Bible Strong build keeps its own links and the original Support screen.

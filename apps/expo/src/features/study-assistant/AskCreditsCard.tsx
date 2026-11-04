@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { openInApp } from '~common/inAppBrowser'
 import { AppState, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import { useRouter } from 'expo-router'
 import Box, { HStack } from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import {
@@ -22,6 +22,7 @@ export default function AskCreditsCard({
   purchasesEnabled: boolean
 }) {
   const { t } = useTranslation()
+  const router = useRouter()
   const [plan, setPlan] = useState<AskCredits | null>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -144,12 +145,12 @@ export default function AskCreditsCard({
         </Text>
       )}
       <HStack className="mt-3 gap-4">
-        <Pressable onPress={() => openInApp('https://cyberjudah.io/app/privacy')}>
+        <Pressable onPress={() => router.push('/privacy')}>
           <Text className="text-xs text-grey">
             {t('askCredits.privacy', { defaultValue: 'Privacy' })}
           </Text>
         </Pressable>
-        <Pressable onPress={() => openInApp('https://cyberjudah.io/app/terms')}>
+        <Pressable onPress={() => router.push('/terms')}>
           <Text className="text-xs text-grey">
             {t('askCredits.terms', { defaultValue: 'Terms' })}
           </Text>
