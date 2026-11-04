@@ -1,0 +1,1 @@
+- Ask shows Bible Strong's own assistant cards under an answer for the people, places, Strong's words, Timeline events and Nave topics it cites (up to three, once the answer is complete). Commentary side by side is left out.

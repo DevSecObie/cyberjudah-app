@@ -43,6 +43,8 @@ export type CyberJudahSource = {
   thumb?: string
   excerpt?: string
   evidence?: 'teaching' | 'scripture' | 'reference'
+  /** A person's or place's id in the entity screens, for its Bible Strong card. */
+  entity?: string
 }
 export type CyberJudahAnswer = {
   traceId?: string
@@ -114,6 +116,8 @@ export const sourceOf = (value: unknown): CyberJudahSource | null => {
     evidence: ['teaching', 'scripture', 'reference'].includes(String(s.evidence))
       ? (s.evidence as CyberJudahSource['evidence'])
       : undefined,
+    entity:
+      typeof s.entity === 'string' && /^[a-z0-9-]{1,120}$/.test(s.entity) ? s.entity : undefined,
   }
 }
 
