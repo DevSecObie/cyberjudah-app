@@ -2567,6 +2567,7 @@ __metadata:
     "@react-native-firebase/app-check": "npm:26.4.0"
     "@react-native-firebase/auth": "npm:26.4.0"
     "@react-native-firebase/firestore": "npm:26.4.0"
+    "@react-native-firebase/messaging": "npm:26.4.0"
     "@react-native-firebase/remote-config": "npm:26.4.0"
     "@react-native-firebase/storage": "npm:26.4.0"
     "@react-native-google-signin/google-signin": "npm:^16.0.0"
@@ -11387,6 +11388,19 @@ __metadata:
   peerDependencies:
     "@react-native-firebase/app": 26.4.0
   checksum: 10c0/873ebb6201af3655820a9897cbe39904a8d76b942d8a4b02ececaab0e04cd967d7d010d55571bf3e06623ca3fd2f04246bbab3ffbb7e6a4a865d64a0ebba21f3
+  languageName: node
+  linkType: hard
+
+"@react-native-firebase/messaging@npm:26.4.0":
+  version: 26.4.0
+  resolution: "@react-native-firebase/messaging@npm:26.4.0"
+  peerDependencies:
+    "@react-native-firebase/app": 26.4.0
+    expo: ">=47.0.0"
+  peerDependenciesMeta:
+    expo:
+      optional: true
+  checksum: 10c0/ffbbfbfced00812db9b601810aef12fb212235411731f7b54663b6a1545095c9c1e5dd60c18d134dd8e91ce35b5db81f87358df060cea8aea997d510bbbc7b0f
   languageName: node
   linkType: hard
 

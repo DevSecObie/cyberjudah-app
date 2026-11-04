@@ -1,0 +1,2 @@
+- CyberJudah: a "New class alerts" switch on the class list. When a reader turns it on, the app asks for notification permission and joins a Firebase Cloud Messaging topic; the server sends an alert when a class is posted or goes live, and tapping it opens the class. Off until the reader turns it on; nothing about the reader is sent to the server.
+- CyberJudah's version moves to 28.4.0 (a new runtime): Firebase Messaging is a native module, so builds before it cannot take this code over the air.

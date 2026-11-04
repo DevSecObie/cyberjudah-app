@@ -4,10 +4,11 @@ const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
 // CyberJudah's first public release has its own version, independent of Bible Strong.
 const APP_VERSION = isCyberJudah ? '1.0.0' : '28.0.1'
 // Native changes require a separate runtime even when the App Store version stays the same.
-// CyberJudah native revision 1 includes Expo Print; older test builds remain on runtime 28.3.
+// CyberJudah native revision 1 includes Expo Print; revision 2 adds Firebase Messaging (new
+// class alerts). Older test builds remain on runtime 28.3.
 const [majorVersion, minorVersion] = APP_VERSION.split('.')
 const RUNTIME_VERSION = isCyberJudah
-  ? `${majorVersion}.${minorVersion}.1`
+  ? `${majorVersion}.${minorVersion}.2`
   : `${majorVersion}.${minorVersion}`
 // The owner's live-editing dev app ("CyberJudah Preview"), installed next to TestFlight builds.
 const isCyberJudahPreview = process.env.BUNDLE_IDENTIFIER === 'io.cyberjudah.app.preview'
@@ -120,6 +121,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 
     entitlements: {
       'com.apple.developer.applesignin': ['Default'],
+      // New class alerts (src/features/newClassAlerts), delivered by Firebase Cloud Messaging.
+      ...(isCyberJudah ? { 'aps-environment': 'production' } : {}),
       'com.apple.developer.devicecheck.appattest-environment': 'production',
     },
     // Deep linking: iOS Universal Links
@@ -170,6 +173,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
             'RNFBFirestore',
             'RNFBConfig',
             'RNFBStorage',
+            'RNFBMessaging',
           ],
         },
         android: {

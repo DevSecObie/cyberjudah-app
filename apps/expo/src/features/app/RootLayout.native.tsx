@@ -52,6 +52,10 @@ if (!isPlaygroundEnabled) {
     require('@notifee/react-native') as typeof import('@notifee/react-native')
   notifee.onBackgroundEvent(async ({ type, detail }) => {
     if (type !== EventType.PRESS) return
+    // A new-class alert shown while the app was open (Android) keeps its class to open on return.
+    const { rememberNewClassPress } =
+      await import('~features/newClassAlerts/newClassAlertInbox.native')
+    rememberNewClassPress(detail.notification?.data)
     // A background handler cannot navigate. Persist the intent until the authenticated UI is ready.
     const { getReadingReminderInbox } =
       await import('~features/daily-reading/readingReminderInbox.native')

@@ -23,6 +23,7 @@ import { useQuery } from '@tanstack/react-query'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import PassageMediaLibraryCard from './PassageMediaLibraryCard'
 import LiveClassBanner from './LiveClassBanner'
+import NewClassAlertsCard from '~features/newClassAlerts/NewClassAlertsCard'
 import { classesForHits, searchInsideClasses, searchKindsFor } from './classSearch'
 import {
   CLASS_COLLECTIONS,
@@ -377,6 +378,7 @@ const PassageMediaLibraryScreen = () => {
                 </Text>
               </TouchableBox>
             )}
+            {cyberJudah && <NewClassAlertsCard className="mt-[18px]" />}
           </VStack>
         }
         renderSectionHeader={({ section }) => (
