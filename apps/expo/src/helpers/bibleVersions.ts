@@ -706,6 +706,8 @@ export const versions: Record<string, Version> =
         KJV: {
           ...upstreamVersions.KJV,
           name: 'King James Version with Apocrypha',
+          // The text CyberJudah publishes, not the CrossWire module Bible Strong links to.
+          sourceUrl: 'https://github.com/DevSecObie/cyberjudah/tree/main/data/bible',
           canonId: 'kjv-1611',
           getAudioUrl: getCyberJudahKjvAudioUrl,
           hasRedWords: false,

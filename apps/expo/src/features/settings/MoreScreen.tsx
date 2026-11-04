@@ -444,6 +444,14 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
           >
             <Text className="text-[13px] text-grey">{t("Conditions d'utilisation")}</Text>
           </LinkItem>
+          {isCyberJudah && (
+            <LinkItem
+              style={{ paddingVertical: 8, paddingHorizontal: 0 }}
+              href="https://cyberjudah.io/app/credits"
+            >
+              <Text className="text-[13px] text-grey">{t('Crédits')}</Text>
+            </LinkItem>
+          )}
           {isLogged && (
             <LinkItem
               style={{ paddingVertical: 8, paddingHorizontal: 0 }}

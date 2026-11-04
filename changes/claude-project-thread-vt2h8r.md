@@ -1,0 +1,3 @@
+- More has a Credits link beside Privacy and Terms. It opens cyberjudah.io/app/credits, which lists every outside source the app uses and its licence, starting with Bible Strong, which the app is built on.
+- The King James card's Strong's line credits CyberJudah's actual sources: Strong's Exhaustive Concordance (1890) and Open Scriptures' dictionaries, CC BY-SA, with "Palestine" written as "Canaan". The card's source link opens CyberJudah's own text.
+- The readme says CyberJudah is a modified version of Bible Strong, under the same GNU GPL v3, and the Literata and Fira Code font licences ship beside the fonts.
