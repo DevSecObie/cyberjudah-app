@@ -93,8 +93,15 @@ export const usesCanonicalBibleExtras = (versionId: string): boolean =>
 
 export const getStrongBibleAttributionKey = (
   versionId: StrongBibleVersionId
-): 'versionSelector.strongAttribution' | 'versionSelector.strongAttributionEnglishSources' =>
-  ENGLISH_STRONG_BIBLE_PRIORITY.includes(
+):
+  | 'versionSelector.strongAttribution'
+  | 'versionSelector.strongAttributionEnglishSources'
+  | 'versionSelector.strongAttributionCyberJudah' =>
+  // CyberJudah's King James carries its own Strong's data (Strong's 1890 concordance and Open
+  // Scriptures' dictionaries), not the CrossWire and STEP Bible data Bible Strong credits.
+  process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+    ? 'versionSelector.strongAttributionCyberJudah'
+    : ENGLISH_STRONG_BIBLE_PRIORITY.includes(
     versionId as (typeof ENGLISH_STRONG_BIBLE_PRIORITY)[number]
   )
     ? 'versionSelector.strongAttributionEnglishSources'

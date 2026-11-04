@@ -1,3 +1,5 @@
+> **CyberJudah** is a modified version of [Bible Strong](https://github.com/smontlouis/bible-strong) by Stéphane Montlouis-Calixte (Le Studio 316), changed by CyberJudah since September 2026. It is free software under the [GNU General Public License v3](./LICENSE), like the original. The readme below is Bible Strong's own. The outside sources CyberJudah uses, and their licences, are listed at https://cyberjudah.io/app/credits.
+
 <p align="center">
   <a href="./README.md">🇫🇷 Version française</a>
 </p>
