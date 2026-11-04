@@ -1,4 +1,4 @@
-// Obie's class order (2026-11-02): the Bishops first, in his order (Nathanyel, Yawasap, Kani),
+// Class order (2026-11-02): the Bishops first, in this order (Nathanyel, Yawasap, Kani),
 // then the Deacons, then the Captains, then everyone else; Zakai's classes always come last.
 const BISHOPS = [/nathanyel/i, /yawasap/i, /kan[ia]\b/i]
 

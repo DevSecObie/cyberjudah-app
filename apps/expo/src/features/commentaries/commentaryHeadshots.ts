@@ -1,4 +1,4 @@
-// Round headshots of the Bishops, cut from the leadership photo Obie shared (2026-10-31).
+// Round headshots of the Bishops, cut from the leadership photo (2026-10-31).
 // Data URIs so the Bible DOM view and native screens read the same picture.
 export const COMMENTARY_HEADSHOTS: Readonly<Record<string, string>> = {
   'bishop-nathanyel':

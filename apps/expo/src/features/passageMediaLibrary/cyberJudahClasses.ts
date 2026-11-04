@@ -103,7 +103,7 @@ export const toClassLibrary = (
       classes.push({
         workId,
         editionId: `${workId}:en`,
-        // A class is credited to its teacher only, never to CyberJudah (Obie, 2026-11-03).
+        // A class is credited to its teacher only, never to CyberJudah (2026-11-03).
         attributionLabel: '',
         reference: '',
         strongCodes: [],

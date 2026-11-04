@@ -66,7 +66,7 @@ export const verseNumbers = (spec?: string | null): number[] => {
   return [...new Set(out)].sort((a, b) => a - b)
 }
 
-/** Obie's class order: the Bishops (Nathanyel, Yawasap, Kani), Deacons, Captains, the rest; Zakai last. */
+/** Class order: the Bishops (Nathanyel, Yawasap, Kani), Deacons, Captains, the rest; Zakai last. */
 const teacherRank = classTeacherRank
 const byRankNewestFirst = (a: ClassMoment, b: ClassMoment) =>
   teacherRank(a.teacher) - teacherRank(b.teacher) || (b.date ?? '').localeCompare(a.date ?? '')
