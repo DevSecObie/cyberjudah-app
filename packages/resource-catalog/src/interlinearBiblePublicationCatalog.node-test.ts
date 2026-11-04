@@ -44,8 +44,8 @@ describe('interlinear Bible publication catalog', () => {
     assert.equal(publication.applicationVersionId, 'BHG')
     assert.equal(publication.datasetId, 'STEP')
     assert.ok(publication.text.text)
-    assert.deepEqual(publication.indexes.fr.text, publication.text.text)
-    assert.deepEqual(publication.indexes.en.text, publication.text.text)
+    assert.deepEqual(publication.indexes.fr?.text, publication.text.text)
+    assert.deepEqual(publication.indexes.en?.text, publication.text.text)
     assert.equal(
       publication.text.text.textRevision,
       `bhg-${publication.text.text.textSha256.slice(0, 20)}`
@@ -67,8 +67,8 @@ describe('interlinear Bible publication catalog', () => {
     assert.equal(publication.text.archiveSha256, 'a'.repeat(64))
     assert.equal(publication.text.archiveBytes, 1784741)
     assert.deepEqual(publication.text.text, nextText)
-    assert.equal(publication.indexes.fr.archiveSha256, 'b'.repeat(64))
-    assert.deepEqual(publication.indexes.en.text, nextText)
+    assert.equal(publication.indexes.fr?.archiveSha256, 'b'.repeat(64))
+    assert.deepEqual(publication.indexes.en?.text, nextText)
   })
 
   it('completes a catalog that predates the declaration from one listing the same archives', () => {

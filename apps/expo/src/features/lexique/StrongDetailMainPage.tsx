@@ -527,7 +527,13 @@ const StrongDetailMainPage = ({
           </StudyCardBody>
         )}
         {isDeep && dictionaryResource && (
-          <DefinitionBlock title={t('strongDetail.definition.classicalGreek')}>
+          <DefinitionBlock
+            title={
+              dictionaryResource.source === 'BDB'
+                ? dictionaryResource.title
+                : t('strongDetail.definition.classicalGreek')
+            }
+          >
             <StrongEditorialPreview
               value={dictionaryResource.contentHtml}
               readingTypography={readingTypography}

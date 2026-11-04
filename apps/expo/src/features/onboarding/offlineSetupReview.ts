@@ -7,6 +7,11 @@ import {
   createDownloadItemFromOnboardingSelection,
   createDownloadItemsFromOnboardingSelections,
 } from './onboardingResources'
+import { isQueuedOnboardingResourceSelection } from './onboardingResourceSelectionId'
+import {
+  CLASS_INDEX_DOWNLOAD_BYTES,
+  CLASS_INDEX_INSTALLED_BYTES,
+} from '~features/passageMediaLibrary/classLibrarySize'
 import { OFFLINE_SETUP_MOTION } from './offlineSetupMotion'
 import type { OfflineSetupFolderId } from './offlineSetupPresets'
 import type { OfflineSetupFolderVisual, OfflineSetupFrame } from './offlineSetupPresentation'
@@ -106,10 +111,9 @@ export const getOfflineSetupReviewItems = (
   getDisplayName?: (selection: OnboardingResourceSelection | undefined) => string
 ): OfflineSetupReviewItem[] => {
   const selectionByItemId = new Map(
-    selections.map(selection => [
-      createDownloadItemFromOnboardingSelection(selection).id,
-      selection,
-    ])
+    selections
+      .filter(isQueuedOnboardingResourceSelection)
+      .map(selection => [createDownloadItemFromOnboardingSelection(selection).id, selection])
   )
   const items = [
     ...new Map(
@@ -117,16 +121,31 @@ export const getOfflineSetupReviewItems = (
     ).values(),
   ]
 
-  return items.map(item => {
-    const selection = selectionByItemId.get(item.id)
-    const size = getOfflineResourceSizeEntry(item.id, item.estimatedSize, manifest)
-    return {
-      id: item.id,
-      name: getDisplayName ? getDisplayName(selection) : item.name,
-      downloadBytes: size.downloadBytes,
-      installedBytes: size.installedBytes,
-    }
-  })
+  const classLibrary = selections.find(selection => selection.kind === 'class-library')
+
+  return [
+    // The class library downloads on its own, beside the queue: listed first, as the classes come first.
+    ...(classLibrary
+      ? [
+          {
+            id: 'class-library',
+            name: getDisplayName ? getDisplayName(classLibrary) : 'class-library',
+            downloadBytes: CLASS_INDEX_DOWNLOAD_BYTES,
+            installedBytes: CLASS_INDEX_INSTALLED_BYTES,
+          },
+        ]
+      : []),
+    ...items.map(item => {
+      const selection = selectionByItemId.get(item.id)
+      const size = getOfflineResourceSizeEntry(item.id, item.estimatedSize, manifest)
+      return {
+        id: item.id,
+        name: getDisplayName ? getDisplayName(selection) : item.name,
+        downloadBytes: size.downloadBytes,
+        installedBytes: size.installedBytes,
+      }
+    }),
+  ]
 }
 
 export const getOfflineSetupReviewSnapPoint = ({

@@ -170,7 +170,7 @@ export const getInterlinearSidecarAvailability = async (
 export const installInterlinearSidecar = async (
   locale: ResourceLanguage,
   artifact: InterlinearPublicationArtifact,
-  datasetId: 'STEP',
+  datasetId: string,
   callbacks: InterlinearSidecarInstallCallbacks = {}
 ) => {
   const base = await getInstalledInterlinearBaseText()

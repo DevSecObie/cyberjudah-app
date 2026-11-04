@@ -102,7 +102,7 @@ describe('BHG interlinear publication', () => {
 
     // Same archives as the bundled catalog: their text is the one it declares.
     expect(publication.text.text).toEqual(bundledText)
-    expect(publication.indexes.fr.text).toEqual(bundledText)
+    expect(publication.indexes.fr?.text).toEqual(bundledText)
   })
 
   it('knows no text for an archive no catalog it holds describes', async () => {
@@ -112,7 +112,7 @@ describe('BHG interlinear publication', () => {
 
     expect(publication.text.archiveSha256).toBe('a'.repeat(64))
     expect(publication.text.text).toBeUndefined()
-    expect(publication.indexes.fr.text).toBeUndefined()
+    expect(publication.indexes.fr?.text).toBeUndefined()
   })
 
   it('names the text of an installed archive from the catalogs it holds', async () => {

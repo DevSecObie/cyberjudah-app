@@ -3,6 +3,7 @@ import { useTheme } from '~themes/ThemeProvider'
 import { useSetAtom } from 'jotai/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { getOfflineSetupFolderSubtitle } from './offlineSetupCopy'
 import { Pressable, useWindowDimensions } from 'react-native'
 import { FadeIn, FadeInUp, useReducedMotion } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -191,7 +192,7 @@ const SelectResources = (props: SelectResourcesProps) => {
           origin={state.hero.origin}
           target={state.hero.target}
           title={t(`offlineSetup.presets.${state.hero.folderId}.title`)}
-          subtitle={t('offlineSetup.selectedCount', { count: heroCount })}
+          subtitle={getOfflineSetupFolderSubtitle(t, heroCount)}
           itemCount={heroCount}
           visual={heroVisual}
           selected={heroCount > 0}

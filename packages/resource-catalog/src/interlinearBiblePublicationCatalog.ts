@@ -12,6 +12,14 @@ export type InterlinearBiblePublicationLanguage = 'fr' | 'en'
 export const getInterlinearBiblePublicationLanguages =
   (): InterlinearBiblePublicationLanguage[] => ['en', 'fr']
 
+/** Languages whose index a catalog publishes; the CyberJudah catalog publishes English only. */
+export const getPublishedInterlinearBibleLanguages = (
+  catalog: MobileResourceCatalog = BUNDLED_MOBILE_RESOURCE_CATALOG
+): InterlinearBiblePublicationLanguage[] =>
+  getInterlinearBiblePublicationLanguages().filter(
+    language => catalog.resources[getInterlinearBibleIndexCatalogId(language)]
+  )
+
 export const INTERLINEAR_BIBLE_TEXT_CATALOG_ID = `bible:${BHG_INTERLINEAR_IDENTITY.applicationVersionId}`
 
 export const getInterlinearBibleIndexCatalogId = (
@@ -68,7 +76,8 @@ export type InterlinearBibleCatalogArtifact = MobileResourceCatalogEntry & {
 
 export type InterlinearBibleCatalogPublication = typeof BHG_INTERLINEAR_IDENTITY & {
   text: InterlinearBibleCatalogArtifact
-  indexes: Record<InterlinearBiblePublicationLanguage, InterlinearBibleCatalogArtifact>
+  /** Every language the catalog publishes an index for; at least one. */
+  indexes: Partial<Record<InterlinearBiblePublicationLanguage, InterlinearBibleCatalogArtifact>>
 }
 
 const resolveArtifact = (
@@ -95,11 +104,26 @@ export const resolveInterlinearBiblePublication = (
 ): InterlinearBibleCatalogPublication => ({
   ...BHG_INTERLINEAR_IDENTITY,
   text: resolveArtifact(INTERLINEAR_BIBLE_TEXT_CATALOG_ID, catalog, fallbackCatalogs),
-  indexes: {
-    fr: resolveArtifact(getInterlinearBibleIndexCatalogId('fr'), catalog, fallbackCatalogs),
-    en: resolveArtifact(getInterlinearBibleIndexCatalogId('en'), catalog, fallbackCatalogs),
-  },
+  indexes: resolveIndexes(catalog, fallbackCatalogs),
 })
+
+const resolveIndexes = (
+  catalog: MobileResourceCatalog,
+  fallbackCatalogs: readonly MobileResourceCatalog[]
+): InterlinearBibleCatalogPublication['indexes'] => {
+  // Bible Strong publishes every language; the CyberJudah catalog only the ones it lists.
+  const languages =
+    BHG_INTERLINEAR_IDENTITY.datasetId === 'CYBERJUDAH'
+      ? getPublishedInterlinearBibleLanguages(catalog)
+      : (['fr', 'en'] as const)
+  if (!languages.length) resolveArtifact(getInterlinearBibleIndexCatalogId('en'), catalog, [])
+  return Object.fromEntries(
+    languages.map(language => [
+      language,
+      resolveArtifact(getInterlinearBibleIndexCatalogId(language), catalog, fallbackCatalogs),
+    ])
+  )
+}
 
 /**
  * Indexes a catalog pairs with another text than the one it publishes. A catalog that declares

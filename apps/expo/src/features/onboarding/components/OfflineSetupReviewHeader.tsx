@@ -4,6 +4,7 @@ import { Feather } from '@expo/vector-icons'
 import type { RefObject } from 'react'
 import { View } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import { getOfflineSetupFolderReviewSummary } from '../offlineSetupCopy'
 import Box, { HStack } from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import type { ResourceLanguage } from '~helpers/databaseTypes'
@@ -75,10 +76,11 @@ const OfflineSetupFolderReviewHeader = ({
               resolveThemeColor(stylingTheme, palette.onSheetMuted) || stylingTheme.colors.default,
           }}
         >
-          {t('offlineSetup.folderReviewSummary', {
-            count: context.selectedCount,
-            size: formatResourceSize(installedBytes, lang),
-          })}
+          {getOfflineSetupFolderReviewSummary(
+            t,
+            context.selectedCount,
+            formatResourceSize(installedBytes, lang)
+          )}
         </Text>
       </Box>
     </HStack>

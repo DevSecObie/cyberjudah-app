@@ -27,11 +27,12 @@ import type { InterlinearBibleResourceAccess } from './interlinearBibleResourceA
 import { resolveInterlinearBaseText } from './interlinearTextPairing'
 import { resourceAccessErrorFromBibleChapterUnavailable } from './resourceAccessError'
 import { warnAboutRecoverableResourceIntegrity } from './recoverableIntegrity'
+import { BHG_INTERLINEAR_IDENTITY } from '~helpers/interlinearBiblePublicationCatalog'
 
 export type BhgLexiconProvenance = {
   sourceKind: 'interlinear'
   versionId: 'BHG'
-  datasetId: 'STEP'
+  datasetId: string
   locale: ResourceLanguage
   isFallback: false
 }
@@ -361,7 +362,7 @@ export const createLexiconBibleResourceAccess = (
   const bhgProvenance = (locale: ResourceLanguage): BhgLexiconProvenance => ({
     sourceKind: 'interlinear',
     versionId: 'BHG',
-    datasetId: 'STEP',
+    datasetId: BHG_INTERLINEAR_IDENTITY.datasetId,
     locale,
     isFallback: false,
   })

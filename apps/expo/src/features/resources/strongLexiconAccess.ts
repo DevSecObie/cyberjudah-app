@@ -446,9 +446,11 @@ const loadResources = async (
             ? language === 'fr'
               ? 'Dictionnaire grec détaillé'
               : 'Detailed Greek dictionary'
-            : language === 'fr'
-              ? 'Notice complémentaire'
-              : 'Additional resource',
+            : row.source === 'BDB'
+              ? 'Brown-Driver-Briggs Hebrew Lexicon'
+              : language === 'fr'
+                ? 'Notice complémentaire'
+                : 'Additional resource',
         contentHtml,
       },
     ]

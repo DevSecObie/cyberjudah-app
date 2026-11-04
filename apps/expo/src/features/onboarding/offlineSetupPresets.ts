@@ -1,4 +1,5 @@
 import { MOBILE_RESOURCE_CATALOG } from '~helpers/mobileResourceCatalog'
+import { requiresStrongLexiconCore } from '~helpers/strongLexiconCore'
 import { getSimpleStrongModuleId } from '@bible-strong/resource-domain/strong-lexicon'
 import { versions } from '~helpers/bibleVersions'
 import { databases } from '~helpers/databases'
@@ -14,7 +15,10 @@ import {
   type BibleDefaultSelectionKind,
 } from '~features/bible/bibleDefaultCatalog'
 import type { OnboardingResourceSelection } from './onboardingResources'
-import { getOnboardingResourceSelectionId } from './onboardingResourceSelectionId'
+import {
+  getOnboardingResourceCatalogId,
+  getOnboardingResourceSelectionId,
+} from './onboardingResourceSelectionId'
 import {
   getCommentaryCatalogForLanguage,
   type CommentaryCatalogEntry,
@@ -54,6 +58,49 @@ export type OfflineSetupSection = {
 }
 
 export type OfflineSetupFolderOptionIds = Record<OfflineSetupFolderId, string[]>
+
+const IS_CYBERJUDAH = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+
+/** CyberJudah's classes: the notes of every published class, to read and search offline. */
+const CLASS_LIBRARY_OPTION: OfflineSetupOption = {
+  id: 'class-library',
+  label: '',
+  labelKey: 'offlineSetup.resources.classes',
+  descriptionKey: 'offlineSetup.option.classesDescription',
+  selections: [{ kind: 'class-library' }],
+}
+
+// The entities module is paired with the lexicon core only where it is built against it.
+const ENTITIES_REQUIRE_CORE = requiresStrongLexiconCore('entities')
+const ENTITIES_SELECTIONS: OnboardingResourceSelection[] = ENTITIES_REQUIRE_CORE
+  ? [
+      { kind: 'strong-lexicon', moduleId: 'core' },
+      { kind: 'strong-lexicon', moduleId: 'entities' },
+    ]
+  : [{ kind: 'strong-lexicon', moduleId: 'entities' }]
+const ENTITIES_REQUIRES = ENTITIES_REQUIRE_CORE ? ['strong-lexicon:core'] : undefined
+
+// CyberJudah's dictionary module is its Hebrew lexicon, read with its own Strong's lexicon.
+const RESOURCES_REQUIRE_CORE = requiresStrongLexiconCore('resources')
+const RESOURCES_OPTION: OfflineSetupOption = RESOURCES_REQUIRE_CORE
+  ? {
+      id: 'strong-lexicon:resources',
+      label: '',
+      labelKey: 'offlineSetup.resources.greekDictionary',
+      descriptionKey: 'offlineSetup.option.greekDictionaryDescription',
+      requires: ['strong-lexicon:core'],
+      selections: [
+        { kind: 'strong-lexicon', moduleId: 'core' },
+        { kind: 'strong-lexicon', moduleId: 'resources' },
+      ],
+    }
+  : {
+      id: 'strong-lexicon:resources',
+      label: '',
+      labelKey: 'offlineSetup.resources.hebrewDictionary',
+      descriptionKey: 'offlineSetup.option.hebrewDictionaryDescription',
+      selections: [{ kind: 'strong-lexicon', moduleId: 'resources' }],
+    }
 
 const getBibleLabel = (versionId: string, lang: ResourceLanguage): string => {
   const version = versions[versionId]
@@ -260,19 +307,23 @@ const getStrongSections = (lang: ResourceLanguage): OfflineSetupSection[] => {
           descriptionKey: 'offlineSetup.option.strongLexiconDescription',
           selections: [{ kind: 'strong-lexicon', moduleId: 'core' }],
         },
-        ...(['resources', 'entities'] as const).map(moduleId => ({
-          id: `strong-lexicon:${moduleId}`,
-          label: '',
-          labelKey:
-            moduleId === 'resources'
-              ? 'offlineSetup.resources.greekDictionary'
-              : 'offlineSetup.resources.entities',
-          requires: ['strong-lexicon:core'],
-          selections: [
-            { kind: 'strong-lexicon' as const, moduleId: 'core' as const },
-            { kind: 'strong-lexicon' as const, moduleId },
-          ],
-        })),
+        ...(['resources', 'entities'] as const).map(moduleId =>
+          moduleId === 'resources' && !RESOURCES_REQUIRE_CORE
+            ? RESOURCES_OPTION
+            : {
+                id: `strong-lexicon:${moduleId}`,
+                label: '',
+                labelKey:
+                  moduleId === 'resources'
+                    ? 'offlineSetup.resources.greekDictionary'
+                    : 'offlineSetup.resources.entities',
+                requires: ['strong-lexicon:core'],
+                selections: [
+                  { kind: 'strong-lexicon' as const, moduleId: 'core' as const },
+                  { kind: 'strong-lexicon' as const, moduleId },
+                ],
+              }
+        ),
       ],
     },
     ...getBibleFolderCatalogSections('strong', lang).map(section => ({
@@ -290,6 +341,15 @@ const getExploreSections = (lang: ResourceLanguage): OfflineSetupSection[] => {
   const otherLang: ResourceLanguage = lang === 'fr' ? 'en' : 'fr'
 
   return [
+    ...(IS_CYBERJUDAH
+      ? [
+          {
+            id: 'classes',
+            titleKey: 'offlineSetup.section.classes',
+            options: [CLASS_LIBRARY_OPTION],
+          },
+        ]
+      : []),
     {
       id: 'dictionaries',
       titleKey: 'offlineSetup.section.dictionaries',
@@ -314,11 +374,8 @@ const getExploreSections = (lang: ResourceLanguage): OfflineSetupSection[] => {
           label: '',
           labelKey: 'offlineSetup.resources.entities',
           descriptionKey: 'offlineSetup.option.entitiesDescription',
-          requires: ['strong-lexicon:core'],
-          selections: [
-            { kind: 'strong-lexicon', moduleId: 'core' },
-            { kind: 'strong-lexicon', moduleId: 'entities' },
-          ],
+          requires: ENTITIES_REQUIRES,
+          selections: ENTITIES_SELECTIONS,
         },
       ],
     },
@@ -380,17 +437,7 @@ const getOriginalLanguageSections = (lang: ResourceLanguage): OfflineSetupSectio
         descriptionKey: 'offlineSetup.option.strongLexiconDescription',
         selections: [{ kind: 'strong-lexicon', moduleId: 'core' }],
       },
-      {
-        id: 'strong-lexicon:resources',
-        label: '',
-        labelKey: 'offlineSetup.resources.greekDictionary',
-        descriptionKey: 'offlineSetup.option.greekDictionaryDescription',
-        requires: ['strong-lexicon:core'],
-        selections: [
-          { kind: 'strong-lexicon', moduleId: 'core' },
-          { kind: 'strong-lexicon', moduleId: 'resources' },
-        ],
-      },
+      RESOURCES_OPTION,
     ],
   },
   {
@@ -421,38 +468,40 @@ const flattenResourceSections = (sections: OfflineSetupSection[]): OfflineSetupS
   return [{ id: 'resources', options }, ...(otherLanguages ? [otherLanguages] : [])]
 }
 
+/** Whether this build's catalog publishes the selection (the class library has its own server). */
+const isPublishedSelection = (selection: OnboardingResourceSelection): boolean =>
+  selection.kind === 'class-library' ||
+  getOnboardingResourceCatalogId(selection) in MOBILE_RESOURCE_CATALOG.resources
+
+const isPublishedOption = (option: OfflineSetupOption): boolean =>
+  option.selections.every(isPublishedSelection)
+
+const onlyPublishedSections = (sections: OfflineSetupSection[]): OfflineSetupSection[] =>
+  sections
+    .map(section => ({
+      ...section,
+      options: section.options.filter(isPublishedOption),
+      groups: section.groups
+        ?.map(group => ({ ...group, options: group.options.filter(isPublishedOption) }))
+        .filter(group => group.options.length > 0),
+    }))
+    .filter(section => section.options.length > 0 || section.groups?.length)
+
 export const getOfflineSetupFolderSections = (
   folderId: OfflineSetupFolderId,
   lang: ResourceLanguage
 ): OfflineSetupSection[] => {
-  if (process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah') {
+  if (IS_CYBERJUDAH) {
     if (folderId === 'read-bible') return flattenResourceSections(getReadableBibleSections(lang))
-    // The CyberJudah publication has no offline lexicon or original-language dataset yet.
-    // Keep the upstream folders and only offer complete, published download choices.
-    if (folderId === 'understand-words') return []
-    if (folderId === 'original-languages') return []
-    return getExploreSections(lang)
-      .map(section => ({
-        ...section,
-        options: section.options.filter(option =>
-          option.selections.every(
-            selection =>
-              getOnboardingResourceSelectionId(selection) in MOBILE_RESOURCE_CATALOG.resources
-          )
-        ),
-        groups: section.groups
-          ?.map(group => ({
-            ...group,
-            options: group.options.filter(option =>
-              option.selections.every(
-                selection =>
-                  getOnboardingResourceSelectionId(selection) in MOBILE_RESOURCE_CATALOG.resources
-              )
-            ),
-          }))
-          .filter(group => group.options.length > 0),
-      }))
-      .filter(section => section.options.length > 0 || section.groups?.length)
+    // Keep the upstream folders and offer only the download choices this catalog publishes.
+    if (folderId === 'understand-words')
+      return onlyPublishedSections(flattenResourceSections(getStrongSections(lang)))
+    // Offered once this build carries an original-language Bible.
+    if (folderId === 'original-languages')
+      return versions.BHG
+        ? onlyPublishedSections(flattenResourceSections(getOriginalLanguageSections(lang)))
+        : []
+    return onlyPublishedSections(getExploreSections(lang))
   }
   switch (folderId) {
     case 'read-bible':
@@ -471,7 +520,8 @@ export const getDefaultOfflineSetupFolderOptionIds = (
 ): OfflineSetupFolderOptionIds => ({
   'read-bible': [`bible:${getDefaultBibleVersion(lang)}`],
   'understand-words': [],
-  'explore-bible': [],
+  // The classes come first: offered with the Bible from the start, and can be unchecked.
+  'explore-bible': IS_CYBERJUDAH ? [CLASS_LIBRARY_OPTION.id] : [],
   'original-languages': [],
 })
 

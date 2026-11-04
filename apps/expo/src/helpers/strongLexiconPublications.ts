@@ -1,5 +1,5 @@
 import { resourceArtifactUrl } from './mobileResourceCatalog'
-import { cyberJudahEntitiesArtifact } from './strongLexiconCore'
+import { cyberJudahEntitiesArtifact, cyberJudahResourcesArtifact } from './strongLexiconCore'
 
 export type StrongLexiconModuleId = 'core' | 'resources' | 'entities' | 'simple-fr' | 'simple-en'
 
@@ -82,7 +82,9 @@ export const STRONG_LEXICON_PUBLICATIONS: Record<
 export const getStrongLexiconPublication = (
   moduleId: StrongLexiconModuleId
 ): StrongLexiconPublicationArtifact =>
-  (moduleId === 'entities' && cyberJudahEntities) || STRONG_LEXICON_PUBLICATIONS[moduleId]
+  (moduleId === 'entities' && cyberJudahEntities) ||
+  (moduleId === 'resources' && cyberJudahResources) ||
+  STRONG_LEXICON_PUBLICATIONS[moduleId]
 
 const cyberJudahEntities: StrongLexiconPublicationArtifact | undefined =
   cyberJudahEntitiesArtifact?.resourceRevision
@@ -96,5 +98,20 @@ const cyberJudahEntities: StrongLexiconPublicationArtifact | undefined =
         contentBytes: cyberJudahEntitiesArtifact.contentBytes,
         contentSha256: cyberJudahEntitiesArtifact.contentSha256,
         resourceRevision: cyberJudahEntitiesArtifact.resourceRevision,
+      }
+    : undefined
+
+const cyberJudahResources: StrongLexiconPublicationArtifact | undefined =
+  cyberJudahResourcesArtifact?.resourceRevision
+    ? {
+        id: 'resources',
+        required: false,
+        url: cyberJudahResourcesArtifact.url,
+        entry: cyberJudahResourcesArtifact.entry,
+        archiveBytes: cyberJudahResourcesArtifact.archiveBytes,
+        archiveSha256: cyberJudahResourcesArtifact.archiveSha256,
+        contentBytes: cyberJudahResourcesArtifact.contentBytes,
+        contentSha256: cyberJudahResourcesArtifact.contentSha256,
+        resourceRevision: cyberJudahResourcesArtifact.resourceRevision,
       }
     : undefined

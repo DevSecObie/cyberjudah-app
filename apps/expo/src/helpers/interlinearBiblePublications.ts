@@ -40,13 +40,14 @@ export type InterlinearPublicationArtifact = {
 
 export type InterlinearBiblePublication = {
   applicationVersionId: InterlinearBibleVersionId
-  datasetId: 'STEP'
-  sourceVersion: 'TAHOT/TAGNT'
+  datasetId: string
+  sourceVersion: string
   attribution: string
-  license: 'CC BY 4.0'
+  license: string
   sourceUrl: string
   text: InterlinearPublicationArtifact
-  indexes: Record<ResourceLanguage, InterlinearPublicationArtifact>
+  /** Every language the catalog publishes an index for; at least one. */
+  indexes: Partial<Record<ResourceLanguage, InterlinearPublicationArtifact>>
 }
 
 const toArtifact = (entry: InterlinearBibleCatalogArtifact): InterlinearPublicationArtifact => ({
@@ -71,10 +72,9 @@ export const getInterlinearBiblePublication = (
   return {
     ...BHG_INTERLINEAR_IDENTITY,
     text: toArtifact(publication.text),
-    indexes: {
-      fr: toArtifact(publication.indexes.fr),
-      en: toArtifact(publication.indexes.en),
-    },
+    indexes: Object.fromEntries(
+      Object.entries(publication.indexes).map(([language, index]) => [language, toArtifact(index)])
+    ),
   }
 }
 
@@ -89,6 +89,18 @@ export const getPublishedInterlinearTextIdentity = (
   archiveSha256
     ? resolveCatalogTextIdentity(INTERLINEAR_BIBLE_TEXT_CATALOG_ID, archiveSha256, catalogs)
     : undefined
+
+/**
+ * The index to read for a language: its own, or, when the catalog publishes none for it, the
+ * first one it does publish (the CyberJudah catalog publishes English only).
+ */
+export const getInterlinearIndexLanguage = (
+  language: ResourceLanguage,
+  publication: Pick<InterlinearBiblePublication, 'indexes'> = getInterlinearBiblePublication()
+): ResourceLanguage =>
+  publication.indexes[language]
+    ? language
+    : ((['en', 'fr'] as const).find(candidate => publication.indexes[candidate]) ?? language)
 
 export const isInterlinearCapableBibleVersion = (
   versionId: string

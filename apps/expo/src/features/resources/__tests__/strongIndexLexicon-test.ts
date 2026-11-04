@@ -53,20 +53,23 @@ describe('Strong lexicon acquired with the CyberJudah Strong index', () => {
     else process.env.EXPO_PUBLIC_RESOURCE_PROFILE = profile
   })
 
-  // 304 crashed on download with MOBILE_RESOURCE_CATALOG_ENTRY_MISSING:strong-lexicon:simple-en.
-  it('pairs no lexicon the catalog does not publish, so the KJV and its index still download', () => {
+  // 304 crashed on download with MOBILE_RESOURCE_CATALOG_ENTRY_MISSING:strong-lexicon:simple-en,
+  // before the CyberJudah catalog published its own English lexicon.
+  it('pairs only a lexicon the catalog publishes, so the KJV and its index still download', () => {
     process.env.EXPO_PUBLIC_RESOURCE_PROFILE = 'cyberjudah'
     jest.isolateModules(() => {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const isolated = require('../strongIndexLexicon') as typeof import('../strongIndexLexicon')
-      expect(isolated.getStrongIndexLexiconModuleId(registry(), 'en')).toBeUndefined()
+      expect(isolated.getStrongIndexLexiconModuleId(registry(), 'en')).toBe('simple-en')
       expect(isolated.getStrongIndexLexiconModuleId(registry(), 'fr')).toBeUndefined()
-      // Pairing Bible Strong's simple lexicon is exactly what crashed the download.
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const items =
         require('~helpers/strongLexiconDownloadItems') as typeof import('~helpers/strongLexiconDownloadItems')
-      expect(() => items.createStrongLexiconModuleDownloadItem('simple-en')).toThrow(
-        'MOBILE_RESOURCE_CATALOG_ENTRY_MISSING:strong-lexicon:simple-en'
+      expect(items.createStrongLexiconModuleDownloadItem('simple-en')).toMatchObject({
+        url: expect.stringContaining('strong_lexicon.simple-en.sqlite.zip'),
+      })
+      expect(() => items.createStrongLexiconModuleDownloadItem('simple-fr')).toThrow(
+        'MOBILE_RESOURCE_CATALOG_ENTRY_MISSING:strong-lexicon:simple-fr'
       )
     })
   })
