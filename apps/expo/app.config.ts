@@ -9,7 +9,10 @@ const [majorVersion, minorVersion] = APP_VERSION.split('.')
 const RUNTIME_VERSION = `${majorVersion}.${minorVersion}`
 // The owner's live-editing dev app ("CyberJudah Preview"), installed next to TestFlight builds.
 const isCyberJudahPreview = process.env.BUNDLE_IDENTIFIER === 'io.cyberjudah.app.preview'
-// CyberJudah's own Expo project (free tier), used only for over-the-air updates.
+// The Preview app built on Expo's servers (eas.json "cyberjudah-preview") runs without the Mac:
+// it takes signed updates from the "preview" channel of updates.cyberjudah.io instead of Metro.
+const isCyberJudahCloudPreview = isCyberJudahPreview && process.env.EAS_BUILD_CHANNEL === 'preview'
+// CyberJudah's own Expo project (free tier). Over-the-air updates come from updates.cyberjudah.io.
 const CYBERJUDAH_EAS_PROJECT_ID = 'ee1c2f69-3a80-46c5-b67d-7f4a75def656'
 
 // Icon fonts built into the Android app. Loaded at run time, a font file an update copied can
@@ -242,15 +245,20 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   // and applied on the next launch. Every update must be signed with the private key that pairs
   // with certs/certificate.pem; that key never enters this repository.
   // The CyberJudah Preview dev app loads unsigned code straight from Metro, so it takes no
-  // over-the-air updates; the code-signing check would refuse every Metro bundle.
-  updates: isCyberJudahPreview
+  // over-the-air updates; the code-signing check would refuse every Metro bundle. The cloud
+  // Preview build is not a dev app and takes updates like the beta, from its own channel.
+  updates: isCyberJudahPreview && !isCyberJudahCloudPreview
     ? { enabled: false }
     : isCyberJudah
       ? {
           enabled: true,
-          url: `https://u.expo.dev/${CYBERJUDAH_EAS_PROJECT_ID}`,
+          // Our own Open OTA server on Cloudflare, as Bible Strong does (docs/adr/0085): EAS Update's
+          // free plan stops serving updates past 1,000 readers a month.
+          url: 'https://updates.cyberjudah.io/manifest',
           checkAutomatically: 'ON_LOAD',
-          fallbackToCacheTimeout: 0,
+          // The cloud Preview is opened to check a change that was just sent, so it waits up to
+          // 30 seconds at launch for the newest update. Readers' builds never wait.
+          fallbackToCacheTimeout: isCyberJudahCloudPreview ? 30000 : 0,
           codeSigningCertificate: './certs/certificate.pem',
           codeSigningMetadata: { keyid: 'main', alg: 'rsa-v1_5-sha256' },
           requestHeaders: {
