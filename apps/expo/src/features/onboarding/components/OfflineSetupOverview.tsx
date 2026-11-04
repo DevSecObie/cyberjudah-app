@@ -1,6 +1,7 @@
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { titleFontStyle } from '~themes/styleValues'
 import { useTranslation } from 'react-i18next'
+import { getOfflineSetupFolderSubtitle } from '../offlineSetupCopy'
 import { ScrollView, View } from 'react-native'
 import { Easing, FadeInDown, FadeInUp } from 'react-native-reanimated'
 import Box, { AnimatedBox, HStack, VStack } from '~common/ui/Box'
@@ -215,7 +216,7 @@ const OfflineSetupOverview = ({
                             <OfflineResourceFolder
                               width={folderWidth}
                               title={t(`offlineSetup.presets.${folder.id}.title`)}
-                              subtitle={t('offlineSetup.selectedCount', { count })}
+                              subtitle={getOfflineSetupFolderSubtitle(t, count)}
                               icon={folder.icon}
                               itemCount={count}
                               selected={count > 0}

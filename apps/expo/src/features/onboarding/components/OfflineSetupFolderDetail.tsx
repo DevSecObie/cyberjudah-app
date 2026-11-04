@@ -4,6 +4,7 @@ import { Feather } from '@expo/vector-icons'
 import { useState } from 'react'
 import { Pressable, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import { getOfflineSetupFolderDescription } from '../offlineSetupCopy'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Box, { AnimatedBox, HStack, VStack } from '~common/ui/Box'
 import Text from '~common/ui/Text'
@@ -158,7 +159,7 @@ const OfflineSetupFolderDetail = ({
                 resolveThemeColor(stylingTheme, palette.description) || stylingTheme.colors.default,
             }}
           >
-            {t(`offlineSetup.presets.${folderId}.description`)}
+            {getOfflineSetupFolderDescription(t, folderId)}
           </Text>
         </AnimatedBox>
 
