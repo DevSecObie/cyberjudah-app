@@ -67,7 +67,9 @@ export default function BookWidget({ widget }: { widget: Descriptor }) {
                 <span>
                   {item.title}
                   <small>
-                    {item.attributionLabel} · {formatPassageMediaDuration(item.durationSeconds)}
+                    {[item.attributionLabel, formatPassageMediaDuration(item.durationSeconds)]
+                      .filter(Boolean)
+                      .join(' · ')}
                   </small>
                 </span>
                 <ArrowUpRightIcon size={15} />

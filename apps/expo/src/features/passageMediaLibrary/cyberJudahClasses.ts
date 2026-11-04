@@ -103,7 +103,8 @@ export const toClassLibrary = (
       classes.push({
         workId,
         editionId: `${workId}:en`,
-        attributionLabel: 'CyberJudah',
+        // A class is credited to its teacher only, never to CyberJudah (Obie, 2026-11-03).
+        attributionLabel: '',
         reference: '',
         strongCodes: [],
         provider: 'youtube',
@@ -141,7 +142,7 @@ export const toClassLibrary = (
     classes.push({
       workId,
       editionId: `${workId}:en`,
-      attributionLabel: 'CyberJudah',
+      attributionLabel: '',
       reference: '',
       strongCodes: [],
       provider: 'youtube',

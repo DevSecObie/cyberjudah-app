@@ -1,5 +1,6 @@
 import books from '~assets/cyberjudah/books.json'
 import type { ResolvedPassageMedia, ResolvedPassageMediaChapter } from './passageMedia'
+import { classTeacherRank } from '~helpers/classTeacherRank'
 
 // The classes' pictures in the reader, as in the Telegram app: after the last verse a class taught,
 // a small deck of its recordings; at the end of the chapter, every class that taught or read it.
@@ -65,16 +66,8 @@ export const verseNumbers = (spec?: string | null): number[] => {
   return [...new Set(out)].sort((a, b) => a - b)
 }
 
-/** The Bishops' teaching comes first, then the Deacons', then the Captains', then the rest; Zakai's last. */
-const teacherRank = (teacher?: string | null) => {
-  const name = teacher ?? ''
-  if (/^bishop\b/i.test(name)) return 0
-  if (/^deacon\b/i.test(name)) return 1
-  if (/^captain\b/i.test(name)) return 2
-  // Zakai's classes always come last (Obie, 2026-11-02).
-  if (/^zakai\b/i.test(name)) return 4
-  return 3
-}
+/** Obie's class order: the Bishops (Nathanyel, Yawasap, Kani), Deacons, Captains, the rest; Zakai last. */
+const teacherRank = classTeacherRank
 const byRankNewestFirst = (a: ClassMoment, b: ClassMoment) =>
   teacherRank(a.teacher) - teacherRank(b.teacher) || (b.date ?? '').localeCompare(a.date ?? '')
 
@@ -184,7 +177,7 @@ const toMedia = (
   return {
     workId,
     editionId: workId,
-    attributionLabel: 'CyberJudah',
+    attributionLabel: '',
     reference: moment.verses.includes(':')
       ? `${bookName} ${moment.verses}`
       : `${bookName} ${chapter}:${moment.verses}`,
