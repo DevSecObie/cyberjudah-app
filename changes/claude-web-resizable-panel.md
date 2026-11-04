@@ -1,2 +1,3 @@
 - Web: drag the side panel's edge to make it wider or narrower; double-click puts back the default width, and the browser remembers the width.
 - Web: the page's back arrow moves only the page; a side panel open beside it stays open.
+- Web: the reader's "unavailable" message is centred in the reader, not the whole window.
