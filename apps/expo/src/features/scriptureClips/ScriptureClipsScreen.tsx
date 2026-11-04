@@ -136,6 +136,10 @@ const ScriptureClipsScreen = () => {
   )
   const [index, setIndex] = useState(0)
   const [sheetClip, setSheetClip] = useState<ScriptureClip | null>(null)
+  // Clips start muted, as Shorts and Reels do, so they can play by themselves; a tap turns the
+  // sound on, and it stays on for the clips after.
+  const [muted, setMuted] = useState(true)
+  const soundOn = useRef(false)
   const firstWithVideo = clips.find(clip => clip.video && clip.start !== undefined)
   const [loaded, setLoaded] = useState<Loaded | null>(null)
   // The video's clock: its last reported second, when that was, and whether it plays.
@@ -192,6 +196,38 @@ const ScriptureClipsScreen = () => {
     // `loaded` is read, not followed: loading a video must not seek it again.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, clips])
+
+  // A video was loaded: start it by itself. With the sound on when it was turned on (falling back
+  // to muted if the phone won't start it with sound), muted otherwise.
+  useEffect(() => {
+    if (!loaded) return
+    let tries = 0
+    const timer = setInterval(() => {
+      if (clockRef.current.playing || tries > 25) {
+        clearInterval(timer)
+        return
+      }
+      if (soundOn.current && tries >= 4) {
+        soundOn.current = false
+        setMuted(true)
+      }
+      frame.current?.command({ func: soundOn.current ? 'unMute' : 'mute' })
+      frame.current?.command({ func: 'playVideo' })
+      tries++
+    }, 500)
+    return () => clearInterval(timer)
+  }, [loaded])
+
+  const tapVideo = () => {
+    if (muted) {
+      soundOn.current = true
+      setMuted(false)
+      frame.current?.command({ func: 'unMute' })
+      frame.current?.command({ func: 'playVideo' })
+      return
+    }
+    frame.current?.command({ func: clockRef.current.playing ? 'pauseVideo' : 'playVideo' })
+  }
 
   const advance = useCallback(() => {
     const following = indexRef.current + 1
@@ -350,6 +386,20 @@ const ScriptureClipsScreen = () => {
               clockRef.current = { ...clockRef.current, at: Date.now(), playing: state === 1 }
             }}
           />
+          {/* Tap the video for sound, then to pause and play, as on Shorts. */}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={muted ? 'Turn the sound on' : 'Pause or play'}
+            onPress={tapVideo}
+            style={StyleSheet.absoluteFill}
+          >
+            {muted && (
+              <View style={styles.soundPill}>
+                <FeatherIcon name="volume-x" size={15} color="white" />
+                <Text style={styles.soundText}>Tap for sound</Text>
+              </View>
+            )}
+          </Pressable>
         </View>
       )}
       <View style={[styles.head, { paddingTop: insets.top + 6 }]} pointerEvents="box-none">
@@ -544,6 +594,19 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.25)',
   },
   progressFill: { height: 2, backgroundColor: '#fff' },
+  soundPill: {
+    position: 'absolute',
+    left: 12,
+    top: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+  },
+  soundText: { color: '#fff', fontWeight: '700', fontSize: 13 },
   empty: { alignItems: 'center', justifyContent: 'center', gap: 18, paddingHorizontal: 32 },
   emptyText: { color: 'rgba(255,255,255,0.8)', fontSize: 16, textAlign: 'center' },
   emptyButton: {

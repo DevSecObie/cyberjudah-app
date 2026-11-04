@@ -26,6 +26,8 @@ type Reading = {
   video: string
   t: number
   ts: string
+  /** The second this verse itself starts being read, when the captions show it. */
+  vt?: number
   title: string
   date: string
   teacher: string

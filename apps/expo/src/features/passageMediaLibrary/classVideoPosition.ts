@@ -71,7 +71,7 @@ export const classStateFromMessage = (data: unknown): number | undefined => {
 }
 
 export type ClassCommand = {
-  func: 'playVideo' | 'pauseVideo' | 'seekTo' | 'pictureInPicture'
+  func: 'playVideo' | 'pauseVideo' | 'seekTo' | 'pictureInPicture' | 'mute' | 'unMute'
   args?: unknown[]
 }
 

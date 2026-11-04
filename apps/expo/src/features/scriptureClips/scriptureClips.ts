@@ -7,9 +7,9 @@ import {
 
 // Scripture Clips: the Bible as a vertical feed of class videos, a verse at a time. The clips are
 // the classes the Bible reader shows under each verse (its "Taught from" and "Read in class"
-// classes), in the reader's order. A clip starts where the class takes up the verse and runs to
-// the class's next moment in the chapter, up to three minutes. This is a CyberJudah component,
-// not one of Bible Strong's.
+// classes), in the reader's order. A clip starts at the second the class reads the verse (from
+// the captions) and runs until the class reads its next verse, up to three minutes. This is a
+// CyberJudah component, not one of Bible Strong's.
 
 /** One caption line of the class transcript: [from, to, text], seconds from the clip's start. */
 export type ClipCaption = [number, number, string]
@@ -26,6 +26,8 @@ export type ScriptureClip = {
   /** The second in the video the verse is read at. */
   start?: number
   end?: number
+  /** Whether `start` is the verse's own second, not the start of the passage. */
+  exact?: boolean
   /** The class's title. */
   title?: string | null
   /** The teacher, blank when not known. */
@@ -90,10 +92,12 @@ const byReaderOrder = (a: Candidate, b: Candidate) =>
   a.t - b.t
 
 /**
- * The chapter's clips: for each verse, the class the reader lists first for it (the classes
- * whose notes teach it, then those that read it aloud; Bishops, Deacons, Captains, Zakai last;
- * newest first). Verses the same class takes up at the same second share one clip. A verse no
- * class has taken up has no clip.
+ * The chapter's clips, one verse each: a class that reads the verse, starting at the second it
+ * reads it and running until it reads its next verse. The class reading on from the verse before
+ * keeps going; otherwise the class the reader lists first (the classes whose notes teach it,
+ * then those that read it aloud; Bishops, Deacons, Captains, Zakai last; newest first). A verse
+ * whose second no caption shows falls back to where a class takes up the passage, shared by the
+ * verses taken up with it. A verse no class has taken up has no clip.
  */
 export const clipsForChapter = (
   data: ChapterClasses | null | undefined,
@@ -144,13 +148,76 @@ export const clipsForChapter = (
   const shown = [...new Set([...texts.keys(), ...covering.keys()])]
     .sort((a, b) => a - b)
     .map(v => ({ v, text: texts.get(v) ?? '' }))
+  // The classes that read each verse with the second the verse itself is read; a class whose
+  // notes teach the chapter counts as teaching it.
+  const taughtVideos = new Set((data?.moments ?? []).map(moment => moment.video))
+  const exact = new Map<number, (Candidate & { vt: number })[]>()
+  const verseSeconds = new Map<string, number[]>()
+  for (const [key, readings] of Object.entries(data?.read ?? {})) {
+    const verse = Number(key)
+    if (!Number.isInteger(verse) || !Array.isArray(readings)) continue
+    for (const reading of readings) {
+      if (!VIDEO_ID.test(reading?.video ?? '') || !Number.isFinite(reading.vt)) continue
+      const vt = reading.vt as number
+      const list = exact.get(verse) ?? []
+      list.push({
+        verses: key,
+        label: reading.title,
+        url: reading.url ?? '',
+        date: reading.date,
+        video: reading.video,
+        t: reading.t,
+        ts: reading.ts,
+        teacher: reading.teacher,
+        taught: Boolean(reading.url) || taughtVideos.has(reading.video),
+        vt,
+      })
+      exact.set(verse, list)
+      const seconds = verseSeconds.get(reading.video) ?? []
+      seconds.push(vt)
+      verseSeconds.set(reading.video, seconds)
+    }
+  }
+  // Where the class reads its next verse.
+  const nextVerseSecond = (video: string, after: number) => {
+    const later = (verseSeconds.get(video) ?? []).filter(seconds => seconds > after + 1)
+    return later.length ? Math.min(...later) : undefined
+  }
+
   const clips: ScriptureClip[] = []
   for (const { v, text } of shown) {
+    const last = clips[clips.length - 1]
+    const exacts = (exact.get(v) ?? []).sort(byReaderOrder)
+    if (exacts.length) {
+      // The class reading on from the verse before keeps going, so the reading isn't broken up;
+      // otherwise the class the reader lists first.
+      const pick =
+        (last?.exact &&
+          exacts.find(c => c.video === last.video && c.vt > (last.start ?? Infinity))) ||
+        exacts[0]
+      // A second early, so the verse's first word is heard.
+      const start = Math.max(0, Math.round((pick.vt - 0.8) * 10) / 10)
+      clips.push({
+        c: chapter,
+        v,
+        text,
+        verses: [{ v, text }],
+        video: pick.video,
+        start,
+        end: nextVerseSecond(pick.video, pick.vt),
+        exact: true,
+        title: pick.label || null,
+        teacher: pick.teacher || null,
+        date: pick.date || null,
+        notes: pick.url || null,
+      })
+      continue
+    }
+    // No class's captions show the verse's own second: where the class takes the passage up.
     const candidates = (covering.get(v) ?? []).sort(byReaderOrder)
     if (!candidates.length) continue
-    const last = clips[clips.length - 1]
     const same =
-      last && last.video && (last.vEnd ?? last.v) === v - 1
+      last && last.video && !last.exact && (last.vEnd ?? last.v) === v - 1
         ? candidates.find(c => c.video === last.video && c.t === last.start)
         : undefined
     if (last && same) {

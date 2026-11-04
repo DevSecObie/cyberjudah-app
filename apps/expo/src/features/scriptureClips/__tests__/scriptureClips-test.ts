@@ -101,3 +101,35 @@ describe('clipsForChapter', () => {
     expect(clipsForChapter(null, 1, verses)).toEqual([])
   })
 })
+
+describe('clipsForChapter with verse seconds', () => {
+  const verses = [1, 2, 3].map(v => ({ v, text: `verse ${v}` }))
+  const reading = (video: string, vt: number, teacher = 'Captain Gideon') => ({
+    video,
+    t: 100,
+    ts: '',
+    vt,
+    title: video,
+    date: '2026-01-01',
+    teacher,
+  })
+
+  it('starts each verse where it is read and keeps the class reading on', () => {
+    const clips = clipsForChapter(
+      {
+        read: {
+          '1': [reading('AAAAAAAAAAA', 110.4)],
+          '2': [reading('BBBBBBBBBBB', 50, 'Bishop Kani'), reading('AAAAAAAAAAA', 118)],
+          '3': [reading('BBBBBBBBBBB', 60, 'Bishop Kani')],
+        },
+      },
+      1,
+      verses
+    )
+    expect(clips.map(clip => [clip.v, clip.video, clip.start, clip.end])).toEqual([
+      [1, 'AAAAAAAAAAA', 109.6, 118],
+      [2, 'AAAAAAAAAAA', 117.2, undefined],
+      [3, 'BBBBBBBBBBB', 59.2, undefined],
+    ])
+  })
+})
