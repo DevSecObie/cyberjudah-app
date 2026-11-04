@@ -1,0 +1,1 @@
+- Link previews on verse links come from CyberJudah's own server (cyberjudah.io/api/og) instead of being off.

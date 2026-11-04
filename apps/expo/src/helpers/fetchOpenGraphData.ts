@@ -2,7 +2,14 @@ import { Link, LinkType, OpenGraphData } from '~redux/modules/user'
 import { getCurrentAuthUser } from './firebaseAuthRuntime'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 
-const FUNCTION_URL = 'https://us-central1-bible-strong-app.cloudfunctions.net/fetchOpenGraph'
+const BIBLE_STRONG_FUNCTION_URL =
+  'https://us-central1-bible-strong-app.cloudfunctions.net/fetchOpenGraph'
+// CyberJudah fetches link previews from its own worker, with the same request and answer.
+const CYBERJUDAH_FUNCTION_URL = `${
+  process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL || 'https://cyberjudah.io'
+}/api/og`
+const functionUrl = () =>
+  usesCyberJudahEditorial() ? CYBERJUDAH_FUNCTION_URL : BIBLE_STRONG_FUNCTION_URL
 
 /**
  * Détecte le type de lien à partir de l'URL
@@ -75,8 +82,7 @@ export function isValidUrl(url: string): boolean {
  * Retourne null si offline, URL invalide, ou erreur (pas grave)
  */
 export async function fetchOpenGraphData(url: string): Promise<OpenGraphData | null> {
-  // Previews are fetched by Bible Strong's cloud function; CyberJudah sends no link there.
-  if (usesCyberJudahEditorial() || !isValidUrl(url)) {
+  if (!isValidUrl(url)) {
     return null
   }
 
@@ -85,7 +91,7 @@ export async function fetchOpenGraphData(url: string): Promise<OpenGraphData | n
     if (!user) return null
 
     const token = await user.getIdToken()
-    const response = await fetch(`${FUNCTION_URL}?url=${encodeURIComponent(url)}`, {
+    const response = await fetch(`${functionUrl()}?url=${encodeURIComponent(url)}`, {
       method: 'GET',
       headers: { Authorization: `Bearer ${token}` },
     })
