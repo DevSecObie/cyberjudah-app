@@ -13,6 +13,8 @@ import {
 } from '~helpers/offlineResourceSizeManifest'
 import formatResourceSize from '../formatResourceSize'
 import { createDownloadItemFromOnboardingSelection } from '../onboardingResources'
+import { isQueuedOnboardingResourceSelection } from '../onboardingResourceSelectionId'
+import { CLASS_INDEX_INSTALLED_BYTES } from '~features/passageMediaLibrary/classLibrarySize'
 import { OFFLINE_SETUP_MOTION } from '../offlineSetupMotion'
 import type { OfflineSetupOption } from '../offlineSetupPresets'
 import type { OfflineSetupPalette } from '../offlineSetupPalette'
@@ -30,9 +32,12 @@ const getOptionBytes = (
   option: OfflineSetupOption,
   sizeManifest: OfflineResourceSizeManifest
 ): number =>
+  (option.selections.some(selection => selection.kind === 'class-library')
+    ? CLASS_INDEX_INSTALLED_BYTES
+    : 0) +
   [
     ...new Map(
-      option.selections.map(selection => {
+      option.selections.filter(isQueuedOnboardingResourceSelection).map(selection => {
         const item = createDownloadItemFromOnboardingSelection(selection)
         return [item.id, item]
       })

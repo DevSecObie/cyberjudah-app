@@ -6,6 +6,11 @@ import { downloadManager } from '~helpers/downloadManager'
 import { bibleDomRemountSignalAtom } from '~state/app'
 import { downloadItemStatesAtom } from '~state/downloadQueue'
 import { offlineResourceRegistry } from '~features/resources/resourceAvailability'
+import {
+  downloadClassIndex,
+  refreshClassIndexState,
+  useClassIndexState,
+} from '~features/passageMediaLibrary/classLibraryIndex'
 import { selectedResourcesAtom } from './atom'
 import {
   createDownloadItemsFromOnboardingSelections,
@@ -37,6 +42,8 @@ const getDisplayedProgress = ({
   return 0
 }
 
+type ClassLibraryPhase = 'none' | 'downloading' | 'done' | 'failed'
+
 const toError = (reason: unknown) => {
   if (reason instanceof Error) return reason
   return new Error(String(reason))
@@ -67,17 +74,38 @@ const useOfflineSetupDownload = ({
     })
   )
   const trackedItemIds = plannedItems.map(item => item.id)
+  // The class library has its own download, beside the queue, tracked as one more item.
+  const [classLibrarySelected] = useState(() =>
+    selectedResources.some(resource => resource.kind === 'class-library')
+  )
+  const [classLibraryPhase, setClassLibraryPhase] = useState<ClassLibraryPhase>('none')
+  const classIndexState = useClassIndexState()
   const timers = useRef<Set<Timer>>(new Set())
   const previewInterval = useRef<ReturnType<typeof setInterval> | undefined>(undefined)
   const verificationStarted = useRef(false)
   const finished = useRef(false)
   const isPreview = mode === 'preview'
-  const tracking = getOfflineSetupDownloadTracking(trackedItemIds, downloadItemStates)
+  const queueTracking = getOfflineSetupDownloadTracking(trackedItemIds, downloadItemStates)
+  let classLibraryProgress = 0
+  if (classLibraryPhase === 'done') classLibraryProgress = 1
+  else if (classIndexState.status === 'downloading') classLibraryProgress = classIndexState.progress
+  const classLibraryTracked = classLibrarySelected && !isPreview
+  const trackedTotal = trackedItemIds.length + (classLibraryTracked ? 1 : 0)
+  const tracking = {
+    completed: queueTracking.completed && (!classLibraryTracked || classLibraryPhase === 'done'),
+    failedItem: queueTracking.failedItem,
+    progress:
+      trackedTotal === 0
+        ? 1
+        : (queueTracking.progress * trackedItemIds.length +
+            (classLibraryTracked ? classLibraryProgress : 0)) /
+          trackedTotal,
+  }
   const displayProgress = getDisplayedProgress({
     isPreview,
     previewProgress,
     queueProgress: tracking.progress,
-    queueTotal: trackedItemIds.length,
+    queueTotal: trackedTotal,
   })
   const schedule = (action: () => void, delay: number) => {
     const timer = setTimeout(() => {
@@ -103,9 +131,18 @@ const useOfflineSetupDownload = ({
     setPhase('error')
   }
 
+  const startClassLibraryDownload = () => {
+    setClassLibraryPhase('downloading')
+    void downloadClassIndex()
+      .then(() => refreshClassIndexState())
+      .then(current => setClassLibraryPhase(current.status === 'ready' ? 'done' : 'failed'))
+      .catch(() => setClassLibraryPhase('failed'))
+  }
+
   const enqueueSelectedResources = () => {
     if (plannedItems.length > 0) downloadManager.enqueue(plannedItems)
-    return plannedItems.length
+    if (classLibrarySelected) startClassLibraryDownload()
+    return plannedItems.length + (classLibrarySelected ? 1 : 0)
   }
 
   const retry = () => {
@@ -116,10 +153,13 @@ const useOfflineSetupDownload = ({
       const failedItemIds = trackedItemIds.filter(
         itemId => downloadItemStates.get(itemId)?.status === 'failed'
       )
+      const classLibraryFailed = classLibraryPhase === 'failed'
+      if (classLibraryFailed) startClassLibraryDownload()
       if (failedItemIds.length > 0) {
         failedItemIds.forEach(itemId => downloadManager.retry(itemId))
         return
       }
+      if (classLibraryFailed) return
 
       if (enqueueSelectedResources() === 0) void verifyAndComplete()
     } catch (itemError) {
@@ -195,6 +235,11 @@ const useOfflineSetupDownload = ({
     if (isPreview || !trackingStarted || !tracking.failedItem) return
     fail(new Error(tracking.failedItem.error || 'Download failed'))
   }, [isPreview, tracking.failedItem, trackingStarted])
+
+  useEffect(() => {
+    if (isPreview || !trackingStarted || classLibraryPhase !== 'failed') return
+    fail(new Error('The classes download failed'))
+  }, [isPreview, classLibraryPhase, trackingStarted])
 
   useEffect(
     () => () => {

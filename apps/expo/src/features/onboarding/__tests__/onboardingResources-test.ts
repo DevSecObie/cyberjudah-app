@@ -300,4 +300,13 @@ describe('onboardingResources', () => {
       })
     ).toEqual([])
   })
+
+  it('leaves the class library out of the download queue, which has its own download', () => {
+    expect(
+      createDownloadItemsFromOnboardingSelections([
+        { kind: 'class-library' },
+        { kind: 'bible', versionId: 'KJV' },
+      ]).map(item => item.id)
+    ).toEqual(['bible:KJV'])
+  })
 })

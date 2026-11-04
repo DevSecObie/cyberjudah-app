@@ -1,0 +1,3 @@
+- First-run offline setup offers the classes: "The classes" (the notes of every published class, searchable offline) is listed first in the Explore folder, checked with the KJV by default, and downloads beside the other resources.
+- Biblical entities and The Jewish Encyclopedia are now offered in the offline setup: the entities module installs on its own, and dictionaries install without the shared index this catalog does not publish.
+- The class library download estimate is 61 MB (was 56 MB).

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { isLocalResourceAvailable } from '~features/resources/resourceAvailability'
+import { hasMobileResourceCatalogEntry } from '~helpers/mobileResourceCatalog'
+import { refreshClassIndexState } from '~features/passageMediaLibrary/classLibraryIndex'
 import type { ResourceLanguage } from '~helpers/databaseTypes'
 import {
   bundledOfflineResourceSizeManifest,
@@ -49,15 +51,20 @@ const checkAvailability = async (
   lang: ResourceLanguage
 ): Promise<AvailabilitySummary> => {
   const selections = resolveOfflineSetupFolderOptionIds(folderOptionIds, lang)
-  const dictionaryDirectoryAvailable = selections.some(selection => selection.kind === 'dictionary')
-    ? await isLocalResourceAvailable({ kind: 'dictionary-directory' })
-    : true
+  // A catalog without the shared dictionary index (CyberJudah's) installs each dictionary alone.
+  const dictionaryDirectoryAvailable =
+    selections.some(selection => selection.kind === 'dictionary') &&
+    hasMobileResourceCatalogEntry('dictionary-directory')
+      ? await isLocalResourceAvailable({ kind: 'dictionary-directory' })
+      : true
   const results = await Promise.all(
     selections.map(async selection => ({
       selection,
       available:
-        (await isLocalResourceAvailable(getOnboardingResourceIdentity(selection))) &&
-        (selection.kind !== 'dictionary' || dictionaryDirectoryAvailable),
+        selection.kind === 'class-library'
+          ? (await refreshClassIndexState()).status === 'ready'
+          : (await isLocalResourceAvailable(getOnboardingResourceIdentity(selection))) &&
+            (selection.kind !== 'dictionary' || dictionaryDirectoryAvailable),
     }))
   )
 

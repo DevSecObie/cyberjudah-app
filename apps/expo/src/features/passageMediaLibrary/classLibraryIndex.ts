@@ -9,6 +9,7 @@ import {
   restoreOrphanedResourceBackup,
 } from '~helpers/atomicResourceFile'
 import { ftsQuery, momentOf } from './classIndexQuery'
+import { CLASS_INDEX_DOWNLOAD_MB, CLASS_INDEX_UNPACKED_RATIO } from './classLibrarySize'
 
 // The class search kept on the phone: the library every notes publish builds (all the notes, with
 // a full-text index), downloaded once from data.cyberjudah.io and searched here in milliseconds,
@@ -22,8 +23,7 @@ const PART = `${DIRECTORY}/${NAME}.part`
 const ETAG_KEY = 'cyberjudah.classIndex.etag'
 const CHECKED_KEY = 'cyberjudah.classIndex.checkedAt'
 const CHECK_EVERY_MS = 12 * 60 * 60 * 1000
-/** The download's size, for asking first: the library as the data server sends it. */
-export const CLASS_INDEX_DOWNLOAD_MB = 56
+export { CLASS_INDEX_DOWNLOAD_MB } from './classLibrarySize'
 
 export type ClassIndexState =
   | { status: 'unknown' | 'absent' | 'ready' }
@@ -82,7 +82,10 @@ const performClassIndexDownload = async () => {
         status: 'downloading',
         installed,
         // The bytes come in unpacked, about three times the size sent.
-        progress: Math.min(0.99, totalBytesWritten / (CLASS_INDEX_DOWNLOAD_MB * 2.9 * 1048576)),
+        progress: Math.min(
+          0.99,
+          totalBytesWritten / (CLASS_INDEX_DOWNLOAD_MB * CLASS_INDEX_UNPACKED_RATIO * 1048576)
+        ),
       })
     )
     const result = await download.downloadAsync()

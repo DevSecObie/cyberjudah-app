@@ -17,10 +17,17 @@ import type { StrongBibleVersionId } from '~helpers/strongBiblePublications'
 import type { StrongLexiconModuleId } from '~helpers/strongLexiconPublications'
 import { requiresStrongLexiconCore } from '~helpers/strongLexiconCore'
 import { createOfflineCopyId, type OfflineCopyIdentity } from '~helpers/offlineCopyId'
-import { getOnboardingResourceSelectionId } from './onboardingResourceSelectionId'
+import {
+  getOnboardingResourceSelectionId,
+  isQueuedOnboardingResourceSelection,
+} from './onboardingResourceSelectionId'
 import { getCommentaryByPublicationId } from '~helpers/commentaryCatalog'
+import { hasMobileResourceCatalogEntry } from '~helpers/mobileResourceCatalog'
 
-export { getOnboardingResourceSelectionId } from './onboardingResourceSelectionId'
+export {
+  getOnboardingResourceSelectionId,
+  isQueuedOnboardingResourceSelection,
+} from './onboardingResourceSelectionId'
 
 type DownloadableDatabaseResources = ReturnType<typeof databases>
 export type OnboardingDatabaseResourceOption =
@@ -60,6 +67,16 @@ export type OnboardingResourceSelection =
       lang: ResourceLanguage
       title: string
     }
+  | {
+      /** CyberJudah's class library: the notes of every published class, kept on the phone. */
+      kind: 'class-library'
+    }
+
+/** The selections the download queue installs (the class library has its own download). */
+export type QueuedOnboardingResourceSelection = Exclude<
+  OnboardingResourceSelection,
+  { kind: 'class-library' }
+>
 
 type TranslateResourceName = (key: string, options?: Record<string, string | undefined>) => string
 
@@ -110,11 +127,12 @@ export const getOnboardingResourceDisplayName = (
     )
   }
   if (resource.kind === 'dictionary') return resource.title
+  if (resource.kind === 'class-library') return translate('offlineSetup.resources.classes')
   return translate(DATABASE_RESOURCE_NAME_KEYS[resource.databaseId])
 }
 
 export const getOnboardingResourceIdentity = (
-  resource: OnboardingResourceSelection
+  resource: QueuedOnboardingResourceSelection
 ): OfflineCopyIdentity => {
   if (resource.kind === 'bible') return { kind: 'bible', versionId: resource.versionId }
   if (resource.kind === 'bible-strong') {
@@ -186,8 +204,11 @@ export const getOnboardingDatabaseResourceOptions = (
 ): OnboardingDatabaseResourceOption[] =>
   Object.values(databases(lang)).filter(db => lang === 'fr' || db.id !== 'MHY')
 
+// A catalog without the shared dictionary index (CyberJudah's) installs each dictionary alone.
+const hasDictionaryDirectory = () => hasMobileResourceCatalogEntry('dictionary-directory')
+
 export const createDownloadItemFromOnboardingSelection = (
-  resource: OnboardingResourceSelection
+  resource: QueuedOnboardingResourceSelection
 ): DownloadItem => {
   if (resource.kind === 'bible') {
     return createBibleDownloadItem(resource.versionId)
@@ -225,8 +246,7 @@ export const createDownloadItemFromOnboardingSelection = (
     )
   }
   if (resource.kind === 'dictionary') {
-    const directory = createDictionaryDirectoryDownloadItem()
-    return {
+    const item = {
       ...createDictionaryDownloadItem({
         kind: 'dictionary',
         work: resource.work,
@@ -234,8 +254,9 @@ export const createDownloadItemFromOnboardingSelection = (
         language: resource.lang,
       }),
       name: resource.title,
-      dependsOnId: directory.id,
     }
+    if (!hasDictionaryDirectory()) return item
+    return { ...item, dependsOnId: createDictionaryDirectoryDownloadItem().id }
   }
 
   return createDatabaseDownloadItem(resource.databaseId, resource.lang)
@@ -244,8 +265,10 @@ export const createDownloadItemFromOnboardingSelection = (
 export const createDownloadItemsFromOnboardingSelections = (
   resources: readonly OnboardingResourceSelection[]
 ): DownloadItem[] => {
-  const selectedItems = resources.map(createDownloadItemFromOnboardingSelection)
-  if (!resources.some(resource => resource.kind === 'dictionary')) return selectedItems
+  const queued = resources.filter(isQueuedOnboardingResourceSelection)
+  const selectedItems = queued.map(createDownloadItemFromOnboardingSelection)
+  if (!queued.some(resource => resource.kind === 'dictionary') || !hasDictionaryDirectory())
+    return selectedItems
   const directory = createDictionaryDirectoryDownloadItem()
   return [directory, ...selectedItems]
 }
