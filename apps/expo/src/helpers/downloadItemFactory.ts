@@ -21,6 +21,7 @@ import {
 import type { StrongBibleSidecarAvailability } from './strongBibleSidecar'
 import {
   getInterlinearBiblePublication,
+  getInterlinearIndexLanguage,
   isInterlinearCapableBibleVersion,
 } from './interlinearBiblePublications'
 import type { InterlinearSidecarAvailability } from './interlinearBibleSidecar'
@@ -91,9 +92,11 @@ export function createBibleDownloadItem(versionId: string): DownloadItem {
   }
 }
 
-export function createInterlinearSidecarDownloadItem(lang: ResourceLanguage): DownloadItem {
+export function createInterlinearSidecarDownloadItem(language: ResourceLanguage): DownloadItem {
   const publication = getInterlinearBiblePublication()
+  const lang = getInterlinearIndexLanguage(language, publication)
   const artifact = publication.indexes[lang]
+  if (!artifact) throw new Error(`INTERLINEAR_BIBLE_CATALOG_ENTRY_MISSING:${lang}`)
   return {
     id: createOfflineCopyId({
       kind: 'interlinear-index',
@@ -117,7 +120,6 @@ export function createInterlinearSidecarDownloadItem(lang: ResourceLanguage): Do
 type InstalledArchiveReader = (resourceId: string) => { archiveSha256?: string } | undefined
 
 const BHG_TEXT_ID = createOfflineCopyId({ kind: 'bible', versionId: 'BHG' })
-const INTERLINEAR_LANGUAGES: ResourceLanguage[] = ['fr', 'en']
 
 /**
  * Brings the BHG text and its indexes to the catalog revision together (ADR-0079). An index is
@@ -145,12 +147,12 @@ export const completeInterlinearDownloadPlan = (
     )
   }
   if (bringsText) {
-    for (const language of INTERLINEAR_LANGUAGES) {
+    for (const language of Object.keys(publication.indexes) as ResourceLanguage[]) {
       const index = createInterlinearSidecarDownloadItem(language)
       const installed = readInstalled(index.id)
       if (
         installed &&
-        installed.archiveSha256 !== publication.indexes[language].archiveSha256 &&
+        installed.archiveSha256 !== publication.indexes[language]?.archiveSha256 &&
         !plan.some(item => item.id === index.id)
       ) {
         plan.push(index)

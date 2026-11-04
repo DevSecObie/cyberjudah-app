@@ -29,6 +29,7 @@ import { installStrongLexiconModule } from './strongLexiconModules'
 import type { ResourceInstallationLifecycle } from './resourceInstallationLifecycle'
 import { verifyFileSha256 } from './fileIntegrity'
 import { unzipOfflineArchive } from './offlineArchiveSource'
+import { BHG_INTERLINEAR_IDENTITY } from './interlinearBiblePublicationCatalog'
 
 export interface ResourceInstallationCallbacks {
   onDownloadProgress: (progress: number) => void
@@ -230,7 +231,10 @@ const installBibleInterlinearSidecar = async (
   item: InterlinearIndexDownloadItem,
   callbacks: ResourceInstallationCallbacks
 ) => {
-  if (item.interlinearDatasetId !== 'STEP' || item.url !== item.interlinearArtifact.url) {
+  if (
+    item.interlinearDatasetId !== BHG_INTERLINEAR_IDENTITY.datasetId ||
+    item.url !== item.interlinearArtifact.url
+  ) {
     throw new Error(`INVALID_INTERLINEAR_DOWNLOAD_ITEM:${item.id}`)
   }
   return installInterlinearSidecar(item.lang, item.interlinearArtifact, item.interlinearDatasetId, {

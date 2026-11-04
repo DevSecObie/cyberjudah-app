@@ -30,7 +30,7 @@ describe('CyberJudah book identities', () => {
       expect(books[53]).toMatchObject({ Numero: 81 })
       expect(books[54]).toMatchObject({ Numero: 40 })
       expect(books[80]).toMatchObject({ Numero: 66 })
-      expect(Object.keys(versions)).toEqual(['KJV'])
+      expect(Object.keys(versions)).toEqual(['KJV', 'BHG'])
     })
   })
   it.each([

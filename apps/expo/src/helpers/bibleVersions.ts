@@ -711,6 +711,13 @@ export const versions: Record<string, Version> =
           hasRedWords: false,
           hasPericope: false,
         },
+        BHG: {
+          ...upstreamVersions.BHG,
+          name: 'Hebrew & Greek Bible',
+          name_en: 'Hebrew & Greek Bible',
+          c: 'Westminster Leningrad Codex and Scrivener’s 1894 Textus Receptus, public domain. Hebrew word tags by the Open Scriptures Hebrew Bible Project, CC BY 4.0. Greek word tags by Maurice A. Robinson, public domain.',
+          sourceUrl: 'https://github.com/openscriptures/morphhb',
+        },
       }
     : upstreamVersions
 

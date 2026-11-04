@@ -2,6 +2,7 @@
 jest.mock('~helpers/bibleVersions', () => ({
   versions: {
     KJV: { id: 'KJV', name: 'King James', language: 'en', readingProfile: 'word-for-word' },
+    BHG: { id: 'BHG', name: 'Hebrew & Greek Bible', c: 'Public domain', language: 'he-grc' },
   },
 }))
 
@@ -99,5 +100,14 @@ describe('CyberJudah offline setup', () => {
     expect(options).toContain('strong-lexicon:simple-en')
     expect(options).toContain('bible-strong:KJV')
     expect(options).not.toContain('strong-lexicon:core')
+  })
+
+  it('offers the Hebrew and Greek Bible and its English index, without unpublished lexicons', () => {
+    const options = loadPresets()
+      .getOfflineSetupFolderSections('original-languages', 'en')
+      .flatMap(section => section.options)
+      .map(option => option.id)
+
+    expect(options).toEqual(['bible:BHG', 'bible-interlinear:en'])
   })
 })

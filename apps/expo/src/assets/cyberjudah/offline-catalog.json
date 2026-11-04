@@ -2,7 +2,7 @@
   "format": "bible-strong-mobile-resource-catalog",
   "schemaVersion": 1,
   "generatedAt": "2026-10-30T03:32:29.671Z",
-  "resourceCount": 7,
+  "resourceCount": 9,
   "resources": {
     "bible:KJV": {
       "id": "bible:KJV",
@@ -152,6 +152,50 @@
       "peakInstallationBytes": 9766851,
       "strategy": "archive-extract",
       "resourceRevision": "cj-strong-lexicon-simple-en-56322e6946d5ea24f1fa8228"
+    },
+    "bible:BHG": {
+      "id": "bible:BHG",
+      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/BHG.json.zip?sha256=14b3731f4e5e461b16c9fdd3ebff36d0aa4079b76810f37f313de37515d89636",
+      "file": "BHG.json.zip",
+      "entry": "BHG.json",
+      "entries": {
+        "canonical": {
+          "entry": "BHG.json",
+          "sha256": "6a64b1d4d8c9865e9d98d40cd359fdac762a42f1fbb0c620e70a6f526243d794",
+          "bytes": 9013920
+        }
+      },
+      "archiveSha256": "14b3731f4e5e461b16c9fdd3ebff36d0aa4079b76810f37f313de37515d89636",
+      "archiveBytes": 1851335,
+      "contentSha256": "6a64b1d4d8c9865e9d98d40cd359fdac762a42f1fbb0c620e70a6f526243d794",
+      "contentBytes": 9013920,
+      "installedBytes": 18027840,
+      "peakInstallationBytes": 19879175,
+      "strategy": "sqlite-import",
+      "textRevision": "1eea4e4d68d6009562a0e1a09902070d9503b98f9deb23cb8aa9f65c00ac4467",
+      "textSha256": "1eea4e4d68d6009562a0e1a09902070d9503b98f9deb23cb8aa9f65c00ac4467"
+    },
+    "bible-interlinear:BHG:en": {
+      "id": "bible-interlinear:BHG:en",
+      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/databases/bible-bhg-interlinear-en.sqlite.zip?sha256=e5c1fa20a1ef2ae604ef03b8f895833f3f78e5e366d767c98714c01b6098c10b",
+      "file": "databases/bible-bhg-interlinear-en.sqlite.zip",
+      "entry": "bible-bhg-interlinear-en.sqlite",
+      "entries": {
+        "canonical": {
+          "entry": "bible-bhg-interlinear-en.sqlite",
+          "sha256": "0bb43b90b9bc799bad7942b9d4a845d00fb2b3dc6c9bca0843959cc206276ca4",
+          "bytes": 37036032
+        }
+      },
+      "archiveSha256": "e5c1fa20a1ef2ae604ef03b8f895833f3f78e5e366d767c98714c01b6098c10b",
+      "archiveBytes": 14069755,
+      "contentSha256": "0bb43b90b9bc799bad7942b9d4a845d00fb2b3dc6c9bca0843959cc206276ca4",
+      "contentBytes": 37036032,
+      "installedBytes": 37036032,
+      "peakInstallationBytes": 88141819,
+      "strategy": "archive-extract",
+      "textRevision": "1eea4e4d68d6009562a0e1a09902070d9503b98f9deb23cb8aa9f65c00ac4467",
+      "textSha256": "1eea4e4d68d6009562a0e1a09902070d9503b98f9deb23cb8aa9f65c00ac4467"
     }
   }
 }
