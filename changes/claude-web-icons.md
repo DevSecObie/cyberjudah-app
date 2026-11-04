@@ -1,0 +1,1 @@
+- web.cyberjudah.io shows CyberJudah's lion, not Bible Strong's logo, when added to an iPhone or Android home screen: new apple-touch-icon and manifest icons, the manifest is named CyberJudah, and the Safari banner and manifest no longer offer Bible Strong's own App Store and Play apps. Web only; the phone apps already use the lion.
