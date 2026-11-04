@@ -104,7 +104,7 @@ jobs:
           # Read jarsigner's report in full first: piped straight into `grep -q`, grep stops at the
           # first match, jarsigner dies on the closed pipe, and pipefail fails a signed bundle.
           report=$(jarsigner -verify -certs "$aab")
-          grep -q 'CN=CyberJudah Upload' <<<"$report" || { echo 'The App Bundle is not signed with the CyberJudah upload key'; exit 1; }
+          grep -q 'jar verified' <<<"$report" && grep -q 'CN=CyberJudah Upload' <<<"$report" || { echo 'The App Bundle is not signed with the CyberJudah upload key'; exit 1; }
           unzip -p "$aab" base/manifest/AndroidManifest.xml > /dev/null
           unzip -p "$aab" base/assets/index.android.bundle > "$RUNNER_TEMP/index.android.bundle"
           node apps/expo/scripts/verify-cyberjudah-bundle.mjs "$RUNNER_TEMP/index.android.bundle"
