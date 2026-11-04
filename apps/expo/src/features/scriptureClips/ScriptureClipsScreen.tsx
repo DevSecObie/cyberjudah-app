@@ -1,3 +1,4 @@
+import Color from 'color'
 import { useRouter } from 'expo-router'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
@@ -25,6 +26,7 @@ import ClassVideoFrame, {
 } from '~features/passageMediaLibrary/ClassVideoFrame'
 import { useOpenSiteLink } from '~features/publishedNotes/siteLinks'
 import type { RootState } from '~redux/modules/reducer'
+import { useTheme } from '~themes/ThemeProvider'
 import { resolveFontFamily } from '~themes/styleValues'
 import AnimatedCaption from './AnimatedCaption'
 import { clipLength, type ScriptureClip, type ScriptureClipDay } from './scriptureClips'
@@ -50,6 +52,11 @@ const ScriptureClipsScreen = () => {
   const list = useRef<FlatList<ScriptureClip>>(null)
   const frame = useRef<ClassVideoFrameHandle>(null)
   const sheet = useRef<SheetRef>(null)
+  const theme = useTheme()
+  const sheetTint = useMemo(
+    () => Color(theme.colors.reverse).alpha(0.9).rgb().string(),
+    [theme.colors.reverse]
+  )
   const [index, setIndex] = useState(0)
   const [sheetClip, setSheetClip] = useState<ScriptureClip | null>(null)
   const firstWithVideo = clips.find(clip => clip.video && clip.start !== undefined)
@@ -242,7 +249,9 @@ const ScriptureClipsScreen = () => {
           {clip?.c}:{clip?.v}
         </Text>
       </View>
-      <Sheet ref={sheet} backdrop={false}>
+      {/* The verse panel's glass sits over the Bible page, so it takes the page's colour. This page
+          is black video, so the glass is tinted with the reader's colour to look the same. */}
+      <Sheet ref={sheet} backdrop={false} backgroundColor={sheetTint}>
         {sheetClip && (
           <SheetView style={{ flex: 0, paddingTop: 10 }}>
             <View style={styles.sheetBody}>
@@ -257,7 +266,7 @@ const ScriptureClipsScreen = () => {
                 <Pressable
                   accessibilityRole="link"
                   onPress={() => sheet.current?.dismissThen(() => openClass(sheetClip))}
-                  style={styles.classRow}
+                  style={[styles.classRow, { backgroundColor: theme.colors.lightGrey }]}
                 >
                   <View style={{ flex: 1 }}>
                     <ThemedText style={styles.classRowTitle} numberOfLines={2}>
@@ -270,8 +279,8 @@ const ScriptureClipsScreen = () => {
                     </ThemedText>
                   </View>
                   {sheetClip.start !== undefined && (
-                    <View style={styles.pill}>
-                      <ThemedText style={styles.pillText}>
+                    <View style={[styles.pill, { backgroundColor: theme.colors.reverse }]}>
+                      <ThemedText style={[styles.pillText, { color: theme.colors.primary }]}>
                         ▶ {formatPassageMediaDuration(sheetClip.start)}
                       </ThemedText>
                     </View>
@@ -403,8 +412,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.25)',
   },
   progressFill: { height: 2, backgroundColor: '#fff' },
-  sheetBody: { padding: 20, gap: 14 },
-  sheetTitle: { fontSize: 18, fontWeight: '700' },
+  sheetBody: { paddingHorizontal: 16, paddingTop: 4, paddingBottom: 16, gap: 14 },
+  sheetTitle: { fontSize: 16, fontWeight: '700' },
   sheetVerse: { fontSize: 19, lineHeight: 30 },
   verseNumber: { color: GOLD, fontSize: 13, fontWeight: '600' },
   classRow: {
@@ -412,18 +421,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     padding: 12,
-    borderRadius: 12,
-    backgroundColor: 'rgba(127,127,127,0.14)',
+    borderRadius: 16,
   },
   classRowTitle: { fontSize: 14, fontWeight: '700' },
   classRowMeta: { fontSize: 13, opacity: 0.7 },
   pill: {
-    backgroundColor: '#2fd3bd',
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
-  pillText: { color: '#0b1624', fontWeight: '700', fontSize: 12, fontVariant: ['tabular-nums'] },
+  pillText: { fontWeight: '700', fontSize: 12, fontVariant: ['tabular-nums'] },
 })
 
 export default ScriptureClipsScreen
