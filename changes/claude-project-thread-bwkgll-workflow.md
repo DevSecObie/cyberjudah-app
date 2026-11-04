@@ -1,0 +1,1 @@
+- The "Publish CyberJudah app update" workflow is listed on the default branch so it can be started by hand (GitHub only offers hand-started workflows found there); each run still uses the workflow and code of the branch it is started on.
