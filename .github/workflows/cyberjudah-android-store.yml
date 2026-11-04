@@ -39,19 +39,6 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-      - name: Check the upload key before building
-        env:
-          CJ_KEYSTORE: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
-          CJ_SIGNING_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASSWORD }}
-        run: |
-          set -euo pipefail
-          test -n "$CJ_KEYSTORE" && test -n "$CJ_SIGNING_PASSWORD" || { echo 'The Play upload key secrets are missing'; exit 1; }
-          umask 077
-          # Outside the checkout, so no step can commit or upload it by accident.
-          printf '%s' "$CJ_KEYSTORE" | base64 --decode > "$RUNNER_TEMP/upload.p12"
-          # Prints only the alias and the certificate fingerprints, which are public.
-          keytool -list -v -storetype PKCS12 -keystore "$RUNNER_TEMP/upload.p12" -storepass:env CJ_SIGNING_PASSWORD -alias cyberjudah-upload \
-            | grep -E '^(Alias name|Owner|Valid|[[:space:]]*SHA(1|256):)' || { echo 'The upload key does not open with this password, or its alias is not cyberjudah-upload'; exit 1; }
       - run: corepack enable
       - run: yarn workspaces focus @bible-strong/expo
       - name: Use only the CyberJudah production settings
@@ -71,6 +58,19 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           cache-read-only: true
+      - name: Check the upload key before building
+        env:
+          CJ_KEYSTORE: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
+          CJ_SIGNING_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          test -n "$CJ_KEYSTORE" && test -n "$CJ_SIGNING_PASSWORD" || { echo 'The Play upload key secrets are missing'; exit 1; }
+          umask 077
+          # Outside the checkout, so no step can commit or upload it by accident.
+          printf '%s' "$CJ_KEYSTORE" | base64 --decode > "$RUNNER_TEMP/upload.p12"
+          # Prints only the alias and the certificate fingerprints, which are public.
+          keytool -list -v -storetype PKCS12 -keystore "$RUNNER_TEMP/upload.p12" -storepass:env CJ_SIGNING_PASSWORD -alias cyberjudah-upload \
+            | grep -E '^(Alias name|Owner|Valid|[[:space:]]*SHA(1|256):)' || { echo 'The upload key does not open with this password, or its alias is not cyberjudah-upload'; exit 1; }
       - name: Sign release builds with the upload key
         run: |
           python3 - <<'PY'
@@ -101,7 +101,10 @@ jobs:
           set -euo pipefail
           aab=apps/expo/android/app/build/outputs/bundle/release/app-release.aab
           # Signed with the upload key, not the debug key.
-          jarsigner -verify -certs "$aab" | grep -q 'CN=CyberJudah Upload' || { echo 'The App Bundle is not signed with the CyberJudah upload key'; exit 1; }
+          # Read jarsigner's report in full first: piped straight into `grep -q`, grep stops at the
+          # first match, jarsigner dies on the closed pipe, and pipefail fails a signed bundle.
+          report=$(jarsigner -verify -certs "$aab")
+          grep -q 'CN=CyberJudah Upload' <<<"$report" || { echo 'The App Bundle is not signed with the CyberJudah upload key'; exit 1; }
           unzip -p "$aab" base/manifest/AndroidManifest.xml > /dev/null
           unzip -p "$aab" base/assets/index.android.bundle > "$RUNNER_TEMP/index.android.bundle"
           node apps/expo/scripts/verify-cyberjudah-bundle.mjs "$RUNNER_TEMP/index.android.bundle"
