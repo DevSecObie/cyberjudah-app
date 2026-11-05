@@ -75,7 +75,7 @@ function Sources({ sources }: { sources: CyberJudahSource[] }) {
             onPress={() => link && openInApp(link)}
             className="flex-row gap-3 rounded-xl bg-light-grey p-3"
           >
-            <Text className="font-bold text-primary">{source.n}</Text>
+            <Text className="font-bold text-link">{source.n}</Text>
             <Box className="flex-1">
               <Text className="font-bold" numberOfLines={2}>
                 {source.title}
@@ -249,7 +249,7 @@ function BibleStrongAssistantScreen() {
               setConsentFor(null)
             }}
           >
-            <Text className="text-primary">{t('assistant.new')}</Text>
+            <Text className="text-link">{t('assistant.new')}</Text>
           </Pressable>
         }
       />
@@ -312,7 +312,7 @@ function BibleStrongAssistantScreen() {
                   }}
                   className="px-4 py-3"
                 >
-                  <Text className="text-primary">{t('assistant.cyberjudah.notNow')}</Text>
+                  <Text className="text-link">{t('assistant.cyberjudah.notNow')}</Text>
                 </Pressable>
               </HStack>
             </Box>

@@ -1,3 +1,4 @@
+import { radii } from '~common/ui/surfaces'
 import { useQueries } from '@tanstack/react-query'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import * as Haptics from 'expo-haptics'
@@ -85,7 +86,7 @@ const Confetti = () => {
             left: `${piece.left}%`,
             width: piece.size,
             height: piece.size * 1.6,
-            borderRadius: 2,
+            borderRadius: radii.mark,
             backgroundColor: piece.color,
             opacity: piece.fall.interpolate({ inputRange: [0, 0.85, 1], outputRange: [1, 1, 0] }),
             transform: [
@@ -360,7 +361,7 @@ const PlanQuizScreen = () => {
                   ],
                 }}
               >
-                <Box className="rounded-[32px] px-[22px] pt-[30px] pb-[24px] gap-[18px] items-center overflow-hidden">
+                <Box className="rounded-[24px] px-[22px] pt-[30px] pb-[24px] gap-[18px] items-center overflow-hidden">
                   <AskGlassBackdrop radius={32} />
                   <Box className="flex-row gap-[10px]">
                     {TILES.map((tile, at) => (
@@ -449,10 +450,6 @@ const PlanQuizScreen = () => {
                   className="w-[132px] h-[132px] rounded-full items-center justify-center"
                   style={{
                     backgroundColor: theme.colors.secondary,
-                    shadowColor: theme.colors.secondary,
-                    shadowOpacity: 0.55,
-                    shadowRadius: 30,
-                    shadowOffset: { width: 0, height: 10 },
                   }}
                 >
                   <FeatherIcon name="award" size={66} color="white" />
@@ -485,7 +482,7 @@ const PlanQuizScreen = () => {
                     ],
                   }}
                 >
-                  <Box className="rounded-[28px] p-[22px] gap-[14px] overflow-hidden">
+                  <Box className="rounded-[24px] p-[22px] gap-[14px] overflow-hidden">
                     <AskGlassBackdrop radius={28} />
                     <Box className="flex-row items-center gap-[8px]">
                       <Box
@@ -566,7 +563,7 @@ const PlanQuizScreen = () => {
                             }}
                             disabled={chosen !== undefined}
                             onPress={() => choose(choice)}
-                            className="min-h-[104px] rounded-[22px] p-[14px] justify-between overflow-hidden"
+                            className="min-h-[104px] rounded-[16px] p-[14px] justify-between overflow-hidden"
                             style={{
                               borderWidth: 3,
                               borderColor:
@@ -618,7 +615,7 @@ const PlanQuizScreen = () => {
               }}
             >
               <Box
-                className="rounded-t-[28px] px-[20px] pt-[18px] gap-[14px]"
+                className="rounded-t-[24px] px-[20px] pt-[18px] gap-[14px]"
                 style={{
                   backgroundColor: verdictColor,
                   paddingBottom: Math.max(insets.bottom, 16) + 8,
@@ -647,7 +644,7 @@ const PlanQuizScreen = () => {
                   <TouchableBox
                     accessibilityRole="button"
                     onPress={next}
-                    className="h-[54px] rounded-[18px] items-center justify-center bg-white"
+                    className="h-[54px] rounded-full items-center justify-center bg-white"
                   >
                     <Text className="text-[18px] font-bold" style={{ color: verdictColor }}>
                       Continue

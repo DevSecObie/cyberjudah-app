@@ -1,3 +1,5 @@
+import { radii } from '~common/ui/surfaces'
+// surface-allow: The scan beam and eye glow are drawn logo artwork, not interface surfaces.
 import { Image } from 'expo-image'
 import React, { useEffect } from 'react'
 import { Appearance, StyleSheet, View } from 'react-native'
@@ -167,7 +169,7 @@ const styles = StyleSheet.create({
     top: EYE.y - 9,
     width: 18,
     height: 18,
-    borderRadius: 9,
+    borderRadius: radii.pill,
     backgroundColor: '#5cc8ff',
     shadowColor: '#2f8bff',
     shadowOpacity: 1,

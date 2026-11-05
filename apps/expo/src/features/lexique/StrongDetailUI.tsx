@@ -1,6 +1,11 @@
 import PageContent from '~common/ui/PageContent'
 import { openInApp } from '~common/inAppBrowser'
-import type { LayoutChangeEvent } from 'react-native'
+import {
+  type LayoutChangeEvent,
+  Text as NativeText,
+  type NativeSyntheticEvent,
+  type TextLayoutEventData,
+} from 'react-native'
 import { getReadingTypography, type ReadingTypography } from '~common/readingHtml'
 import { useReferencePreview } from '~features/bibleReferencePreview/state'
 
@@ -9,11 +14,6 @@ import { StudyRowsCard } from '~common/ui/StudySection'
 import { formatStrongDisplayCode } from '~helpers/strongIdentities'
 import { useTheme } from '~themes/ThemeProvider'
 import React from 'react'
-import {
-  Text as NativeText,
-  type NativeSyntheticEvent,
-  type TextLayoutEventData,
-} from 'react-native'
 import { useTranslation, type TFunction } from 'react-i18next'
 import { DomUtils, parseDocument } from 'htmlparser2'
 import { hasChildren, isTag, isText, type ChildNode } from 'domhandler'
@@ -44,7 +44,7 @@ import { withoutRepeatedSummary } from './strongEntityArticle'
 import { isStrongOriginalUnnamed } from './strongOriginalPresentation'
 
 export const StrongEyebrow = ({ children }: { children: React.ReactNode }) => (
-  <Text className="text-primary text-[11px] font-bold uppercase">{children}</Text>
+  <Text className="text-link text-[11px] font-bold uppercase">{children}</Text>
 )
 
 /** A titled section of an entity page (CyberJudah's person sections use it). */

@@ -1,3 +1,4 @@
+import { radii } from '~common/ui/surfaces'
 import { useEffect, useRef, useState } from 'react'
 import {
   Alert,
@@ -217,16 +218,12 @@ function ThinkingDot({ color }: { color: string }) {
       style={{
         width: 9,
         height: 9,
-        borderRadius: 5,
+        borderRadius: radii.pill,
         backgroundColor: color,
         opacity: pulse,
         transform: [
           { scale: pulse.interpolate({ inputRange: [0.35, 1], outputRange: [0.8, 1.15] }) },
         ],
-        shadowColor: color,
-        shadowOpacity: 0.9,
-        shadowRadius: 6,
-        shadowOffset: { width: 0, height: 0 },
       }}
     />
   )
@@ -614,10 +611,6 @@ function AccountChat({ account }: { account: string }) {
                     backgroundColor: p.accentAt(0.08),
                     borderWidth: 1,
                     borderColor: p.accentAt(0.2),
-                    shadowColor: p.accent,
-                    shadowOpacity: 0.55,
-                    shadowRadius: 48,
-                    shadowOffset: { width: 0, height: 0 },
                   }}
                 >
                   <Image
@@ -725,7 +718,7 @@ function AccountChat({ account }: { account: string }) {
             >
               {/* Your question: a subtle filled pill on the right. Content stays off the glass layer. */}
               <Box
-                className="mb-6 self-end rounded-[22px] px-4 py-[10px]"
+                className="mb-6 self-end rounded-[16px] px-4 py-[10px]"
                 style={{
                   maxWidth: '82%',
                   backgroundColor: p.surface2,
@@ -948,15 +941,11 @@ function AccountChat({ account }: { account: string }) {
           style={{ maxWidth: 744, paddingBottom: Math.max(insets.bottom, 8) }}
         >
           <Box
-            className="rounded-[26px] px-2 pb-2 pt-1"
+            className="rounded-[24px] px-2 pb-2 pt-1"
             style={{
               backgroundColor: p.surface1,
               borderWidth: 1,
               borderColor: busy ? p.accentAt(0.6) : focused ? p.accentAt(0.4) : p.edgeStrong,
-              shadowColor: p.accent,
-              shadowOpacity: busy ? 0.35 : focused ? 0.18 : 0,
-              shadowRadius: 18,
-              shadowOffset: { width: 0, height: 0 },
             }}
           >
             {!!reading && (
@@ -1111,7 +1100,12 @@ function AccountChat({ account }: { account: string }) {
               >
                 {busy ? (
                   <Box
-                    style={{ width: 11, height: 11, borderRadius: 2, backgroundColor: p.onAccent }}
+                    style={{
+                      width: 11,
+                      height: 11,
+                      borderRadius: radii.mark,
+                      backgroundColor: p.onAccent,
+                    }}
                   />
                 ) : (
                   <FeatherIcon

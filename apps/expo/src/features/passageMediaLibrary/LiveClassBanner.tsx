@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
-import { TouchableBox, VStack } from '~common/ui/Box'
-import Box from '~common/ui/Box'
+import Box, { TouchableBox, VStack } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
@@ -49,7 +48,7 @@ const LiveClassBanner = ({ className }: { className?: string }) => {
         style={{ backgroundColor: banner.starts ? '#F5A524' : '#E5484D' }}
       />
       <VStack className="flex-[1] gap-[2px]">
-        <Text className="font-bold text-primary text-[12px]">{label}</Text>
+        <Text className="font-bold text-link text-[12px]">{label}</Text>
         <Text className="text-[16px] leading-[20px]" numberOfLines={2}>
           {banner.title}
         </Text>

@@ -61,16 +61,16 @@ const PreceptCard = ({
     .filter(Boolean)
   const shown = expanded ? paragraphs : paragraphs.slice(0, 1)
   return (
-    <VStack className="rounded-[18px] bg-light-grey p-[16px] gap-[10px]">
+    <VStack className="rounded-[16px] bg-light-grey p-[16px] gap-[10px]">
       <TouchableBox
         accessibilityRole="link"
         onPress={() => onOpenReference(precept.ref.url)}
         className="flex-row items-center gap-[10px]"
       >
-        <Box className="rounded-[10px] bg-reverse px-[10px] py-[3px]">
+        <Box className="rounded-[12px] bg-reverse px-[10px] py-[3px]">
           <Text className="text-[13px] font-bold text-grey">Precept</Text>
         </Box>
-        <Text className="flex-[1] text-primary text-[19px] font-bold">{precept.ref.label}</Text>
+        <Text className="flex-[1] text-link text-[19px] font-bold">{precept.ref.label}</Text>
         <FeatherIcon name="chevron-right" size={18} color="grey" />
       </TouchableBox>
       {!!verseText && (

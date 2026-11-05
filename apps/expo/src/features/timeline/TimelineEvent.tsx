@@ -145,7 +145,7 @@ const TimelineEvent = ({
       </AnimatedBox>
       {image ? (
         <Box
-          className="overflow-hidden border-continuous ml-auto rounded-tr-[10px] rounded-br-[10px]"
+          className="overflow-hidden border-continuous ml-auto rounded-tr-[12px] rounded-br-[12px]"
           style={{ width: imageSize }}
         >
           <Image

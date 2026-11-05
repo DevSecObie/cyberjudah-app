@@ -70,7 +70,7 @@ const ClassVideoEmbed = forwardRef<ClassVideoEmbedHandle, Props>(
     const label = start > 0 ? formatPassageMediaDuration(start) : undefined
     const video = (
       <Box
-        className={`overflow-hidden border-continuous bg-[#000] ${bare ? 'rounded-[14px]' : ''}`}
+        className={`overflow-hidden border-continuous bg-[#000] ${bare ? 'rounded-[16px]' : ''}`}
         style={{ width: '100%', aspectRatio: 16 / 9 }}
       >
         {playing ? (
@@ -137,7 +137,7 @@ const ClassVideoEmbed = forwardRef<ClassVideoEmbedHandle, Props>(
       </VStack>
     )
     return (
-      <Box className="overflow-hidden border-continuous rounded-[14px] border-[1px] border-border bg-light-grey">
+      <Box className="overflow-hidden border-continuous rounded-[16px] border-[1px] border-border bg-light-grey">
         {video}
         {(title || meta) &&
           (onOpenClass ? (

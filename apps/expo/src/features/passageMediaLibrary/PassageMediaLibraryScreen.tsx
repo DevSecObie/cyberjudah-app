@@ -1,3 +1,4 @@
+import { radii } from '~common/ui/surfaces'
 import { useClassLibraryQuery } from './useClassLibraryQuery'
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
@@ -10,8 +11,7 @@ import Header from '~common/Header'
 import FiltersHeader, { type FiltersHeaderItem } from '~common/FiltersHeader'
 import PanelSearch from '~common/ContextualPanel/PanelSearch'
 import { Image } from 'expo-image'
-import { TouchableBox } from '~common/ui/Box'
-import Box, { SafeAreaBox, VStack } from '~common/ui/Box'
+import Box, { TouchableBox, SafeAreaBox, VStack } from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import { FeatherIcon } from '~common/ui/Icon'
 import {
@@ -334,7 +334,7 @@ const PassageMediaLibraryScreen = () => {
                     ? 'The classes could not be refreshed. Showing the list saved on this phone.'
                     : 'The classes could not be loaded. Check your connection.'}
                 </Text>
-                <Text className="text-primary text-[14px] font-bold">
+                <Text className="text-link text-[14px] font-bold">
                   {classLibrary.isFetching ? 'Trying…' : 'Try again'}
                 </Text>
               </TouchableBox>
@@ -354,9 +354,9 @@ const PassageMediaLibraryScreen = () => {
                   contentFit="cover"
                   cachePolicy="memory-disk"
                   transition={180}
-                  style={{ width: '100%', aspectRatio: 16 / 9, borderRadius: 14 }}
+                  style={{ width: '100%', aspectRatio: 16 / 9, borderRadius: radii.card }}
                 />
-                <Text className="font-bold text-primary text-[12px]">
+                <Text className="font-bold text-link text-[12px]">
                   {t('passageMediaLibrary.latest')} · {featured.subtitle}
                 </Text>
                 <Text
@@ -383,7 +383,7 @@ const PassageMediaLibraryScreen = () => {
                 className="py-[4px] pl-[12px]"
                 onPress={() => setFilter({ series: section.title })}
               >
-                <Text className="text-primary text-[14px]">
+                <Text className="text-link text-[14px]">
                   {t('passageMediaLibrary.seeAll', { count: section.more })}
                 </Text>
               </TouchableBox>

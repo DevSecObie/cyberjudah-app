@@ -185,7 +185,7 @@ export const LetterListScreen = ({
   )
 
   return (
-    <FormSheetScreen reserveBottom={!search && !groups}>
+    <FormSheetScreen className="bg-canvas" reserveBottom={!search && !groups}>
       <Box className="overflow-hidden border-continuous flex-[1] bg-reverse">
         <FiltersHeader
           hasBackButton

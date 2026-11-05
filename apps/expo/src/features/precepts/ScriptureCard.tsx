@@ -22,9 +22,9 @@ export default function ScriptureCard({ scripture }: { scripture: Scripture }) {
         if (route) router.push(route)
       }}
     >
-      <VStack className="rounded-[18px] bg-light-grey p-[16px] gap-[8px]">
+      <VStack className="rounded-[16px] bg-light-grey p-[16px] gap-[8px]">
         <HStack className="items-center gap-[10px]">
-          <Text className="flex-[1] text-primary text-[18px] font-bold">{scripture.label}</Text>
+          <Text className="flex-[1] text-link text-[18px] font-bold">{scripture.label}</Text>
           <FeatherIcon name="chevron-right" size={18} color="grey" />
         </HStack>
         <Text

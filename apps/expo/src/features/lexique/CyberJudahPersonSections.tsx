@@ -53,7 +53,7 @@ const More = ({
       className="py-[8px]"
       onPress={() => onMore(shown + step)}
     >
-      <Text className="text-primary text-[14px] font-bold">
+      <Text className="text-link text-[14px] font-bold">
         Show {Math.min(step, total - shown)} more
         <Text className="text-tertiary text-[14px]"> · {total - shown} left</Text>
       </Text>
@@ -193,7 +193,7 @@ export default function CyberJudahPersonSections({
                 <Text className="text-[16px]">
                   {label}:{' '}
                   <Text
-                    className="text-primary text-[16px]"
+                    className="text-link text-[16px]"
                     onPress={() => onOpenEntityProfile(link.id)}
                   >
                     {link.name}
@@ -262,7 +262,7 @@ export default function CyberJudahPersonSections({
                 className="flex-row items-center gap-[10px] py-[12px] border-b-[1px] border-border"
               >
                 <VStack className="flex-[1] gap-[2px]">
-                  <Text className="text-primary text-[12px] font-bold">
+                  <Text className="text-link text-[12px] font-bold">
                     {item.collection || 'Class'}
                   </Text>
                   <Text className="text-[16px]">{item.title}</Text>

@@ -46,7 +46,7 @@ const LinkedText = ({
     if (link.start < at) continue
     if (link.start > at) parts.push(text.slice(at, link.start))
     parts.push(
-      <Text key={link.start} className="text-primary" accessibilityRole="link" onPress={link.open}>
+      <Text key={link.start} className="text-link" accessibilityRole="link" onPress={link.open}>
         {link.label}
       </Text>
     )

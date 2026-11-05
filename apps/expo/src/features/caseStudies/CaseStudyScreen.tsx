@@ -1,3 +1,4 @@
+import { radii } from '~common/ui/surfaces'
 import { useQuery } from '@tanstack/react-query'
 import { useRecordHistory } from '~features/history/useRecordHistory'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -45,7 +46,7 @@ const RefText = ({
     parts.push(
       <Text
         key={reference.start}
-        className={`${className} text-primary`}
+        className={`${className} text-link`}
         accessibilityRole="link"
         onPress={() => onOpenOsis(reference.target.osis)}
       >
@@ -75,7 +76,7 @@ const PersonRow = ({ id, name, onPress }: { id: string; name: string; onPress: (
     >
       <Image
         source={getStrongEntityAvatarSource(type === 'Group' ? 'group' : 'person', type, id)}
-        style={{ width: 36, height: 36, borderRadius: 18 }}
+        style={{ width: 36, height: 36, borderRadius: radii.pill }}
         contentFit="cover"
       />
       <Text className="flex-[1] text-[16px]">{name}</Text>

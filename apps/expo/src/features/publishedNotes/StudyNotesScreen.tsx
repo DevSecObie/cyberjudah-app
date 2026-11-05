@@ -68,7 +68,7 @@ const StudyNotesScreen = () => {
               }
             >
               {!!item.range && (
-                <Text className="text-primary text-[12px] font-bold">{item.range}</Text>
+                <Text className="text-link text-[12px] font-bold">{item.range}</Text>
               )}
               <Text className="font-bold text-[16px]" numberOfLines={2}>
                 {studyNoteHeading(item.title)}

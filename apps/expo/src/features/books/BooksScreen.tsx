@@ -52,7 +52,7 @@ const BookRow = ({ book, onOpen }: { book: LibraryRow; onOpen: () => void }) => 
     >
       <Box className="overflow-hidden border-continuous flex-row items-center">
         <Box
-          className="rounded-[6px] overflow-hidden bg-canvas"
+          className="rounded-[8px] overflow-hidden bg-canvas"
           style={{ width: COVER_WIDTH, height: 64 }}
         >
           {book.cover ? (

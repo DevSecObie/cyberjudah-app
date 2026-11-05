@@ -1,3 +1,4 @@
+import { radii } from '~common/ui/surfaces'
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons'
 import { useState } from 'react'
 import { Image, Pressable, ScrollView } from 'react-native'
@@ -92,7 +93,7 @@ const VerseText = ({ withP }: { withP?: boolean }) => {
     >
       {withP && (
         <Text
-          className="text-[19px] text-primary"
+          className="text-[19px] text-link"
           style={{ fontStyle: 'italic', fontWeight: '400', color: theme.colors.primary }}
         >
           p{' '}
@@ -105,7 +106,7 @@ const VerseText = ({ withP }: { withP?: boolean }) => {
 }
 
 const Card = ({ children }: { children: React.ReactNode }) => (
-  <VStack className="rounded-[18px] bg-light-grey p-[16px] gap-[8px]">{children}</VStack>
+  <VStack className="rounded-[16px] bg-light-grey p-[16px] gap-[8px]">{children}</VStack>
 )
 
 const Scene = ({ index }: { index: number }) => {
@@ -123,7 +124,7 @@ const Scene = ({ index }: { index: number }) => {
         <VerseText withP />
         {PRECEPTS.map(precept => (
           <Card key={precept.reference}>
-            <Text className="text-[14px] font-semibold text-primary">{precept.reference}</Text>
+            <Text className="text-[14px] font-semibold text-link">{precept.reference}</Text>
             <Text className="text-[15px] leading-[22px] text-default">{precept.text}</Text>
             <Text className="text-[14px] leading-[20px] text-grey">{precept.point}</Text>
             <Text className="text-[12px] text-tertiary">{precept.source}</Text>
@@ -181,7 +182,7 @@ const Scene = ({ index }: { index: number }) => {
             <Image
               source={nation.image}
               accessibilityIgnoresInvertColors
-              style={{ width: 92, height: 92, borderRadius: 46 }}
+              style={{ width: 92, height: 92, borderRadius: radii.pill }}
             />
             <Text className="text-[15px] font-semibold text-default">{nation.name}</Text>
           </VStack>
@@ -283,7 +284,7 @@ const CyberJudahTour = ({ onComplete }: { onComplete: () => void }) => {
           onPress={() => (last ? onComplete() : setIndex(index + 1))}
           style={{
             minHeight: 52,
-            borderRadius: 26,
+            borderRadius: radii.sheet,
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: theme.colors.primary,

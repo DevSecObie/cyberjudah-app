@@ -1,3 +1,4 @@
+import { radii } from '~common/ui/surfaces'
 import { useClassLibraryQuery } from '~features/passageMediaLibrary/useClassLibraryQuery'
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
@@ -27,25 +28,20 @@ const PassageMediaLibraryWidget = () => {
     <Box className="overflow-hidden border-continuous bg-light-grey pt-[20px]">
       {cyberJudah && <LiveClassBanner className="mb-[16px]" />}
       <TouchableBox
-        className="overflow-hidden border-continuous rounded-[20px] bg-reverse h-[136px] flex-row items-center"
+        className="overflow-hidden border-continuous rounded-[16px] bg-reverse h-[136px] flex-row items-center"
         accessibilityRole="button"
         accessibilityLabel={t('passageMediaLibrary.open')}
         activeOpacity={0.84}
         onPress={() => pushRoute({ pathname: '/(library)/passage-media' })}
         style={{
-          shadowColor: 'rgb(89,131,240)',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 7,
-          elevation: 1,
           overflow: 'visible',
         }}
       >
         <Box
           className={
             latest
-              ? 'border-continuous overflow-visible w-[48%] h-[100%] bg-light-grey rounded-tl-[20px] rounded-bl-[20px]'
-              : 'border-continuous overflow-visible w-[48%] h-[100%] rounded-tl-[20px] rounded-bl-[20px]'
+              ? 'border-continuous overflow-visible w-[48%] h-[100%] bg-light-grey rounded-tl-[16px] rounded-bl-[16px]'
+              : 'border-continuous overflow-visible w-[48%] h-[100%] rounded-tl-[16px] rounded-bl-[16px]'
           }
           // Without a class yet, the lion sits on a light panel and rises above the card.
           style={latest ? undefined : { backgroundColor: '#E6EDFF' }}
@@ -66,8 +62,8 @@ const PassageMediaLibraryWidget = () => {
                 ? {
                     width: '100%',
                     height: '100%',
-                    borderBottomLeftRadius: 20,
-                    borderTopLeftRadius: 20,
+                    borderBottomLeftRadius: radii.card,
+                    borderTopLeftRadius: radii.card,
                   }
                 : { position: 'absolute', left: 0, right: 0, bottom: 0, top: -COURSES_ART_RISE }
             }
@@ -90,7 +86,7 @@ const PassageMediaLibraryWidget = () => {
             </Text>
           )}
           <Box
-            className="overflow-hidden border-continuous absolute right-[14px] bottom-[12px] rounded-[18px] bg-light-primary items-center justify-center"
+            className="overflow-hidden border-continuous absolute right-[14px] bottom-[12px] rounded-full bg-light-primary items-center justify-center"
             style={{ width: 34, height: 34 }}
           >
             <FeatherIcon color="primary" name="chevron-right" size={20} />

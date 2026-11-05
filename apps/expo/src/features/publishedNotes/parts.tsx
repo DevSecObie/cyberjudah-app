@@ -8,7 +8,7 @@ import { verseText, type Moment, type ScriptureRef } from './classTeaching'
 /** A titled block of a page, under a rule (as the case studies have them). */
 export const Section = ({ title, children }: { title: string; children: ReactNode }) => (
   <VStack className="mt-[26px] pt-[22px] border-t-[1px] border-border gap-[12px]">
-    <Text className="text-primary text-[13px] font-bold">{title}</Text>
+    <Text className="text-link text-[13px] font-bold">{title}</Text>
     {children}
   </VStack>
 )
@@ -31,7 +31,7 @@ export const LinkRow = ({
     className="flex-row items-center gap-[10px] py-[11px] border-b-[1px] border-border"
   >
     <VStack className="flex-[1] gap-[2px]">
-      {!!meta && <Text className="text-primary text-[12px] font-bold">{meta}</Text>}
+      {!!meta && <Text className="text-link text-[12px] font-bold">{meta}</Text>}
       <Text className="text-[15px]">{title}</Text>
       {!!sub && (
         <Text className="text-grey text-[13px]" numberOfLines={2}>
@@ -56,7 +56,7 @@ export const Scripture = ({
     <TouchableBox
       accessibilityRole="link"
       onPress={() => onOpen(scripture.url)}
-      className="rounded-[10px] px-[12px] py-[10px] gap-[6px]"
+      className="rounded-[12px] px-[12px] py-[10px] gap-[6px]"
       style={{ backgroundColor: 'rgba(89, 131, 240, 0.08)' }}
     >
       <Text className="text-[15px] font-bold">

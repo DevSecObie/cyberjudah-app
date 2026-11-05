@@ -157,7 +157,7 @@ const NewTabItem = ({
           {/* Light panel in the card's corner; the lion sits on it and rises above the card. */}
           <Box
             pointerEvents="none"
-            className="border-continuous rounded-tr-[18px] rounded-bl-[18px]"
+            className="border-continuous rounded-tr-[16px] rounded-bl-[16px]"
             style={{
               position: 'absolute',
               top: 0,

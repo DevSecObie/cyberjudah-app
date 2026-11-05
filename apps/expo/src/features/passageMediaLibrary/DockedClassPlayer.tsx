@@ -1,3 +1,4 @@
+import { radii, floatingShadow } from '~common/ui/surfaces'
 import { useRouter } from 'expo-router'
 import { useAtom, useAtomValue } from 'jotai'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -114,7 +115,7 @@ const Scrubber = ({
           setDragAt(null)
         },
       }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     []
   )
   const shown = dragAt ?? Math.min(time, duration)
@@ -146,7 +147,7 @@ const Scrubber = ({
           pointerEvents="none"
           style={{
             height: dragAt === null ? 3 : 5,
-            borderRadius: 3,
+            borderRadius: radii.mark,
             backgroundColor: 'rgba(255,255,255,0.35)',
           }}
         >
@@ -154,7 +155,7 @@ const Scrubber = ({
             style={{
               width: `${part * 100}%`,
               height: '100%',
-              borderRadius: 3,
+              borderRadius: radii.mark,
               backgroundColor: '#ff0033',
             }}
           />
@@ -415,17 +416,13 @@ const DockedClassPlayer = () => {
           top: 0,
           width: cardWidth,
           height: cardHeight,
-          borderRadius: 14,
+          borderRadius: radii.card,
           backgroundColor: '#000',
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.35,
-          shadowRadius: 20,
-          elevation: 10,
+          ...floatingShadow,
           transform: pan.getTranslateTransform(),
         }}
       >
-        <Box style={{ flex: 1, borderRadius: 14, overflow: 'hidden' }}>
+        <Box style={{ flex: 1, borderRadius: radii.card, overflow: 'hidden' }}>
           <ClassVideoFrame
             ref={frame}
             key={docked.videoId}

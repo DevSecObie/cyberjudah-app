@@ -48,7 +48,7 @@ const PassageMediaLibraryCard = ({ item, episodeNumber, thumbnailWidth, onPress 
         </Box>
       </Box>
       <VStack className="overflow-hidden border-continuous flex-[1] gap-[4px] py-[2px]">
-        <Text className="font-bold text-primary text-[12px] leading-[15px]">
+        <Text className="font-bold text-link text-[12px] leading-[15px]">
           {item.subtitle || t('passageMediaLibrary.episode', { number: episodeNumber })}
         </Text>
         <Text

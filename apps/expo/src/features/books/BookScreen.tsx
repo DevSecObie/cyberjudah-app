@@ -99,7 +99,7 @@ const BookScreen = () => {
               <Card className="px-[18px] py-[17px]">
                 <Box className="overflow-hidden border-continuous flex-row items-center gap-[14px]">
                   <Box
-                    className="rounded-[6px] overflow-hidden bg-canvas"
+                    className="rounded-[8px] overflow-hidden bg-canvas"
                     style={{ width: 56, height: 78 }}
                   >
                     {data.cover ? (

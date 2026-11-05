@@ -1,3 +1,4 @@
+import { radii } from '~common/ui/surfaces'
 import { Feather } from '@expo/vector-icons'
 import React, { type ReactElement, type ReactNode, useRef, useState } from 'react'
 import {
@@ -409,7 +410,7 @@ const Block = ({
             paddingHorizontal: 12,
             paddingTop: 10,
             paddingBottom: 12,
-            borderRadius: 10,
+            borderRadius: radii.control,
             backgroundColor: 'rgba(89, 131, 240, 0.08)',
             opacity: pressed ? 0.62 : 1,
           })}

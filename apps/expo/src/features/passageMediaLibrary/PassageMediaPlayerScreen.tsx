@@ -1,3 +1,4 @@
+import { radii } from '~common/ui/surfaces'
 import { resolveFontFamily } from '~themes/styleValues'
 import { useRecordHistory } from '~features/history/useRecordHistory'
 import { openInApp } from '~common/inAppBrowser'
@@ -162,15 +163,10 @@ const PassageMediaPlayerScreen = () => {
                 style={{ width: playerWidth }}
               >
                 <Box
-                  className="border-continuous overflow-hidden rounded-[14px] border-[1px] border-border bg-light-grey"
+                  className="border-continuous overflow-hidden rounded-[16px] border-[1px] border-border bg-light-grey"
                   style={{
                     width: playerWidth,
                     height: playerHeight,
-                    shadowColor: 'rgb(89,131,240)',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 7,
-                    elevation: 1,
                     overflow: 'visible',
                   }}
                 >
@@ -179,7 +175,7 @@ const PassageMediaPlayerScreen = () => {
                     <TouchableBox
                       accessibilityRole="button"
                       onPress={() => askDockedClassBack(count => count + 1)}
-                      className="flex-1 items-center justify-center gap-[8px] rounded-[14px] bg-[#000]"
+                      className="flex-1 items-center justify-center gap-[8px] rounded-[16px] bg-[#000]"
                     >
                       <FeatherIcon name="maximize-2" size={20} color="white" />
                       <Text className="text-[14px]" style={{ color: '#fff' }}>
@@ -196,7 +192,7 @@ const PassageMediaPlayerScreen = () => {
                           style={{
                             width: playerWidth,
                             height: playerHeight,
-                            borderRadius: 14,
+                            borderRadius: radii.card,
                             overflow: 'hidden',
                           }}
                         >
@@ -215,7 +211,11 @@ const PassageMediaPlayerScreen = () => {
                             if (seconds !== undefined)
                               rememberClassPosition(item.providerId, seconds)
                           }}
-                          style={{ width: playerWidth, height: playerHeight, borderRadius: 14 }}
+                          style={{
+                            width: playerWidth,
+                            height: playerHeight,
+                            borderRadius: radii.card,
+                          }}
                           allowsInlineMediaPlayback
                           allowsFullscreenVideo
                           mediaPlaybackRequiresUserAction={false}
@@ -252,8 +252,8 @@ const PassageMediaPlayerScreen = () => {
                           return url === 'about:blank' || url.startsWith(YOUTUBE_PLAYER_BASE_URL)
                         },
                       }}
-                      viewContainerStyle={{ borderRadius: 14, overflow: 'hidden' }}
-                      webViewStyle={{ borderRadius: 14, overflow: 'hidden' }}
+                      viewContainerStyle={{ borderRadius: radii.card, overflow: 'hidden' }}
+                      webViewStyle={{ borderRadius: radii.card, overflow: 'hidden' }}
                     />
                   )}
                 </Box>
@@ -323,7 +323,7 @@ const PassageMediaPlayerScreen = () => {
                 </Text>
                 {notes.isError && (
                   <TouchableBox accessibilityRole="button" onPress={() => notes.refetch()}>
-                    <Text className="text-primary text-[15px]">Try again</Text>
+                    <Text className="text-link text-[15px]">Try again</Text>
                   </TouchableBox>
                 )}
               </VStack>
