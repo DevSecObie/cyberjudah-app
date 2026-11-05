@@ -1,7 +1,8 @@
 import type { Action } from '@reduxjs/toolkit'
 import { batchWriteSubcollection } from '~helpers/firestoreSubcollections'
 import { firestoreSyncOutbox } from '~helpers/firestoreSyncOutbox'
-import { setDoc } from '~helpers/firebase'
+import { setDoc, deleteDoc } from '~helpers/firebase'
+import { deleteRemoteStudy } from '~helpers/deleteRemoteStudy'
 import {
   getPendingSubcollectionTargets,
   keepPendingWrites,
@@ -70,6 +71,9 @@ jest.mock('~helpers/storage', () => ({
 }))
 jest.mock('~helpers/TokenManager', () => ({
   tokenManager: { tryRefresh: jest.fn(async () => false) },
+}))
+jest.mock('~helpers/deleteRemoteStudy', () => ({
+  deleteRemoteStudy: jest.fn(async () => undefined),
 }))
 jest.mock('~helpers/toast', () => ({ toast: { error: jest.fn(), success: jest.fn() } }))
 jest.mock('~helpers/agentObservability', () => ({
@@ -157,6 +161,21 @@ describe('firestoreMiddleware while Firebase does not hold the account', () => {
     expect(firestoreSyncOutbox.getPending('user-1').map(entry => entry.intent)).toEqual([
       { kind: 'document-delete', path: ['studies', 'study-0'] },
     ])
+  })
+
+  it('uses ownership-preserving deletion immediately and retains a failed attempt for replay', async () => {
+    mockSignedInUserId = 'user-1'
+    setAccountMigrationWriteScope('user-1')
+    state = withBible({ studies: { 'study-0': { id: 'study-0', title: 'Saved' } as never } })
+    jest.mocked(deleteRemoteStudy).mockRejectedValueOnce(new Error('service unavailable'))
+    await run(deleteStudy('study-0'))
+    expect(deleteRemoteStudy).toHaveBeenCalledWith('user-1', 'study-0')
+    expect(deleteDoc).not.toHaveBeenCalled()
+    expect(firestoreSyncOutbox.getPending('user-1')).toHaveLength(1)
+    await firestoreSyncOutbox.replay('user-1')
+    expect(deleteRemoteStudy).toHaveBeenCalledTimes(2)
+    expect(deleteDoc).not.toHaveBeenCalled()
+    expect(firestoreSyncOutbox.getPending('user-1')).toEqual([])
   })
 
   it("never writes one account's edits into the account Firebase holds instead", async () => {

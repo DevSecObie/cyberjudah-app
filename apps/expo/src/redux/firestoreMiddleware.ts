@@ -2,6 +2,7 @@ import { isAnyOf, Middleware } from '@reduxjs/toolkit'
 import { Platform } from 'react-native'
 import { appLogger } from '~helpers/agentObservability'
 import { getCurrentAuthUser } from '~helpers/firebaseAuthRuntime'
+import { deleteRemoteStudy } from '~helpers/deleteRemoteStudy'
 import { tokenManager } from '~helpers/TokenManager'
 import {
   firestoreSyncOutbox,
@@ -111,7 +112,7 @@ import {
 } from '~helpers/firestoreSubcollections'
 import i18n from '~i18n'
 import { RootState } from '~redux/modules/reducer'
-import { deleteDoc, deleteField, doc, firebaseDb, setDoc } from '../helpers/firebase'
+import { deleteField, doc, firebaseDb, setDoc } from '../helpers/firebase'
 import {
   fetchPlan,
   markAsRead,
@@ -949,7 +950,6 @@ const firestoreMiddleware: Middleware = store => next => async action => {
     try {
       await Promise.all(
         Object.entries(studies).map(async ([studyId]) => {
-          const studyDocRef = doc(firebaseDb, 'studies', studyId)
           const intent: FirestoreSyncIntent = {
             kind: 'document-delete',
             path: ['studies', studyId],
@@ -962,7 +962,7 @@ const firestoreMiddleware: Middleware = store => next => async action => {
           try {
             await runFirestoreSyncIntentsSerialized(userId, [intent], async () => {
               try {
-                await deleteDoc(studyDocRef)
+                await deleteRemoteStudy(userId, studyId)
                 firestoreSyncOutbox.supersedePending(userId, intent)
               } catch (error) {
                 firestoreSyncOutbox.enqueue(userId, intent)

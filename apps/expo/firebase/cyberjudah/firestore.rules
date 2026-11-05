@@ -3,6 +3,11 @@ service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
     function owns(userId) { return signedIn() && request.auth.uid == userId; }
+    // A server-only ownership record prevents old clients from reusing a deleted study ID.
+    function studyWritable(root, studyId) {
+      let ledgerId = root + ':' + studyId;
+      return !exists(/databases/$(database)/documents/study_deletion_owners/$(ledgerId));
+    }
     // Internal staging study data uses the same UID, in isolated collections.
     // `subscription` belongs to the server: clients never set or change it (as upstream).
     function keepsSubscription() {
@@ -19,12 +24,16 @@ service cloud.firestore {
       allow read, write: if owns(userId);
     }
     match /staging_studies/{studyId} {
-      allow read, delete: if signedIn() && resource.data.user.id == request.auth.uid;
-      allow create: if signedIn() && request.resource.data.user.id == request.auth.uid;
+      allow read: if signedIn() && resource.data.user.id == request.auth.uid;
+      allow delete: if false; // The authenticated server preserves ownership atomically.
+      allow create: if signedIn() && request.resource.data.user.id == request.auth.uid
+        && studyWritable('staging_studies', studyId);
       allow update: if signedIn() && resource.data.user.id == request.auth.uid
-        && request.resource.data.user.id == request.auth.uid;
+        && request.resource.data.user.id == request.auth.uid && studyWritable('staging_studies', studyId);
       match /revisions/{revisionId} {
-        allow read, write: if signedIn()
+        allow read: if signedIn() && studyWritable('staging_studies', studyId)
+          && get(/databases/$(database)/documents/staging_studies/$(studyId)).data.user.id == request.auth.uid;
+        allow write: if signedIn() && studyWritable('staging_studies', studyId)
           && get(/databases/$(database)/documents/staging_studies/$(studyId)).data.user.id == request.auth.uid;
       }
     }
@@ -50,15 +59,18 @@ service cloud.firestore {
     }
     // A study's history is as private as the study: only the study's owner reads or writes it.
     match /studies/{studyId}/revisions/{revisionId} {
-      allow read, write: if signedIn()
+      allow read: if signedIn() && studyWritable('studies', studyId)
+        && get(/databases/$(database)/documents/studies/$(studyId)).data.user.id == request.auth.uid;
+      allow write: if signedIn() && studyWritable('studies', studyId)
         && get(/databases/$(database)/documents/studies/$(studyId)).data.user.id == request.auth.uid;
     }
     match /studies/{studyId} {
       allow read: if signedIn() && resource.data.user.id == request.auth.uid;
-      allow create: if signedIn() && request.resource.data.user.id == request.auth.uid;
+      allow create: if signedIn() && request.resource.data.user.id == request.auth.uid
+        && studyWritable('studies', studyId);
       allow update: if signedIn() && resource.data.user.id == request.auth.uid
-        && request.resource.data.user.id == request.auth.uid;
-      allow delete: if signedIn() && resource.data.user.id == request.auth.uid;
+        && request.resource.data.user.id == request.auth.uid && studyWritable('studies', studyId);
+      allow delete: if false; // Parent-only client deletion would discard ownership evidence.
     }
     match /users-status/{userId} {
       allow read, write: if owns(userId);

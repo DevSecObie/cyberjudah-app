@@ -459,6 +459,11 @@ const executeFirestoreSyncOutboxEntry = async ({
 
   const reference = doc(firebaseDb, intent.path.join('/'))
   if (intent.kind === 'document-delete') {
+    if (intent.path.length === 2 && intent.path[0] === 'studies') {
+      const { deleteRemoteStudy } = await import('./deleteRemoteStudy')
+      await deleteRemoteStudy(userId, intent.path[1])
+      return
+    }
     await deleteDoc(reference)
     return
   }

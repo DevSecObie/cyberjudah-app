@@ -19,11 +19,16 @@ import {
 } from 'firebase/firestore'
 let env
 before(async () => {
+  const emulator = process.env.FIRESTORE_EMULATOR_HOST ?? '127.0.0.1:8089'
+  if (!/^(127\.0\.0\.1|localhost):\d+$/.test(emulator)) throw new Error('Loopback emulator required')
+  const projectId = process.env.FIRESTORE_TEST_PROJECT ?? 'demo-cyberjudah-port'
+  if (!projectId.startsWith('demo-')) throw new Error('Demo project required')
+  const [host, port] = emulator.split(':')
   env = await initializeTestEnvironment({
-    projectId: 'demo-cyberjudah-port',
+    projectId,
     firestore: {
-      host: '127.0.0.1',
-      port: 8089,
+      host,
+      port: Number(port),
       rules: await readFile(
         process.env.FIRESTORE_RULES_PATH ??
           new URL('../../apps/expo/firebase/cyberjudah/firestore.rules', import.meta.url),
@@ -102,7 +107,7 @@ test("a study's revision history is as private as the study", async () => {
   }
   await assertSucceeds(deleteDoc(doc(owner, path + '/revisions/one')))
 })
-test('Delete account can remove everything the owner keeps, and nothing of anyone else', async () => {
+test('client cleanup cannot bypass ownership-preserving study deletion or delete another owner', async () => {
   for (const [users, studies, status] of [
     ['users', 'studies', 'users-status'],
     ['staging_users', 'staging_studies', 'staging_users-status'],
@@ -119,13 +124,58 @@ test('Delete account can remove everything the owner keeps, and nothing of anyon
     })
     const alice = db('alice')
     await assertFails(deleteDoc(doc(alice, `${studies}/theirs`)))
+    await assertFails(deleteDoc(doc(alice, `${studies}/mine`)))
     for (const path of [
       `${users}/alice/notes/n1`,
       `${studies}/mine/revisions/r1`,
-      `${studies}/mine`,
       `${status}/alice`,
       `${users}/alice`,
     ])
       await assertSucceeds(deleteDoc(doc(alice, path)))
+    await assertFails(deleteDoc(doc(alice, `${studies}/mine`)))
+  }
+})
+
+test('only the server controls deletion ownership and a deleted study ID cannot be reused', async () => {
+  for (const root of ['studies', 'staging_studies']) {
+    const ledger = `study_deletion_owners/${root}:retained-owner`
+    await env.withSecurityRulesDisabled(ctx => setDoc(doc(ctx.firestore(), ledger), {
+      version: 1, user: { id: 'alice' }, studyRoot: root, studyId: 'retained-owner',
+    }))
+    for (const uid of ['alice', 'bob']) {
+      const client = db(uid)
+      await assertFails(getDoc(doc(client, ledger)))
+      await assertFails(setDoc(doc(client, ledger), { user: { id: uid } }))
+      await assertFails(deleteDoc(doc(client, ledger)))
+      await assertFails(setDoc(doc(client, `${root}/retained-owner`), { user: { id: uid } }))
+      await assertFails(setDoc(doc(client, `${root}/retained-owner/revisions/new`), { user: { id: uid }, text: 'late' }))
+    }
+  }
+})
+
+// Historical IDs require a trusted inventory and an approved server-side quarantine. A ledger
+// for future deletions cannot prove that an unrecorded old ID was never reclaimed.
+test('quarantining an unresolved historical ID prevents recreation and access through a replaced parent', async () => {
+  for (const root of ['studies', 'staging_studies']) {
+    const path = `${root}/historical-unresolved`
+    await env.withSecurityRulesDisabled(async ctx => {
+      await setDoc(doc(ctx.firestore(), path + '/revisions/old'), { text: 'private older content' })
+      // Model a parent already recreated before quarantine; its current owner is not evidence
+      // of ownership of the older revision.
+      await setDoc(doc(ctx.firestore(), path), { user: { id: 'bob' } })
+      await setDoc(doc(ctx.firestore(), `study_deletion_owners/${root}:historical-unresolved`), {
+        version: 1, state: 'ownership-unresolved', studyRoot: root, studyId: 'historical-unresolved',
+      })
+    })
+    for (const uid of ['alice', 'bob']) {
+      await assertFails(getDoc(doc(db(uid), path + '/revisions/old')))
+      await assertFails(setDoc(doc(db(uid), path), { user: { id: uid } }))
+    }
+    await env.withSecurityRulesDisabled(ctx => deleteDoc(doc(ctx.firestore(), path)))
+    await assertFails(setDoc(doc(db('bob'), path), { user: { id: 'bob' } }))
+    await env.withSecurityRulesDisabled(async ctx => {
+      await deleteDoc(doc(ctx.firestore(), path + '/revisions/old'))
+      await deleteDoc(doc(ctx.firestore(), `study_deletion_owners/${root}:historical-unresolved`))
+    })
   }
 })
