@@ -6,7 +6,6 @@ import Link from '~common/Link'
 import { FeatherIcon } from '~common/ui/Icon'
 import { loadPublishedNote } from '~features/passageMediaLibrary/cyberJudahClasses'
 import { toast } from '~helpers/toast'
-import { classNotePdf, pdfName } from './notePdf'
 import { sharePdf } from './sharePdf'
 
 /** The header's "Save as PDF" for a class's notes, like the Telegram app's export. */
@@ -19,6 +18,8 @@ export default function ClassNotesPdfButton({ notesPath }: { notesPath: string }
     setBusy(true)
     try {
       const note = await loadPublishedNote(notesPath)
+      // Loaded on tap: the PDF library is large and only this action needs it.
+      const { classNotePdf, pdfName } = await import('./notePdf')
       const base64 = await classNotePdf({ ...note, url: note.url ?? notesPath })
       await sharePdf(base64, pdfName(note), t('notesExport.savePdf'))
     } catch (e) {

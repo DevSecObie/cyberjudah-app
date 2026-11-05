@@ -1,0 +1,3 @@
+- Web: the lion shows as soon as the page opens, instead of a blank page while the app loads.
+- Web: the app no longer waits for the icon fonts (about 1 MB) before showing the first screen; icons appear as their fonts arrive.
+- The PDF maker, the animation player and the tab screenshot tool load when first used, not at startup. On the web this takes about 0.4 MB (compressed) off the first download.

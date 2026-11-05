@@ -17,7 +17,6 @@ import { publishStudy, Study } from '~redux/modules/user'
 import type { AppDispatch } from '~redux/store'
 import Clipboard from '@react-native-clipboard/clipboard'
 import { remoteQueryOptions } from '~helpers/queryOptions'
-import { studyPdf, pdfName } from '~features/notesExport/notePdf'
 import { sharePdf } from '~features/notesExport/sharePdf'
 import {
   deletePublishedStudy,
@@ -113,6 +112,7 @@ const PublishStudyMenuItem = ({ study, onClosed }: Props) => {
   const exportPDF = async () => {
     try {
       setPDFStatus('Pending')
+      const { studyPdf, pdfName } = await import('~features/notesExport/notePdf')
       const base64 = await studyPdf({
         title: study.title,
         author: study.user?.displayName,

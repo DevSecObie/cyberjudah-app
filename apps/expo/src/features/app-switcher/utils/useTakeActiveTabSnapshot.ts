@@ -1,7 +1,6 @@
 import { PixelRatio, Platform, type View } from 'react-native'
 import { runAfterInteractions } from '~helpers/runAfterInteractions'
 import { useSetAtom, useStore } from 'jotai/react'
-import { captureRef } from 'react-native-view-shot'
 import useDynamicRefs from '~helpers/useDynamicRefs'
 import { setTabPreviewAtom, tabGroupsAtom, tabsAtom } from '../../../state/tabs'
 import {
@@ -60,6 +59,8 @@ const useTakeActiveTabSnapshot = () => {
     // The web keeps a data URI for the session; native writes a file kept across launches.
     const isWeb = Platform.OS === 'web'
     const size = await measurePreviewSize(cachedTabScreen)
+    // Loaded on first use: on the web it brings html2canvas, which the first screen doesn't need.
+    const { captureRef } = await import('react-native-view-shot')
     const uri = await captureRef(cachedTabScreen, {
       result: isWeb ? 'data-uri' : 'tmpfile',
       format: 'jpg',
