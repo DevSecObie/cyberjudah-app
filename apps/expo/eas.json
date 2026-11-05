@@ -35,6 +35,12 @@
         "CYBERJUDAH_ACCEPTANCE_BUILD": "1"
       }
     },
+    "cyberjudah-acceptance-arm64": {
+      "extends": "cyberjudah-acceptance",
+      "android": {
+        "gradleCommand": ":app:assembleRelease -PreactNativeArchitectures=arm64-v8a"
+      }
+    },
     "cyberjudah-preview": {
       "channel": "preview",
       "distribution": "internal",
@@ -57,7 +63,7 @@
         "EXPO_PUBLIC_ACCOUNT_SYNC_SCOPE": "staging",
         "EXPO_PUBLIC_CYBERJUDAH_API_URL": "https://cyberjudah-telegram-staging.oisrae1.workers.dev",
         "ANDROID_GOOGLE_SERVICES_FILE": "./firebase/cyberjudah/google-services.json",
-        "IOS_GOOGLE_SERVICES_FILE": "./firebase/cyberjudah/GoogleService-Info.plist",
+        "IOS_GOOGLE_SERVICES_FILE": "./firebase/cyberjudah-preview/GoogleService-Info.plist",
         "EXPO_PUBLIC_ASK_PURCHASES_ENABLED": "false",
         "CYBERJUDAH_APPLE_TEAM_ID": "M8DUMWBXLH",
         "SENTRY_DISABLE_AUTO_UPLOAD": "true"
