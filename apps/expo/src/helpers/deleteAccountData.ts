@@ -10,11 +10,11 @@ const ACCOUNT_SUBCOLLECTIONS = [...SUBCOLLECTION_NAMES, 'studies'] as const
 type DeletableRef = Parameters<ReturnType<typeof writeBatch>['delete']>[0]
 
 /**
- * Deletes every document the account owner keeps in Firestore, before the login itself is deleted:
- * each synced subcollection, the studies they own with their history, the sync status and the
- * profile. CyberJudah's Firebase project runs no deletion function, so the app removes these
- * itself; the rules let only the owner do so. Paths go through the same staging scope as every
- * other write. Everything is listed before anything is deleted, so a failed read deletes nothing.
+ * Deletes known, client-discoverable account data before the login itself is deleted.
+ * Client collection queries do not return missing parent documents, so orphaned revision history
+ * and unlisted subcollections require server-side recursive cleanup. This helper does not prove
+ * complete historical account erasure. Paths use the same staging scope as other writes.
+ * Everything is listed before anything is deleted, so a failed read deletes nothing.
  */
 export async function deleteOwnAccountData(userId: string): Promise<number> {
   const refs: DeletableRef[] = []
@@ -70,7 +70,7 @@ type AccountDeletionSteps = {
  * 1. the provider step (Apple users sign in again, then the app's Apple tokens are revoked);
  * 2. a recent-sign-in check, because Firebase refuses to delete an older login;
  * 3. published studies;
- * 4. every document the account keeps in Firestore;
+ * 4. client-discoverable Firestore data (see the completeness limits above);
  * 5. the login.
  * If any step fails, the later ones do not run and the reader can try again. Deletion
  * across stores and batches is not atomic; a failure can leave partially deleted data.
