@@ -176,9 +176,11 @@ export const toClassLibrary = (
     const feedIndex = feedAt.get(item.providerId)
     if (feedIndex !== undefined) item.feedIndex = feedIndex
   }
-  const rank = (series: ClassCollection) => CLASS_COLLECTIONS.indexOf(series)
-  return classes.sort((a, b) => rank(a.series) - rank(b.series) || byLiveOrder(a, b))
+  return classes.sort(byCollectionAndLiveOrder)
 }
+
+const byCollectionAndLiveOrder = (a: CyberJudahClass, b: CyberJudahClass) =>
+  CLASS_COLLECTIONS.indexOf(a.series) - CLASS_COLLECTIONS.indexOf(b.series) || byLiveOrder(a, b)
 
 export type ClassBroadcast = { date: string; broadcastAt: string }
 
@@ -208,19 +210,26 @@ export const byLiveOrder = (a: CyberJudahClass, b: CyberJudahClass) => {
 
 /** The classroom channel's newest uploads; none when the server can't say (the list still loads). */
 export const loadRecentClassVideos = async (
-  fetcher: typeof fetch = fetch
+  fetcher: typeof fetch = fetch,
+  onUnavailable: () => void = () => {}
 ): Promise<RecentClassVideo[]> => {
   try {
     const response = await fetcher(`${API_ORIGIN}/api/app/channel/recent`, {
       headers: { accept: 'application/json' },
     })
     if (!response.ok) {
+      onUnavailable()
       console.warn('[Classes] recent uploads unavailable', response.status)
       return []
     }
-    const body = (await response.json()) as { videos?: unknown }
-    return Array.isArray(body?.videos) ? (body.videos as RecentClassVideo[]) : []
+    const body = (await response.json()) as { videos?: unknown; feedOk?: boolean }
+    if (!Array.isArray(body?.videos) || body.feedOk === false) {
+      onUnavailable()
+      return []
+    }
+    return body.videos as RecentClassVideo[]
   } catch (error) {
+    onUnavailable()
     console.warn('[Classes] recent uploads failed', error)
     return []
   }
@@ -272,6 +281,10 @@ export const readCachedClassLibrary = (): CyberJudahClass[] | null => {
 export const loadClassLibrary = async (
   fetcher: typeof fetch = fetch
 ): Promise<CyberJudahClass[]> => {
+  let complete = true
+  const unavailable = () => {
+    complete = false
+  }
   const read = async (path: string) => {
     const response = await fetcher(`${DATA_ORIGIN}${path}`, {
       headers: { accept: 'application/json' },
@@ -279,14 +292,40 @@ export const loadClassLibrary = async (
     if (!response.ok) throw new Error(`CYBERJUDAH_CLASSES_UNAVAILABLE:${response.status}`)
     return response.json()
   }
+  const readFeed = async (path: string) => {
+    const value = await read(path)
+    if (!Array.isArray(value)) throw new Error('CYBERJUDAH_CLASSES_INVALID')
+    return value
+  }
+  const optionalFeed = (path: string) =>
+    readFeed(path).catch(() => {
+      unavailable()
+      return []
+    })
   const [classes, captains, history, recent, broadcasts] = await Promise.all([
-    read('/search/classes.json'),
-    read('/search/captains.json').catch(() => []),
-    read('/api/history/index.json').catch(() => []),
-    loadRecentClassVideos(fetcher),
-    read('/api/classes/broadcasts.json').catch(() => ({})),
+    readFeed('/search/classes.json'),
+    optionalFeed('/search/captains.json'),
+    optionalFeed('/api/history/index.json'),
+    loadRecentClassVideos(fetcher, unavailable),
+    read('/api/classes/broadcasts.json')
+      .then(value => {
+        if (!value || typeof value !== 'object' || Array.isArray(value))
+          throw new Error('CYBERJUDAH_CLASSES_INVALID')
+        return value
+      })
+      .catch(() => {
+        unavailable()
+        return {}
+      }),
   ])
   const library = toClassLibrary({ classes, captains, history }, recent, broadcasts)
+  if (!complete) {
+    // Keep cached rows from unavailable feeds while showing newly fetched classes.
+    // Only a complete response may replace the persistent offline snapshot.
+    const combined = new Map((readCachedClassLibrary() ?? []).map(item => [item.providerId, item]))
+    for (const item of library) combined.set(item.providerId, item)
+    if (combined.size) return [...combined.values()].sort(byCollectionAndLiveOrder)
+  }
   if (!library.length) throw new Error('CYBERJUDAH_CLASSES_EMPTY')
   storage.set(CACHE_KEY, JSON.stringify(library))
   return library

@@ -28,10 +28,29 @@ export const mergeStrongDefinitionLevels = (
 ): StrongLexiconEntry | undefined => {
   const entry = detailed ?? simple
   if (!entry) return undefined
+  // Numeric resource IDs belong to independent publications. Retain distinct source
+  // texts, while collapsing the same installed text returned by both readers.
+  const resources = [...(simple?.resources ?? []), ...(detailed?.resources ?? [])]
+  const seen = new Set<string>()
+  const moduleFrom = (id: 'resources' | 'entities') =>
+    simple?.modules[id].status === 'available' ? simple.modules[id] : entry.modules[id]
   return {
     ...entry,
     definitionHtml: simple?.definitionHtml,
     detailedDefinitionHtml: detailed?.definitionHtml,
+    resources: resources.filter(resource => {
+      const key = JSON.stringify([
+        resource.source,
+        resource.kind,
+        resource.title,
+        resource.contentHtml,
+      ])
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    }),
+    entity: detailed?.entity ?? simple?.entity,
+    modules: { resources: moduleFrom('resources'), entities: moduleFrom('entities') },
   }
 }
 
@@ -82,15 +101,15 @@ export function createLayeredStrongLexiconAccess(
       const merged = mergeStrongDefinitionLevels(basic, advanced)
       if (merged)
         return options?.content === 'definitions'
-          ? { ...merged, detailedEntryAvailable: Boolean(advanced) }
+          ? { ...merged, detailedEntryAvailable: Boolean(basic || advanced) }
           : merged
       // Preserve the normal recovery error if neither resource can be read.
       return simple.loadEntry(identity, language, options)
     },
     async loadEntryExtras(identity, language) {
-      // The historical text has already been read. Only enrich the detailed entry;
-      // never replace the definitions or identity used by the initial presentation.
-      const entry = await detailed.loadEntry(identity, language)
+      // Either source may supply installed supplements such as BDB. Return only
+      // enrichment, preserving the definitions and identity already presented.
+      const entry = await access.loadEntry(identity, language)
       if (!entry) return null
       const { resources, lsjAbsent, entity, modules } = entry
       return { resources, lsjAbsent, entity, modules }

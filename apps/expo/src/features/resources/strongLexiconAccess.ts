@@ -860,7 +860,8 @@ const toEntry = async (
 }
 
 export type StrongEntryLoadOptions = { content?: 'definitions' | 'full' }
-// Client-only read metadata: a simple-only result cannot provide detailed addons.
+// Client-only read metadata: whether the reader can attempt supplemental content.
+// A simple source can supply addons (for example BDB) without a detailed core.
 export type StrongEntryRead = StrongLexiconEntry & { detailedEntryAvailable?: boolean }
 export type StrongEntryExtras = Pick<
   StrongLexiconEntry,

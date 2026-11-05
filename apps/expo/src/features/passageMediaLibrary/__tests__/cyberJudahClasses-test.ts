@@ -53,7 +53,11 @@ const respond = (data: Record<string, unknown>) =>
         ? data.classes
         : url.endsWith('/search/captains.json')
           ? data.captains
-          : data.history,
+          : url.endsWith('/api/history/index.json')
+            ? data.history
+            : url.includes('/api/app/channel/recent')
+              ? { videos: [] }
+              : {},
   })) as unknown as typeof fetch
 
 beforeEach(() => mockStore.clear())
@@ -100,6 +104,63 @@ describe('CyberJudah class library', () => {
     const failing = jest.fn(async () => ({ ok: false, status: 503 })) as unknown as typeof fetch
     await expect(loadClassLibrary(failing)).rejects.toThrow('CYBERJUDAH_CLASSES_UNAVAILABLE:503')
     expect(readCachedClassLibrary()).toHaveLength(7)
+  })
+
+  it.each(['/search/captains.json', '/api/history/index.json'])(
+    'preserves the complete cache when %s fails',
+    async path => {
+      await loadClassLibrary(respond(feeds))
+      const before = readCachedClassLibrary()
+      const complete = respond(feeds)
+      const partial = jest.fn(async (url: string) =>
+        url.endsWith(path) ? { ok: false, status: 503 } : complete(url)
+      ) as unknown as typeof fetch
+      const result = await loadClassLibrary(partial)
+      expect(readCachedClassLibrary()).toEqual(before)
+      expect(new Set(result.map(item => item.providerId))).toEqual(
+        new Set(before!.map(item => item.providerId))
+      )
+    }
+  )
+
+  it('shows new rows during a partial refresh without replacing the offline snapshot', async () => {
+    await loadClassLibrary(respond(feeds))
+    const before = readCachedClassLibrary()
+    const complete = respond({
+      ...feeds,
+      classes: [...feeds.classes, row('NEWCLASS123', '2026-10-30')],
+    })
+    const partial = jest.fn(async (url: string) =>
+      url.endsWith('/api/history/index.json')
+        ? { ok: true, json: async () => ({ error: 'unavailable' }) }
+        : complete(url)
+    ) as unknown as typeof fetch
+    expect((await loadClassLibrary(partial))[0].providerId).toBe('NEWCLASS123')
+    expect(readCachedClassLibrary()).toEqual(before)
+  })
+
+  it.each(['recent', 'broadcasts'])(
+    'does not cache a partial snapshot when %s is unavailable',
+    async source => {
+      const complete = respond(feeds)
+      const partial = jest.fn(async (url: string) =>
+        url.includes(source)
+          ? {
+              ok: true,
+              json: async () => (source === 'recent' ? { videos: [], feedOk: false } : null),
+            }
+          : complete(url)
+      ) as unknown as typeof fetch
+      expect(await loadClassLibrary(partial)).toHaveLength(7)
+      expect(readCachedClassLibrary()).toBeNull()
+    }
+  )
+
+  it('allows a complete successful refresh to remove unpublished rows', async () => {
+    await loadClassLibrary(respond(feeds))
+    const result = await loadClassLibrary(respond({ ...feeds, history: [], captains: [] }))
+    expect(result).toHaveLength(4)
+    expect(readCachedClassLibrary()).toEqual(result)
   })
 })
 

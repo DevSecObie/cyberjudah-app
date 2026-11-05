@@ -69,6 +69,60 @@ it('works with only a simple offline copy and does not require the detailed lexi
   expect((await access.loadEntry(identity, 'en'))?.detailedDefinitionHtml).toBeUndefined()
 })
 
+it('preserves an installed BDB resource when a detailed entry has no supplemental resources', async () => {
+  const bdb = {
+    id: 7225,
+    source: 'BDB',
+    kind: 'lexicon',
+    title: 'Brown-Driver-Briggs Hebrew Lexicon',
+    contentHtml: '<p>beginning</p>',
+  }
+  const simple = {
+    ...entry('Simple'),
+    resources: [bdb],
+    modules: {
+      ...entry('Simple').modules,
+      resources: { status: 'available' as const, moduleId: 'resources' as const },
+    },
+  }
+  const access = createLayeredStrongLexiconAccess(source(simple), source(entry('Detailed')))
+  expect((await access.loadEntry(identity, 'en'))?.resources).toEqual([bdb])
+  expect((await access.loadEntryExtras!(identity, 'en'))?.resources).toEqual([bdb])
+})
+
+it('loads installed simple-source extras progressively even without a detailed core', async () => {
+  const bdb = {
+    id: 7225,
+    source: 'BDB',
+    kind: 'lexicon',
+    title: 'Brown-Driver-Briggs Hebrew Lexicon',
+    contentHtml: '<p>beginning</p>',
+  }
+  const simple = { ...entry('Simple'), resources: [bdb] }
+  const access = createLayeredStrongLexiconAccess(source(simple), source())
+  expect(
+    (await access.loadEntry(identity, 'en', { content: 'definitions' }))?.detailedEntryAvailable
+  ).toBe(true)
+  expect((await access.loadEntryExtras!(identity, 'en'))?.resources).toEqual([bdb])
+})
+
+it('keeps different publications with the same numeric ID and deduplicates identical text', async () => {
+  const bdb = { id: 1, source: 'BDB', kind: 'lexicon', title: 'BDB', contentHtml: '<p>Hebrew</p>' }
+  const other = { ...bdb, source: 'Other', contentHtml: '<p>Other text</p>' }
+  const access = createLayeredStrongLexiconAccess(
+    source({ ...entry('Simple'), resources: [bdb] }),
+    source({ ...entry('Detailed'), resources: [{ ...bdb, id: 99 }, other] })
+  )
+  expect((await access.loadEntryExtras!(identity, 'en'))?.resources).toEqual([bdb, other])
+})
+
+it('preserves recovery errors when no supplemental source can be read', async () => {
+  const access = createLayeredStrongLexiconAccess(source(), source())
+  await expect(access.loadEntryExtras!(identity, 'en')).rejects.toMatchObject({
+    code: 'NETWORK_OFFLINE',
+  })
+})
+
 it('keeps an existing detailed copy readable without calling it a simple definition', async () => {
   const access = createLayeredStrongLexiconAccess(source(), source(entry('STEP')))
   const result = await access.loadEntry(identity, 'fr')
@@ -136,7 +190,7 @@ it('preserves an empty result from the preview source identity filter', async ()
   expect(await access.loadPreview([identity], 'fr')).toEqual([])
 })
 
-it('loads both definition texts first, then only detailed extras without replacing either text', async () => {
+it('loads both definition texts first, then source extras without replacing either text', async () => {
   const simple = source(entry('Simple'))
   const detailed = source(entry('STEP'))
   const basicRead = jest.spyOn(simple, 'loadEntry')
@@ -146,7 +200,7 @@ it('loads both definition texts first, then only detailed extras without replaci
   expect(basicRead).toHaveBeenCalledWith(identity, 'fr', { content: 'definitions' })
   expect(detailedRead).toHaveBeenCalledWith(identity, 'fr', { content: 'definitions' })
   const extras = await access.loadEntryExtras!(identity, 'fr')
-  expect(basicRead).toHaveBeenCalledTimes(1)
+  expect(basicRead).toHaveBeenCalledTimes(2)
   expect(detailedRead).toHaveBeenCalledTimes(2)
   expect(extras).not.toHaveProperty('definitionHtml')
   expect(extras).not.toHaveProperty('relations')
