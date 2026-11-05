@@ -202,6 +202,30 @@ describe('hybrid Nave access', () => {
 })
 
 describe('HTTP Nave access', () => {
+  it.each(['en', 'fr'] as const)(
+    'localizes topic and random reference labels for %s',
+    async language => {
+      const description = '<a href="v=19-2-12">Psaumes 2:12</a>'
+      const access = createHttpNaveAccess({
+        baseUrl: 'http://resource.test',
+        fetcher: jest.fn(async () => ({
+          ok: true,
+          status: 200,
+          json: async () => ({
+            resource: { kind: 'nave', language, revision: 'r1' },
+            topic: { ...topic, description },
+          }),
+        })) as unknown as typeof fetch,
+        isOnline: async () => true,
+      })
+      const expected = language === 'en' ? '<a href="v=19-2-12">Psalms 2:12</a>' : description
+      await expect(access.loadItem(topic.normalizedName, language)).resolves.toMatchObject({
+        description: expected,
+      })
+      await expect(access.loadRandom(language)).resolves.toMatchObject({ description: expected })
+    }
+  )
+
   afterEach(() => {
     jest.restoreAllMocks()
   })

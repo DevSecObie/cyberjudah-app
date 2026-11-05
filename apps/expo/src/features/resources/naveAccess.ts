@@ -239,7 +239,7 @@ export const createHttpNaveAccess = ({
         if (decoded.topic.normalizedName !== nameLower) {
           throw new ResourceAccessError('INTEGRITY_FAILURE')
         }
-        return decoded.topic
+        return localizeNaveTopic(decoded.topic, lang)
       } catch (error) {
         if (error instanceof ResourceAccessError && error.code === 'NOT_FOUND') return undefined
         throw error
@@ -260,7 +260,7 @@ export const createHttpNaveAccess = ({
       const payload = await request(`/v1/naves/${encodeURIComponent(lang)}/random`)
       const decoded = decode(NaveTopicResponseDto, payload)
       assertResponseLanguage(decoded.resource.language, lang)
-      return decoded.topic
+      return localizeNaveTopic(decoded.topic, lang)
     },
   }
 
