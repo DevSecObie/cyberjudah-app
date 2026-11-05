@@ -118,6 +118,7 @@
   },
   "resolutions": {
     "react-native-svg": "15.16.0",
+    "react-native-nitro-modules@npm:^0.37.2": "patch:react-native-nitro-modules@npm%3A0.37.2#~/.yarn/patches/react-native-nitro-modules-npm-0.37.2-swift-headers.patch",
     "rn-fetch-blob@npm:^0.12.0": "patch:rn-fetch-blob@npm%3A0.12.0#~/.yarn/patches/rn-fetch-blob-npm-0.12.0-cf02e3c544.patch",
     "@react-native-masked-view/masked-view@npm:^0.3.2": "patch:@react-native-masked-view/masked-view@npm%3A0.3.2#~/.yarn/patches/@react-native-masked-view-masked-view-npm-0.3.2-7e49df0087.patch",
     "vaul@npm:^1.1.2": "patch:vaul@npm%3A1.1.2#~/.yarn/patches/vaul-npm-1.1.2-7a571c1ad6.patch",
