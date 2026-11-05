@@ -121,6 +121,7 @@ const DeleteAccountModal = ({ modalRef }: DeleteAccountModalProps) => {
       <SheetView>
         <VStack className="overflow-hidden border-continuous gap-[15px] px-[20px] py-[20px]">
           <Text className="text-[15px]">{t('app.deleteAccountBody')}</Text>
+          <Text className="text-[15px] font-bold">{t('app.deleteAccountTelegramNotice')}</Text>
           <Text className="text-[14px] text-grey">
             {t('app.deleteAccountTypeConfirm', { text: confirmationText })}
           </Text>

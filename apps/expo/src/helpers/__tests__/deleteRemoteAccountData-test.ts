@@ -7,7 +7,8 @@ const originalFetch = global.fetch
 const originalOrigin = process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL
 const fetchMock = jest.fn()
 const acknowledgment = {
-  version: 2,
+  version: 3,
+  telegramUnlinked: true,
   publicationsDeleted: true,
   writesBlocked: true,
   uid: 'alice',
@@ -49,6 +50,9 @@ it.each([
   {},
   { ...acknowledgment, uid: 'bob' },
   { ...acknowledgment, version: 1 },
+  { ...acknowledgment, version: 2 },
+  { ...acknowledgment, telegramUnlinked: false },
+  { ...acknowledgment, telegramUnlinked: undefined },
   { ...acknowledgment, firestoreDeleted: false },
   { ...acknowledgment, publicationsDeleted: false },
   { ...acknowledgment, writesBlocked: false },
