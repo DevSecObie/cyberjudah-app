@@ -3,6 +3,7 @@ import { act, create, type ReactTestRenderer } from 'react-test-renderer'
 import DictionaryListScreen from '~features/dictionnary/DictionaryListScreen'
 import LexiqueListScreen from '~features/lexique/LexiqueListScreen'
 import NaveListScreen from '~features/nave/NaveListScreen'
+import { ResourceAccessError } from '../resourceAccessError'
 jest.mock('expo-router', () => ({
   useNavigation: () => ({ goBack: jest.fn() }),
   useRouter: () => ({ push: jest.fn(), back: jest.fn() }),
@@ -16,6 +17,10 @@ jest.mock('~themes/ThemeProvider', () => ({
 }))
 
 let mockIsOnline = true
+let mockCatalogError: unknown
+let mockListError: string | undefined = 'NETWORK_OFFLINE'
+let mockListResults: { word: string; normalizedWord: string }[] = []
+const mockCatalogRetry = jest.fn()
 let mockStrongAvailability: { status: 'available' | 'missing'; moduleId?: 'core' } = {
   status: 'available',
 }
@@ -33,9 +38,9 @@ jest.mock('@tanstack/react-query', () => ({
       : queryKey.includes('strong-lexicon')
         ? { availability: mockStrongAvailability, recoveries: [] }
         : { status: 'available' },
-    error: undefined,
-    isError: false,
-    refetch: jest.fn(),
+    error: queryKey.includes('dictionary-catalog') ? mockCatalogError : undefined,
+    isError: queryKey.includes('dictionary-catalog') && Boolean(mockCatalogError),
+    refetch: queryKey.includes('dictionary-catalog') ? mockCatalogRetry : jest.fn(),
   }),
 }))
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }))
@@ -65,9 +70,9 @@ jest.mock('~features/lexique/useUtilities', () => ({
     setSearchValue: jest.fn(),
   }),
   useInfiniteResultsByLetterOrSearch: () => ({
-    results: [],
+    results: mockListResults,
     isLoading: false,
-    error: 'NETWORK_OFFLINE',
+    error: mockListError,
     recoveries: ['retry'],
     retry: jest.fn(),
     fetchNextPage: jest.fn(),
@@ -95,6 +100,7 @@ jest.mock('~common/Header', () => {
 })
 jest.mock('~common/AlphabetList', () => () => null)
 jest.mock('~common/Empty', () => () => null)
+jest.mock('~assets/images/empty-state-icons/word.svg', () => 1)
 jest.mock('~common/FiltersHeader', () => () => null)
 jest.mock('~common/Loading', () => () => null)
 jest.mock('~common/SearchInput', () => () => null)
@@ -125,6 +131,10 @@ describe('resource failure list screens', () => {
     act(() => renderer.unmount())
     mockIsOnline = true
     mockStrongAvailability = { status: 'available' }
+    mockCatalogError = undefined
+    mockListError = 'NETWORK_OFFLINE'
+    mockCatalogRetry.mockClear()
+    mockListResults = []
   })
 
   it.each([
@@ -149,6 +159,30 @@ describe('resource failure list screens', () => {
     expect(renderer.root.find(node => String(node.type) === 'Header').props).toEqual(
       expect.objectContaining({ hasBackButton: true, title: 'Désolé...' })
     )
+  })
+
+  it('shows a retryable dictionary catalog failure instead of an empty dictionary', () => {
+    mockListError = undefined
+    mockCatalogError = new ResourceAccessError('TEMPORARY_UNAVAILABLE', ['retry'])
+    act(() => {
+      renderer = create(<DictionaryListScreen dictionaryAtom={{} as never} />)
+    })
+    const failure = renderer.root.find(node => String(node.type) === 'ResourceUnavailableView')
+    expect(failure.props.failure.cause).toBe('temporary-unavailable')
+    act(() => failure.props.onRetry())
+    expect(mockCatalogRetry).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps readable dictionary rows usable during a catalog outage', () => {
+    mockListError = undefined
+    mockCatalogError = new ResourceAccessError('NETWORK_OFFLINE')
+    mockListResults = [{ word: 'Aaron', normalizedWord: 'aaron' }]
+    act(() => {
+      renderer = create(<DictionaryListScreen dictionaryAtom={{} as never} />)
+    })
+    expect(
+      renderer.root.findAll(node => String(node.type) === 'ResourceUnavailableView')
+    ).toHaveLength(0)
   })
 
   it('describes a missing Strong copy as an offline connection when offline', () => {

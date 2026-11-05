@@ -5,3 +5,5 @@ Keep the last complete class library when any source feed fails or returns malfo
 Regression coverage includes BDB retention, absent detailed content, publication ID collisions, partial feeds, invalid data, new classes during outages and legitimate removals after a complete refresh. These fixes require inclusion in the reviewed replacement mobile build.
 
 The production Android APK profile now explicitly inherits the production identity, Firebase and API environment, matching the production AAB profile while retaining APK output. No build number or signing credentials are changed.
+
+The bundled timeline now identifies the dated Lamech as Noah's father, matching the corrected CyberJudah server detail while retaining its route and dates. Dictionary catalog failures offer recovery instead of an empty-state message, without hiding already readable rows. Alphabet navigation announces the selected initial letter consistently for lowercase and uppercase state. Targeted regressions reproduce each prior failure.

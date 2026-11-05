@@ -104,7 +104,7 @@ const AlphabetList = ({ color, setLetter, letter }: AlphabetListProps) => {
             <TouchableOpacity
               accessibilityLabel={section.toUpperCase()}
               accessibilityRole="radio"
-              accessibilityState={{ checked: letter === section }}
+              accessibilityState={{ checked: letter.toUpperCase() === section }}
               onPress={() => {
                 CarouselAlphabet.current?.scrollTo({ index: itemIndex, animated: true })
                 setLetter(section)
@@ -112,7 +112,10 @@ const AlphabetList = ({ color, setLetter, letter }: AlphabetListProps) => {
               style={{ minWidth: 36, minHeight: 44, justifyContent: 'center' }}
             >
               <Box className="overflow-hidden border-continuous">
-                <StyledText className="text-center text-[26px]" isSelected={letter === section}>
+                <StyledText
+                  className="text-center text-[26px]"
+                  isSelected={letter.toUpperCase() === section}
+                >
                   {section.toUpperCase()}
                 </StyledText>
               </Box>

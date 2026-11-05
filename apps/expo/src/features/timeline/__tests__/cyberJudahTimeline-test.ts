@@ -10,6 +10,16 @@ jest.mock('expo-file-system/legacy', () => ({ readAsStringAsync: jest.fn() }))
 jest.mock('~helpers/utils', () => ({ wp: (value: number) => value }))
 jest.mock('~i18n', () => ({ getFixedT: () => (key: string) => key }))
 
+it('labels the dated Lamech as Noah’s father in every bundled period', () => {
+  const lamechs = sections.flatMap(section => section.events.filter(event => event.id === 673))
+  expect(lamechs).toHaveLength(2)
+  for (const event of lamechs) {
+    expect(event.title).toBe('Lamech, father of Noah')
+    expect(event.titleEn).toBe('Lamech, father of Noah')
+    expect(event.end - event.start).toBe(777)
+  }
+})
+
 it('uses the same published CyberJudah periods on web and devices without reading the upstream content', async () => {
   const originalProfile = process.env.EXPO_PUBLIC_RESOURCE_PROFILE
   process.env.EXPO_PUBLIC_RESOURCE_PROFILE = 'cyberjudah'

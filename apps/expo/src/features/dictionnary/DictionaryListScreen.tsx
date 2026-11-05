@@ -340,7 +340,10 @@ const DictionaryListScreen = ({
     })
   }
 
-  if (availabilityQuery.isError || error) {
+  // An unavailable catalog must not look like an empty dictionary. Keep already
+  // readable rows usable when only catalog metadata could not be refreshed.
+  const catalogUnavailable = dictionaryCatalogQuery.isError && !results.length && !isLoading
+  if (availabilityQuery.isError || error || catalogUnavailable) {
     return (
       <ResourceUnavailableScreen
         headerTitle={t('Désolé...')}
@@ -352,9 +355,12 @@ const DictionaryListScreen = ({
         failure={
           error
             ? resourceFailureFromAccessCode(error, recoveries)
-            : resourceFailureFromAccessError(availabilityQuery.error)
+            : resourceFailureFromAccessError(
+                availabilityQuery.error ?? dictionaryCatalogQuery.error
+              )
         }
         onRetry={() => {
+          void dictionaryCatalogQuery.refetch()
           void availabilityQuery.refetch()
           retry()
         }}
