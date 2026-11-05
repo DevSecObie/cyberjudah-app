@@ -422,25 +422,27 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
         <Box className="overflow-hidden border-continuous px-[24px] mb-[22px]">
           <LinkItem
             style={{ paddingVertical: 8, paddingHorizontal: 0 }}
-            href={
-              isCyberJudah
-                ? 'https://cyberjudah.io/app/privacy'
-                : lang === 'fr'
-                  ? 'https://bible-strong.app/politique-de-confidentialite'
-                  : 'https://bible-strong.app/privacy-policy'
-            }
+            {...(isCyberJudah
+              ? { route: 'Privacy' as const }
+              : {
+                  href:
+                    lang === 'fr'
+                      ? 'https://bible-strong.app/politique-de-confidentialite'
+                      : 'https://bible-strong.app/privacy-policy',
+                })}
           >
             <Text className="text-[13px] text-grey">{t('Politique de confidentialité')}</Text>
           </LinkItem>
           <LinkItem
             style={{ paddingVertical: 8, paddingHorizontal: 0 }}
-            href={
-              isCyberJudah
-                ? 'https://cyberjudah.io/app/terms'
-                : lang === 'fr'
-                  ? 'https://bible-strong.app/eula'
-                  : 'https://bible-strong.app/eula-en'
-            }
+            {...(isCyberJudah
+              ? { route: 'Terms' as const }
+              : {
+                  href:
+                    lang === 'fr'
+                      ? 'https://bible-strong.app/eula'
+                      : 'https://bible-strong.app/eula-en',
+                })}
           >
             <Text className="text-[13px] text-grey">{t("Conditions d'utilisation")}</Text>
           </LinkItem>

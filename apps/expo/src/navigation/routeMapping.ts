@@ -45,6 +45,8 @@ export const routeMapping: Record<keyof MainStackProps, string> = {
   ForgotPassword: '/forgot-password',
   Dictionnaire: '/dictionnaire',
   FAQ: '/faq',
+  Privacy: '/privacy',
+  Terms: '/terms',
   Nave: '/nave',
   NaveDetail: '/nave-detail',
   ToggleCompareVerses: '/toggle-compare-verses',
