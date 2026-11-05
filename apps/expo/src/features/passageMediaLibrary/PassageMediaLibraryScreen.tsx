@@ -1,3 +1,4 @@
+import { useClassLibraryQuery } from './useClassLibraryQuery'
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { pageContentStyle } from '~common/ui/PageContent'
@@ -27,8 +28,6 @@ import { classesForHits, searchInsideClasses, searchKindsFor } from './classSear
 import {
   CLASS_COLLECTIONS,
   filterClassLibrary,
-  loadClassLibrary,
-  readCachedClassLibrary,
   type CyberJudahClass,
   featuredSabbathClass,
 } from './cyberJudahClasses'
@@ -119,16 +118,7 @@ const PassageMediaLibraryScreen = () => {
   const [paneWidth, setPaneWidth] = useState(windowWidth)
   const cyberJudah = usesCyberJudahEditorial()
   // CyberJudah lists every published class, read live and kept for offline opens.
-  const classLibrary = useQuery({
-    queryKey: ['cyberjudah-class-library'],
-    queryFn: () => loadClassLibrary(),
-    initialData: () => readCachedClassLibrary() ?? undefined,
-    initialDataUpdatedAt: 0,
-    enabled: cyberJudah,
-    staleTime: 5 * 60 * 1000,
-    networkMode: 'always',
-    retry: 1,
-  })
+  const classLibrary = useClassLibraryQuery(cyberJudah)
   const classes = cyberJudah ? (classLibrary.data ?? []) : []
   const library = classes.length ? classes : getPassageMediaLibrary({ language })
   const [filters, setFilters] = useState<ClassFilters>({ query: '' })
