@@ -2,6 +2,9 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
+    function writableAccount() {
+      return signedIn() && !exists(/databases/$(database)/documents/account_deletion_blocks/$(request.auth.uid));
+    }
     function owns(userId) { return signedIn() && request.auth.uid == userId; }
     // A server-only ownership record prevents old clients from reusing a deleted study ID.
     function studyWritable(root, studyId) {
@@ -14,36 +17,45 @@ service cloud.firestore {
       return request.resource.data.get('subscription', null) == (resource == null ? null : resource.data.get('subscription', null));
     }
     match /staging_users/{userId} {
-      allow read, delete: if owns(userId);
-      allow create, update: if owns(userId) && keepsSubscription();
+      allow read: if owns(userId);
+      allow delete: if writableAccount() && owns(userId);
+      allow create, update: if writableAccount() && owns(userId) && keepsSubscription();
     }
     match /staging_users/{userId}/{collection}/{document=**} {
-      allow read, write: if owns(userId);
+      allow read: if owns(userId);
+      allow write: if writableAccount() && owns(userId);
     }
     match /staging_users-status/{userId} {
-      allow read, write: if owns(userId);
+      allow read: if owns(userId);
+      allow write: if writableAccount() && owns(userId);
     }
     match /staging_studies/{studyId} {
       allow read: if signedIn() && resource.data.user.id == request.auth.uid;
       allow delete: if false; // The authenticated server preserves ownership atomically.
-      allow create: if signedIn() && request.resource.data.user.id == request.auth.uid
+      allow create: if writableAccount() && signedIn() && request.resource.data.user.id == request.auth.uid
         && studyWritable('staging_studies', studyId);
-      allow update: if signedIn() && resource.data.user.id == request.auth.uid
+      allow update: if writableAccount() && signedIn() && resource.data.user.id == request.auth.uid
         && request.resource.data.user.id == request.auth.uid && studyWritable('staging_studies', studyId);
       match /revisions/{revisionId} {
         allow read: if signedIn() && studyWritable('staging_studies', studyId)
           && get(/databases/$(database)/documents/staging_studies/$(studyId)).data.user.id == request.auth.uid;
-        allow write: if signedIn() && studyWritable('staging_studies', studyId)
+        allow write: if writableAccount() && signedIn() && studyWritable('staging_studies', studyId)
           && get(/databases/$(database)/documents/staging_studies/$(studyId)).data.user.id == request.auth.uid;
       }
     }
     // These are personal documents. They never grant Telegram admin rights or API quotas.
     match /users/{userId} {
-      allow read, delete: if owns(userId);
-      allow create, update: if owns(userId) && keepsSubscription();
+      allow read: if owns(userId);
+      allow delete: if writableAccount() && owns(userId);
+      allow create, update: if writableAccount() && owns(userId) && keepsSubscription();
     }
     match /users/{userId}/{collection}/{document} {
-      allow read, write: if owns(userId) && collection in [
+      allow read: if owns(userId) && collection in [
+        'bookmarks', 'highlights', 'notes', 'links', 'relations', 'relationIndex',
+        'relationPairs', 'tags', 'wordAnnotations', 'strongsHebreu', 'strongsGrec',
+        'words', 'naves', 'studies', 'tabGroups'
+      ];
+      allow write: if writableAccount() && owns(userId) && collection in [
         'bookmarks', 'highlights', 'notes', 'links', 'relations', 'relationIndex',
         'relationPairs', 'tags', 'wordAnnotations', 'strongsHebreu', 'strongsGrec',
         'words', 'naves', 'studies', 'tabGroups'
@@ -52,28 +64,31 @@ service cloud.firestore {
     // Revision history: previous states saved before meaningful edits.
     // Nested under the note/study they belong to; owner-only via the path.
     match /users/{userId}/notes/{noteId}/revisions/{revisionId} {
-      allow read, write: if owns(userId);
+      allow read: if owns(userId);
+      allow write: if writableAccount() && owns(userId);
     }
     match /users/{userId}/studies/{studyId}/revisions/{revisionId} {
-      allow read, write: if owns(userId);
+      allow read: if owns(userId);
+      allow write: if writableAccount() && owns(userId);
     }
     // A study's history is as private as the study: only the study's owner reads or writes it.
     match /studies/{studyId}/revisions/{revisionId} {
       allow read: if signedIn() && studyWritable('studies', studyId)
         && get(/databases/$(database)/documents/studies/$(studyId)).data.user.id == request.auth.uid;
-      allow write: if signedIn() && studyWritable('studies', studyId)
+      allow write: if writableAccount() && signedIn() && studyWritable('studies', studyId)
         && get(/databases/$(database)/documents/studies/$(studyId)).data.user.id == request.auth.uid;
     }
     match /studies/{studyId} {
       allow read: if signedIn() && resource.data.user.id == request.auth.uid;
-      allow create: if signedIn() && request.resource.data.user.id == request.auth.uid
+      allow create: if writableAccount() && signedIn() && request.resource.data.user.id == request.auth.uid
         && studyWritable('studies', studyId);
-      allow update: if signedIn() && resource.data.user.id == request.auth.uid
+      allow update: if writableAccount() && signedIn() && resource.data.user.id == request.auth.uid
         && request.resource.data.user.id == request.auth.uid && studyWritable('studies', studyId);
       allow delete: if false; // Parent-only client deletion would discard ownership evidence.
     }
     match /users-status/{userId} {
-      allow read, write: if owns(userId);
+      allow read: if owns(userId);
+      allow write: if writableAccount() && owns(userId);
     }
     // Preserve the shared-content reads in the owner's active September 8 rules.
     // Never restore their catch-all signed-in read: it exposes other users' data.

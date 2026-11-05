@@ -6,7 +6,14 @@ jest.mock('../firebaseAuthRuntime', () => ({ getCurrentAuthUser: () => mockCurre
 const originalFetch = global.fetch
 const originalOrigin = process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL
 const fetchMock = jest.fn()
-const acknowledgment = { version: 1, uid: 'alice', firestoreDeleted: true, removed: 7 }
+const acknowledgment = {
+  version: 2,
+  publicationsDeleted: true,
+  writesBlocked: true,
+  uid: 'alice',
+  firestoreDeleted: true,
+  removed: 7,
+}
 const response = (body: unknown, status = 200) => ({
   ok: status >= 200 && status < 300,
   status,
@@ -41,8 +48,10 @@ it.each([
   null,
   {},
   { ...acknowledgment, uid: 'bob' },
-  { ...acknowledgment, version: 2 },
+  { ...acknowledgment, version: 1 },
   { ...acknowledgment, firestoreDeleted: false },
+  { ...acknowledgment, publicationsDeleted: false },
+  { ...acknowledgment, writesBlocked: false },
 ])('rejects a missing, incompatible or other-account acknowledgment: %j', async body => {
   fetchMock.mockResolvedValue(response(body))
   await expect(deleteRemoteAccountData('alice')).rejects.toMatchObject({

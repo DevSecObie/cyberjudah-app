@@ -25,14 +25,18 @@ export async function deleteRemoteAccountData(expectedUid: string): Promise<void
   const body = (await response.json().catch(() => null)) as {
     version?: unknown
     uid?: unknown
+    publicationsDeleted?: unknown
+    writesBlocked?: unknown
     firestoreDeleted?: unknown
     error?: unknown
   } | null
   if (
     !response.ok ||
-    body?.version !== 1 ||
+    body?.version !== 2 ||
     body.uid !== expectedUid ||
-    body.firestoreDeleted !== true
+    body.firestoreDeleted !== true ||
+    body.publicationsDeleted !== true ||
+    body.writesBlocked !== true
   )
     throw Object.assign(new Error('Account deletion could not be completed. Please try again.'), {
       code:

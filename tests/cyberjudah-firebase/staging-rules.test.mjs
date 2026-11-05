@@ -16,6 +16,8 @@ import {
   where,
   updateDoc,
   deleteDoc,
+  disableNetwork,
+  enableNetwork,
 } from 'firebase/firestore'
 let env
 before(async () => {
@@ -178,4 +180,27 @@ test('quarantining an unresolved historical ID prevents recreation and access th
       await deleteDoc(doc(ctx.firestore(), `study_deletion_owners/${root}:historical-unresolved`))
     })
   }
+})
+
+test('a server deletion barrier rejects another device and queued offline writes in both scopes', async () => {
+  const uid = 'deletion-barrier-reader', first = db(uid), second = db(uid)
+  const marker = `account_deletion_blocks/${uid}`
+  const paths = ['users/' + uid, 'users/' + uid + '/notes/n', 'users/' + uid + '/notes/n/revisions/r', 'users-status/' + uid, 'studies/barrier-study', 'studies/barrier-study/revisions/r', 'staging_users/' + uid, 'staging_users/' + uid + '/notes/n/revisions/r', 'staging_users-status/' + uid, 'staging_studies/barrier-study', 'staging_studies/barrier-study/revisions/r']
+  await env.withSecurityRulesDisabled(async ctx => {
+    for (const path of paths) await setDoc(doc(ctx.firestore(), path), { user: { id: uid }, text: 'before' })
+  })
+  await disableNetwork(first)
+  const queued = assertFails(setDoc(doc(first, `users/${uid}/notes/offline`), { text: 'old device' }))
+  await env.withSecurityRulesDisabled(ctx => setDoc(doc(ctx.firestore(), marker), { version: 1 }))
+  await enableNetwork(first)
+  await queued
+  for (const path of paths) await assertFails(setDoc(doc(second, path), { user: { id: uid }, text: 'late' }))
+  await assertFails(setDoc(doc(second, 'studies/new-after-deletion'), { user: { id: uid } }))
+  await assertFails(getDoc(doc(second, marker)))
+  await assertFails(deleteDoc(doc(second, marker)))
+  await assertFails(setDoc(doc(second, marker), { version: 0 }))
+  await assertSucceeds(setDoc(doc(db('unrelated-reader'), 'users/unrelated-reader/notes/ok'), { text: 'unaffected' }))
+  await env.withSecurityRulesDisabled(async ctx => {
+    for (const path of [...paths, marker, 'users/unrelated-reader/notes/ok']) await deleteDoc(doc(ctx.firestore(), path))
+  })
 })
