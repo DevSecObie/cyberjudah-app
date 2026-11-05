@@ -54,14 +54,11 @@ const DeleteAccountModal = ({ modalRef }: DeleteAccountModalProps) => {
 
     setIsLoading(true)
     try {
-      // Studies the reader published come down with the account. The server keeps no other copy.
-      await deleteAllPublishedStudies().catch(error =>
-        console.warn('[Auth] Could not take down published studies', error)
-      )
       // The account's synced data goes with it: CyberJudah's Firebase project runs no deletion
       // function, and an Apple sign-in is revoked first (App Store guideline 5.1.1(v)).
       await deleteAccountWithData(authUser, {
         revokeProvider: revokeAppleSignInIfLinked,
+        unpublishStudies: deleteAllPublishedStudies,
         deleteLogin: deleteCurrentAuthUser,
       })
       handleClose()

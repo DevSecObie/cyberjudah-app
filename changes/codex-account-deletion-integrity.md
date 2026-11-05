@@ -1,0 +1,1 @@
+Account deletion now removes nested note and legacy study revision history before deleting their parent documents. Published studies are removed after provider confirmation and the recent-sign-in check; a publication-service failure keeps the login and private data available for retry.

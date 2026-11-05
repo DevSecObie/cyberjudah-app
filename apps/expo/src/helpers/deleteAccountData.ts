@@ -20,7 +20,15 @@ export async function deleteOwnAccountData(userId: string): Promise<number> {
   const refs: DeletableRef[] = []
   for (const name of ACCOUNT_SUBCOLLECTIONS) {
     const snapshot = await getDocs(collection(firebaseDb, 'users', userId, name))
-    for (const document of snapshot.docs) refs.push(document.ref)
+    for (const document of snapshot.docs) {
+      // Deleting a Firestore document does not delete its subcollections. Keep the parent
+      // until its history is gone so a failed batch can be retried by listing it again.
+      if (name === 'notes' || name === 'studies') {
+        const revisions = await getDocs(collection(document.ref, 'revisions'))
+        for (const revision of revisions.docs) refs.push(revision.ref)
+      }
+      refs.push(document.ref)
+    }
   }
   const studies = await getDocs(
     query(collection(firebaseDb, 'studies'), where('user.id', '==', userId))
@@ -52,20 +60,24 @@ type DeletableUser = {
 type AccountDeletionSteps = {
   /** Confirms the sign-in where the provider needs it and revokes its tokens (Sign in with Apple). */
   revokeProvider: () => Promise<void>
+  /** Must succeed while the reader can still authenticate to the publication service. */
+  unpublishStudies: () => Promise<void>
   deleteLogin: () => Promise<void>
 }
 
 /**
- * Deletes an account in an order that never leaves a reader with a login and no data:
+ * Deletes an account only after its known data stores have acknowledged deletion:
  * 1. the provider step (Apple users sign in again, then the app's Apple tokens are revoked);
  * 2. a recent-sign-in check, because Firebase refuses to delete an older login;
- * 3. every document the account keeps in Firestore;
- * 4. the login.
- * If any step fails, the later ones do not run and the reader can try again.
+ * 3. published studies;
+ * 4. every document the account keeps in Firestore;
+ * 5. the login.
+ * If any step fails, the later ones do not run and the reader can try again. Deletion
+ * across stores and batches is not atomic; a failure can leave partially deleted data.
  */
 export async function deleteAccountWithData(
   user: DeletableUser,
-  { revokeProvider, deleteLogin }: AccountDeletionSteps,
+  { revokeProvider, unpublishStudies, deleteLogin }: AccountDeletionSteps,
   now: () => number = Date.now
 ): Promise<void> {
   await revokeProvider()
@@ -75,6 +87,7 @@ export async function deleteAccountWithData(
     throw Object.assign(new Error('Sign in again to delete this account.'), {
       code: 'auth/requires-recent-login',
     })
+  await unpublishStudies()
   await deleteOwnAccountData(user.uid)
   await deleteLogin()
 }
