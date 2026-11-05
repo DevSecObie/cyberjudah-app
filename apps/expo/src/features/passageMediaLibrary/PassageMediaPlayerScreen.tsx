@@ -18,6 +18,7 @@ import {
 } from './classVideoPosition'
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes'
 import Header from '~common/Header'
+import Loading from '~common/Loading'
 import Box, { TouchableBox, VStack } from '~common/ui/Box'
 import FormSheetScreen from '~common/ui/FormSheetScreen'
 import Text from '~common/ui/Text'
@@ -36,7 +37,9 @@ import { getCommentaryBibleViewRoute } from '~features/commentaries/commentaryRe
 import ClassNotesList from './ClassNotesList'
 import ClassNotesPdfButton from '~features/notesExport/ClassNotesPdfButton'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
-import { CLASS_SEEK_PREFIX, getCachedClassById, loadClassNote } from './cyberJudahClasses'
+import { CLASS_SEEK_PREFIX, loadClassNote } from './cyberJudahClasses'
+import { useClassLibraryQuery } from './useClassLibraryQuery'
+
 const YOUTUBE_PLAYER_BASE_URL =
   'https://lonelycpp.github.io/react-native-youtube-iframe/iframe_v2.html'
 
@@ -72,8 +75,11 @@ const PassageMediaPlayerScreen = () => {
   const pathname = usePathname()
   const routeParams = useGlobalSearchParams()
   const router = useRouter()
+  const isClassLink = usesCyberJudahEditorial() && !!workId?.startsWith('cyberjudah-class-')
+  const classLibrary = useClassLibraryQuery(isClassLink)
+  const cachedClass = isClassLink ? classLibrary.data?.find(entry => entry.workId === workId) : null
   const item = workId
-    ? (getPassageMediaById(workId, language) ?? getCachedClassById(workId))
+    ? (getPassageMediaById(workId, language) ?? cachedClass)
     : video && /^[\w-]{11}$/.test(video)
       ? ({
           workId: `cyberjudah-recording-${video}`,
@@ -85,16 +91,8 @@ const PassageMediaPlayerScreen = () => {
         } as unknown as NonNullable<ReturnType<typeof getPassageMediaById>>)
       : null
   // A class's notes come from the class library, even when the catalog also lists the video.
-  const cachedClass = workId ? getCachedClassById(workId) : null
   const notesPath =
     item && 'notesPath' in item ? String(item.notesPath) : (cachedClass?.notesPath ?? '')
-  console.log(
-    '[ClassPlayer]',
-    workId,
-    !!getPassageMediaById(workId ?? '', language),
-    !!getCachedClassById(workId ?? ''),
-    notesPath
-  )
   const notes = useQuery({
     queryKey: ['cyberjudah-class-note', notesPath],
     queryFn: () => loadClassNote(notesPath, item?.providerId ?? ''),
@@ -338,6 +336,15 @@ const PassageMediaPlayerScreen = () => {
               </VStack>
             ) : null}
           </>
+        ) : isClassLink && classLibrary.isFetching ? (
+          <Loading />
+        ) : isClassLink && classLibrary.isError ? (
+          <VStack className="py-[40px] px-[20px] items-center gap-[12px]">
+            <Text className="text-grey text-center">{t('Une erreur est survenue')}</Text>
+            <TouchableBox accessibilityRole="button" onPress={() => classLibrary.refetch()}>
+              <Text className="text-link">{t('Réessayer')}</Text>
+            </TouchableBox>
+          </VStack>
         ) : (
           <Box className="overflow-hidden border-continuous py-[60px] px-[20px] items-center justify-center">
             <Text className="text-grey text-center">{t('passageMediaLibrary.notFound')}</Text>
