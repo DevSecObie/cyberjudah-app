@@ -8,7 +8,7 @@ import Loading from '~common/Loading'
 import Box, { SafeAreaBox, VStack } from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import ClassNotesPdfButton from '~features/notesExport/ClassNotesPdfButton'
-import { longDate } from '~features/notesExport/notePdf'
+import { longDate } from '~features/notesExport/longDate'
 import ClassNotesList from '~features/passageMediaLibrary/ClassNotesList'
 import {
   classNotesToBlocks,

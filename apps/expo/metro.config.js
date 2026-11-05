@@ -40,6 +40,10 @@ const resolveRequest = config.resolver.resolveRequest
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (platform === 'web' && moduleName === 'tslib')
     return { type: 'sourceFile', filePath: require.resolve('tslib/tslib.es6.js') }
+  // fast-check is a test-data generator that effect's Schema re-exports; nothing in the app uses
+  // it, so the web build leaves out its 0.5 MB.
+  if (platform === 'web' && moduleName === 'fast-check')
+    return { type: 'sourceFile', filePath: path.join(__dirname, 'web-stubs/fast-check.js') }
   return (resolveRequest ?? context.resolveRequest)(context, moduleName, platform)
 }
 
