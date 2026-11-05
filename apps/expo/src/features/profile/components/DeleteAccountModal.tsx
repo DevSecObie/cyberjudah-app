@@ -9,6 +9,7 @@ import Sheet from '~common/ModalSheet'
 import { deleteCurrentAuthUser, getCurrentAuthUser } from '~helpers/firebaseAuthRuntime'
 import { revokeAppleSignInIfLinked } from '~helpers/appleAccountRevoke'
 import { deleteAccountWithData } from '~helpers/deleteAccountData'
+import { deleteRemoteAccountData } from '~helpers/deleteRemoteAccountData'
 import type { Theme as AppTheme } from '~themes'
 import { useTheme } from '~themes/ThemeProvider'
 
@@ -54,11 +55,12 @@ const DeleteAccountModal = ({ modalRef }: DeleteAccountModalProps) => {
 
     setIsLoading(true)
     try {
-      // The account's synced data goes with it: CyberJudah's Firebase project runs no deletion
-      // function, and an Apple sign-in is revoked first (App Store guideline 5.1.1(v)).
+      // Keep the login until publication and recursive server cleanup acknowledge deletion.
       await deleteAccountWithData(authUser, {
         revokeProvider: revokeAppleSignInIfLinked,
         unpublishStudies: deleteAllPublishedStudies,
+        deleteRemoteData: () => deleteRemoteAccountData(authUser.uid),
+        isCurrentUser: () => getCurrentAuthUser()?.uid === authUser.uid,
         deleteLogin: deleteCurrentAuthUser,
       })
       handleClose()
@@ -69,7 +71,9 @@ const DeleteAccountModal = ({ modalRef }: DeleteAccountModalProps) => {
       console.error('[Auth] Delete error:', authError.code, authError.message)
       if (APPLE_CANCELED_CODES.includes(authError.code ?? '')) {
         // The reader closed the Apple sheet: nothing was deleted.
-      } else if (authError.code === 'auth/requires-recent-login') {
+      } else if (
+        ['auth/requires-recent-login', 'auth/user-mismatch'].includes(authError.code ?? '')
+      ) {
         toast.warning(t('app.deleteAccountRequiresRecentLogin'))
       } else {
         toast.error(authError.message || t('Erreur'))
