@@ -7,6 +7,7 @@
 import { decodeHTML } from 'entities'
 import { parseDocument } from 'htmlparser2'
 import { marked, type Token, type Tokens } from 'marked'
+import { longDate } from './longDate'
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from 'pdf-lib'
 
 /** A published note, as data.cyberjudah.io serves it at /api/notes/<path>.json. */
@@ -38,20 +39,6 @@ const INK = rgb(0.11, 0.11, 0.13)
 const MUTED = rgb(0.43, 0.45, 0.5)
 const ACCENT = rgb(0.0, 0.42, 0.6)
 const RULE = rgb(0.82, 0.83, 0.86)
-const MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-]
 const COLLECTION: Record<string, string> = {
   class: 'Sabbath class',
   captains: '15 Minutes with the Captains',
@@ -62,12 +49,6 @@ const COLLECTION: Record<string, string> = {
 const SITE = 'https://cyberjudah.io'
 const MOMENT = /^\d{1,2}:\d{2}(?::\d{2})?$/
 const HIDDEN = new Set(['script', 'style', 'iframe', 'object', 'template'])
-
-/** 2025-12-28 as "December 28, 2025". */
-export const longDate = (iso?: string | null) => {
-  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso ?? '')
-  return m ? `${MONTHS[+m[2] - 1]} ${+m[3]}, ${m[1]}` : ''
-}
 
 const isoDay = (time: number) => {
   const d = new Date(time)
@@ -549,3 +530,5 @@ export const pdfName = (note: { date?: string | null; title?: string }) =>
 
 export const personalNotesPdfName = (title: string, time = Date.now()) =>
   pdfName({ date: isoDay(time), title })
+
+export { longDate }

@@ -1,5 +1,5 @@
 import SheetWell from '~common/ui/SheetWell'
-import Lottie from 'lottie-react-native'
+import Lottie from '~common/LottieView'
 import React from 'react'
 import { SheetView, type SheetRef } from '~common/sheet'
 import Sheet from '~common/ModalSheet'

@@ -26,6 +26,28 @@
         height: 100%;
         flex: 1;
       }
+      /* Shown from the first byte until the app replaces the root's content. */
+      .boot {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #ffffff;
+      }
+      body {
+        margin: 0;
+      }
+      .boot img {
+        width: 96px;
+        height: 96px;
+        border-radius: 22px;
+      }
+      @media (prefers-color-scheme: dark) {
+        .boot {
+          background: #05070d;
+        }
+      }
     </style>
   </head>
 
@@ -33,6 +55,10 @@
     <!-- Use static rendering with Expo Router to support running without JavaScript. -->
     <noscript> You need to enable JavaScript to run this app. </noscript>
     <!-- The root element for your Expo app. -->
-    <div id="root"></div>
+    <div id="root">
+      <div class="boot" role="img" aria-label="Loading" aria-busy="true">
+        <img src="/icon-192.png" alt="" />
+      </div>
+    </div>
   </body>
 </html>

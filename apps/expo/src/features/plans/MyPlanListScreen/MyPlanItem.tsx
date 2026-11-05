@@ -1,6 +1,6 @@
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { titleFontStyle } from '~themes/styleValues'
-import Lottie from 'lottie-react-native'
+import Lottie from '~common/LottieView'
 import React from 'react'
 import { ComputedPlanItem } from 'src/common/types'
 import Link from '~common/Link'
