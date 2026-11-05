@@ -2,7 +2,8 @@ import { ExpoConfig, ConfigContext } from 'expo/config'
 
 const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
 // CyberJudah keeps its own TestFlight version; 28.3 is its first on Bible Strong 28 (Expo 58).
-const APP_VERSION = isCyberJudah ? '28.3.0' : '28.0.1'
+// 28.4 adds Firebase Messaging (new class alerts), a native module, so it is a new runtime.
+const APP_VERSION = isCyberJudah ? '28.4.0' : '28.0.1'
 // Patch releases share a runtime and receive the same OTA updates. Any native change must
 // ship in a new major or minor version, which creates a new runtime.
 const [majorVersion, minorVersion] = APP_VERSION.split('.')
@@ -118,6 +119,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 
     entitlements: {
       'com.apple.developer.applesignin': ['Default'],
+      // New class alerts (src/features/newClassAlerts), delivered by Firebase Cloud Messaging.
+      ...(isCyberJudah ? { 'aps-environment': 'production' } : {}),
       'com.apple.developer.devicecheck.appattest-environment': 'production',
     },
     // Deep linking: iOS Universal Links
@@ -168,6 +171,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
             'RNFBFirestore',
             'RNFBConfig',
             'RNFBStorage',
+            'RNFBMessaging',
           ],
         },
         android: {
