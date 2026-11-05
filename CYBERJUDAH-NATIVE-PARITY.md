@@ -52,13 +52,17 @@ On 5 November 2026 both online editions passed the public checks for topic detai
 
 Run `node bot/scripts/verify-owned-nave.mjs https://cyberjudah.io/bs/reference/v1/naves/` in the gateway repository after changes. If this first release must be withdrawn, remove just the new pattern from the publication Worker's routes and apply its triggers. Retain the database, private Worker and previous topic gateway while investigating. For subsequent releases restore the last verified Worker version and rerun the same checks.
 
-Both staging offline ZIPs were downloaded and matched the published SHA-256 values. The production app’s existing offline ZIP paths returned HTML on this date. Verify production delivery and a physical iPhone in airplane mode before enabling the replacement app for release.
+On 5 November 2026 both production and staging catalogs delivered the checked English and French offline ZIPs. Each ZIP and its extracted database matched the native release SHA-256 values. Each database passed SQLite integrity checks and returned its own Faith article from the Hebrews 11:1 lookup. The staging iPhone app downloads its copies from the staging host. Physical iPhone acceptance in airplane mode is the remaining offline release check.
 
-## Acceptance on the next signed iPhone build
+## iPhone build and device acceptance
 
 The [first native staging archive](https://github.com/DevSecObie/cyberjudah-app/actions/runs/42082746095) exposed a NitroModules 0.37.2 Swift module import failure on React Native 0.88. Nitro’s version macros are consumed only in its C++ implementation. The Yarn patch moves the version-header import there and exports the renderer header referenced by its public headers.
 
 The [replacement signed staging build](https://github.com/DevSecObie/cyberjudah-app/actions/runs/42096970714) on commit `7e9db9c935eaecab1f037ee233e69fcafa7782d6` passed the app tests, Xcode Release archive, code-signature check, bundle settings check and export. The downloaded artifact matched GitHub's digest. Independent verification of its IPA confirmed the deep code signature, Apple sign-in entitlement, CyberJudah staging Firebase identity, and both canonical Nave revisions in the bundle. Version 28.3.0 (311), minimum iOS 16.4, bundle ID `io.cyberjudah.app.dev`, IPA SHA-256 `e17fcac1dbad5a067fdd2e4895336012db3d18ba96da03e5326d0878cf441ed5`. This run produced a GitHub artifact. TestFlight distribution and physical-device acceptance are separate steps.
+
+Apple already had a different beta numbered 311. The [signed build 312](https://github.com/DevSecObie/cyberjudah-app/actions/runs/42117094085) uses commit `c2b888cc5164c5b1ff64ea1942257b50f646478f`. Its IPA SHA-256 is `8d01c5c6abacfea6135b1249133ee6e09227660b142885e0969c94a4eadf9eb0`. The downloaded IPA passed independent signature, provisioning profile, Firebase identity, and English/French catalog checks. Apple received CyberJudah Beta 28.3.0 (312) at 3:09 p.m. Pacific on 5 November 2026 and finished processing it.
+
+For the physical iPhone test, update to build 312 and download both Nave editions in Download manager while online. Turn on Airplane Mode, turn off Wi-Fi, and fully quit and reopen the app. Open the Nave topic list, use its language filter and search for **Faith** in English and **La foi** in French. Open each article. Record the iOS version, device model, and whether each search and article opens offline.
 
 Record the upstream version, candidate commit, iOS version and device for each run. Compare the same route and gesture side by side. Capture a clean launch, an upgrade preserving a study, account recovery, reader and Free Note actions, online/offline navigation, class playback and an Ask citation. Save traces showing owned content and backend origins throughout. A web screenshot or green export alone cannot establish mobile parity. Recheck on Android when its build enters device testing.
 
