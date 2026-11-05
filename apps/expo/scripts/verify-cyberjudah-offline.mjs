@@ -58,6 +58,26 @@ try {
       }
     }
   }
+  for (const [language, filename, expectedName] of [
+    ['en', 'nave.sqlite', 'Faith'],
+    ['fr', 'nave-fr.sqlite', 'La foi'],
+  ]) {
+    assert.ok(catalog.resources[`database:NAVE:${language}`])
+    const nave = new DatabaseSync(join(temp, filename), { readOnly: true })
+    try {
+      assert.equal(nave.prepare('PRAGMA integrity_check').get().integrity_check, 'ok')
+      assert.equal(nave.prepare('SELECT COUNT(*) AS n FROM TOPICS').get().n, 5313)
+      const row = nave.prepare('SELECT ref FROM VERSES WHERE id = ?').get('58-11-1')
+      assert.ok(JSON.parse(row.ref).includes('faith'))
+      const topic = nave
+        .prepare('SELECT name, description FROM TOPICS WHERE name_lower = ?')
+        .get('faith')
+      assert.equal(topic.name, expectedName)
+      assert.ok(topic.description)
+    } finally {
+      nave.close()
+    }
+  }
   assert.equal(bible.schemaVersion, 4)
   assert.equal(bible.datasetId, 'CYBERJUDAH')
   assert.equal(Object.keys(bible.verses).length, 81)

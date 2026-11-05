@@ -1,0 +1,1 @@
+- Updated the native iPhone startup dependencies, restored original English and French Nave downloads, and fixed opening class links on a fresh install. Shared study links now open on CyberJudah’s web app.
