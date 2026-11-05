@@ -183,11 +183,13 @@ const bibleChapterAdapter = createHybridBibleChapterAdapter({
   remotelyReadableVersions: remotelyReadableBibleVersions,
   isOnline: async () => onlineManager.isOnline(),
 })
-const onlineNaveAccess = resourceApiBaseUrl
+const configuredNaveUrl = getConfiguredResourceApiBaseUrl(process.env.EXPO_PUBLIC_NAVE_API_URL)
+const naveBaseUrl = configuredNaveUrl ?? resourceApiBaseUrl
+const onlineNaveAccess = naveBaseUrl
   ? onlineSource(
       'Nave',
       createHttpNaveAccess({
-        baseUrl: resourceApiBaseUrl,
+        baseUrl: naveBaseUrl,
         fetcher: resourceApiFetch,
         isOnline: async () => onlineManager.isOnline(),
         isOfflineFailure: isLikelyOfflineAfterFailure,
@@ -198,8 +200,8 @@ const remotelyReadableDictionaryLanguages = new Set<ResourceLanguage>(
   resourceApiBaseUrl ? ['fr', 'en'] : []
 )
 const remotelyReadableNaveLanguages = new Set<ResourceLanguage>(
-  resourceApiBaseUrl
-    ? process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+  naveBaseUrl
+    ? process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah' && !configuredNaveUrl
       ? ['en']
       : ['fr', 'en']
     : []

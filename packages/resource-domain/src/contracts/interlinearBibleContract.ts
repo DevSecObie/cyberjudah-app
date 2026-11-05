@@ -26,7 +26,7 @@ export class InterlinearBibleRevisionDto extends Schema.Class<InterlinearBibleRe
 )({
   kind: Schema.Literal('interlinear-index'),
   versionId: VersionId,
-  datasetId: Schema.Literal('STEP'),
+  datasetId: Schema.Literal('STEP', 'CYBERJUDAH'),
   language: Language,
   revision: Schema.NonEmptyString,
   textRevision: Schema.NonEmptyString,

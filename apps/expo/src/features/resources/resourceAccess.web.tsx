@@ -222,9 +222,11 @@ const dictionary = resourceApiBaseUrl
       isOfflineFailure: isLikelyOfflineAfterFailure,
     })
   : unavailableAccess<DictionaryAccess>()
-const nave = resourceApiBaseUrl
+const naveBaseUrl =
+  getConfiguredResourceApiBaseUrl(process.env.EXPO_PUBLIC_NAVE_API_URL) ?? resourceApiBaseUrl
+const nave = naveBaseUrl
   ? createHttpNaveAccess({
-      baseUrl: resourceApiBaseUrl,
+      baseUrl: naveBaseUrl,
       fetcher: resourceApiFetch,
       isOnline,
       isOfflineFailure: isLikelyOfflineAfterFailure,
@@ -306,7 +308,7 @@ export const defaultResourceAccess: ResourceAccessRegistry = {
       getResourceOnlineAccess(
         identity,
         bibleVersions,
-        new Set<ResourceLanguage>(resourceApiBaseUrl ? ['fr', 'en'] : []),
+        new Set<ResourceLanguage>(naveBaseUrl ? ['fr', 'en'] : []),
         strongBibleVersions,
         languages,
         strongLexiconModules,

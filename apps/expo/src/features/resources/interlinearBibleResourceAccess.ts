@@ -62,6 +62,7 @@ export const localInterlinearBibleResourceAdapter: InterlinearBibleResourceAdapt
 
 type HttpInterlinearBibleResourceAdapterOptions = {
   baseUrl: string
+  datasetId?: 'STEP' | 'CYBERJUDAH'
   fetcher?: typeof fetch
   isOnline: () => Promise<boolean>
   /** Explains a request that failed without a response; defaults to the online gate. */
@@ -111,6 +112,7 @@ const toInterlinearToken = (
 
 export const createHttpInterlinearBibleResourceAdapter = ({
   baseUrl,
+  datasetId = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah' ? 'CYBERJUDAH' : 'STEP',
   fetcher = fetch,
   isOnline,
   isOfflineFailure = async () => !(await isOnline()),
@@ -158,7 +160,7 @@ export const createHttpInterlinearBibleResourceAdapter = ({
   ): Promise<InterlinearSidecarAvailability> => {
     try {
       const coverage = await get(`${resourcePath(locale)}/coverage`, InterlinearBibleCoverageDto)
-      if (coverage.resource.language !== locale) {
+      if (coverage.resource.language !== locale || coverage.resource.datasetId !== datasetId) {
         throw new ResourceAccessError('INTEGRITY_FAILURE')
       }
       const bibleCoverage = await bibleChapterAdapter.loadCoverage('BHG')
@@ -220,6 +222,7 @@ export const createHttpInterlinearBibleResourceAdapter = ({
       )
       if (
         chapter.resource.language !== locale ||
+        chapter.resource.datasetId !== datasetId ||
         chapter.book !== request.book ||
         chapter.chapter !== request.chapter
       ) {

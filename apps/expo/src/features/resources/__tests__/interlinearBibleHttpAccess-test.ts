@@ -488,3 +488,49 @@ describe('interlinear Bible HTTP resource access', () => {
     })
   })
 })
+
+it('loads the owned CyberJudah publication and rejects a different dataset', async () => {
+  const owned = { ...resource, datasetId: 'CYBERJUDAH', language: 'en' }
+  const fetcher = jest.fn((url: string) =>
+    url.endsWith('/coverage')
+      ? jsonResponse({
+          resource: owned,
+          books: [1],
+          chaptersByBook: { 1: [1] },
+          verseCountByBookChapter: { '1-1': 1 },
+        })
+      : jsonResponse({
+          resource: owned,
+          book: 1,
+          chapter: 1,
+          verses: [{ number: 1, tokens: [token] }],
+        })
+  ) as jest.MockedFunction<typeof fetch>
+  const adapter = createHttpInterlinearBibleResourceAdapter({
+    baseUrl: 'https://resource.invalid',
+    datasetId: 'CYBERJUDAH',
+    fetcher,
+    isOnline: async () => true,
+    bibleChapterAdapter,
+  })
+  await expect(adapter.getAvailability('en')).resolves.toMatchObject({
+    status: 'available',
+    locale: 'en',
+  })
+  await expect(adapter.loadChapterTokens('en', { book: 1, chapter: 1 })).resolves.toMatchObject({
+    tokensByVerse: { 1: [token] },
+  })
+  const wrongDataset = createHttpInterlinearBibleResourceAdapter({
+    baseUrl: 'https://resource.invalid',
+    datasetId: 'STEP',
+    fetcher,
+    isOnline: async () => true,
+    bibleChapterAdapter,
+  })
+  await expect(wrongDataset.getAvailability('en')).rejects.toMatchObject({
+    code: 'INTEGRITY_FAILURE',
+  })
+  await expect(wrongDataset.loadChapterTokens('en', { book: 1, chapter: 1 })).rejects.toMatchObject(
+    { code: 'INTEGRITY_FAILURE' }
+  )
+})

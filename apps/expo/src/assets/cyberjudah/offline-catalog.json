@@ -1,8 +1,8 @@
 {
   "format": "bible-strong-mobile-resource-catalog",
   "schemaVersion": 1,
-  "generatedAt": "2026-10-30T03:32:29.671Z",
-  "resourceCount": 10,
+  "generatedAt": "2026-11-05T18:08:35.157Z",
+  "resourceCount": 12,
   "resources": {
     "bible:KJV": {
       "id": "bible:KJV",
@@ -52,43 +52,43 @@
       "id": "database:TIMELINE:en",
       "file": "cyberjudah-timeline-en.json.zip",
       "entry": "bible-timeline-events.json",
-      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/cyberjudah-timeline-en.json.zip?sha256=b2fdfe01f8a6db7be9dba589ce9e402e3a8621b5969d05ebcbc2007c830231cf",
+      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/cyberjudah-timeline-en.json.zip?sha256=0b934eeb92ce5853c5d36c6f0afc22705f1c0a1627ff7f9d7873edfc36656369",
       "entries": {
         "canonical": {
           "entry": "bible-timeline-events.json",
-          "sha256": "638ddeb827f11f1297c3e6aa4c3e77397bf7b6792c730d42c2d4886988580e4e",
-          "bytes": 1661080
+          "sha256": "f5955794994aa433b621a94c8ccaf15b816c9f7899ecefe9347ee6c1fdfd8892",
+          "bytes": 1604162
         }
       },
-      "archiveSha256": "b2fdfe01f8a6db7be9dba589ce9e402e3a8621b5969d05ebcbc2007c830231cf",
-      "archiveBytes": 527700,
-      "contentSha256": "638ddeb827f11f1297c3e6aa4c3e77397bf7b6792c730d42c2d4886988580e4e",
-      "contentBytes": 1661080,
-      "installedBytes": 1661080,
-      "peakInstallationBytes": 3849860,
+      "archiveSha256": "0b934eeb92ce5853c5d36c6f0afc22705f1c0a1627ff7f9d7873edfc36656369",
+      "archiveBytes": 512404,
+      "contentSha256": "f5955794994aa433b621a94c8ccaf15b816c9f7899ecefe9347ee6c1fdfd8892",
+      "contentBytes": 1604162,
+      "installedBytes": 1604162,
+      "peakInstallationBytes": 3720728,
       "strategy": "archive-extract",
-      "resourceRevision": "cj-timeline-720785d96785a1384c479be23c543a4b95a78ab8c4fd6515ead17f608016c0c5"
+      "resourceRevision": "cj-timeline-88f5cf09939bc4594537eb8d7a6ffcbf707b6c47b5d27441ad61f8306907859c"
     },
     "database:TIMELINE:fr": {
       "id": "database:TIMELINE:fr",
       "file": "cyberjudah-timeline-en.json.zip",
       "entry": "bible-timeline-events.json",
-      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/cyberjudah-timeline-en.json.zip?sha256=b2fdfe01f8a6db7be9dba589ce9e402e3a8621b5969d05ebcbc2007c830231cf",
+      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/cyberjudah-timeline-en.json.zip?sha256=0b934eeb92ce5853c5d36c6f0afc22705f1c0a1627ff7f9d7873edfc36656369",
       "entries": {
         "canonical": {
           "entry": "bible-timeline-events.json",
-          "sha256": "638ddeb827f11f1297c3e6aa4c3e77397bf7b6792c730d42c2d4886988580e4e",
-          "bytes": 1661080
+          "sha256": "f5955794994aa433b621a94c8ccaf15b816c9f7899ecefe9347ee6c1fdfd8892",
+          "bytes": 1604162
         }
       },
-      "archiveSha256": "b2fdfe01f8a6db7be9dba589ce9e402e3a8621b5969d05ebcbc2007c830231cf",
-      "archiveBytes": 527700,
-      "contentSha256": "638ddeb827f11f1297c3e6aa4c3e77397bf7b6792c730d42c2d4886988580e4e",
-      "contentBytes": 1661080,
-      "installedBytes": 1661080,
-      "peakInstallationBytes": 3849860,
+      "archiveSha256": "0b934eeb92ce5853c5d36c6f0afc22705f1c0a1627ff7f9d7873edfc36656369",
+      "archiveBytes": 512404,
+      "contentSha256": "f5955794994aa433b621a94c8ccaf15b816c9f7899ecefe9347ee6c1fdfd8892",
+      "contentBytes": 1604162,
+      "installedBytes": 1604162,
+      "peakInstallationBytes": 3720728,
       "strategy": "archive-extract",
-      "resourceRevision": "cj-timeline-720785d96785a1384c479be23c543a4b95a78ab8c4fd6515ead17f608016c0c5"
+      "resourceRevision": "cj-timeline-88f5cf09939bc4594537eb8d7a6ffcbf707b6c47b5d27441ad61f8306907859c"
     },
     "strong-lexicon:entities": {
       "id": "strong-lexicon:entities",
@@ -217,6 +217,48 @@
       "peakInstallationBytes": 8416906,
       "strategy": "archive-extract",
       "resourceRevision": "cj-strong-lexicon-resources-62d693464d0f06c08deb7897"
+    },
+    "database:NAVE:en": {
+      "id": "database:NAVE:en",
+      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/databases/en/nave.sqlite.zip?sha256=3e76be5791d33d23b21fb40f334d4e2b28c968d69e19ea41d6c0f32fed824766",
+      "file": "databases/en/nave.sqlite.zip",
+      "entry": "nave.sqlite",
+      "entries": {
+        "canonical": {
+          "entry": "nave.sqlite",
+          "sha256": "473c70d6cd86ae4da8db99a2957aa6234d6d46b06d8ae1857b0ff7a2b0c6bf9d",
+          "bytes": 7402496
+        }
+      },
+      "archiveSha256": "3e76be5791d33d23b21fb40f334d4e2b28c968d69e19ea41d6c0f32fed824766",
+      "archiveBytes": 2010816,
+      "contentSha256": "473c70d6cd86ae4da8db99a2957aa6234d6d46b06d8ae1857b0ff7a2b0c6bf9d",
+      "contentBytes": 7402496,
+      "resourceRevision": "nave-en-a3ca283196d0eb084276",
+      "installedBytes": 7402496,
+      "peakInstallationBytes": 16815808,
+      "strategy": "archive-extract"
+    },
+    "database:NAVE:fr": {
+      "id": "database:NAVE:fr",
+      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/databases/nave-fr.sqlite.zip?sha256=c46e7f1ebad4fb5e5c3e6de6cd811bde95b3d7725334aa2bbd539f5fb9849326",
+      "file": "databases/nave-fr.sqlite.zip",
+      "entry": "nave-fr.sqlite",
+      "entries": {
+        "canonical": {
+          "entry": "nave-fr.sqlite",
+          "sha256": "de5746edf548dc56e3d469b3bc6d40437344a4be2ea934837284956d7720bc3b",
+          "bytes": 7791616
+        }
+      },
+      "archiveSha256": "c46e7f1ebad4fb5e5c3e6de6cd811bde95b3d7725334aa2bbd539f5fb9849326",
+      "archiveBytes": 2068973,
+      "contentSha256": "de5746edf548dc56e3d469b3bc6d40437344a4be2ea934837284956d7720bc3b",
+      "contentBytes": 7791616,
+      "resourceRevision": "nave-fr-358b8cf8a5e5f48554de",
+      "installedBytes": 7791616,
+      "peakInstallationBytes": 17652205,
+      "strategy": "archive-extract"
     }
   }
 }
