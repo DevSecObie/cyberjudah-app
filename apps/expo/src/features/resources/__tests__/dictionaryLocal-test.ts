@@ -183,6 +183,33 @@ describe('downloaded dictionaries without network access', () => {
       '/documents/fr'
     )
   })
+  it('keeps an existing English legacy dictionary readable offline with CyberJudah’s Easton identity', async () => {
+    const previous = process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+    process.env.EXPO_PUBLIC_RESOURCE_PROFILE = 'cyberjudah'
+    try {
+      jest
+        .mocked(offlineResourceRegistry.getAvailability)
+        .mockResolvedValue({ status: 'missing' } as never)
+      jest.mocked(getLocalResourceAvailability).mockImplementation(
+        async identity =>
+          ({
+            status: 'language' in identity && identity.language === 'en' ? 'available' : 'missing',
+            resource: identity,
+          }) as never
+      )
+      expect(await access.getAvailability!('en')).toEqual({ status: 'available' })
+      expect(await access.loadItem('Aaron', 'en')).toMatchObject({ definition: 'First' })
+      expect(openSQLiteDatabase).toHaveBeenCalledWith(
+        'dictionnaire.sqlite',
+        { useNewConnection: true },
+        '/documents/en'
+      )
+      expect(online.loadItem).not.toHaveBeenCalled()
+    } finally {
+      if (previous === undefined) delete process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+      else process.env.EXPO_PUBLIC_RESOURCE_PROFILE = previous
+    }
+  })
   it('browses and searches installed works without the directory, with stable pagination', async () => {
     expect(await access.getDirectoryAvailability!()).toEqual({ status: 'available' })
     const first = await access.browseDirectoryPage('a', { limit: 2 }, 'fr')

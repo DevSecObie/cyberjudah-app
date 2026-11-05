@@ -24,6 +24,35 @@ const response = (body: unknown) =>
   )
 
 describe('HTTP dictionary access', () => {
+  it('uses CyberJudah’s published Easton identity when no work is selected', async () => {
+    const previous = process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+    process.env.EXPO_PUBLIC_RESOURCE_PROFILE = 'cyberjudah'
+    try {
+      const fetcher = jest.fn(() =>
+        response({
+          resource: { kind: 'dictionary', work: 'easton', language: 'en', revision: 'cj-r1' },
+          entries: [{ id: 1, word: 'Faithful', normalizedWord: 'faithful' }],
+          limit: 50,
+        })
+      )
+      const access = createHttpDictionaryAccess({
+        baseUrl: 'http://resource.test',
+        fetcher,
+        isOnline: async () => true,
+      })
+      await expect(access.searchPage('faith', {}, 'en')).resolves.toMatchObject({
+        entries: [{ word: 'Faithful' }],
+      })
+      expect(fetcher).toHaveBeenCalledWith(
+        'http://resource.test/v1/dictionaries/easton/en/entries?search=faith&limit=50',
+        expect.any(Object)
+      )
+    } finally {
+      if (previous === undefined) delete process.env.EXPO_PUBLIC_RESOURCE_PROFILE
+      else process.env.EXPO_PUBLIC_RESOURCE_PROFILE = previous
+    }
+  })
+
   it('discovers independently identified dictionaries by language', async () => {
     const dictionaries = [
       {

@@ -5,7 +5,10 @@ import NaveOfTheDay from '../NaveOfTheDay'
 import StrongOfTheDay from '../StrongOfTheDay'
 import WordOfTheDay from '../WordOfTheDay'
 import { loadDictionaryWidgetEntry, selectDictionaryWidgetWork } from '../dictionaryWidgetEntry'
-import { KNOWN_DICTIONARY_WORKS } from '~features/resources/dictionaryAccess'
+import {
+  KNOWN_DICTIONARY_WORKS,
+  getDefaultDictionaryWork,
+} from '~features/resources/dictionaryAccess'
 import { useOfflineResourceRegistry } from '~features/resources/useOfflineResourceRegistry'
 jest.mock('react-native', () => ({ Platform: { OS: 'web' } }))
 jest.mock('~themes/ThemeProvider', () => ({
@@ -24,6 +27,9 @@ const mockAvailabilityRefetch = jest.fn()
 const mockContentRefetch = jest.fn()
 
 jest.mock('~features/resources/dictionaryAccess', () => ({
+  getDefaultDictionaryWork: jest.fn((language: string) =>
+    language === 'en' ? 'easton-webster' : 'westphal'
+  ),
   KNOWN_DICTIONARY_WORKS: [
     {
       resource: { work: 'westphal', language: 'fr' },
@@ -425,6 +431,27 @@ describe('Home resource download widgets', () => {
 })
 
 describe('Dictionary home widget entry selection', () => {
+  it('uses the profile default when its published work is available', () => {
+    jest.mocked(getDefaultDictionaryWork).mockReturnValueOnce('easton')
+    const easton = {
+      ...KNOWN_DICTIONARY_WORKS.find(work => work.resource.language === 'en')!,
+      resource: {
+        kind: 'dictionary' as const,
+        work: 'easton',
+        language: 'en' as const,
+        revision: 'catalog',
+      },
+      resourceId: 'easton-en',
+      title: 'Easton’s Bible Dictionary',
+    }
+    const selected = selectDictionaryWidgetWork('en', [...KNOWN_DICTIONARY_WORKS, easton], {
+      revision: 0,
+      phase: 'ready',
+      resources: new Map(),
+    })
+    expect(selected).toBe(easton)
+  })
+
   it('prefers installed works in the requested language', () => {
     mockInstalledDictionaryWorks = ['bost', 'calmet']
     const snapshot = useOfflineResourceRegistry()

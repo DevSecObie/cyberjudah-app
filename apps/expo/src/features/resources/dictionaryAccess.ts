@@ -156,6 +156,24 @@ const CYBERJUDAH_DICTIONARY_WORKS: readonly DictionaryWork[] =
         {
           resource: {
             kind: 'dictionary' as const,
+            work: 'easton',
+            language: 'en' as const,
+            revision: 'catalog',
+          },
+          resourceId: 'easton-en',
+          title: 'Easton’s Bible Dictionary',
+          abbreviation: 'Easton',
+          authors: ['Matthew George Easton'],
+          description: 'Easton’s Bible Dictionary as published by CyberJudah.',
+          edition: '1897',
+          source: 'https://data.cyberjudah.io',
+          attribution: 'Easton’s Bible Dictionary; CyberJudah dataset.',
+          onlineAccess: true,
+          offlineDownload: false,
+        },
+        {
+          resource: {
+            kind: 'dictionary' as const,
             work: 'jewish-encyclopedia',
             language: 'en' as const,
             revision: 'catalog',
@@ -260,7 +278,11 @@ export type DictionaryAccess = {
 }
 
 export const getDefaultDictionaryWork = (language: ResourceLanguage): DictionaryWorkId =>
-  language === 'en' ? 'easton-webster' : 'westphal'
+  language === 'en'
+    ? process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+      ? 'easton'
+      : 'easton-webster'
+    : 'westphal'
 
 const getDictionaryResource = (work: DictionaryWorkId, language: ResourceLanguage) =>
   [...offlineResourceRegistry.getSnapshot().resources.values()].find(
