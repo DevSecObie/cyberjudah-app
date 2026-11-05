@@ -1,6 +1,6 @@
 import worker from './worker'
 
-// Only these publications have been imported and smoke-tested in CyberJudah's staging database.
+// Only these publications have been imported and smoke-tested in CyberJudah's resource databases.
 export default {
   fetch(request: Request, bindings: Env, ctx: ExecutionContext) {
     const path = new URL(request.url).pathname

@@ -6,7 +6,7 @@
   "include": [
     "worker-configuration.d.ts",
     "src/runtime/worker.ts",
-    "src/runtime/cyberjudahStagingWorker.ts"
+    "src/runtime/cyberjudahNaveWorker.ts"
   ],
   "exclude": ["node_modules"]
 }

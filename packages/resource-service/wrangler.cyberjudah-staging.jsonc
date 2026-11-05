@@ -1,6 +1,6 @@
 {
   "name": "cyberjudah-resources-staging",
-  "main": "src/runtime/cyberjudahStagingWorker.ts",
+  "main": "src/runtime/cyberjudahNaveWorker.ts",
   "compatibility_date": "2026-08-19",
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": false,
