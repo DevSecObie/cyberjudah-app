@@ -29,6 +29,12 @@
       "extends": "staging",
       "ios": { "simulator": true }
     },
+    "cyberjudah-acceptance": {
+      "extends": "cyberjudah-preview",
+      "env": {
+        "CYBERJUDAH_ACCEPTANCE_BUILD": "1"
+      }
+    },
     "cyberjudah-preview": {
       "channel": "preview",
       "distribution": "internal",

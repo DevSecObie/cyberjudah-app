@@ -12,6 +12,8 @@ const isCyberJudahPreview = process.env.BUNDLE_IDENTIFIER === 'io.cyberjudah.app
 // The Preview app built on Expo's servers (eas.json "cyberjudah-preview") runs without the Mac:
 // it takes signed updates from the "preview" channel of updates.cyberjudah.io instead of Metro.
 const isCyberJudahCloudPreview = isCyberJudahPreview && process.env.EAS_BUILD_CHANNEL === 'preview'
+// Acceptance must exercise the embedded candidate, without replacing it with a preview OTA.
+const isCyberJudahAcceptance = isCyberJudah && process.env.CYBERJUDAH_ACCEPTANCE_BUILD === '1'
 // CyberJudah's own Expo project (free tier). Over-the-air updates come from updates.cyberjudah.io.
 const CYBERJUDAH_EAS_PROJECT_ID = 'ee1c2f69-3a80-46c5-b67d-7f4a75def656'
 
@@ -247,37 +249,38 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   // The CyberJudah Preview dev app loads unsigned code straight from Metro, so it takes no
   // over-the-air updates; the code-signing check would refuse every Metro bundle. The cloud
   // Preview build is not a dev app and takes updates like the beta, from its own channel.
-  updates: isCyberJudahPreview && !isCyberJudahCloudPreview
-    ? { enabled: false }
-    : isCyberJudah
-      ? {
-          enabled: true,
-          // Our own Open OTA server on Cloudflare, as Bible Strong does (docs/adr/0085): EAS Update's
-          // free plan stops serving updates past 1,000 readers a month.
-          url: 'https://updates.cyberjudah.io/manifest',
-          checkAutomatically: 'ON_LOAD',
-          // The cloud Preview is opened to check a change that was just sent, so it waits up to
-          // 30 seconds at launch for the newest update. Readers' builds never wait.
-          fallbackToCacheTimeout: isCyberJudahCloudPreview ? 30000 : 0,
-          codeSigningCertificate: './certs/certificate.pem',
-          codeSigningMetadata: { keyid: 'main', alg: 'rsa-v1_5-sha256' },
-          requestHeaders: {
-            'expo-channel-name': process.env.EAS_BUILD_CHANNEL || 'staging',
-          },
-        }
-      : {
-          // Bible Strong's own update server (Open OTA on Cloudflare), see docs/adr/0085.
-          url: 'https://updates.bible-strong.app/manifest',
-          checkAutomatically: 'NEVER',
-          // Only builds with a channel (staging, production) receive updates.
-          ...(process.env.EAS_BUILD_CHANNEL && {
+  updates:
+    isCyberJudahAcceptance || (isCyberJudahPreview && !isCyberJudahCloudPreview)
+      ? { enabled: false }
+      : isCyberJudah
+        ? {
+            enabled: true,
+            // Our own Open OTA server on Cloudflare, as Bible Strong does (docs/adr/0085): EAS Update's
+            // free plan stops serving updates past 1,000 readers a month.
+            url: 'https://updates.cyberjudah.io/manifest',
+            checkAutomatically: 'ON_LOAD',
+            // The cloud Preview is opened to check a change that was just sent, so it waits up to
+            // 30 seconds at launch for the newest update. Readers' builds never wait.
+            fallbackToCacheTimeout: isCyberJudahCloudPreview ? 30000 : 0,
             codeSigningCertificate: './certs/certificate.pem',
             codeSigningMetadata: { keyid: 'main', alg: 'rsa-v1_5-sha256' },
-          }),
-          requestHeaders: {
-            'expo-channel-name': process.env.EAS_BUILD_CHANNEL,
+            requestHeaders: {
+              'expo-channel-name': process.env.EAS_BUILD_CHANNEL || 'staging',
+            },
+          }
+        : {
+            // Bible Strong's own update server (Open OTA on Cloudflare), see docs/adr/0085.
+            url: 'https://updates.bible-strong.app/manifest',
+            checkAutomatically: 'NEVER',
+            // Only builds with a channel (staging, production) receive updates.
+            ...(process.env.EAS_BUILD_CHANNEL && {
+              codeSigningCertificate: './certs/certificate.pem',
+              codeSigningMetadata: { keyid: 'main', alg: 'rsa-v1_5-sha256' },
+            }),
+            requestHeaders: {
+              'expo-channel-name': process.env.EAS_BUILD_CHANNEL,
+            },
           },
-        },
   experiments: {
     reactCompiler: true,
   },
