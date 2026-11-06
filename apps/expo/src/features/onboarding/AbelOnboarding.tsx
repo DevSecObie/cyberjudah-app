@@ -542,7 +542,9 @@ const AbelOnboarding = ({ completionMode = 'handoff', onComplete }: AbelOnboardi
         className="overflow-hidden border-continuous self-center gap-[20px]"
         style={{ paddingBottom: Math.max(insets.bottom, 24), width: contentWidth }}
       >
-        <Box className="overflow-hidden border-continuous h-[76px] items-center justify-center">
+        <Box
+          className={`overflow-hidden border-continuous items-center justify-center ${currentScene.id === 'scene-three' ? 'h-[76px]' : 'min-h-[76px]'}`}
+        >
           {currentScene.id === 'scene-three' ? (
             <StrongCarouselPrompt
               carouselProgress={strongCarouselProgress}

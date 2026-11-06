@@ -4,6 +4,11 @@ import { act, create, type ReactTestRenderer } from 'react-test-renderer'
 import ResourceUnavailableView from '../ResourceUnavailableView'
 
 let mockIsOnline = true
+let mockHasCatalogEntry = true
+
+jest.mock('~helpers/mobileResourceCatalog', () => ({
+  hasMobileResourceCatalogEntry: () => mockHasCatalogEntry,
+}))
 
 jest.mock('~helpers/useConnection', () => () => mockIsOnline)
 jest.mock('expo-router', () => ({ useRouter: () => ({ push: jest.fn() }) }))
@@ -38,6 +43,29 @@ describe('ResourceUnavailableView', () => {
   })
 
   afterEach(() => act(() => renderer?.unmount()))
+
+  it('does not offer an unpublished dictionary download after an access failure', () => {
+    mockIsOnline = true
+    mockHasCatalogEntry = false
+    try {
+      act(() => {
+        renderer = create(
+          <ResourceUnavailableView
+            identity={{ kind: 'database', databaseId: 'DICTIONNAIRE', language: 'en' }}
+            title="Dictionary unavailable"
+            fileSize={22}
+            failure={{ cause: 'offline-copy-required', recoveries: ['acquire-offline-copy'] }}
+          />
+        )
+      })
+      expect(renderer.root.findAll(node => String(node.type) === 'OfflineRecovery')).toHaveLength(0)
+      expect(
+        renderer.root.findAllByProps({ children: 'Dictionary unavailable' }).length
+      ).toBeGreaterThan(0)
+    } finally {
+      mockHasCatalogEntry = true
+    }
+  })
 
   it('renders an offline failure with wifi-off and never offers a download', () => {
     mockIsOnline = false
