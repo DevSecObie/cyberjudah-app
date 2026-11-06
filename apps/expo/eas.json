@@ -59,6 +59,7 @@
     "production": {
       "channel": "production",
       "env": {
+        "EXPO_PUBLIC_DEFAULT_ENGLISH_DICTIONARY": "easton",
         "APP_NAME": "CyberJudah",
         "BUNDLE_IDENTIFIER": "io.cyberjudah.app",
         "CYBERJUDAH_APPLE_TEAM_ID": "M8DUMWBXLH",

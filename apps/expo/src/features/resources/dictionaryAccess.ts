@@ -260,7 +260,9 @@ export type DictionaryAccess = {
 }
 
 export const getDefaultDictionaryWork = (language: ResourceLanguage): DictionaryWorkId =>
-  language === 'en' ? 'easton-webster' : 'westphal'
+  language === 'en'
+    ? process.env.EXPO_PUBLIC_DEFAULT_ENGLISH_DICTIONARY || 'easton-webster'
+    : 'westphal'
 
 const getDictionaryResource = (work: DictionaryWorkId, language: ResourceLanguage) =>
   [...offlineResourceRegistry.getSnapshot().resources.values()].find(

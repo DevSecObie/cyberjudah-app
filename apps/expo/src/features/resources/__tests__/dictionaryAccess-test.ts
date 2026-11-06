@@ -24,6 +24,40 @@ const response = (body: unknown) =>
   )
 
 describe('HTTP dictionary access', () => {
+  it.each([
+    ['easton', 'easton'],
+    [undefined, 'easton-webster'],
+  ])('uses the configured English dictionary %s', async (configuredWork, work) => {
+    const previousWork = process.env.EXPO_PUBLIC_DEFAULT_ENGLISH_DICTIONARY
+    if (configuredWork === undefined) delete process.env.EXPO_PUBLIC_DEFAULT_ENGLISH_DICTIONARY
+    else process.env.EXPO_PUBLIC_DEFAULT_ENGLISH_DICTIONARY = configuredWork
+    try {
+      const entries = [{ id: 2, word: 'Aaron', normalizedWord: 'aaron' }]
+      const fetcher = jest.fn(() =>
+        response({
+          resource: { kind: 'dictionary', work, language: 'en', revision: 'r1' },
+          entries,
+          limit: 20,
+        })
+      )
+      const access = createHttpDictionaryAccess({
+        baseUrl: 'http://resource.test',
+        fetcher,
+        isOnline: async () => true,
+      })
+      await expect(access.listByLetterPage('a', { limit: 20 }, 'en')).resolves.toEqual({
+        entries,
+      })
+      expect(fetcher).toHaveBeenCalledWith(
+        `http://resource.test/v1/dictionaries/${work}/en/entries?initial=a&limit=20`,
+        expect.any(Object)
+      )
+    } finally {
+      if (previousWork === undefined) delete process.env.EXPO_PUBLIC_DEFAULT_ENGLISH_DICTIONARY
+      else process.env.EXPO_PUBLIC_DEFAULT_ENGLISH_DICTIONARY = previousWork
+    }
+  })
+
   it('discovers independently identified dictionaries by language', async () => {
     const dictionaries = [
       {

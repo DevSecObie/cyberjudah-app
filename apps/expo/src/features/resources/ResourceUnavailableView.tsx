@@ -3,7 +3,8 @@ import { useRouter } from 'expo-router'
 import Box from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
-import type { OfflineCopyIdentity } from '~helpers/offlineCopyId'
+import { getOfflineCopyCatalogId, type OfflineCopyIdentity } from '~helpers/offlineCopyId'
+import { hasMobileResourceCatalogEntry } from '~helpers/mobileResourceCatalog'
 import useConnection from '~helpers/useConnection'
 import OfflineResourceRecovery from './OfflineResourceRecovery'
 import { getResourceFailurePresentation, type ResourceFailure } from './resourceFailure'
@@ -41,9 +42,13 @@ const ResourceUnavailableView = ({
     : failure
   const presentation = getResourceFailurePresentation(effectiveFailure, { isOnline })
   const displayedTitle = isOfflineFailure && offlineTitle ? offlineTitle : title
+  const isDictionary =
+    identity?.kind === 'dictionary' ||
+    (identity?.kind === 'database' && identity.databaseId === 'DICTIONNAIRE')
 
   if (
     identity &&
+    (!isDictionary || hasMobileResourceCatalogEntry(getOfflineCopyCatalogId(identity))) &&
     fileSize != null &&
     (presentation.actions.includes('download') || presentation.actions.includes('repair'))
   ) {

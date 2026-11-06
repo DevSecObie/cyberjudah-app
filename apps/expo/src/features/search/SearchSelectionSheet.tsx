@@ -90,7 +90,8 @@ import ResourceUnavailableView from '~features/resources/ResourceUnavailableView
 import { ResourceAccessError } from '~features/resources/resourceAccessError'
 import { resourceFailureFromAccessError } from '~features/resources/resourceFailure'
 import { createOfflineCopyDownloadItem } from '~helpers/downloadItemFactory'
-import type { OfflineCopyIdentity } from '~helpers/offlineCopyId'
+import { getOfflineCopyCatalogId, type OfflineCopyIdentity } from '~helpers/offlineCopyId'
+import { hasMobileResourceCatalogEntry } from '~helpers/mobileResourceCatalog'
 import { useDefaultBibleVersion } from '~state/useDefaultBibleVersion'
 import type { VersionCode } from '~state/tabs'
 
@@ -986,12 +987,18 @@ const SearchSelectionSheet = ({
             <ResourceUnavailableView
               identity={resourceFailure.identity}
               title={resourceFailure.title}
-              fileSize={Math.max(
-                1,
-                Math.round(
-                  createOfflineCopyDownloadItem(resourceFailure.identity).estimatedSize / 1_000_000
-                )
-              )}
+              fileSize={
+                resourceFailure.identity.kind === 'strong-lexicon-module' ||
+                hasMobileResourceCatalogEntry(getOfflineCopyCatalogId(resourceFailure.identity))
+                  ? Math.max(
+                      1,
+                      Math.round(
+                        createOfflineCopyDownloadItem(resourceFailure.identity).estimatedSize /
+                          1_000_000
+                      )
+                    )
+                  : undefined
+              }
               failure={resourceFailureFromAccessError(resourceFailure.error)}
               onRetry={() => void resourceFailure.retry()}
             />
