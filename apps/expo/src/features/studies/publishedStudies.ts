@@ -56,9 +56,27 @@ export async function deletePublishedStudy(id: string) {
   await send(api(id), { method: 'DELETE', headers: await signedIn() })
 }
 
-/** Takes down every study the signed-in reader published (account deletion). */
-export async function deleteAllPublishedStudies() {
-  await send(api(), { method: 'DELETE', headers: await signedIn() })
+// Both Workers use the same Firebase project, but separate publication stores.
+// Each existing endpoint derives its own owner hash from the verified UID.
+const accountPublicationServers = [
+  'https://cyberjudah.io',
+  'https://cyberjudah-telegram-staging.oisrae1.workers.dev',
+] as const
+
+/** Remove native publications and account links in both stores, preserving Telegram data. */
+export async function deleteNativeWorkerAccountData(expectedUid: string) {
+  if (!accountPublicationServers.some(server => server === cyberJudahServer()))
+    throw new PublishError('account_cleanup_environment_unknown', 503)
+  const user = getCurrentAuthUser()
+  if (!user || user.uid !== expectedUid) throw new PublishError('account_changed', 401)
+  const headers = { authorization: `Bearer ${await user.getIdToken()}` }
+  for (const path of ['/api/published-studies', '/api/firebase/link']) {
+    for (const server of accountPublicationServers) {
+      if (getCurrentAuthUser()?.uid !== expectedUid) throw new PublishError('account_changed', 401)
+      await send(`${server}${path}`, { method: 'DELETE', headers })
+    }
+  }
+  if (getCurrentAuthUser()?.uid !== expectedUid) throw new PublishError('account_changed', 401)
 }
 
 /** 200 when it is online, 404 when it is not. */

@@ -130,5 +130,5 @@ export const deleteStudy = functions
   .firestore
   .document('studies/{studyId}')
   .onDelete(async (snap) => {
-    await deleteStudyFiles(snap.id)
+    await deleteStudyFiles(snap.id, snap.data()?.user?.id)
   })
