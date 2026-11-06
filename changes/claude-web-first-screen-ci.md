@@ -1,0 +1,1 @@
+- Web exports without the resource API address (such as CI checks) keep the lion instead of failing.
