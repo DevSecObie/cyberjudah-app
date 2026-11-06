@@ -47,15 +47,33 @@ test('provider cancellation cannot remove publications or private data', async (
   assert.deepEqual(f.effects, [])
 })
 
-test('successful publication cleanup precedes data and login deletion', async () => {
+test('successful deletion delegates private-data cleanup to the Auth trigger', async () => {
   const f = fixture()
   await f.run(f.user, {
     revokeProvider: async () => f.effects.push('provider'),
     unpublishStudies: async () => f.effects.push('publications'),
     deleteLogin: async () => f.effects.push('login'),
   })
-  assert.equal(f.effects[0], 'provider')
-  assert.equal(f.effects[1], 'publications')
-  assert.equal(f.effects.at(-2), 'data')
-  assert.equal(f.effects.at(-1), 'login')
+  assert.deepEqual(f.effects, ['provider', 'publications', 'login'])
+})
+
+test('expired authentication stops before publication removal', async () => {
+  const f = fixture()
+  f.user.getIdTokenResult = async () => ({ authTime: '2026-01-01T00:00:00Z' })
+  await assert.rejects(f.run(f.user, {
+    revokeProvider: async () => f.effects.push('provider'),
+    unpublishStudies: async () => f.effects.push('publications'),
+    deleteLogin: async () => f.effects.push('login'),
+  }, () => Date.parse('2026-01-02T00:00:00Z')), { code: 'auth/requires-recent-login' })
+  assert.deepEqual(f.effects, ['provider'])
+})
+
+test('Auth deletion failure never triggers client Firestore cleanup', async () => {
+  const f = fixture()
+  await assert.rejects(f.run(f.user, {
+    revokeProvider: async () => f.effects.push('provider'),
+    unpublishStudies: async () => f.effects.push('publications'),
+    deleteLogin: async () => { throw new Error('auth unavailable') },
+  }), /auth unavailable/)
+  assert.deepEqual(f.effects, ['provider', 'publications'])
 })

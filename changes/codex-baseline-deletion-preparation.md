@@ -9,8 +9,11 @@ Changes:
   identities. Staging cleanup cannot remove a production preview with the same ID.
 - Stop native account deletion when publication removal fails, after provider
   confirmation and recent authentication rather than before them.
+- Follow the upstream client flow: delete Firebase Auth and let its onDelete
+  handler perform recursive private-data cleanup. Remove the separate client
+  Firestore traversal. This branch must not ship before the trigger is verified.
 
-Validation: 28 focused API/native orchestration tests pass. Two executable
+Validation: 30 focused API/native orchestration tests pass. Two executable
 acceptance cases reproduce upstream limitations and **fail** when run with
 `CYBERJUDAH_STRICT_ACCEPTANCE=1`: a late revision survives and a replacement
 parent owner can be deleted. Ordinary runs mark these two as TODO; those runs do
@@ -30,9 +33,7 @@ Remaining implementation/verification:
 - Integrate and test both required publication stores and native Telegram unlink.
   Current existing publication API still addresses one configured Worker.
 - Verify actual staging file usage before declaring file cleanup complete.
-- Switch off client Firestore cleanup only when the reviewed Auth trigger is
-  deployed and verified. The current app helper intentionally still has the base
-  client cleanup; this is preparatory work, not the completed baseline switch.
+- Deploy and verify the reviewed Auth trigger before shipping the client switch.
 - Add an isolated explicit CyberJudah deployment configuration; existing
   `.firebaserc` remains `bible-strong-app`. Never use the broad package deploy
   command or deploy unrelated functions. Verify runtime/project/bucket first.
@@ -43,3 +44,10 @@ Billing was rechecked after the user's payment: Firebase now displays Blaze and
 Functions Get started; CyberJudah remains linked to Firebase Payment. No payment,
 billing mutation, deployment, rules change, retention change, PR merge, or build
 was performed by this draft. Build number remains unchanged.
+
+Upstream comparison was repeated directly against `smontlouis/bible-strong`:
+`apps/expo/src/features/profile/components/DeleteAccountModal.tsx` calls
+`deleteCurrentAuthUser()` after typed confirmation, then logs out.
+`apps/api/functions/src/users.ts` supplies Auth onDelete cleanup with retry policy.
+CyberJudah retains its existing Apple revocation and Worker-publication prerequisite;
+the server traversal remains upstream's, extended only for its scoped collections.
