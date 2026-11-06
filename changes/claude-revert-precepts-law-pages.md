@@ -1,0 +1,1 @@
+- Precepts and The law go back to the pages they had before the 2026-11-03 rebuild on Bible Strong's list and study components (#46): the precepts list, a precept, the law's parts and a law section. The other pages that rebuild changed stay as they are.
