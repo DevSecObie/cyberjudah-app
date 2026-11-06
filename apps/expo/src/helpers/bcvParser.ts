@@ -41,12 +41,11 @@ const parserOptions =
       }
     : undefined
 
-const bcvByLanguage: Record<BcvLanguage, BibleReferenceParser> = {
-  fr: createBibleReferenceParser('fr', parserOptions),
-  en: createBibleReferenceParser('en', parserOptions),
-}
+// Building a parser compiles its book patterns, so each language's is made on first use.
+const bcvByLanguage: Partial<Record<BcvLanguage, BibleReferenceParser>> = {}
 
-const getBcvParser = (parserLanguage: BcvLanguage = getLanguage()) => bcvByLanguage[parserLanguage]
+const getBcvParser = (parserLanguage: BcvLanguage = getLanguage()) =>
+  (bcvByLanguage[parserLanguage] ??= createBibleReferenceParser(parserLanguage, parserOptions))
 
 const getBookNumber = (book: string, _parserLanguage?: BcvLanguage): number | undefined =>
   getSupportedOsisBookNumber(book)

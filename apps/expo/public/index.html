@@ -26,10 +26,13 @@
         height: 100%;
         flex: 1;
       }
-      /* Shown from the first byte until the app replaces the root's content. */
+      /* Shown from the first byte until the app's first screen is up (bootSplash.web.ts). */
       .boot {
-        flex: 1;
+        position: fixed;
+        inset: 0;
+        z-index: 2147483647;
         display: flex;
+        transition: opacity 160ms ease-out;
         flex-direction: column;
         align-items: center;
         justify-content: center;
@@ -55,10 +58,16 @@
     <!-- Use static rendering with Expo Router to support running without JavaScript. -->
     <noscript> You need to enable JavaScript to run this app. </noscript>
     <!-- The root element for your Expo app. -->
-    <div id="root">
-      <div class="boot" role="img" aria-label="Loading" aria-busy="true">
-        <img src="/icon-192.png" alt="" />
-      </div>
+    <div id="root"></div>
+    <div id="boot" class="boot" role="img" aria-label="Loading" aria-busy="true">
+      <img src="/icon-192.png" alt="" />
     </div>
+    <script>
+      // If the app never reaches its first screen, stop covering whatever it shows instead.
+      setTimeout(function () {
+        var boot = document.getElementById('boot')
+        if (boot) boot.remove()
+      }, 30000)
+    </script>
   </body>
 </html>

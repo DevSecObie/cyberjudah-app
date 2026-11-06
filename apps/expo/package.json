@@ -60,7 +60,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web --port 9090",
-    "web:export": "EXPO_UNSTABLE_TREE_SHAKING=1 EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH=1 expo export --platform web",
+    "web:export": "EXPO_WEB_GRANULAR_CHUNKS=1 EXPO_UNSTABLE_TREE_SHAKING=1 EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH=1 expo export --platform web && node scripts/web-preload-fonts.mjs",
     "web:build": "EXPO_NO_DOTENV=1 EXPO_UNSTABLE_TREE_SHAKING=1 EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH=1 dotenv -e .env.production -- expo export --platform web",
     "themes:generate": "node scripts/generate-theme-css.cjs",
     "themes:check": "node scripts/generate-theme-css.cjs --check"
