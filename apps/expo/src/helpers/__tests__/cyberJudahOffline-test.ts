@@ -30,6 +30,43 @@ it('allows only the exact published CyberJudah archives and their hashes', () =>
     ).toBe(false)
   }
 })
+it('accepts hash-pinned additions from the validated live catalog, never arbitrary URLs', async () => {
+  process.env.EXPO_PUBLIC_RESOURCE_PROFILE = 'cyberjudah'
+  const entry = {
+    ...catalog.resources['bible:KJV'],
+    id: 'bible:TEST',
+    file: 'TEST.json.zip',
+    url: 'https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/TEST.json.zip',
+    archiveSha256: 'a'.repeat(64),
+  }
+  const live = {
+    ...catalog,
+    generatedAt: '2099-01-01T00:00:00.000Z',
+    resourceCount: catalog.resourceCount + 1,
+    resources: { ...catalog.resources, [entry.id]: entry },
+  }
+  await jest.isolateModulesAsync(async () => {
+    const { loadMobileResourceCatalog, resolveMobileResourceArtifactUrl } =
+      await import('../mobileResourceCatalog')
+    const { isCyberJudahPublicArchive } = await import('../cyberJudahPublicArchive')
+    const url = resolveMobileResourceArtifactUrl(entry)
+    expect(isCyberJudahPublicArchive(url, entry.archiveSha256)).toBe(false)
+    await loadMobileResourceCatalog(
+      jest.fn().mockResolvedValue({ ok: true, json: async () => live })
+    )
+    expect(isCyberJudahPublicArchive(url, entry.archiveSha256)).toBe(true)
+    expect(isCyberJudahPublicArchive(url, 'b'.repeat(64))).toBe(false)
+    expect(
+      isCyberJudahPublicArchive(url.replace('/offline/', '/private/'), entry.archiveSha256)
+    ).toBe(false)
+    expect(
+      isCyberJudahPublicArchive(
+        url.replace(new URL(url).origin, 'https://example.com'),
+        entry.archiveSha256
+      )
+    ).toBe(false)
+  })
+})
 it('never exempts original Bible Strong downloads', () => {
   process.env.EXPO_PUBLIC_RESOURCE_PROFILE = 'upstream'
   const isCyberJudahPublicArchive = loadIsPublic()

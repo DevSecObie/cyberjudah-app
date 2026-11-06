@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import { describe, it } from 'node:test'
@@ -632,7 +632,8 @@ describe('R2 artifact publisher', () => {
       const firstBundle = path.join(root, 'first')
       const secondBundle = path.join(root, 'second')
       const { manifest } = await writeStrongPublicationFixture(firstBundle)
-      await writeStrongPublicationFixture(secondBundle)
+      // Duplicate the exact artifact: independently generated ZIP timestamps can change its hash.
+      await cp(firstBundle, secondBundle, { recursive: true })
       const catalogPath = path.join(root, 'mobile-resource-catalog.json')
       await writeMobileCatalog(catalogPath, {
         'bible-strong:LSG': {

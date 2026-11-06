@@ -200,7 +200,7 @@ const SelectResources = (props: SelectResourcesProps) => {
         />
       ) : null}
 
-      {props.mode === 'preview' || props.mode === undefined ? (
+      {props.mode === 'preview' || (props.mode === undefined && !state.downloadSceneActive) ? (
         <AnimatedBox
           className="overflow-hidden border-continuous absolute right-[16px] z-[100]"
           pointerEvents={reviewOpen ? 'none' : 'auto'}
