@@ -1,0 +1,1 @@
+- Link previews (a study's or verse's saved links) come from CyberJudah's own server again, instead of being turned off.

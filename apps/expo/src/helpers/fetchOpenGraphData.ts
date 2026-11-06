@@ -3,6 +3,11 @@ import { getCurrentAuthUser } from './firebaseAuthRuntime'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 
 const FUNCTION_URL = 'https://us-central1-bible-strong-app.cloudfunctions.net/fetchOpenGraph'
+/** CyberJudah's own server reads previews (its /api/og answers in the same shape), so no link goes to Bible Strong. */
+const CYBERJUDAH_OG_URL = `${(
+  process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL ||
+  'https://cyberjudah-telegram-staging.oisrae1.workers.dev'
+).replace(/\/+$/, '')}/api/og`
 
 /**
  * Détecte le type de lien à partir de l'URL
@@ -74,18 +79,21 @@ export function isValidUrl(url: string): boolean {
  * Fetch OG data via Cloud Function
  * Retourne null si offline, URL invalide, ou erreur (pas grave)
  */
-export async function fetchOpenGraphData(url: string): Promise<OpenGraphData | null> {
-  // Previews are fetched by Bible Strong's cloud function; CyberJudah sends no link there.
-  if (usesCyberJudahEditorial() || !isValidUrl(url)) {
+export async function fetchOpenGraphData(
+  url: string,
+  fetcher: typeof fetch = fetch
+): Promise<OpenGraphData | null> {
+  if (!isValidUrl(url)) {
     return null
   }
+  const endpoint = usesCyberJudahEditorial() ? CYBERJUDAH_OG_URL : FUNCTION_URL
 
   try {
     const user = getCurrentAuthUser()
     if (!user) return null
 
     const token = await user.getIdToken()
-    const response = await fetch(`${FUNCTION_URL}?url=${encodeURIComponent(url)}`, {
+    const response = await fetcher(`${endpoint}?url=${encodeURIComponent(url)}`, {
       method: 'GET',
       headers: { Authorization: `Bearer ${token}` },
     })
