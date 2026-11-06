@@ -3,8 +3,12 @@ import * as admin from 'firebase-admin'
 // Use the Firestore document ID, never an editable field from its payload.
 // Account cleanup and the Firestore delete trigger may both run for one study.
 export const deleteStudyFiles = async (studyId: string, ownerUid?: string): Promise<void> => {
+  const options = admin.app().options
+  // CyberJudah has no provisioned Storage bucket (verified in both consoles).
+  // Do not invent a bucket or target the upstream project's bucket.
+  if (options.projectId === 'cyberjudah-app' && !options.storageBucket) return
   const bucket = admin.storage().bucket()
-  if (admin.app().options.projectId === 'cyberjudah-app') {
+  if (options.projectId === 'cyberjudah-app') {
     for (const name of [`images/studies/${studyId}.jpg`, `images/studies/${studyId}-whatsapp.jpg`]) {
       const file = bucket.file(name)
       let metadata

@@ -12,7 +12,7 @@ const sourceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '.
 
 // Load the real exported Firebase handlers without initializing credentials or
 // connecting to a project. Only the SDK boundary is replaced.
-function fixture(entries, initialFiles = [], projectId = 'bible-strong-app') {
+function fixture(entries, initialFiles = [], projectId = 'bible-strong-app', storageBucket = 'cyberjudah-app.firebasestorage.app') {
   const documents = new Map(entries)
   const files = new Set(initialFiles)
   const fileFailures = new Set()
@@ -131,7 +131,10 @@ function fixture(entries, initialFiles = [], projectId = 'bible-strong-app') {
       },
     }),
   }
-  const admin = { app: () => ({ options: { projectId } }), firestore: () => db, storage: () => ({ bucket: () => bucket }) }
+  const admin = { app: () => ({ options: { projectId, storageBucket } }), firestore: () => db, storage: () => {
+    if (!storageBucket) throw new Error('Storage must not be used without a configured bucket')
+    return { bucket: () => bucket }
+  } }
   const wrap = options => handler => Object.assign(handler, { runtimeOptions: options })
   const functions = options => ({
     runWith: next => functions(next),
@@ -162,6 +165,13 @@ function fixture(entries, initialFiles = [], projectId = 'bible-strong-app') {
 }
 
 const imageNames = id => [`images/studies/${id}.jpg`, `images/studies/${id}-whatsapp.jpg`]
+
+test('CyberJudah without a provisioned bucket cleans data without inventing a Storage target', async () => {
+  const f = fixture([['studies/own', { user: { id: 'alice' } }]], [], 'cyberjudah-app', null)
+  await f.users.deleteUser({ uid: 'alice' })
+  assert.equal(f.documents.size, 0)
+  assert.equal(f.fileAttempts.length, 0)
+})
 
 test('CyberJudah deletes only previews tagged with the expected owner and study', async () => {
   const f = fixture([['studies/own', { user: { id: 'alice' } }]], imageNames('own'), 'cyberjudah-app')

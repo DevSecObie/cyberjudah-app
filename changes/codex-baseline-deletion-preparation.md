@@ -13,7 +13,7 @@ Changes:
   handler perform recursive private-data cleanup. Remove the separate client
   Firestore traversal. This branch must not ship before the trigger is verified.
 
-Validation on Node 22.23.4: 43 focused API/native tests pass with no TODOs,
+Validation on Node 22.23.4: 44 focused API/native tests pass with no TODOs,
 plus four real Firestore emulator tests pass against the repository's CyberJudah
 rules. API SDK typecheck and TSLint pass. Full Expo typecheck, targeted ESLint,
 and five deletion Jest tests now pass with installed workspace dependencies. The emulator verifies late-revision
@@ -44,7 +44,10 @@ Remaining implementation/verification:
   differently owned objects stop cleanup without being deleted. Existing-object
   inventory and trusted metadata-writer verification remain required; no metadata
   was backfilled or ownership inferred from Firestore IDs. Live Storage inspection
-  is pending because the user was actively using Brave.
+  on November 6 is complete: Firebase Storage shows Get started and the authorized
+  Google Cloud console shows no live buckets for cyberjudah-app. If deployment has
+  no configured bucket, preview cleanup now skips Storage access rather than
+  inventing a target. This does not inventory soft-deleted buckets or other projects.
 - The client now calls both existing publication stores, then native-only unlink
   on both Workers. It captures the UID, rejects account switches, and blocks Auth
   deletion if any call fails. Backend companion branch:
