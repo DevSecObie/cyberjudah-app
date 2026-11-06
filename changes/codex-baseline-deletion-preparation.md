@@ -13,27 +13,35 @@ Changes:
   handler perform recursive private-data cleanup. Remove the separate client
   Firestore traversal. This branch must not ship before the trigger is verified.
 
-Validation: 32 focused API/native orchestration tests pass. Root deletion now
-requires the snapshot's Firestore updateTime; replacing a study or profile before
-the final delete causes a retry instead of erasing that replacement. This does
-not yet protect descendants or previews against replacement during their cleanup.
-One executable acceptance case still **fails** with
-`CYBERJUDAH_STRICT_ACCEPTANCE=1`: a late revision survives. Ordinary runs mark
-that case as TODO; those runs do not constitute deletion acceptance. No production
-or device deletion was run. API typecheck and TSLint pass with the actual SDK
-dependencies installed from the repository lockfile.
+Validation on Node 22.23.4: 34 focused API/native tests pass with no TODOs,
+plus four real Firestore emulator tests pass against the repository's CyberJudah
+rules. API SDK typecheck and TSLint pass. The emulator verifies late-revision
+retry, a client write racing finalization, replacement-owner descendant safety,
+and more than 400 descendants including missing intermediate parents.
+
+CyberJudah study cleanup still traverses descendants from the Auth trigger. Each
+bounded deletion batch transaction checks the original parent's updateTime.
+The final transaction checks the parent and the client-writable revisions query
+before deleting the parent. Late revisions leave the study discoverable for the
+existing Auth-trigger retry. No new persistent records or retention policy were
+introduced. The upstream implementation remains the fallback for other projects.
 
 Run with the repository dependencies installed:
 
 ```sh
 node --test apps/api/functions/tests/*.test.mjs apps/expo/scripts/test-account-deletion-baseline.mjs
-CYBERJUDAH_STRICT_ACCEPTANCE=1 node --test apps/api/functions/tests/account-deletion.test.mjs
+firebase emulators:exec --only firestore --project demo-cyberjudah-deletion --config firebase.deletion-test.json "node --test apps/api/functions/tests/emulator/study-cleanup.test.mjs"
 ```
 
 Remaining implementation/verification:
-- Resolve late writes and descendant/preview ownership races without silently
-  adopting indefinite markers. Check affected historical ownership; current parent attribution alone
-  does not establish the owner of orphan/reused-ID history.
+- The tested study/revision races are fixed. This is not a proof against arbitrary
+  privileged writes or writes after account deletion. Profile-subtree cleanup
+  still uses upstream recursive deletion; stale clients/custom tokens can recreate
+  account data under the current rules. Verify the writer and re-enrollment paths.
+- Verify preview ownership before deleting files: the inherited preview path has
+  only the study ID and file deletion currently precedes the guarded traversal.
+  Historical orphan/reused-ID attribution also requires evidence; a current
+  parent alone does not prove historical ownership.
 - Integrate and test both required publication stores and native Telegram unlink.
   Current existing publication API still addresses one configured Worker.
 - Verify actual staging file usage before declaring file cleanup complete.
@@ -41,11 +49,11 @@ Remaining implementation/verification:
 - Add an isolated explicit CyberJudah deployment configuration; existing
   `.firebaserc` remains `bible-strong-app`. Never use the broad package deploy
   command or deploy unrelated functions. Verify runtime/project/bucket first.
-- Expo/Jest suite, real emulator, native/offline tests, and deployed acceptance
-  remain outstanding. The focused SDK tests mock services.
-- The inherited Node.js 20 deployment runtime was decommissioned on October 30,
-  2026. An isolated v1 deployment needs Node.js 22 and validation on that runtime;
-  do not reuse the legacy default project or broad API deploy command.
+- Expo/Jest suite, native/offline tests, and deployed acceptance remain outstanding.
+  The four study-tree emulator tests supplement the mocked API/native tests.
+- Firebase runtime and API engine now target Node 22, tested locally. Node 20
+  was decommissioned October 30, 2026. This does not change the legacy default
+  Firebase project; explicit isolated deployment remains required.
   Source: https://cloud.google.com/functions/docs/runtime-support
 
 Billing was rechecked after the user's payment: Firebase now displays Blaze and
@@ -58,4 +66,15 @@ Upstream comparison was repeated directly against `smontlouis/bible-strong`:
 `deleteCurrentAuthUser()` after typed confirmation, then logs out.
 `apps/api/functions/src/users.ts` supplies Auth onDelete cleanup with retry policy.
 CyberJudah retains its existing Apple revocation and Worker-publication prerequisite;
-the server traversal remains upstream's, extended only for its scoped collections.
+the Auth-trigger design remains upstream's, with scoped collections and the
+transactional study traversal needed for CyberJudah's revision history.
+
+Additional backend source verification at main `3e425df8`:
+- `firebase-auth.ts` can mint a linked native UID without an existence check.
+- `device-auth.ts` exchange also mints that UID after checking only the link;
+  approved device-signin rows and already issued custom tokens need consideration.
+- `firestore-admin.ts` privileged deletion resolves both the linked native UID
+  and legacy Telegram UID. Native deletion must not reuse that Telegram eraser.
+- Publication bulk deletion remains local to one Worker store; no peer-store
+  cleanup or native-only unlink is integrated in this baseline candidate yet.
+The independent staging reference service was not changed.

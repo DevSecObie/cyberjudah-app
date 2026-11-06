@@ -24,11 +24,14 @@ function fixture(entries, initialFiles = [], projectId = 'bible-strong-app') {
   const snapshot = documentPath => {
     const data = documents.get(documentPath)
     return { id: documentPath.split('/').at(-1), ref: document(documentPath), exists: data !== undefined,
-      data: () => data, updateTime: data }
+      data: () => data, updateTime: data === undefined ? undefined : {
+        value: data, isEqual: other => other?.value === data,
+      } }
   }
   const document = documentPath => ({
     path: documentPath,
     id: documentPath.split('/').at(-1),
+    collection: name => collection(`${documentPath}/${name}`),
     listCollections: async () => [...new Set([...documents.keys()]
       .filter(key => key.startsWith(`${documentPath}/`))
       .map(key => key.slice(0, documentPath.length + 1) + key.slice(documentPath.length + 1).split('/')[0]))]
@@ -36,7 +39,7 @@ function fixture(entries, initialFiles = [], projectId = 'bible-strong-app') {
     get: async () => snapshot(documentPath),
     delete: async precondition => {
       await hooks.beforeDelete(documentPath, documents)
-      if (precondition?.lastUpdateTime && precondition.lastUpdateTime !== documents.get(documentPath)) {
+      if (precondition?.lastUpdateTime && precondition.lastUpdateTime.value !== documents.get(documentPath)) {
         throw Object.assign(new Error('document version changed'), { code: 9 })
       }
       documents.delete(documentPath)
@@ -58,10 +61,37 @@ function fixture(entries, initialFiles = [], projectId = 'bible-strong-app') {
         return { empty: matches.length === 0, docs: matches.map(([key]) => snapshot(key)) }
       },
     })
-    return { path: collectionPath, ...makeQuery(), doc: id => document(`${collectionPath}/${id}`) }
+    return { path: collectionPath, id: collectionPath.split('/').at(-1), ...makeQuery(),
+      doc: id => document(`${collectionPath}/${id}`),
+      listDocuments: async () => [...new Set([...documents.keys()]
+        .filter(key => key.startsWith(`${collectionPath}/`))
+        .map(key => key.split('/').slice(0, collectionPath.split('/').length + 1).join('/')))].map(document),
+    }
   }
   const db = {
     collection,
+    runTransaction: async callback => {
+      const reads = [], deletes = []
+      const signature = result => result.docs
+        ? result.docs.map(doc => [doc.ref.path, doc.data()])
+        : [[result.ref.path, result.data()]]
+      await callback({
+        get: async ref => {
+          const result = await ref.get()
+          reads.push([ref, signature(result)])
+          return result
+        },
+        delete: ref => deletes.push(ref),
+      })
+      for (const ref of deletes) await hooks.beforeDelete(ref.path, documents)
+      for (const [ref, before] of reads) {
+        const after = signature(await ref.get())
+        if (before.length !== after.length || before.some(([path, data], i) => path !== after[i][0] || data !== after[i][1])) {
+          throw Object.assign(new Error('transaction read changed'), { code: 9 })
+        }
+      }
+      for (const ref of deletes) documents.delete(ref.path)
+    },
     batch: () => {
       const pending = []
       return {
@@ -244,16 +274,36 @@ test('staging cleanup cannot delete a production preview with the same study ID'
 })
 
 
-test('acceptance: late revisions must not survive cleanup', { todo: process.env.CYBERJUDAH_STRICT_ACCEPTANCE !== '1' && 'Upstream traversal does not fence late writes; requires deployed-rule acceptance' }, async () => {
+test('late revisions keep the parent discoverable and are removed on retry', async () => {
   const f = fixture([
     ['users/alice', {}], ['studies/own', { user: { id: 'alice' } }],
     ['studies/own/revisions/first', {}],
   ], [], 'cyberjudah-app')
   f.hooks.beforeDelete = async (path, documents) => {
-    if (path === 'studies/own') documents.set('studies/own/revisions/late', {})
+    if (path === 'studies/own') {
+      documents.set('studies/own/revisions/late', {})
+      f.hooks.beforeDelete = async () => {}
+    }
   }
+  await assert.rejects(f.users.deleteUser({ uid: 'alice' }), { code: 9 })
+  assert.ok(f.documents.has('studies/own'))
   await f.users.deleteUser({ uid: 'alice' })
   assert.equal(f.documents.size, 0)
+})
+
+test('replacement ownership protects descendants before their deletion batch commits', async () => {
+  const replacement = { user: { id: 'bob' } }, revision = { text: 'keep' }
+  const f = fixture([
+    ['studies/own', { user: { id: 'alice' } }], ['studies/own/revisions/r', revision],
+  ], [], 'cyberjudah-app')
+  f.hooks.beforeDelete = async (path, documents) => {
+    if (path === 'studies/own/revisions/r') documents.set('studies/own', replacement)
+  }
+  await assert.rejects(f.users.deleteUser({ uid: 'alice' }), { code: 9 })
+  assert.equal(f.documents.get('studies/own/revisions/r'), revision)
+  await f.users.deleteUser({ uid: 'alice' })
+  assert.equal(f.documents.get('studies/own'), replacement)
+  assert.equal(f.documents.get('studies/own/revisions/r'), revision)
 })
 
 test('a replacement parent owner survives a paused cleanup and its retry', async () => {

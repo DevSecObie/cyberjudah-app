@@ -2,6 +2,7 @@
 import * as functions from 'firebase-functions/v1'
 import * as admin from 'firebase-admin'
 import { deleteStudyFiles } from './studyFiles'
+import { deleteStudyTree } from './deleteStudyTree'
 
 export const createUser = functions.auth.user().onCreate(async (user) => {
   const { uid, email, displayName, photoURL, providerData, emailVerified } =
@@ -62,7 +63,8 @@ export const deleteUser = functions
           // The inherited preview path belongs to production studies. Staging
           // must not delete another owner's production preview with the same ID.
           if (!scope) await deleteStudyFiles(study.id)
-          await deleteDocumentTree(study)
+          if (cyberJudah) await deleteStudyTree(db, study)
+          else await deleteDocumentTree(study)
         }
       }
 
