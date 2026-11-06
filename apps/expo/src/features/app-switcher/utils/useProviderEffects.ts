@@ -1,4 +1,5 @@
 import { getDefaultStore } from 'jotai/vanilla'
+import { selectAtom } from 'jotai/vanilla/utils'
 import { useAtomValue } from 'jotai/react'
 import { useEffect, useEffectEvent, useRef } from 'react'
 import { useWindowDimensions } from 'react-native'
@@ -15,6 +16,14 @@ import {
 } from '~state/tabs'
 
 import { useResponsiveWorkspace } from './useResponsiveWorkspace'
+
+// The groups' order is all these effects read: a change inside a tab (a selected verse) leaves
+// it the same, so the app switcher and every screen under it are not drawn again for it.
+const tabGroupIdsAtom = selectAtom(
+  tabGroupsAtom,
+  groups => groups.map(group => group.id),
+  (a, b) => a.length === b.length && a.every((id, index) => id === b[index])
+)
 
 /**
  * Side-effects that keep SharedValues in sync with Jotai atoms.
@@ -58,7 +67,7 @@ export const useProviderEffects = ({
   }, [tabsCount, tabsCountShared])
 
   const appSwitcherMode = useAtomValue(appSwitcherModeAtom)
-  const groups = useAtomValue(tabGroupsAtom)
+  const groupIds = useAtomValue(tabGroupIdsAtom)
   const activeGroupId = useAtomValue(activeGroupIdAtom)
   const activeTabId = useAtomValue(activeTabIdAtom)
   const activeIndex = useAtomValue(activeTabIndexAtom)
@@ -77,10 +86,7 @@ export const useProviderEffects = ({
     tabPreviewCarousel.opacity.set(0)
     tabPreviewCarousel.translateY.set(height)
     createGroupPageIsFullyVisible.set(false)
-    const groupIndex = Math.max(
-      0,
-      groups.findIndex(group => group.id === activeGroupId)
-    )
+    const groupIndex = Math.max(0, groupIds.indexOf(activeGroupId))
     activeGroupIndex.set(groupIndex)
     pagerTranslateX.set(-groupIndex * width)
     pagerScrollX.set(groupIndex * width)
@@ -93,12 +99,12 @@ export const useProviderEffects = ({
     wasWide.current = isWide
     if (!shouldSync) return
     syncMobileAnimationState()
-  }, [isWide, activeTabId, activeIndex, activeGroupId, groups.length, width, height])
+  }, [isWide, activeTabId, activeIndex, activeGroupId, groupIds.length, width, height])
 
   useEffect(() => {
     if (appSwitcherMode !== 'list') return
 
-    const activeGroupIndexValue = groups.findIndex(group => group.id === activeGroupId)
+    const activeGroupIndexValue = groupIds.indexOf(activeGroupId)
     if (activeGroupIndexValue === -1) return
 
     const targetX = -activeGroupIndexValue * width
@@ -107,7 +113,7 @@ export const useProviderEffects = ({
     pagerScrollX.set(-targetX)
   }, [
     appSwitcherMode,
-    groups,
+    groupIds,
     activeGroupId,
     width,
     activeGroupIndex,

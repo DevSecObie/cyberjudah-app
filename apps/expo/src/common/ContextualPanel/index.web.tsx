@@ -1,6 +1,6 @@
 import { useTabCommands } from '~common/useTabCommands'
 import { Popover } from '@heroui/react/popover'
-import { useImperativeHandle, useState, type ReactNode } from 'react'
+import { startTransition, useImperativeHandle, useState, type ReactNode } from 'react'
 import { HeaderActionContext, HeaderContentContext } from './HeaderActionContext'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '~themes/ThemeProvider'
@@ -16,24 +16,29 @@ import '../FiltersHeader.web.css'
 export default function ContextualPanel(props: ContextualPanelProps) {
   const theme = useTheme()
   const panel = usePanelNavigation(props)
+  // A panel's content is drawn as a transition: the tap that opens it is painted at once, and
+  // a long list (the books, the versions) does not hold the page while it is built.
+  const present = () => startTransition(panel.present)
   useTabCommands(props.commands?.actions, id => {
     props.commands?.select(id, {
       ...panel.navigation,
       open: screen => {
-        panel.present()
-        panel.navigation.open(screen)
+        startTransition(() => {
+          panel.present()
+          panel.navigation.open(screen)
+        })
       },
     })
   })
   useImperativeHandle(props.controllerRef, () => ({
-    present: () => (panel.isOpen ? panel.navigation.close() : panel.present()),
+    present: () => (panel.isOpen ? panel.navigation.close() : present()),
     dismiss: panel.navigation.close,
-    open: panel.present,
+    open: present,
   }))
   return (
     <Popover
       isOpen={panel.isOpen}
-      onOpenChange={open => (open ? panel.present() : panel.navigation.close())}
+      onOpenChange={open => (open ? present() : panel.navigation.close())}
     >
       {!props.anchorRef && (
         <Popover.Trigger

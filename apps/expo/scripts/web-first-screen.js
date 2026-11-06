@@ -11,7 +11,7 @@
     try {
       let value = localStorage.getItem('bible-strong:' + key)
       return value == null ? null : json === false ? value : JSON.parse(value)
-    } catch (error) {
+    } catch {
       return null
     }
   }
@@ -61,7 +61,7 @@
       settings = (user.bible && user.bible.settings) || {}
       fontFamily = user.fontFamily || fontFamily
     }
-  } catch (error) {
+  } catch {
     return
   }
   if (fontFamily !== 'Literata Book') return
