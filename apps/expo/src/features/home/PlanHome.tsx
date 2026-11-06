@@ -62,6 +62,10 @@ const loadBundledPlan = async (lang: string): Promise<Plan | undefined> => {
   return serialized ? (JSON.parse(serialized) as Plan) : undefined
 }
 
+// The bundled plan is several hundred KB: read and store it once per app launch, not on every
+// visit to Home (each refresh re-parses it and rewrites the saved state).
+const refreshedThisLaunch = new Set<string>()
+
 const useGetFirstPlans = () => {
   const lang = useLanguage()
   const planId = usesCyberJudahEditorial()
@@ -72,21 +76,25 @@ const useGetFirstPlans = () => {
   const hasPlan = useSelector((state: RootState) =>
     state.plan.myPlans.some(plan => plan.id === planId)
   )
-  // Our bundled plan is refreshed on every open, so a phone that added it earlier gets new rows.
+  // Our bundled plan is refreshed once per launch, so a phone that added it earlier gets new rows.
   const refreshBundled = usesCyberJudahEditorial()
   const dispatch = useDispatch()
   useEffect(() => {
     if (hasPlan && !refreshBundled) return
+    const launchKey = `${planId}:${lang}`
+    if (hasPlan && refreshedThisLaunch.has(launchKey)) return
     let active = true
     void loadBundledPlan(lang)
       .then(plan => {
-        if (active && plan) dispatch(refreshBundled ? replacePlan(plan) : addPlan(plan))
+        if (!active || !plan) return
+        refreshedThisLaunch.add(launchKey)
+        dispatch(refreshBundled ? replacePlan(plan) : addPlan(plan))
       })
       .catch(error => console.warn('[Home] Could not load bundled reading plan', error))
     return () => {
       active = false
     }
-  }, [hasPlan, refreshBundled, lang, dispatch])
+  }, [hasPlan, planId, refreshBundled, lang, dispatch])
 }
 
 /** « À découvrir », the link to the plan catalogue. */

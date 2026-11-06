@@ -1,26 +1,14 @@
 import { TabCommandContext } from '~common/useTabCommands'
 import { PrimitiveAtom } from 'jotai/vanilla'
 import { useAtomValue } from 'jotai/react'
-import React, { memo, Ref } from 'react'
+import React, { memo, Ref, Suspense } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { useAnimatedReaction, useAnimatedStyle } from 'react-native-reanimated'
 import { runOnJS } from 'react-native-worklets'
 import Box from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import BibleTabScreen from '~features/bible/BibleTabScreen'
-import CompareVersesTabScreen from '~features/bible/CompareVersesTabScreen'
-import StrongTabScreen from '~features/lexique/StrongTabScreen'
-import CommentariesTabScreen from '~features/commentaries/CommentariesTabScreen'
-import CommentaryResourceTabScreen from '~features/commentaries/CommentaryResourceTabScreen'
-import InvalidCommentaryTabScreen from '~features/commentaries/InvalidCommentaryTabScreen'
 import { isValidCommentaryVerse } from '~features/commentaries/commentaryTabValidation'
-import DictionaryTabScreen from '~features/dictionnary/DictionaryTabScreen'
-import NaveTabScreen from '~features/nave/NaveTabScreen'
-import { NotesTabScreen } from '~features/notes'
-import PlanTabScreen from '~features/plans/PlanTabScreen'
-import SearchTabScreen from '~features/search/SearchTabScreen'
-import StudiesTabScreen from '~features/studies/StudiesTabScreen'
-import TimelineTabScreen from '~features/timeline/TimelineTabScreen'
 import {
   BibleTab,
   activeTabIdAtom,
@@ -40,10 +28,24 @@ import {
   TimelineTab,
 } from '../../../state/tabs'
 import { useAppSwitcherContext } from '../AppSwitcherContext'
-import NewTabScreen from './NewTab/NewTabScreen'
 import { useResponsiveWorkspace } from '../utils/useResponsiveWorkspace'
 import useScrollToActiveTab from '../utils/useScrollToActiveTab'
 import TabScreenWrapper from './TabScreenWrapper'
+import {
+  CommentariesTabScreen,
+  CommentaryResourceTabScreen,
+  CompareVersesTabScreen,
+  DictionaryTabScreen,
+  InvalidCommentaryTabScreen,
+  NaveTabScreen,
+  NewTabScreen,
+  NotesTabScreen,
+  PlanTabScreen,
+  SearchTabScreen,
+  StudiesTabScreen,
+  StrongTabScreen,
+  TimelineTabScreen,
+} from './tabScreenComponents'
 import { useSafeAreaFrame } from 'react-native-safe-area-context'
 const renderTabComponent = (tab: TabItem, tabAtom: PrimitiveAtom<TabItem>) => {
   switch (tab.type) {
@@ -140,7 +142,9 @@ const TabScreen = ({ tabAtom, ref }: TabScreenProps) => {
         accessibilityElementsHidden={!isAccessibilityVisible}
         importantForAccessibility={isAccessibilityVisible ? 'auto' : 'no-hide-descendants'}
       >
-        <TabCommandContext.Provider value={tab.id}>{tabComponent}</TabCommandContext.Provider>
+        <TabCommandContext.Provider value={tab.id}>
+          <Suspense fallback={null}>{tabComponent}</Suspense>
+        </TabCommandContext.Provider>
       </TabScreenWrapper>
     )
   }

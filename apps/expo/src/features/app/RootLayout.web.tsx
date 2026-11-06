@@ -24,6 +24,15 @@ import getTheme, { baseTheme } from '~themes/index'
 import { setI18n } from '../../../i18n'
 setAutoFreeze(false)
 
+// The home screen's script starts downloading now, while the rest of the app's code is set up,
+// instead of after the app has mounted and asked the router for it.
+if (typeof window !== 'undefined') {
+  const path = window.location.pathname
+  if (path === '/')
+    void import('~features/app-switcher/AppSwitcherScreen/AppSwitcherScreen').catch(() => {})
+  else if (path === '/home') void import('~features/home/HomeScreen').catch(() => {})
+}
+
 const Loading = () => (
   <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
     <ActivityIndicator />
