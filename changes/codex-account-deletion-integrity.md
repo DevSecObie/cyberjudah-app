@@ -4,4 +4,4 @@ Ordinary study deletion and persisted retries now require the ownership-preservi
 
 Native account deletion requires version-3 acknowledgment that the server blocked writes, removed publications and synced Firestore records, and unlinked Telegram. The confirmation explains that Telegram history remains separate. The candidate rules reject personal-data writes from other devices and offline queues after the server installs a deletion barrier. Rollout still requires the reviewed server, rules and historical ownership reconciliation.
 
-Release validation also corrects the share-card title type guard and formatting in three existing build helpers so the full repository checks can run without bypasses.
+Release validation also corrects the share-card title type guard and formatting in three existing build helpers and the app configuration so the full repository checks can run without bypasses. The configuration's executable JavaScript, build number and signing settings are unchanged.
