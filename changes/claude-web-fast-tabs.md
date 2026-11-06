@@ -2,3 +2,4 @@
 - Web: the first screen downloads about 1 MB less script. Each tab type (Search, Strong, Dictionary, Notes, Timeline and the rest) loads the first time a tab of that type opens. Panels that wait for a tap (reference previews, tags, colors, the class player, What's new) load right after the first screen. Each script file holds only the code one set of screens shares.
 - Web: the reading and title fonts download with the page. The large icon fonts load a few seconds after the first screen.
 - Home reads the bundled 4 Chapters a Day plan once per launch instead of on every visit. The Bible reference parser for each language is built the first time it is used.
+- Web: the audio player (about 300 KB) is set up once the first screen is idle instead of while the chapter is still loading.
