@@ -1,0 +1,1 @@
+- Web: when the app opens on a Bible chapter, that chapter's text shows straight away in the reading layout while the rest of the app loads, then the app takes over in place. Readers with another theme, text size, line height, alignment, font or verse layout still see the lion until the app is ready.
