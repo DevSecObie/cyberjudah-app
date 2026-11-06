@@ -10,6 +10,21 @@ jest.mock('expo-file-system/legacy', () => ({ readAsStringAsync: jest.fn() }))
 jest.mock('~helpers/utils', () => ({ wp: (value: number) => value }))
 jest.mock('~i18n', () => ({ getFixedT: () => (key: string) => key }))
 
+it('bundles Abraham’s corrected lifespan consistently with the other published anchors', () => {
+  const events = sections.flatMap(section => section.events)
+  const abrahams = events.filter(event => event.slug === 'abraham')
+  expect(abrahams.length).toBeGreaterThan(0)
+  for (const event of abrahams) {
+    expect(event.start).toBe(-1946)
+    expect(event.end - event.start).toBe(175)
+    expect(events.find(row => row.slug === 'ishmael')!.start - event.start).toBe(86)
+    expect(
+      events.find(row => row.slug === 'abram-called-and-departs-haran')!.start - event.start
+    ).toBe(75)
+    expect(events.find(row => row.slug === 'sarah')!.start - event.start).toBe(10)
+  }
+})
+
 it('labels the dated Lamech as Noah’s father in every bundled period', () => {
   const lamechs = sections.flatMap(section => section.events.filter(event => event.id === 673))
   expect(lamechs).toHaveLength(2)
