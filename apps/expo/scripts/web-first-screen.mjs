@@ -8,7 +8,12 @@ import { join } from 'node:path'
 const root = fileURLToPath(new URL('../', import.meta.url))
 const dist = join(root, 'dist')
 const api = process.env.EXPO_PUBLIC_RESOURCE_API_URL
-if (!api) throw new Error('EXPO_PUBLIC_RESOURCE_API_URL is not set')
+if (!api) {
+  // Builds without the CyberJudah resource API (CI checks, Bible Strong's own setup) keep the
+  // lion: the inline script is left out and index.html is unchanged.
+  console.log('First screen: EXPO_PUBLIC_RESOURCE_API_URL is not set, keeping the launch screen')
+  process.exit(0)
+}
 
 // The app names a book by translating its upstream French name (books-desc.ts) into English.
 const booksSource = await readFile(join(root, 'src/assets/bible_versions/books-desc.ts'), 'utf8')
