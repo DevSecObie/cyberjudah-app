@@ -16,7 +16,9 @@ import { createGlobalStyles } from 'goober/global'
 import { m, useReducedMotion } from 'motion/react'
 import Feather from '@expo/vector-icons/Feather'
 import { domMax, LazyMotion } from 'motion/react'
-import React, { useEffect, useEffectEvent, useMemo, useState, useRef } from 'react'
+import React, { memo, useEffect, useEffectEvent, useMemo, useState, useRef } from 'react'
+import { useStableDomProps } from './stableDomProps'
+import { useStableList } from '~helpers/useStableList'
 import { Verse as TVerse } from '~common/types'
 import { floatingShadow, radii } from '~common/ui/surfaces'
 import {
@@ -774,7 +776,10 @@ const LoadedBibleContent = ({
     }),
     [parallelVerses, version, verses]
   )
-  const redWordsByVersion = { ...parallelRedWords, [version]: redWords ?? null }
+  const redWordsByVersion = useMemo(
+    () => ({ ...parallelRedWords, [version]: redWords ?? null }),
+    [parallelRedWords, version, redWords]
+  )
 
   // Clear tokens cache and selection when versions change to avoid stale word indices
   useEffect(() => {
@@ -863,7 +868,9 @@ const LoadedBibleContent = ({
     shouldSuppressVerseGestures(versionId, versionModes.get(versionId)) ||
     hasReverseInterlinear(versionId)
   // Interlinear presentations hold no personal Bible data: their columns show none (ADR-0030).
-  const interlinearReadingVersions = displayedVersions.filter(isVersionGestureSuppressed)
+  const interlinearReadingVersions = useStableList(
+    displayedVersions.filter(isVersionGestureSuppressed)
+  )
   const annotatedVersions = displayedVersions.filter(
     versionId => !interlinearReadingVersions.includes(versionId)
   )
@@ -2072,10 +2079,16 @@ const VersesRendererContent = ({ settings, dispatch, translations, verses, ...re
   )
 }
 
-const VersesRenderer = (props: Props) => (
-  <LazyMotion features={domMax} strict>
-    <VersesRendererContent {...props} />
-  </LazyMotion>
-)
+// Drawn again only when the reader's data changes, not each time the screen around it renders
+const StableVersesRendererContent = memo(VersesRendererContent)
+
+const VersesRenderer = (props: Props) => {
+  const stableProps = useStableDomProps(props)
+  return (
+    <LazyMotion features={domMax} strict>
+      <StableVersesRendererContent {...stableProps} />
+    </LazyMotion>
+  )
+}
 
 export default VersesRenderer

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { memo, useEffect } from 'react'
 import { keyframes, styled } from 'goober'
 
 import {
@@ -869,4 +869,5 @@ const Verse = ({
   )
 }
 
-export default Verse
+// A verse draws again only when its own props change, not each time the chapter does
+export default memo(Verse)
