@@ -13,11 +13,15 @@ Changes:
   handler perform recursive private-data cleanup. Remove the separate client
   Firestore traversal. This branch must not ship before the trigger is verified.
 
-Validation: 30 focused API/native orchestration tests pass. Two executable
-acceptance cases reproduce upstream limitations and **fail** when run with
-`CYBERJUDAH_STRICT_ACCEPTANCE=1`: a late revision survives and a replacement
-parent owner can be deleted. Ordinary runs mark these two as TODO; those runs do
-not constitute deletion acceptance. No production or device deletion was run.
+Validation: 32 focused API/native orchestration tests pass. Root deletion now
+requires the snapshot's Firestore updateTime; replacing a study or profile before
+the final delete causes a retry instead of erasing that replacement. This does
+not yet protect descendants or previews against replacement during their cleanup.
+One executable acceptance case still **fails** with
+`CYBERJUDAH_STRICT_ACCEPTANCE=1`: a late revision survives. Ordinary runs mark
+that case as TODO; those runs do not constitute deletion acceptance. No production
+or device deletion was run. API typecheck and TSLint pass with the actual SDK
+dependencies installed from the repository lockfile.
 
 Run with the repository dependencies installed:
 
@@ -27,8 +31,8 @@ CYBERJUDAH_STRICT_ACCEPTANCE=1 node --test apps/api/functions/tests/account-dele
 ```
 
 Remaining implementation/verification:
-- Resolve both concurrency acceptance failures without silently adopting indefinite
-  markers. Check affected historical ownership; current parent attribution alone
+- Resolve late writes and descendant/preview ownership races without silently
+  adopting indefinite markers. Check affected historical ownership; current parent attribution alone
   does not establish the owner of orphan/reused-ID history.
 - Integrate and test both required publication stores and native Telegram unlink.
   Current existing publication API still addresses one configured Worker.
@@ -37,8 +41,12 @@ Remaining implementation/verification:
 - Add an isolated explicit CyberJudah deployment configuration; existing
   `.firebaserc` remains `bible-strong-app`. Never use the broad package deploy
   command or deploy unrelated functions. Verify runtime/project/bucket first.
-- Full SDK typecheck, lint, Expo/Jest suite, real emulator, native/offline tests,
-  and deployed acceptance remain outstanding. The focused SDK tests mock services.
+- Expo/Jest suite, real emulator, native/offline tests, and deployed acceptance
+  remain outstanding. The focused SDK tests mock services.
+- The inherited Node.js 20 deployment runtime was decommissioned on October 30,
+  2026. An isolated v1 deployment needs Node.js 22 and validation on that runtime;
+  do not reuse the legacy default project or broad API deploy command.
+  Source: https://cloud.google.com/functions/docs/runtime-support
 
 Billing was rechecked after the user's payment: Firebase now displays Blaze and
 Functions Get started; CyberJudah remains linked to Firebase Payment. No payment,

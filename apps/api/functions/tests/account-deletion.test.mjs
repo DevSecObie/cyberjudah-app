@@ -21,6 +21,11 @@ function fixture(entries, initialFiles = [], projectId = 'bible-strong-app') {
   const queries = []
   const removals = []
   const hooks = { beforeDelete: async () => {} }
+  const snapshot = documentPath => {
+    const data = documents.get(documentPath)
+    return { id: documentPath.split('/').at(-1), ref: document(documentPath), exists: data !== undefined,
+      data: () => data, updateTime: data }
+  }
   const document = documentPath => ({
     path: documentPath,
     id: documentPath.split('/').at(-1),
@@ -28,7 +33,14 @@ function fixture(entries, initialFiles = [], projectId = 'bible-strong-app') {
       .filter(key => key.startsWith(`${documentPath}/`))
       .map(key => key.slice(0, documentPath.length + 1) + key.slice(documentPath.length + 1).split('/')[0]))]
       .map(collection),
-    delete: async () => { await hooks.beforeDelete(documentPath, documents); documents.delete(documentPath) },
+    get: async () => snapshot(documentPath),
+    delete: async precondition => {
+      await hooks.beforeDelete(documentPath, documents)
+      if (precondition?.lastUpdateTime && precondition.lastUpdateTime !== documents.get(documentPath)) {
+        throw Object.assign(new Error('document version changed'), { code: 9 })
+      }
+      documents.delete(documentPath)
+    },
   })
   const collection = collectionPath => {
     const makeQuery = (filter, maximum = Infinity) => ({
@@ -43,7 +55,7 @@ function fixture(entries, initialFiles = [], projectId = 'bible-strong-app') {
           return !filter || filter.field.split('.').reduce((value, part) => value?.[part], data) === filter.value
         }).slice(0, maximum)
         queries.push({ collectionPath, filter, maximum, size: matches.length })
-        return { empty: matches.length === 0, docs: matches.map(([key, data]) => ({ id: key.split('/').at(-1), ref: document(key), data: () => data })) }
+        return { empty: matches.length === 0, docs: matches.map(([key]) => snapshot(key)) }
       },
     })
     return { path: collectionPath, ...makeQuery(), doc: id => document(`${collectionPath}/${id}`) }
@@ -244,11 +256,21 @@ test('acceptance: late revisions must not survive cleanup', { todo: process.env.
   assert.equal(f.documents.size, 0)
 })
 
-test('acceptance: a replacement owner must survive a paused cleanup', { todo: process.env.CYBERJUDAH_STRICT_ACCEPTANCE !== '1' && 'Upstream root deletion is unconditional; owner/version protection remains required' }, async () => {
+test('a replacement parent owner survives a paused cleanup and its retry', async () => {
   const f = fixture([['studies/own', { user: { id: 'alice' } }]], [], 'cyberjudah-app')
   f.hooks.beforeDelete = async (path, documents) => {
     if (path === 'studies/own') documents.set(path, { user: { id: 'bob' } })
   }
+  await assert.rejects(f.users.deleteUser({ uid: 'alice' }), { code: 9 })
   await f.users.deleteUser({ uid: 'alice' })
   assert.equal(f.documents.get('studies/own')?.user.id, 'bob')
+})
+
+test('a changed profile survives the final conditional delete', async () => {
+  const f = fixture([['users/alice', { generation: 1 }]], [], 'cyberjudah-app')
+  f.hooks.beforeDelete = async (path, documents) => {
+    if (path === 'users/alice') documents.set(path, { generation: 2 })
+  }
+  await assert.rejects(f.users.deleteUser({ uid: 'alice' }), { code: 9 })
+  assert.equal(f.documents.get('users/alice')?.generation, 2)
 })
