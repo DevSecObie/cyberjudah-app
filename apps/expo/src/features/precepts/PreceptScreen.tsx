@@ -1,17 +1,21 @@
 import { useQuery } from '@tanstack/react-query'
-import { useLocalSearchParams } from 'expo-router'
 import { useRecordHistory } from '~features/history/useRecordHistory'
-import { useOpenSiteLink } from '~features/publishedNotes/siteLinks'
-import { JumpSection, ScriptureRow, StudyPage } from '~features/publishedNotes/studyKit'
-import { loadPrecept, scriptureHasVerse, scriptureText } from './preceptsAndLaw'
+import { useLocalSearchParams } from 'expo-router'
+import { useEffect, useRef, useState } from 'react'
+import { ScrollView } from 'react-native'
+import Header from '~common/Header'
+import Loading from '~common/Loading'
+import { SafeAreaBox } from '~common/ui/Box'
+import Text from '~common/ui/Text'
+import ScriptureCard from './ScriptureCard'
+import { loadPrecept, scriptureHasVerse } from './preceptsAndLaw'
+import Box from '~common/ui/Box'
 
-/**
- * One precept on Bible Strong's concordance card: every scripture the classes read on it, in Bible
- * order. Opened from a verse, that verse's scripture comes first.
- */
+/** One precept: every scripture the classes read on it in Bible order, opened at one verse. */
 export default function PreceptScreen() {
   const { slug = '', at = '' } = useLocalSearchParams<{ slug?: string; at?: string }>()
-  const { open } = useOpenSiteLink()
+  const scrollRef = useRef<ScrollView>(null)
+  const [atTop, setAtTop] = useState<number>()
   const precept = useQuery({
     queryKey: ['cyberjudah-precept', slug],
     queryFn: () => loadPrecept(slug),
@@ -19,9 +23,13 @@ export default function PreceptScreen() {
     networkMode: 'always',
     retry: 3,
   })
-  const refs = precept.data?.refs ?? []
-  const opened = at ? refs.find(scripture => scriptureHasVerse(scripture, at)) : undefined
-
+  // Open at the scripture of the verse the tag sits on, once it has been laid out.
+  useEffect(() => {
+    if (atTop != null) scrollRef.current?.scrollTo({ y: Math.max(0, atTop - 12), animated: false })
+  }, [atTop])
+  const opened = at
+    ? precept.data?.refs.find(scripture => scriptureHasVerse(scripture, at))
+    : undefined
   // Reopened from Pick up and History, like Bible Strong's own pages.
   useRecordHistory(
     precept.data?.title
@@ -34,38 +42,33 @@ export default function PreceptScreen() {
         }
       : null
   )
-
   return (
-    <StudyPage
-      kind="strong"
-      kindLabel="Precept"
-      headerTitle="Precepts"
-      title={precept.data?.title}
-      isPending={precept.isPending}
-      isError={precept.isError}
-      errorMessage="This precept did not load. Check your connection."
-    >
-      {opened && (
-        <JumpSection id="opened" title="This verse" surface="rows">
-          <ScriptureRow
-            label={opened.label}
-            text={scriptureText(opened)}
-            onPress={() => open(opened.url)}
-          />
-        </JumpSection>
-      )}
-      {refs.length > 0 && (
-        <JumpSection id="scriptures" title="Scriptures" surface="rows">
-          {refs.map(scripture => (
-            <ScriptureRow
+    <SafeAreaBox className="overflow-hidden border-continuous bg-reverse">
+      <Header hasBackButton background title={precept.data?.title ?? 'Precept'} />
+      {precept.isPending ? (
+        <Loading />
+      ) : (
+        <ScrollView
+          ref={scrollRef}
+          contentContainerStyle={{ padding: 16, paddingBottom: 60, gap: 12 }}
+        >
+          {precept.data?.refs.map(scripture => (
+            <Box
               key={scripture.label}
-              label={scripture.label}
-              text={scriptureText(scripture)}
-              onPress={() => open(scripture.url)}
-            />
-          ))}
-        </JumpSection>
+              className={scripture === opened ? 'rounded-[20px] border-[2px] border-primary' : ''}
+              onLayout={
+                scripture === opened ? event => setAtTop(event.nativeEvent.layout.y) : undefined
+              }
+            >
+              <ScriptureCard scripture={scripture} />
+            </Box>
+          )) ?? (
+            <Text className="text-grey text-center py-[40px]">
+              This precept did not load. Check your connection.
+            </Text>
+          )}
+        </ScrollView>
       )}
-    </StudyPage>
+    </SafeAreaBox>
   )
 }
