@@ -75,7 +75,11 @@ const PublishedNoteScreen = () => {
       <Header
         hasBackButton
         title={isEncyclopedia ? 'Encyclopedia' : (note.data?.title ?? chapter?.title ?? '')}
-        rightComponent={path && !chapter ? <ClassNotesPdfButton notesPath={path} /> : undefined}
+        rightComponent={
+          path && !chapter ? (
+            <ClassNotesPdfButton notesPath={path} blocks={note.data?.blocks} />
+          ) : undefined
+        }
       />
       {note.isPending ? (
         <Loading />

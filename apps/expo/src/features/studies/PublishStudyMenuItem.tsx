@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { ActivityIndicator, Platform, Share, StyleSheet } from 'react-native'
 import { openInApp } from '~common/inAppBrowser'
 import PanelAction from '~common/ContextualPanel/PanelAction'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { LinkBox } from '~common/Link'
 import { toast } from '~helpers/toast'
 import { Status } from '~common/types'
@@ -14,17 +14,18 @@ import { FeatherIcon, MaterialIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
 import useConnection from '~helpers/useConnection'
 import { publishStudy, Study } from '~redux/modules/user'
-import type { AppDispatch } from '~redux/store'
+import type { AppDispatch, RootState } from '~redux/store'
 import Clipboard from '@react-native-clipboard/clipboard'
 import { remoteQueryOptions } from '~helpers/queryOptions'
-import { sharePdf } from '~features/notesExport/sharePdf'
+import { printScreenPdf } from '~features/notesExport/printScreenPdf'
+import { useTheme } from '~themes/ThemeProvider'
+import useCurrentThemeSelector from '~helpers/useCurrentThemeSelector'
 import {
   deletePublishedStudy,
   publishedStudyStatus,
   publishedStudyUrl,
   putPublishedStudy,
 } from './publishedStudies'
-import { studyMarkdown } from './studyMarkdown'
 interface Props {
   study: Study
   onClosed: () => void
@@ -58,6 +59,9 @@ const PublishStudyMenuItem = ({ study, onClosed }: Props) => {
   const isConnected = useConnection()
   const dispatch = useDispatch<AppDispatch>()
   const { t } = useTranslation()
+  const theme = useTheme()
+  const fontFamily = useSelector((state: RootState) => state.user.fontFamily)
+  const { colorScheme } = useCurrentThemeSelector()
 
   const queryClient = useQueryClient()
   const [publishing, setPublishing] = useState(false)
@@ -108,21 +112,16 @@ const PublishStudyMenuItem = ({ study, onClosed }: Props) => {
     return result
   }
 
-  // The PDF is made on the phone from the study itself (notePdf.ts), then handed to the share sheet.
+  // Print the rich study locally, then hand its PDF to the existing share sheet.
   const exportPDF = async () => {
     try {
       setPDFStatus('Pending')
-      const { studyPdf, pdfName } = await import('~features/notesExport/notePdf')
-      const base64 = await studyPdf({
-        title: study.title,
-        author: study.user?.displayName,
-        modified: study.modified_at,
-        markdown: studyMarkdown(study.content),
-        link: study.published ? url : '',
-      })
+      const { pdfName } = await import('~features/notesExport/notePdf')
+      const { studyScreenPdfHtml } = await import('~features/notesExport/studyScreenPdfHtml')
+      const html = studyScreenPdfHtml(study, theme, colorScheme === 'dark', fontFamily)
       setPDFStatus('Resolved')
       onClosed()
-      await sharePdf(base64, pdfName({ title: study.title }), study.title)
+      await printScreenPdf(html, pdfName({ title: study.title }), study.title)
     } catch (e) {
       console.log('[Studies] Error generating PDF:', e)
       setPDFStatus('Rejected')

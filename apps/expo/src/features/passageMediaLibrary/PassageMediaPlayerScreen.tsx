@@ -154,7 +154,15 @@ const PassageMediaPlayerScreen = () => {
         <Header
           background
           title={item?.title ?? t('passageMediaLibrary.playerTitle')}
-          rightComponent={notesPath ? <ClassNotesPdfButton notesPath={notesPath} /> : undefined}
+          rightComponent={
+            notesPath ? (
+              <ClassNotesPdfButton
+                notesPath={notesPath}
+                blocks={notes.data?.blocks}
+                videoId={videoId}
+              />
+            ) : undefined
+          }
         />
         {item ? (
           <>

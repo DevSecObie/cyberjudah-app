@@ -2627,6 +2627,7 @@ __metadata:
     expo-keep-awake: "npm:~58.0.3"
     expo-linear-gradient: "npm:~58.0.3"
     expo-linking: "npm:~58.0.13"
+    expo-print: "npm:~58.0.6"
     expo-router: "npm:~58.0.23"
     expo-sharing: "npm:~58.0.19"
     expo-speech: "npm:~58.0.3"
@@ -2664,6 +2665,7 @@ __metadata:
     pressto: "npm:^0.6.0"
     prettier: "npm:^3.8.1"
     promise: "npm:^8.3.0"
+    quill-delta-to-html: "npm:^0.12.1"
     radix-ui: "npm:^1.6.7"
     react: "npm:19.3.0"
     react-aria: "npm:^3.51.0"
@@ -20570,6 +20572,16 @@ __metadata:
     "@expo/modules-macros-win32-x64":
       optional: true
   checksum: 10c0/4dce9d134f9a3bcb2d409b2c9dc03c69189fcf0f4a0ff6c5da640e6e8d74f3ac6e672ac4240c1a6357494d071aa577e62b0744fb2f0b5928c44708d4c6ac5df4
+  languageName: node
+  linkType: hard
+
+"expo-print@npm:~58.0.6":
+  version: 58.0.8
+  resolution: "expo-print@npm:58.0.8"
+  peerDependencies:
+    expo: "*"
+    react-native: "*"
+  checksum: 10c0/ee7b78cab64f1a13dac34be5878bd2150dc35e34c45c1e8651cbd29751353bf795715cb4481ed19758aff33e6b77a654e33780a80d9a767ec29dc2e56208444d
   languageName: node
   linkType: hard
 

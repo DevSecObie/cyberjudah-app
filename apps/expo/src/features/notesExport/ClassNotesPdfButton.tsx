@@ -4,13 +4,27 @@ import { useTranslation } from 'react-i18next'
 import { ActivityIndicator } from 'react-native'
 import Link from '~common/Link'
 import { FeatherIcon } from '~common/ui/Icon'
-import { loadPublishedNote } from '~features/passageMediaLibrary/cyberJudahClasses'
+import {
+  type NoteBlock,
+  classNotesToBlocks,
+  loadPublishedNote,
+} from '~features/passageMediaLibrary/cyberJudahClasses'
 import { toast } from '~helpers/toast'
-import { sharePdf } from './sharePdf'
+import { useTheme } from '~themes/ThemeProvider'
+import { printScreenPdf } from './printScreenPdf'
 
 /** The header's "Save as PDF" for a class's notes, like the Telegram app's export. */
-export default function ClassNotesPdfButton({ notesPath }: { notesPath: string }) {
+export default function ClassNotesPdfButton({
+  notesPath,
+  blocks,
+  videoId = '',
+}: {
+  notesPath: string
+  blocks?: NoteBlock[]
+  videoId?: string
+}) {
   const { t } = useTranslation()
+  const theme = useTheme()
   const [busy, setBusy] = useState(false)
 
   const exportPdf = async () => {
@@ -19,9 +33,14 @@ export default function ClassNotesPdfButton({ notesPath }: { notesPath: string }
     try {
       const note = await loadPublishedNote(notesPath)
       // Loaded on tap: the PDF library is large and only this action needs it.
-      const { classNotePdf, pdfName } = await import('./notePdf')
-      const base64 = await classNotePdf({ ...note, url: note.url ?? notesPath })
-      await sharePdf(base64, pdfName(note), t('notesExport.savePdf'))
+      const { pdfName } = await import('./notePdf')
+      const { classScreenPdfHtml } = await import('./screenPdfHtml')
+      const html = classScreenPdfHtml(
+        note,
+        blocks ?? classNotesToBlocks(note.body ?? '', videoId),
+        theme
+      )
+      await printScreenPdf(html, pdfName(note), t('notesExport.savePdf'))
     } catch (e) {
       toast.error(t('notesExport.pdfError'))
       console.log('[NotesExport] Class notes PDF failed:', e)
