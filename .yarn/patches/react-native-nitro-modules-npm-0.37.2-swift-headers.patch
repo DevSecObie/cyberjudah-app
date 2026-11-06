@@ -1,0 +1,41 @@
+diff --git a/cpp/views/ReactNativeCore.hpp b/cpp/views/ReactNativeCore.hpp
+--- a/cpp/views/ReactNativeCore.hpp
++++ b/cpp/views/ReactNativeCore.hpp
+@@ -1,11 +1,3 @@
+ #pragma once
+-
+-// React Native 0.89+ (RN_STRICT_API) rejects direct includes of headers that have
+-// an umbrella, and makes <cxxreact/ReactNativeVersion.h> private.
+-#if __has_include(<React/Utils.h>)
+-#include <React/Utils.h>
+-#else
+-#include <cxxreact/ReactNativeVersion.h>
+-#endif
+ 
+ #if __has_include(<React/RendererCore.h>)
+diff --git a/cpp/views/RawPropsCompat.cpp b/cpp/views/RawPropsCompat.cpp
+--- a/cpp/views/RawPropsCompat.cpp
++++ b/cpp/views/RawPropsCompat.cpp
+@@ -16,4 +16,13 @@
+ 
+ #include "ReactNativeCore.hpp"
++
++// Keep version detection in the implementation so Swift never imports the cxxreact umbrella.
++// React Native 0.89+ (RN_STRICT_API) rejects direct includes of headers that have
++// an umbrella, and makes <cxxreact/ReactNativeVersion.h> private.
++#if __has_include(<React/Utils.h>)
++#include <React/Utils.h>
++#else
++#include <cxxreact/ReactNativeVersion.h>
++#endif
+ 
+ #if defined(ANDROID) && REACT_NATIVE_VERSION_MAJOR == 0 && REACT_NATIVE_VERSION_MINOR >= 84 && REACT_NATIVE_VERSION_MINOR < 87
+diff --git a/NitroModules.podspec b/NitroModules.podspec
+--- a/NitroModules.podspec
++++ b/NitroModules.podspec
+@@ -54,4 +54,5 @@
+     "cpp/views/CachedProp.hpp",
+     "cpp/views/RawPropsCompat.hpp",
++    "cpp/views/ReactNativeCore.hpp",
+     "cpp/views/ReactProp.hpp",
+     "cpp/views/ViewComponentDescriptor.hpp",

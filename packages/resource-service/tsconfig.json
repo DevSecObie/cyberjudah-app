@@ -18,6 +18,7 @@
   "exclude": [
     "node_modules",
     "src/runtime/worker.ts",
+    "src/runtime/cyberjudahNaveWorker.ts",
     "src/runtime/__tests__/worker.node-test.ts",
     "worker-configuration.d.ts"
   ]

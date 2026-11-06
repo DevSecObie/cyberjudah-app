@@ -1,3 +1,4 @@
+import { useClassLibraryQuery } from '~features/passageMediaLibrary/useClassLibraryQuery'
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { Image } from 'expo-image'
@@ -6,13 +7,8 @@ import { useTranslation } from 'react-i18next'
 import Box, { TouchableBox } from '~common/ui/Box'
 import { FeatherIcon } from '~common/ui/Icon'
 import Text from '~common/ui/Text'
-import { useQuery } from '@tanstack/react-query'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
-import {
-  loadClassLibrary,
-  readCachedClassLibrary,
-  featuredSabbathClass,
-} from '~features/passageMediaLibrary/cyberJudahClasses'
+import { featuredSabbathClass } from '~features/passageMediaLibrary/cyberJudahClasses'
 import LiveClassBanner from '~features/passageMediaLibrary/LiveClassBanner'
 /** How far the lion rises above the card, inside the space above it. */
 const COURSES_ART_RISE = 18
@@ -24,16 +20,7 @@ const PassageMediaLibraryWidget = () => {
   const pushRoute = usePushRouteOnce()
   const cyberJudah = usesCyberJudahEditorial()
   // CyberJudah's card shows the latest class, as in the Telegram app (same list as the library).
-  const classLibrary = useQuery({
-    queryKey: ['cyberjudah-class-library'],
-    queryFn: () => loadClassLibrary(),
-    initialData: () => readCachedClassLibrary() ?? undefined,
-    initialDataUpdatedAt: 0,
-    enabled: cyberJudah,
-    staleTime: 5 * 60 * 1000,
-    networkMode: 'always',
-    retry: 1,
-  })
+  const classLibrary = useClassLibraryQuery(cyberJudah)
   const latest = cyberJudah ? featuredSabbathClass(classLibrary.data ?? []) : undefined
 
   return (

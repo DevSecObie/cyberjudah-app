@@ -20,6 +20,7 @@ jobs:
       SENTRY_DISABLE_AUTO_UPLOAD: 'true'
       NODE_OPTIONS: --max-old-space-size=6144
       CYBERJUDAH_APPLE_TEAM_ID: M8DUMWBXLH
+      CYBERJUDAH_IOS_BUILD_NUMBER: '312'
     steps:
       - uses: actions/checkout@v4
       - run: python3 apps/expo/scripts/test-ios-signing.py

@@ -1,4 +1,3 @@
-import { useQuery } from '@tanstack/react-query'
 import { Image } from 'expo-image'
 import { atom, useAtom } from 'jotai'
 import { forwardRef, useId, useImperativeHandle, useRef, useState } from 'react'
@@ -9,7 +8,7 @@ import Text from '~common/ui/Text'
 import { formatPassageMediaDuration, getPassageMediaEmbedUrl } from '~features/bible/passageMedia'
 import ClassVideoFrame, { type ClassVideoFrameHandle } from './ClassVideoFrame'
 import { rememberClassPosition } from './classVideoPosition'
-import { loadClassLibrary, readCachedClassLibrary } from './cyberJudahClasses'
+import { useClassLibraryQuery } from './useClassLibraryQuery'
 import PipGlass from './PipGlass'
 
 export { secondsOfClock } from './classVideoPosition'
@@ -17,17 +16,7 @@ export { secondsOfClock } from './classVideoPosition'
 /** The one class playing inside a page; starting another puts this one back to its picture. */
 const playingEmbedAtom = atom<string | null>(null)
 
-/** The published classes, read once and shared, to find a class's video from its notes page. */
-export const useClassLibrary = () =>
-  useQuery({
-    queryKey: ['cyberjudah-class-library'],
-    queryFn: () => loadClassLibrary(),
-    initialData: () => readCachedClassLibrary() ?? undefined,
-    initialDataUpdatedAt: 0,
-    staleTime: 5 * 60 * 1000,
-    networkMode: 'always',
-    retry: 1,
-  }).data
+export const useClassLibrary = () => useClassLibraryQuery(true).data
 
 /** The YouTube video of a class, from its notes page ("/classes/…"), when the class has one. */
 export const useClassVideoOf = (notesPath?: string): string | undefined => {

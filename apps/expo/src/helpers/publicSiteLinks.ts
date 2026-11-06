@@ -1,10 +1,13 @@
+import { buildPublicStrongPath } from '~features/lexique/publicStrongRoutes'
 import { ONLINE_BIBLE_VERSION_IDS } from '~helpers/ordinaryBibleVersions'
 import { getSupportedOsisBookId } from '~helpers/osisReference'
 import { createStrongIdentity } from '~helpers/strongIdentities'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 
 /** The public site, where a shared resource can be read without the application (ADR-0068). */
-export const PUBLIC_SITE_URL = 'https://bible-strong.app'
+export const PUBLIC_SITE_URL = usesCyberJudahEditorial()
+  ? (process.env.EXPO_PUBLIC_CYBERJUDAH_WEB_URL || 'https://web.cyberjudah.io').replace(/\/+$/, '')
+  : 'https://bible-strong.app'
 
 const onlineVersions = new Set<string>(ONLINE_BIBLE_VERSION_IDS)
 
@@ -14,8 +17,6 @@ const onlineVersions = new Set<string>(ONLINE_BIBLE_VERSION_IDS)
  * reader does not find.
  */
 export const getPublicSiteUrl = (buildPath: () => string): string | undefined => {
-  // The public site is Bible Strong's; CyberJudah shares text without a bible-strong.app link.
-  if (usesCyberJudahEditorial()) return undefined
   try {
     return `${PUBLIC_SITE_URL}${buildPath()}`
   } catch {
@@ -66,5 +67,6 @@ export const getStrongShareUrl = (
 ): string | undefined =>
   getPublicSiteUrl(() => {
     const identity = createStrongIdentity(code, lexicalLanguage)
+    if (usesCyberJudahEditorial()) return buildPublicStrongPath(identity.code)
     return `/strong/${language}/${identity.code[0]?.toLowerCase()}${identity.code.slice(1)}`
   })

@@ -1,0 +1,23 @@
+{
+  "name": "cyberjudah-resources-staging",
+  "main": "src/runtime/cyberjudahNaveWorker.ts",
+  "compatibility_date": "2026-08-19",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [],
+  "minify": true,
+  "vars": {
+    "FIREBASE_APP_CHECK_PROJECT_NUMBER": "979802439968",
+    "FIREBASE_APP_CHECK_ALLOWED_APP_IDS": "1:979802439968:ios:0a37ed885a52d5b7959745",
+    "RESOURCE_WEB_ORIGINS": "https://cyberjudah-telegram-staging.oisrae1.workers.dev",
+    "RESOURCE_ENVIRONMENT": "staging",
+    "SEARCH_ANALYTICS_ENABLED": "false"
+  },
+  "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "499a0fd02f124efbaa325de66fbb129b" }],
+  "ratelimits": [
+    { "name": "READING_RATE_LIMITER", "namespace_id": "9798024399681", "simple": { "limit": 20000, "period": 60 } },
+    { "name": "ORIGIN_READING_RATE_LIMITER", "namespace_id": "9798024399687", "simple": { "limit": 1000, "period": 60 } },
+    { "name": "SEARCH_RATE_LIMITER", "namespace_id": "9798024399682", "simple": { "limit": 300, "period": 60 } }
+  ]
+}
