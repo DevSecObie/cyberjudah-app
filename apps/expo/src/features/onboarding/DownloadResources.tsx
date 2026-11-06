@@ -323,7 +323,9 @@ const DownloadSuccessContent = ({
             { fontFamily: 'Literata Book' },
           ]}
         >
-          Bible Strong
+          {process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
+            ? 'CyberJudah'
+            : 'Bible Strong'}
         </Text>
       </VStack>
     )
