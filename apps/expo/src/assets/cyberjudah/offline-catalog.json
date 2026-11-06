@@ -52,43 +52,43 @@
       "id": "database:TIMELINE:en",
       "file": "cyberjudah-timeline-en.json.zip",
       "entry": "bible-timeline-events.json",
-      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/cyberjudah-timeline-en.json.zip?sha256=00cd2868690c86c4cf1bbcbe7d1c5d51b8a8cd8512e2227d66108200f4c9eed7",
+      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/cyberjudah-timeline-en.json.zip?sha256=29b3ef114534d9f68daccbb3899fa6478130a0c859e1ca9711935d8f4335aac0",
       "entries": {
         "canonical": {
           "entry": "bible-timeline-events.json",
-          "sha256": "2cd234ef2f200f11d3271d338d11e03b743f2e274106d480f6cbd9f499579913",
+          "sha256": "2c0c0f726082b8b98ff3d2d6c9509f89cfc3890eceaf118e04abfcb005fdfcd8",
           "bytes": 1604162
         }
       },
-      "archiveSha256": "00cd2868690c86c4cf1bbcbe7d1c5d51b8a8cd8512e2227d66108200f4c9eed7",
+      "archiveSha256": "29b3ef114534d9f68daccbb3899fa6478130a0c859e1ca9711935d8f4335aac0",
       "archiveBytes": 512404,
-      "contentSha256": "2cd234ef2f200f11d3271d338d11e03b743f2e274106d480f6cbd9f499579913",
+      "contentSha256": "2c0c0f726082b8b98ff3d2d6c9509f89cfc3890eceaf118e04abfcb005fdfcd8",
       "contentBytes": 1604162,
       "installedBytes": 1604162,
       "peakInstallationBytes": 3720728,
       "strategy": "archive-extract",
-      "resourceRevision": "cj-timeline-c0fa41b927b1fe8acf6ff4174f61efcf52cece3da9cd0bed1edb286b69622722"
+      "resourceRevision": "cj-timeline-42b88f7ef90853821ad08f8bf4b04d11b2c86ca6289d3c6b928a861e1a1d8284"
     },
     "database:TIMELINE:fr": {
       "id": "database:TIMELINE:fr",
       "file": "cyberjudah-timeline-en.json.zip",
       "entry": "bible-timeline-events.json",
-      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/cyberjudah-timeline-en.json.zip?sha256=00cd2868690c86c4cf1bbcbe7d1c5d51b8a8cd8512e2227d66108200f4c9eed7",
+      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/cyberjudah-timeline-en.json.zip?sha256=29b3ef114534d9f68daccbb3899fa6478130a0c859e1ca9711935d8f4335aac0",
       "entries": {
         "canonical": {
           "entry": "bible-timeline-events.json",
-          "sha256": "2cd234ef2f200f11d3271d338d11e03b743f2e274106d480f6cbd9f499579913",
+          "sha256": "2c0c0f726082b8b98ff3d2d6c9509f89cfc3890eceaf118e04abfcb005fdfcd8",
           "bytes": 1604162
         }
       },
-      "archiveSha256": "00cd2868690c86c4cf1bbcbe7d1c5d51b8a8cd8512e2227d66108200f4c9eed7",
+      "archiveSha256": "29b3ef114534d9f68daccbb3899fa6478130a0c859e1ca9711935d8f4335aac0",
       "archiveBytes": 512404,
-      "contentSha256": "2cd234ef2f200f11d3271d338d11e03b743f2e274106d480f6cbd9f499579913",
+      "contentSha256": "2c0c0f726082b8b98ff3d2d6c9509f89cfc3890eceaf118e04abfcb005fdfcd8",
       "contentBytes": 1604162,
       "installedBytes": 1604162,
       "peakInstallationBytes": 3720728,
       "strategy": "archive-extract",
-      "resourceRevision": "cj-timeline-c0fa41b927b1fe8acf6ff4174f61efcf52cece3da9cd0bed1edb286b69622722"
+      "resourceRevision": "cj-timeline-42b88f7ef90853821ad08f8bf4b04d11b2c86ca6289d3c6b928a861e1a1d8284"
     },
     "strong-lexicon:entities": {
       "id": "strong-lexicon:entities",

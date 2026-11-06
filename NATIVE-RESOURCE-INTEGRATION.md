@@ -4,7 +4,7 @@ This branch retains the existing Bible Strong application and resource clients. 
 
 - Interlinear HTTP access accepts the distinct `CYBERJUDAH` dataset for this profile and rejects mismatched dataset/language/text identity. The server projects the existing WLC/Open Scriptures and Scrivener/Robinson-based BHG archives without fabricating alignment. No STEP dataset is restored.
 - The existing PR79 Nave implementation is integrated: original English/French archives, catalog entries, optional separate HTTP base, and Resource service entrypoint/manifests. Production candidate settings select `https://cyberjudah.io/bs/reference`; preview selects the existing staging `/bs`. Existing CyberJudah teaching links retain `/bs` and their own publication. No active release branch, deployed environment or workflow is changed.
-- The timeline archive, catalog and publication metadata agree with the server publication at revision `cj-timeline-c0fa41b927b1fe8acf6ff4174f61efcf52cece3da9cd0bed1edb286b69622722`. On 6 November, Abraham's birth moved from 1950 BC to 1946 BC, restoring the stated 175-year lifespan and agreeing with the existing Ishmael, Sarah and Haran-departure anchors. The other event geometry/identities are unchanged. Isaac's birth and the circumcision dates remain unresolved release blockers; see the server's `docs/TIMELINE-CHRONOLOGY.md`. These inherited BC positions are not absolute dates established by the KJV.
+- The timeline archive, catalog and publication metadata agree with the server publication at revision `cj-timeline-42b88f7ef90853821ad08f8bf4b04d11b2c86ca6289d3c6b928a861e1a1d8284`. On 6 November, Abraham's birth moved from 1950 BC to 1946 BC, restoring the stated 175-year lifespan and agreeing with the existing Ishmael, Sarah and Haran-departure anchors. A subsequent reconciliation places circumcision at 1847 BC and Isaac's birth at 1846 BC, then propagates the stated ages through Jacob and Joseph. Inherited estimates move with their family cluster; identities are unchanged. See the primary evidence and limits in the server's `docs/TIMELINE-CHRONOLOGY.md`. These inherited BC positions are not absolute dates established by the KJV.
 - 28 custom screens/components now use the shared surface radius scale and readable `text-link` accents. Static card shadows were removed, the floating player uses `floatingShadow`, and the notes sheet uses the correct canvas ground. The splash logo's drawn light effects have a documented illustration exception. No baseline was raised.
 
 Validation: 12 interlinear tests, 52 Nave/search/availability/timeline tests, 50 Resource service Nave/Worker tests, full offline archive/SQLite verification, native/resource-domain/Resource Worker typechecks, changed-file lint/format and surface/resource architecture checks. The server candidate has 106 API tests plus local staging and mock indexing tests. Public production Nave GET smoke passed English/French edition pins, topic/verse lookup, search, cursor continuity, random selection and missing-topic behavior. Staging passed the same public smoke on retry; the earlier timeout is superseded. Browser verification opened guest Genesis, home, Nave search and the Faith topic. It exposed French scripture labels in English Nave on the direct web HTTP path; the existing localization helper now applies there, with 18 focused tests passing.
@@ -33,8 +33,17 @@ events in 21 periods, with 517 readable records. Only the English/French
 TIMELINE catalog entries changed; the other ten entries are identical. Repeating
 the backend build and native import produces byte-for-byte identical artifacts.
 
-The server's strict chronology check still exits 1 (Isaac: 95 versus 100), and
-now gates its normal release workflow and root deploy script. No production
+The server's strict chronology check initially exited 1 (Isaac: 95 versus 100).
+After reconciling the linked family sequence it passes all six checks, with no
+TODOs or skips. It still gates the normal release workflow and root deploy script. No production
 resource was published. A signed iOS/Android build and physical-device acceptance
 are still required; local compilation and unit tests do not establish store
 readiness.
+
+The later chronology reconciliation changes 53 event identities / 69 repeated
+rows beyond Abraham's initial correction. It retains 991 events / 21 periods /
+517 readable records. The native app typecheck, four timeline tests and the complete offline
+verifier passed against the updated bundle. The earlier successful 8 GB Expo
+web export tested the preceding `0ac0ef7d` content; it is not a signed-device or
+latest-content web acceptance result. Absolute BC placement and unstated
+lifespans remain inherited estimates, as documented in the server audit.

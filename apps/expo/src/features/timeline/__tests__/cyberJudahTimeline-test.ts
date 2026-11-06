@@ -35,6 +35,32 @@ it('labels the dated Lamech as Noah’s father in every bundled period', () => {
   }
 })
 
+it('preserves the reconciled ages in every repeated patriarchal chart row', () => {
+  const rows = sections.flatMap(section => section.events)
+  const bySlug = new Map(rows.map(event => [event.slug, event]))
+  const abraham = bySlug.get('abraham')!
+  const isaac = bySlug.get('isaac')!
+  const jacob = bySlug.get('jacob')!
+  const joseph = bySlug.get('joseph')!
+  const circumcision = bySlug.get('abram-becomes-abraham-covenant-of-circumcision')!
+  expect(circumcision.start - abraham.start).toBe(99)
+  expect(isaac.start - abraham.start).toBe(100)
+  expect(jacob.start - isaac.start).toBe(60)
+  expect(bySlug.get('jacob-and-family-come-to-egypt')!.start - jacob.start).toBe(130)
+  expect(bySlug.get('joseph-freed-pharaohs-dream-7-years-of-plenty')!.start - joseph.start).toBe(30)
+  for (const [slug, years] of [
+    ['isaac', 180],
+    ['jacob', 147],
+    ['joseph', 110],
+  ] as const) {
+    const event = bySlug.get(slug)!
+    for (const copy of rows.filter(row => row.slug === slug)) {
+      expect([copy.start, copy.end]).toEqual([event.start, event.end])
+      expect(copy.end - copy.start).toBe(years)
+    }
+  }
+})
+
 it('uses the same published CyberJudah periods on web and devices without reading the upstream content', async () => {
   const originalProfile = process.env.EXPO_PUBLIC_RESOURCE_PROFILE
   process.env.EXPO_PUBLIC_RESOURCE_PROFILE = 'cyberjudah'
