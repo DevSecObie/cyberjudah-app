@@ -554,6 +554,9 @@ const FireAuth = class {
     }
   }
 
+  /** Telegram only opens the web app (FireAuth.web.ts); the phone apps never sign in this way. */
+  loginWithTelegram = async (_initData: string, _apiOrigin: string): Promise<boolean> => false
+
   loginWithCustomToken = (token: string): Promise<boolean> =>
     new Promise(async resolve => {
       if (!__DEV__) {

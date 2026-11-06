@@ -363,6 +363,35 @@ export class WebFireAuth {
     }
   }
 
+  /**
+   * Telegram opened the web app: its launch data, checked by CyberJudah's server against the
+   * bot token, signs the reader into their Telegram account (the one the Telegram app used).
+   */
+  loginWithTelegram = async (initData: string, apiOrigin: string): Promise<boolean> => {
+    const auth = getAuth(firebaseApp)
+    await auth.authStateReady()
+    if (auth.currentUser) return true
+    const attempt = this.beginAccountEntryAttempt('provider-sign-in', 'custom-token')
+    try {
+      const response = await fetch(`${apiOrigin}/api/firebase/token`, {
+        method: 'POST',
+        headers: { authorization: `tma ${initData}` },
+      })
+      const body = (await response.json().catch(() => ({}))) as { token?: unknown }
+      if (!response.ok || typeof body.token !== 'string')
+        throw new Error(`telegram_sign_in_${response.status}`)
+      const credential = await signInWithCustomToken(auth, body.token)
+      attempt.complete({ userId: credential.user.uid })
+      return true
+    } catch (error) {
+      attempt.fail()
+      appLogger.info('sync', 'account_entry.telegram_sign_in_failed', {
+        message: error instanceof Error ? error.message : String(error),
+      })
+      return false
+    }
+  }
+
   logout = async () => {
     this.isLoggingOut = true
     const hadUser = Boolean(this.user)
