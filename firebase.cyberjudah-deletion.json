@@ -1,0 +1,8 @@
+{
+  "functions": [{
+    "source": ".scratch/generated/cyberjudah-deletion",
+    "codebase": "cyberjudah-deletion",
+    "runtime": "nodejs22",
+    "ignore": ["node_modules", ".git", "*.log", "*.local"]
+  }]
+}
