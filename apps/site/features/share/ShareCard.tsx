@@ -77,7 +77,9 @@ const clamped = (lines: number): CSSProperties => ({
 
 // A line of facts may name an original word, which the sans face cannot write.
 const Facts = ({ text }: { text: string }) => (
-  <div style={{ fontFamily: `${SANS}, ${SERIF}`, fontSize: 28, fontWeight: 500, color: COLORS.muted }}>
+  <div
+    style={{ fontFamily: `${SANS}, ${SERIF}`, fontSize: 28, fontWeight: 500, color: COLORS.muted }}
+  >
     {text}
   </div>
 )
@@ -121,7 +123,9 @@ const body = (content: Exclude<ShareCardContent, { kind: 'default' }>) => {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 28 }}>
-          <div style={{ fontFamily: SERIF, fontSize: 132, lineHeight: 1.15 }}>{content.original}</div>
+          <div style={{ fontFamily: SERIF, fontSize: 132, lineHeight: 1.15 }}>
+            {content.original}
+          </div>
           <div style={{ fontSize: 44, fontWeight: 500, color: COLORS.muted }}>
             {content.transliteration}
           </div>
@@ -135,7 +139,9 @@ const body = (content: Exclude<ShareCardContent, { kind: 'default' }>) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <Title
-        size={content.title.length > 14 ? 84 : content.kind === 'title' && content.large ? 160 : 120}
+        size={
+          content.title.length > 14 ? 84 : content.kind === 'title' && content.large ? 160 : 120
+        }
       >
         {content.title}
       </Title>
@@ -179,7 +185,12 @@ const Gallery = ({ pictures }: { pictures: { src: string; caption: string }[] })
             transform: `rotate(${rotate}deg)`,
           }}
         >
-          <img src={picture.src} width={160} height={204} style={{ ...photoFrame, left: 0, top: 0 }} />
+          <img
+            src={picture.src}
+            width={160}
+            height={204}
+            style={{ ...photoFrame, left: 0, top: 0 }}
+          />
           <div
             style={{
               position: 'absolute',
