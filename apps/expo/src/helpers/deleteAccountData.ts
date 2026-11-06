@@ -52,6 +52,7 @@ type DeletableUser = {
 type AccountDeletionSteps = {
   /** Confirms the sign-in where the provider needs it and revokes its tokens (Sign in with Apple). */
   revokeProvider: () => Promise<void>
+  unpublishStudies: () => Promise<void>
   deleteLogin: () => Promise<void>
 }
 
@@ -65,7 +66,7 @@ type AccountDeletionSteps = {
  */
 export async function deleteAccountWithData(
   user: DeletableUser,
-  { revokeProvider, deleteLogin }: AccountDeletionSteps,
+  { revokeProvider, unpublishStudies, deleteLogin }: AccountDeletionSteps,
   now: () => number = Date.now
 ): Promise<void> {
   await revokeProvider()
@@ -75,6 +76,7 @@ export async function deleteAccountWithData(
     throw Object.assign(new Error('Sign in again to delete this account.'), {
       code: 'auth/requires-recent-login',
     })
+  await unpublishStudies()
   await deleteOwnAccountData(user.uid)
   await deleteLogin()
 }

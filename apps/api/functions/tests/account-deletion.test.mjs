@@ -12,7 +12,7 @@ const sourceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '.
 
 // Load the real exported Firebase handlers without initializing credentials or
 // connecting to a project. Only the SDK boundary is replaced.
-function fixture(entries, initialFiles = []) {
+function fixture(entries, initialFiles = [], projectId = 'bible-strong-app') {
   const documents = new Map(entries)
   const files = new Set(initialFiles)
   const fileFailures = new Set()
@@ -20,6 +20,7 @@ function fixture(entries, initialFiles = []) {
   const fileAttempts = []
   const queries = []
   const removals = []
+  const hooks = { beforeDelete: async () => {} }
   const document = documentPath => ({
     path: documentPath,
     id: documentPath.split('/').at(-1),
@@ -27,7 +28,7 @@ function fixture(entries, initialFiles = []) {
       .filter(key => key.startsWith(`${documentPath}/`))
       .map(key => key.slice(0, documentPath.length + 1) + key.slice(documentPath.length + 1).split('/')[0]))]
       .map(collection),
-    delete: async () => { documents.delete(documentPath) },
+    delete: async () => { await hooks.beforeDelete(documentPath, documents); documents.delete(documentPath) },
   })
   const collection = collectionPath => {
     const makeQuery = (filter, maximum = Infinity) => ({
@@ -77,7 +78,7 @@ function fixture(entries, initialFiles = []) {
       },
     }),
   }
-  const admin = { firestore: () => db, storage: () => ({ bucket: () => bucket }) }
+  const admin = { app: () => ({ options: { projectId } }), firestore: () => db, storage: () => ({ bucket: () => bucket }) }
   const wrap = options => handler => Object.assign(handler, { runtimeOptions: options })
   const functions = options => ({
     runWith: next => functions(next),
@@ -104,7 +105,7 @@ function fixture(entries, initialFiles = []) {
     vm.runInNewContext('(function(require,module,exports){' + compiled + '\n})', { console: { log() {}, error() {} } }, { filename })(moduleRequire, module, module.exports)
     return module.exports
   }
-  return { documents, files, fileFailures, documentFailures, fileAttempts, queries, removals, users: load(path.join(sourceRoot, 'users.ts')), studies: () => load(path.join(sourceRoot, 'studies.ts')) }
+  return { hooks, documents, files, fileFailures, documentFailures, fileAttempts, queries, removals, users: load(path.join(sourceRoot, 'users.ts')), studies: () => load(path.join(sourceRoot, 'studies.ts')) }
 }
 
 const imageNames = id => [`images/studies/${id}.jpg`, `images/studies/${id}-whatsapp.jpg`]
@@ -191,4 +192,63 @@ test('standalone study deletion reports storage failures instead of swallowing t
   const f = fixture([], imageNames('own'))
   f.fileFailures.add(imageNames('own')[0])
   await assert.rejects(f.studies().deleteStudy({ id: 'own', data: () => ({ id: 'own' }) }, { params: { studyId: 'own' } }), /storage unavailable/)
+})
+
+
+test('CyberJudah removes both app scopes and status while preserving Telegram and another reader', async () => {
+  const f = fixture([
+    ['users/alice', {}], ['staging_users/alice', {}],
+    ['users-status/alice', {}], ['staging_users-status/alice', {}],
+    ['staging_users/alice/notes/n/revisions/r', {}],
+    ['studies/prod', { user: { id: 'alice' } }],
+    ['staging_studies/stage', { user: { id: 'alice' } }],
+    ['staging_studies/stage/revisions/r', {}],
+    ['users/tg_123', {}], ['users/tg_123/notes/n', {}],
+    ['studies/telegram', { user: { id: 'tg_123' } }],
+    ['staging_users/bob', {}], ['studies/other', { user: { id: 'bob' } }],
+  ], [], 'cyberjudah-app')
+  await f.users.deleteUser({ uid: 'alice' })
+  assert.deepEqual([...f.documents.keys()].sort(), [
+    'staging_users/bob', 'studies/other', 'studies/telegram', 'users/tg_123', 'users/tg_123/notes/n',
+  ])
+})
+
+test('CyberJudah native deletion ignores Telegram Auth identities', async () => {
+  const entries = [['users/tg_123', {}], ['studies/t', { user: { id: 'tg_123' } }]]
+  const f = fixture(entries, imageNames('t'), 'cyberjudah-app')
+  await f.users.deleteUser({ uid: 'tg_123' })
+  assert.deepEqual([...f.documents.entries()], entries)
+  assert.equal(f.fileAttempts.length, 0)
+})
+
+test('staging cleanup cannot delete a production preview with the same study ID', async () => {
+  const f = fixture([
+    ['staging_studies/shared-id', { user: { id: 'alice' } }],
+    ['studies/shared-id', { user: { id: 'bob' } }],
+  ], imageNames('shared-id'), 'cyberjudah-app')
+  await f.users.deleteUser({ uid: 'alice' })
+  assert.ok(f.documents.has('studies/shared-id'))
+  assert.deepEqual([...f.files], imageNames('shared-id'))
+})
+
+
+test('acceptance: late revisions must not survive cleanup', { todo: process.env.CYBERJUDAH_STRICT_ACCEPTANCE !== '1' && 'Upstream traversal does not fence late writes; requires deployed-rule acceptance' }, async () => {
+  const f = fixture([
+    ['users/alice', {}], ['studies/own', { user: { id: 'alice' } }],
+    ['studies/own/revisions/first', {}],
+  ], [], 'cyberjudah-app')
+  f.hooks.beforeDelete = async (path, documents) => {
+    if (path === 'studies/own') documents.set('studies/own/revisions/late', {})
+  }
+  await f.users.deleteUser({ uid: 'alice' })
+  assert.equal(f.documents.size, 0)
+})
+
+test('acceptance: a replacement owner must survive a paused cleanup', { todo: process.env.CYBERJUDAH_STRICT_ACCEPTANCE !== '1' && 'Upstream root deletion is unconditional; owner/version protection remains required' }, async () => {
+  const f = fixture([['studies/own', { user: { id: 'alice' } }]], [], 'cyberjudah-app')
+  f.hooks.beforeDelete = async (path, documents) => {
+    if (path === 'studies/own') documents.set(path, { user: { id: 'bob' } })
+  }
+  await f.users.deleteUser({ uid: 'alice' })
+  assert.equal(f.documents.get('studies/own')?.user.id, 'bob')
 })

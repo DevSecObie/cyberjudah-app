@@ -101,7 +101,7 @@ describe('deleteAccountWithData', () => {
     const revokeProvider = jest.fn(async () => undefined)
     for (const authTime of ['2026-11-01T20:54:59Z', 'not a date'])
       await expect(
-        deleteAccountWithData(user(authTime), { revokeProvider, deleteLogin }, now)
+        deleteAccountWithData(user(authTime), { revokeProvider, unpublishStudies: async () => undefined, deleteLogin }, now)
       ).rejects.toMatchObject({ code: 'auth/requires-recent-login' })
     expect(deleteLogin).not.toHaveBeenCalled()
     expect(mockBatches).toEqual([])
@@ -113,6 +113,7 @@ describe('deleteAccountWithData', () => {
     await deleteAccountWithData(
       reader,
       {
+        unpublishStudies: async () => undefined,
         revokeProvider: async () => {
           order.push(mockStore.has('users/alice') ? 'revoke' : 'revoke after data')
         },
@@ -133,7 +134,7 @@ describe('deleteAccountWithData', () => {
       throw Object.assign(new Error('canceled'), { code: '1001' })
     })
     await expect(
-      deleteAccountWithData(user('2026-11-01T20:58:00Z'), { revokeProvider, deleteLogin }, now)
+      deleteAccountWithData(user('2026-11-01T20:58:00Z'), { revokeProvider, unpublishStudies: async () => undefined, deleteLogin }, now)
     ).rejects.toMatchObject({ code: '1001' })
     expect(deleteLogin).not.toHaveBeenCalled()
     expect(mockBatches).toEqual([])
@@ -145,10 +146,27 @@ describe('deleteAccountWithData', () => {
     await expect(
       deleteAccountWithData(
         user('2026-11-01T20:58:00Z'),
-        { revokeProvider: async () => undefined, deleteLogin },
+        { revokeProvider: async () => undefined, unpublishStudies: async () => undefined, deleteLogin },
         now
       )
     ).rejects.toThrow()
     expect(deleteLogin).not.toHaveBeenCalled()
   })
+})
+
+
+test('publication failure preserves the login and private data', async () => {
+  seed()
+  const deleteLogin = jest.fn(async () => undefined)
+  await expect(deleteAccountWithData(
+    { uid: 'alice', getIdTokenResult: async () => ({ authTime: new Date().toISOString() }) },
+    {
+      revokeProvider: async () => undefined,
+      unpublishStudies: async () => { throw new Error('publication unavailable') },
+      deleteLogin,
+    }
+  )).rejects.toThrow('publication unavailable')
+  expect(deleteLogin).not.toHaveBeenCalled()
+  expect(mockBatches).toEqual([])
+  expect(mockStore.has('users/alice')).toBe(true)
 })
