@@ -18,7 +18,7 @@ import Text from '~common/ui/Text'
 import FireAuth from '~helpers/FireAuth'
 import { MODAL_FOOTER_HEIGHT } from '~helpers/constants'
 import { toast } from '~helpers/toast'
-import { deleteAllPublishedStudies } from '~features/studies/publishedStudies'
+import { deleteNativeWorkerAccountData } from '~features/studies/publishedStudies'
 
 // Sign in with Apple reports a closed sheet as 1001 (ASAuthorizationError.canceled).
 const APPLE_CANCELED_CODES = ['1001', 'ERR_CANCELED']
@@ -54,12 +54,12 @@ const DeleteAccountModal = ({ modalRef }: DeleteAccountModalProps) => {
 
     setIsLoading(true)
     try {
-      // The account's synced data goes with it: CyberJudah's Firebase project runs no deletion
-      // function, and an Apple sign-in is revoked first (App Store guideline 5.1.1(v)).
+      // The deployed Auth trigger cleans private data, following Bible Strong.
+      // CyberJudah's publication stores must succeed before deleting the login.
       await deleteAccountWithData(authUser, {
         revokeProvider: revokeAppleSignInIfLinked,
-        unpublishStudies: deleteAllPublishedStudies,
-        deleteLogin: deleteCurrentAuthUser,
+        unpublishStudies: () => deleteNativeWorkerAccountData(authUser.uid),
+        deleteLogin: () => deleteCurrentAuthUser(authUser.uid),
       })
       handleClose()
       FireAuth.logout()

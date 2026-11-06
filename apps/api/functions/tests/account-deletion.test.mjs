@@ -18,9 +18,10 @@ function fixture(entries, initialFiles = [], projectId = 'bible-strong-app') {
   const fileFailures = new Set()
   const documentFailures = new Set()
   const fileAttempts = []
+  const fileMetadata = new Map()
   const queries = []
   const removals = []
-  const hooks = { beforeDelete: async () => {} }
+  const hooks = { beforeDelete: async () => {}, beforeFileDelete: async () => {} }
   const snapshot = documentPath => {
     const data = documents.get(documentPath)
     return { id: documentPath.split('/').at(-1), ref: document(documentPath), exists: data !== undefined,
@@ -111,9 +112,19 @@ function fixture(entries, initialFiles = [], projectId = 'bible-strong-app') {
     },
   }
   const bucket = {
-    file: name => ({
+    file: (name, fileOptions) => ({
+      getMetadata: async () => {
+        if (!files.has(name)) throw Object.assign(new Error('not found'), { code: 404 })
+        return [fileMetadata.get(name) ?? {}]
+      },
       delete: async options => {
         fileAttempts.push(name)
+        await hooks.beforeFileDelete(name)
+        const conditions = fileOptions?.preconditionOpts
+        if (files.has(name) && conditions && (
+          conditions.ifGenerationMatch !== fileMetadata.get(name)?.generation ||
+          conditions.ifMetagenerationMatch !== fileMetadata.get(name)?.metageneration
+        )) throw Object.assign(new Error('object version changed'), { code: 412 })
         if (fileFailures.has(name)) throw new Error('storage unavailable')
         if (!files.has(name) && !options?.ignoreNotFound) throw Object.assign(new Error('not found'), { code: 404 })
         files.delete(name)
@@ -147,10 +158,43 @@ function fixture(entries, initialFiles = [], projectId = 'bible-strong-app') {
     vm.runInNewContext('(function(require,module,exports){' + compiled + '\n})', { console: { log() {}, error() {} } }, { filename })(moduleRequire, module, module.exports)
     return module.exports
   }
-  return { hooks, documents, files, fileFailures, documentFailures, fileAttempts, queries, removals, users: load(path.join(sourceRoot, 'users.ts')), studies: () => load(path.join(sourceRoot, 'studies.ts')) }
+  return { hooks, documents, files, fileMetadata, fileFailures, documentFailures, fileAttempts, queries, removals, users: load(path.join(sourceRoot, 'users.ts')), studies: () => load(path.join(sourceRoot, 'studies.ts')) }
 }
 
 const imageNames = id => [`images/studies/${id}.jpg`, `images/studies/${id}-whatsapp.jpg`]
+
+test('CyberJudah deletes only previews tagged with the expected owner and study', async () => {
+  const f = fixture([['studies/own', { user: { id: 'alice' } }]], imageNames('own'), 'cyberjudah-app')
+  for (const name of imageNames('own')) f.fileMetadata.set(name, {
+    generation: '123456789012345678', metageneration: '1', metadata: { ownerUid: 'alice', studyId: 'own' },
+  })
+  await f.users.deleteUser({ uid: 'alice' })
+  assert.equal(f.files.size, 0)
+  assert.equal(f.documents.size, 0)
+})
+
+test('untagged or differently owned CyberJudah previews stop cleanup without deletion', async () => {
+  for (const metadata of [{}, { ownerUid: 'bob', studyId: 'own' }, { ownerUid: 'alice', studyId: 'other' }]) {
+    const f = fixture([['studies/own', { user: { id: 'alice' } }]], imageNames('own'), 'cyberjudah-app')
+    for (const name of imageNames('own')) f.fileMetadata.set(name, { generation: '1', metageneration: '1', metadata })
+    await assert.rejects(f.users.deleteUser({ uid: 'alice' }), /ownership is unverified/)
+    assert.equal(f.files.size, 2)
+    assert.ok(f.documents.has('studies/own'))
+  }
+})
+
+test('preview content or ownership changes after inspection fail the exact-version delete', async () => {
+  for (const changed of [{ generation: '2' }, { metageneration: '2' }]) {
+    const f = fixture([['studies/own', { user: { id: 'alice' } }]], imageNames('own'), 'cyberjudah-app')
+    for (const name of imageNames('own')) f.fileMetadata.set(name, {
+      generation: '1', metageneration: '1', metadata: { ownerUid: 'alice', studyId: 'own' },
+    })
+    f.hooks.beforeFileDelete = async name => f.fileMetadata.set(name, { ...f.fileMetadata.get(name), ...changed })
+    await assert.rejects(f.users.deleteUser({ uid: 'alice' }), { code: 412 })
+    assert.equal(f.files.size, 2)
+    assert.ok(f.documents.has('studies/own'))
+  }
+})
 
 test('account deletion removes owned public and private studies, nested data and previews, preserving other accounts', async () => {
   const f = fixture([

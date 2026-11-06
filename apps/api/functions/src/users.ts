@@ -62,7 +62,7 @@ export const deleteUser = functions
           // Files first: if Storage fails, the study remains discoverable on retry.
           // The inherited preview path belongs to production studies. Staging
           // must not delete another owner's production preview with the same ID.
-          if (!scope) await deleteStudyFiles(study.id)
+          if (!scope) await deleteStudyFiles(study.id, user.uid)
           if (cyberJudah) await deleteStudyTree(db, study)
           else await deleteDocumentTree(study)
         }

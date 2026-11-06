@@ -13,9 +13,10 @@ Changes:
   handler perform recursive private-data cleanup. Remove the separate client
   Firestore traversal. This branch must not ship before the trigger is verified.
 
-Validation on Node 22.23.4: 34 focused API/native tests pass with no TODOs,
+Validation on Node 22.23.4: 43 focused API/native tests pass with no TODOs,
 plus four real Firestore emulator tests pass against the repository's CyberJudah
-rules. API SDK typecheck and TSLint pass. The emulator verifies late-revision
+rules. API SDK typecheck and TSLint pass. Full Expo typecheck, targeted ESLint,
+and five deletion Jest tests now pass with installed workspace dependencies. The emulator verifies late-revision
 retry, a client write racing finalization, replacement-owner descendant safety,
 and more than 400 descendants including missing intermediate parents.
 
@@ -29,7 +30,7 @@ introduced. The upstream implementation remains the fallback for other projects.
 Run with the repository dependencies installed:
 
 ```sh
-node --test apps/api/functions/tests/*.test.mjs apps/expo/scripts/test-account-deletion-baseline.mjs
+node --test apps/api/functions/tests/*.test.mjs apps/expo/scripts/test-account-deletion-baseline.mjs apps/expo/scripts/test-publication-account-cleanup.mjs
 firebase emulators:exec --only firestore --project demo-cyberjudah-deletion --config firebase.deletion-test.json "node --test apps/api/functions/tests/emulator/study-cleanup.test.mjs"
 ```
 
@@ -38,18 +39,31 @@ Remaining implementation/verification:
   privileged writes or writes after account deletion. Profile-subtree cleanup
   still uses upstream recursive deletion; stale clients/custom tokens can recreate
   account data under the current rules. Verify the writer and re-enrollment paths.
-- Verify preview ownership before deleting files: the inherited preview path has
-  only the study ID and file deletion currently precedes the guarded traversal.
-  Historical orphan/reused-ID attribution also requires evidence; a current
-  parent alone does not prove historical ownership.
-- Integrate and test both required publication stores and native Telegram unlink.
-  Current existing publication API still addresses one configured Worker.
+- Preview deletion now requires matching custom metadata `ownerUid` and `studyId`,
+  and enforces both GCS generation and metageneration preconditions. Untagged or
+  differently owned objects stop cleanup without being deleted. Existing-object
+  inventory and trusted metadata-writer verification remain required; no metadata
+  was backfilled or ownership inferred from Firestore IDs. Live Storage inspection
+  is pending because the user was actively using Brave.
+- The client now calls both existing publication stores, then native-only unlink
+  on both Workers. It captures the UID, rejects account switches, and blocks Auth
+  deletion if any call fails. Backend companion branch:
+  `codex/baseline-native-unlink-20261106` in cyberjudah-telegram. It must be verified
+  and deployed to both Workers before the client ships. Six Workers/D1 tests and
+  sixteen identity/unlink tests pass; Telegram wallets/chats/publications and other
+  users' links/device grants survive. Both Workers have independent hash keys.
+- Post-deletion profile writes and already-authorized publish/link requests still
+  need a final policy and implementation. The user has been asked whether to allow
+  delayed server cleanup without deletion records, or require immediate cleanup
+  with temporary records. No answer is assumed. Neither delay nor records have
+  been implemented. A delay alone is not proof of safety: custom-token recreation,
+  profile provisioning, and final cleanup of external stores must also be verified.
 - Verify actual staging file usage before declaring file cleanup complete.
 - Deploy and verify the reviewed Auth trigger before shipping the client switch.
 - Add an isolated explicit CyberJudah deployment configuration; existing
   `.firebaserc` remains `bible-strong-app`. Never use the broad package deploy
   command or deploy unrelated functions. Verify runtime/project/bucket first.
-- Expo/Jest suite, native/offline tests, and deployed acceptance remain outstanding.
+- Full Expo test suite, native/offline tests, and deployed acceptance remain outstanding.
   The four study-tree emulator tests supplement the mocked API/native tests.
 - Firebase runtime and API engine now target Node 22, tested locally. Node 20
   was decommissioned October 30, 2026. This does not change the legacy default
@@ -75,6 +89,8 @@ Additional backend source verification at main `3e425df8`:
   approved device-signin rows and already issued custom tokens need consideration.
 - `firestore-admin.ts` privileged deletion resolves both the linked native UID
   and legacy Telegram UID. Native deletion must not reuse that Telegram eraser.
-- Publication bulk deletion remains local to one Worker store; no peer-store
-  cleanup or native-only unlink is integrated in this baseline candidate yet.
+- Publication bulk deletion remains local per Worker; the candidate client now
+  invokes both stores. The companion native unlink deletes only `account_links`
+  and matching approved `device_signins`, and rechecks links before returning
+  freshly minted native tokens. Already-issued credentials remain a release gate.
 The independent staging reference service was not changed.
