@@ -1,3 +1,4 @@
+import FourChaptersBookBrowser from './FourChaptersBookBrowser'
 import { Image } from 'expo-image'
 import {
   useGlobalSearchParams,
@@ -499,6 +500,9 @@ const ScheduledPlanContent = ({ plan, initialReadingSliceId }: Props) => {
           {header}
           {!started && !!plan.description && (
             <Text className="text-default text-[15px] leading-[24px]">{plan.description}</Text>
+          )}
+          {plan.id === 'cyberjudah-four-chapters-a-day' && (
+            <FourChaptersBookBrowser plan={plan} onSelect={setChosenDay} />
           )}
           {wide ? (
             <Box className="flex-row items-start gap-[24px]">

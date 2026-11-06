@@ -134,7 +134,9 @@ const body = (content: Exclude<ShareCardContent, { kind: 'default' }>) => {
   const beside = shareCardHasPictures(content)
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      <Title size={content.title.length > 14 ? 84 : content.large ? 160 : 120}>{content.title}</Title>
+      <Title size={content.title.length > 14 ? 84 : content.kind === 'title' && content.large ? 160 : 120}>
+        {content.title}
+      </Title>
       {content.facts && <Facts text={content.facts} />}
       {content.excerpt && <Excerpt text={content.excerpt} lines={beside ? 3 : 2} />}
     </div>

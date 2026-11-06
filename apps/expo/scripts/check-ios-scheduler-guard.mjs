@@ -15,7 +15,10 @@ const header = readFileSync(join(scheduler, 'Scheduler.h'), 'utf8')
 
 const checks = [
   ['the token is declared', /std::shared_ptr<std::atomic<bool>> delegateInvalidated_/.test(header)],
-  ['teardown invalidates it', /~Scheduler\(\) \{\s*\/\/[^\n]*\n[^\n]*\n\s*\*delegateInvalidated_ = true;/.test(source)],
+  [
+    'teardown invalidates it',
+    /~Scheduler\(\) \{\s*\/\/[^\n]*\n[^\n]*\n\s*\*delegateInvalidated_ = true;/.test(source),
+  ],
   [
     'a new delegate invalidates the old token and takes a fresh one',
     /setDelegate\(SchedulerDelegate\* delegate\) \{[\s\S]*?\*delegateInvalidated_ = true;\s*delegateInvalidated_ = std::make_shared<std::atomic<bool>>\(false\);/.test(

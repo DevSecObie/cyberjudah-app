@@ -36,6 +36,71 @@ const PassageMediaLibraryWidget = () => {
   })
   const latest = cyberJudah ? featuredSabbathClass(classLibrary.data ?? []) : undefined
 
+  if (cyberJudah) {
+    return (
+      <Box className="pt-[20px] px-[20px]">
+        <LiveClassBanner className="mb-[16px]" />
+        <Box className="flex-row gap-[12px] items-stretch">
+          <TouchableBox
+            className="flex-1 min-w-0 rounded-[16px] overflow-hidden bg-surface"
+            accessibilityRole="button"
+            accessibilityLabel={t('passageMediaLibrary.open')}
+            activeOpacity={0.84}
+            onPress={() => pushRoute({ pathname: '/(library)/passage-media' })}
+          >
+            <Image
+              source={
+                latest
+                  ? { uri: latest.thumbnailUrl }
+                  : require('~assets/images/home/courses-videos.webp')
+              }
+              placeholder={latest ? { blurhash: latest.blurHash } : undefined}
+              cachePolicy="memory-disk"
+              contentFit={latest ? 'cover' : 'contain'}
+              accessible={false}
+              style={{ width: '100%', height: 100 }}
+            />
+            <Box className="p-[12px] gap-[6px]">
+              <Text className="text-[15px] leading-[20px] font-bold">
+                {t('passageMediaLibrary.title')}
+              </Text>
+              {!!latest && (
+                <Text className="text-grey text-[12px] leading-[16px]" numberOfLines={2}>
+                  {latest.title}
+                </Text>
+              )}
+              <FeatherIcon color="primary" name="chevron-right" size={20} />
+            </Box>
+          </TouchableBox>
+          <TouchableBox
+            className="flex-1 min-w-0 rounded-[16px] overflow-hidden bg-surface"
+            accessibilityRole="button"
+            accessibilityLabel="Four Chapters a Day"
+            accessibilityHint="Open the daily reading series with classes, chapter notes, and quizzes"
+            activeOpacity={0.84}
+            onPress={() =>
+              pushRoute({ pathname: '/plan', params: { planId: 'cyberjudah-four-chapters-a-day' } })
+            }
+          >
+            <Image
+              source={require('~assets/images/new-tab/bible-reader.webp')}
+              contentFit="contain"
+              accessible={false}
+              style={{ width: '100%', height: 100 }}
+            />
+            <Box className="p-[12px] gap-[6px]">
+              <Text className="text-[15px] leading-[20px] font-bold">Four Chapters a Day</Text>
+              <Text className="text-grey text-[12px] leading-[16px]">
+                Daily readings, classes & quizzes
+              </Text>
+              <FeatherIcon color="primary" name="chevron-right" size={20} />
+            </Box>
+          </TouchableBox>
+        </Box>
+      </Box>
+    )
+  }
+
   return (
     <Box className="overflow-hidden border-continuous bg-light-grey pt-[20px]">
       {cyberJudah && <LiveClassBanner className="mb-[16px]" />}

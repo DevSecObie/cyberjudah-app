@@ -25,8 +25,30 @@ const dictionaries = {
 
 // The online reader's text, as the CyberJudah server writes it (bot/src/bs/strongs.ts).
 const GREEK = {
-  α: 'a', β: 'b', γ: 'g', δ: 'd', ε: 'e', ζ: 'z', η: 'ē', θ: 'th', ι: 'i', κ: 'k', λ: 'l', μ: 'm',
-  ν: 'n', ξ: 'x', ο: 'o', π: 'p', ρ: 'r', σ: 's', ς: 's', τ: 't', υ: 'u', φ: 'ph', χ: 'ch', ψ: 'ps',
+  α: 'a',
+  β: 'b',
+  γ: 'g',
+  δ: 'd',
+  ε: 'e',
+  ζ: 'z',
+  η: 'ē',
+  θ: 'th',
+  ι: 'i',
+  κ: 'k',
+  λ: 'l',
+  μ: 'm',
+  ν: 'n',
+  ξ: 'x',
+  ο: 'o',
+  π: 'p',
+  ρ: 'r',
+  σ: 's',
+  ς: 's',
+  τ: 't',
+  υ: 'u',
+  φ: 'ph',
+  χ: 'ch',
+  ψ: 'ps',
   ω: 'ō',
 }
 const greekTransliteration = lemma =>
@@ -114,7 +136,8 @@ for (const [language, dictionary] of Object.entries(dictionaries)) {
       baseCode,
       code,
       original: lemma,
-      transliteration: data.xlit || (language === 'greek' && lemma ? greekTransliteration(lemma) : ''),
+      transliteration:
+        data.xlit || (language === 'greek' && lemma ? greekTransliteration(lemma) : ''),
       pronunciation: (data.pron ?? '').trim(),
       gloss: strongGloss(code, data),
       meaning: [strongText(data), data.kjv?.trim(), data.source?.trim()]
@@ -164,9 +187,7 @@ CREATE TABLE MorphologyCodeTranslations (
   morphologyCodeId INTEGER NOT NULL, language TEXT NOT NULL, meaning TEXT NOT NULL,
   description TEXT NOT NULL, PRIMARY KEY(morphologyCodeId,language)) WITHOUT ROWID;
 BEGIN;`)
-const entryInsert = db.prepare(
-  "INSERT INTO StepEntries VALUES(?,?,?,'','',?,?,?,'',?,?,'',?)"
-)
+const entryInsert = db.prepare("INSERT INTO StepEntries VALUES(?,?,?,'','',?,?,?,'',?,?,'',?)")
 const identityInsert = db.prepare('INSERT INTO StepEntryIdentities VALUES(?,?)')
 for (const entry of entries) {
   entryInsert.run(
