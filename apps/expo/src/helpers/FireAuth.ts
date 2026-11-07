@@ -173,7 +173,11 @@ const FireAuth = class {
     this.unsubscribeAuth?.()
     this.unsubscribeAuth = onAuthStateChanged(authInstance, async user => {
       const revision = ++this.authRevision
-      if (!user) void identifyAnalyticsUser(null)
+      if (!user) {
+        void identifyAnalyticsUser(null)
+        // Later crashes must not be filed under the account that just signed out.
+        Sentry.getCurrentScope().setUser(null)
+      }
       if (user && user.isAnonymous) {
         console.log('[Auth] Deprecated, user exists and is anonymous', user.uid)
         return
@@ -254,9 +258,9 @@ const FireAuth = class {
           this.previousEmailVerified = emailVerified
 
           void identifyAnalyticsUser(profile.id)
-          // Keep enough identity to correlate a support report without attaching the
-          // complete Firebase profile (display name, photo URL and account metadata).
-          Sentry.getCurrentScope().setUser({ id: profile.id, email: profile.email })
+          // Only the account id, to match a support report with its crashes. No email: native
+          // crash reports are sent by the native SDK and skip the JS scrubbing in sentryPrivacy.
+          Sentry.getCurrentScope().setUser({ id: profile.id })
           return
         }
 
