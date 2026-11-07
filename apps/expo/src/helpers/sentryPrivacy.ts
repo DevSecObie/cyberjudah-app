@@ -8,28 +8,81 @@ import { redactDiagnosticText, sanitizeDiagnosticPayload } from './agentObservab
 // password in a URL, no console output, no element labels, no device name, and emails, bearer
 // tokens and JWTs redacted from every free-text field. GlitchTip scrubs again on arrival and
 // stores no IP address (ask-cyberjudah-monitoring: ingest-proxy and GLITCHTIP_PII_SCRUB_DEFAULT).
-// Hard native crashes are sent by the native SDK and skip these hooks: RootLayout.native.tsx
-// turns off the native breadcrumbs, and FireAuth sets nothing but the account id.
+// Hard native crashes are sent by the native SDK and skip these hooks: FireAuth sets nothing but
+// the account id, and iOS records no automatic breadcrumbs (RootLayout.native.tsx). Android keeps
+// its native lifecycle, system and connectivity breadcrumbs, which carry no reader data.
 
 type EventHint = Parameters<NonNullable<ReactNativeOptions['beforeSend']>>[1]
 type EventHook = (event: ErrorEvent, hint: EventHint) => ErrorEvent | null
 
 const MAX_TEXT_LENGTH = 8_000
 const MAX_DEPTH = 6
-// `scheme://user:password@host`: the credentials go, the host stays.
-const URL_CREDENTIALS = /(\b[a-z][a-z0-9+.-]*:\/\/)[^\s/?#@"'<>]+@/gi
-// Anything with a `/` (`https://host/path`, `host/path`, `api/search`, `/notes`) followed by
-// `?query` or `#hash`: keep what comes before. Not a regex the RN URL polyfill gap can break.
-const URL_QUERY = /([^\s?#"'<>()[\]{}]*\/[^\s?#"'<>()[\]{}]*)[?#][^\s"'<>()[\]{}]*/g
-// Web click and input breadcrumbs describe the element as a CSS selector whose attributes carry
-// aria-label (React Native Web's accessibilityLabel), title or alt text.
-const SELECTOR_ATTRIBUTES = /\[[^\]]*\]/g
+// A stack location left on a URL whose query is dropped: `app.js?v=1:10:5)` keeps `:10:5)`.
+const STACK_LOCATION = /:\d+(?::\d+)?\)?$/
 
-export const redactText = (value: string, maxLength = MAX_TEXT_LENGTH) =>
-  redactDiagnosticText(
-    value.replace(URL_CREDENTIALS, '$1[REDACTED]@').replace(URL_QUERY, '$1'),
-    maxLength
-  )
+// Text is scanned token by token (split on whitespace) with indexOf, never with a regex that can
+// backtrack: this runs on the JS thread while the app reports a crash.
+const redactToken = (token: string) => {
+  let result = token
+  // `scheme://user:password@host`: everything before the last `@` of the address goes.
+  const schemeEnd = result.indexOf('://')
+  if (schemeEnd > 0) {
+    const authorityStart = schemeEnd + 3
+    const queryStart = firstQueryIndex(result)
+    const at = result.lastIndexOf('@', queryStart === -1 ? result.length : queryStart)
+    if (at > authorityStart && result.slice(authorityStart, at).includes(':')) {
+      result = `${result.slice(0, authorityStart)}[REDACTED]${result.slice(at)}`
+    }
+  }
+  // Anything with a `/` before `?` or `#` (`https://host/path`, `host/path`, `/notes`) loses the
+  // rest of the token: the query can hold search text, tokens or ids.
+  const queryStart = firstQueryIndex(result)
+  if (
+    queryStart > 0 &&
+    queryStart < result.length - 1 &&
+    result.lastIndexOf('/', queryStart) !== -1
+  ) {
+    const location = result.slice(queryStart).match(STACK_LOCATION)?.[0] ?? ''
+    result = result.slice(0, queryStart) + location
+  }
+  return result
+}
+
+const firstQueryIndex = (token: string) => {
+  const question = token.indexOf('?')
+  const hash = token.indexOf('#')
+  if (question === -1) return hash
+  if (hash === -1) return question
+  return Math.min(question, hash)
+}
+
+export const redactText = (value: string, maxLength = MAX_TEXT_LENGTH) => {
+  // Cut first, so the work is bounded whatever the size of what was thrown.
+  const text = value.length > maxLength ? `${value.slice(0, maxLength)}…` : value
+  return redactDiagnosticText(text.split(/(\s+)/).map(redactToken).join(''), maxLength + 1)
+}
+
+// Web click and input breadcrumbs describe the element as a CSS selector whose `[...]`
+// attributes carry aria-label (React Native Web's accessibilityLabel), title or alt text. Every
+// attribute goes, quotes respected, and an unterminated one runs to the end.
+export const stripSelectorAttributes = (selector: string) => {
+  let result = ''
+  let inAttribute = false
+  let quote = ''
+  for (const char of selector) {
+    if (!inAttribute) {
+      if (char === '[') inAttribute = true
+      else result += char
+    } else if (quote) {
+      if (char === quote) quote = ''
+    } else if (char === '"' || char === "'") {
+      quote = char
+    } else if (char === ']') {
+      inAttribute = false
+    }
+  }
+  return result
+}
 
 /** Redacts every string inside a value, at any depth. */
 const redactDeep = (value: unknown, depth = 0): unknown => {
@@ -71,8 +124,7 @@ export const scrubSentryBreadcrumb = (breadcrumb: Breadcrumb): Breadcrumb | null
 
   if (breadcrumb.category?.startsWith('ui.')) {
     // `div.css-1x > div[aria-label="My prayer list"]` keeps its tags and classes only.
-    if (scrubbed.message)
-      scrubbed.message = redactText(scrubbed.message.replace(SELECTOR_ATTRIBUTES, ''))
+    if (scrubbed.message) scrubbed.message = redactText(stripSelectorAttributes(scrubbed.message))
     delete scrubbed.data
     return scrubbed
   }

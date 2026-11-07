@@ -104,8 +104,9 @@ const initSentry = () => {
     maxBreadcrumbs: 100,
     ignoreErrors: ignoreSentryErrors,
     // Readers' data stays out of crash reports (helpers/sentryPrivacy.ts). Hard native crashes
-    // skip those hooks, so the native SDK records no breadcrumbs of its own: iOS would keep every
-    // request URL (query string included) and the labels of tapped views.
+    // skip those hooks, so iOS records no breadcrumbs of its own: it would keep every request URL
+    // (query string included) and the labels of tapped views. Both options are iOS-only; Android's
+    // native breadcrumbs (lifecycle, system, connectivity) carry no reader data.
     beforeSend: withPrivacy(filterSentryEvent),
     beforeBreadcrumb: scrubSentryBreadcrumb,
     enableNetworkBreadcrumbs: false,

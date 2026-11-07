@@ -90,7 +90,8 @@ const RootLayout = () => {
     Sentry.init({
       dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
       enabled: !__DEV__,
-      environment: 'web',
+      // Which web deployment (production or preview) the error came from.
+      environment: `web:${window.location.hostname}`,
       sampleRate: 0.5,
       sendDefaultPii: false,
       // Readers' data stays out of crash reports (helpers/sentryPrivacy.ts).

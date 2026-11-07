@@ -1,6 +1,12 @@
 import type { Breadcrumb, ErrorEvent } from '@sentry/react-native'
 
-import { redactText, scrubSentryBreadcrumb, scrubSentryEvent, withPrivacy } from '../sentryPrivacy'
+import {
+  redactText,
+  scrubSentryBreadcrumb,
+  scrubSentryEvent,
+  stripSelectorAttributes,
+  withPrivacy,
+} from '../sentryPrivacy'
 
 jest.mock('@sentry/react-native', () => ({ addBreadcrumb: jest.fn(), withScope: jest.fn() }))
 
@@ -157,9 +163,8 @@ describe('review cases', () => {
     )
     expect(redactText('GET api/search?q=secret')).toBe('GET api/search')
     expect(redactText('path:/notes?id=42')).toBe('path:/notes')
-    expect(redactText('load(https://x/a?b=1),retry=3 failed')).toBe(
-      'load(https://x/a),retry=3 failed'
-    )
+    // Privacy over detail: text glued to a query goes with it.
+    expect(redactText('load(https://x/a?b=1),retry=3 failed')).toBe('load(https://x/a failed')
   })
 
   it('removes passwords from URLs', () => {
@@ -221,5 +226,45 @@ describe('review cases', () => {
     )
     expect(scrubbed.contexts?.react?.componentStack).toBe(componentStack)
     expect(scrubbed.contexts?.diagnostic).toEqual({ stateName: 'ready' })
+  })
+})
+
+describe('second review cases', () => {
+  it('drops the whole query, whatever brackets, quotes or parens it holds', () => {
+    for (const url of [
+      'https://x/a?ids=[1,2]&token=abc',
+      'https://x/a?q=hello(world)&token=abc',
+      'https://x/a?f={"a":1}&token=abc',
+      "https://x/a?q=it's&token=abc",
+      'https://x/wiki/Foo_(bar)?token=abc',
+    ]) {
+      expect(redactText(`GET ${url} failed`)).not.toMatch(/token|world|hello|it's|ids/)
+    }
+  })
+
+  it('removes the whole password, even with @ or / in it', () => {
+    expect(redactText('https://u:p@ss@host/x')).toBe('https://[REDACTED]@host/x')
+    expect(redactText('https://admin:pa/ss@localhost/db')).toBe('https://[REDACTED]@localhost/db')
+    expect(redactText('https://x/users/@me')).toBe('https://x/users/@me')
+  })
+
+  it('leaves ordinary text and keeps stack locations', () => {
+    expect(redactText('Is it read/write? Why? #1')).toBe('Is it read/write? Why? #1')
+    expect(redactText('at foo (http://x/a.js?v=1:10:5)')).toBe('at foo (http://x/a.js:10:5)')
+  })
+
+  it('strips selector attributes with ] or quotes inside, and unterminated ones', () => {
+    expect(
+      stripSelectorAttributes('div > div[aria-label="Note [1] on Psalm 23 my secret"].x')
+    ).toBe('div > div.x')
+    expect(stripSelectorAttributes('a[title="open')).toBe('a')
+  })
+
+  it('stays fast on huge strings with slashes and no query', () => {
+    const blob = 'data:image/png;base64,' + 'ab/cd+ef/'.repeat(20_000)
+    const started = Date.now()
+    redactText(blob)
+    redactText('a.b-c.'.repeat(20_000))
+    expect(Date.now() - started).toBeLessThan(250)
   })
 })
