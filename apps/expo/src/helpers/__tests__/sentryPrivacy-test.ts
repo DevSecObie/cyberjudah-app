@@ -445,3 +445,16 @@ describe('final review cases', () => {
     expect(JSON.stringify(scrubbed)).not.toMatch(/reader@/)
   })
 })
+
+describe('non-string fields', () => {
+  it('scrubs objects where a string was declared, and passes numbers through', () => {
+    const scrubbed = scrubSentryEvent({
+      type: undefined,
+      transaction: { path: '/search?q=secret' },
+      exception: { values: [{ value: ['reader@example.com'], type: { name: 'x' } }] },
+      request: { url: { href: 'https://x/a?token=1' } },
+    } as unknown as ErrorEvent)
+    expect(JSON.stringify(scrubbed)).not.toMatch(/secret|reader@|token=/)
+    expect(redactText(5 as unknown as string)).toBe(5)
+  })
+})

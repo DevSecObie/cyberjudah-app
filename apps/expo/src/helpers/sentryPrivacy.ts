@@ -143,8 +143,9 @@ const SECRET_VALUE =
 const EMAIL = /[^\s@"'<>()[\]{},;:]+@[^\s@"'<>()[\]{},;:]+\.[^\s@"'<>()[\]{},;:.]{2,}/g
 
 export const redactText = (value: string, maxLength = MAX_TEXT_LENGTH): string => {
-  // Events can break their declared types; throwing here would lose the whole report.
-  if (typeof value !== 'string') return value
+  // Events can break their declared types: an object is scrubbed deeply (throwing here would
+  // lose the whole report), and a number or boolean holds no text.
+  if (typeof value !== 'string') return redactDeep(value) as string
   // Only about maxLength characters are scanned, cut between tokens so no secret is split in two.
   let text = value
   if (text.length > maxLength + MAX_TOKEN_LENGTH) {
