@@ -30,7 +30,7 @@ const ClassIndexDownloadCard = () => {
     ? `Downloading… ${progress}%`
     : state.status === 'failed'
       ? 'The download did not finish. Try again.'
-      : 'Every class, Captains and Hidden History episode, for instant search on this phone, even offline.'
+      : 'Class notes and search, available offline. Videos require an internet connection.'
 
   return (
     <Box className="mt-[16px]">

@@ -4,6 +4,7 @@ import { openSQLiteDatabase, type SQLiteDatabase } from '~helpers/sqliteConnecti
 import { useEffect, useSyncExternalStore } from 'react'
 import { AppState, Platform } from 'react-native'
 import { storage } from '~helpers/storage'
+import type { PublishedNote } from '~features/notesExport/notePdf'
 import {
   installAtomicResourceFile,
   restoreOrphanedResourceBackup,
@@ -176,6 +177,40 @@ export const useClassIndexState = () =>
     },
     () => state
   )
+
+/** Read the full note already included in the installed library, without a network request. */
+export const readDownloadedClassNote = async (
+  path: string
+): Promise<(PublishedNote & { body: string }) | null> => {
+  if (Platform.OS === 'web') return null
+  try {
+    const current = state.status === 'unknown' ? await refreshClassIndexState() : state
+    if (!isClassIndexSearchable(current)) return null
+    const db = await open()
+    const row = await db.getFirstAsync<{
+      url: string
+      kind: string
+      title: string
+      date: string | null
+      teacher: string | null
+      topics: string | null
+      body: string
+    }>('SELECT url, kind, title, date, teacher, topics, body FROM notes WHERE url = ?', [path])
+    if (!row?.body?.trim()) return null
+    let topics: string[] = []
+    try {
+      const parsed: unknown = JSON.parse(row.topics ?? '[]')
+      if (Array.isArray(parsed))
+        topics = parsed.filter((item): item is string => typeof item === 'string')
+    } catch {
+      // Older downloads may omit topic metadata; the note itself is still readable.
+    }
+    return { ...row, date: row.date ?? '', teacher: row.teacher ?? '', topics }
+  } catch {
+    // A missing or unreadable local copy must not prevent the existing online reader.
+    return null
+  }
+}
 
 export type ClassIndexHit = {
   url: string

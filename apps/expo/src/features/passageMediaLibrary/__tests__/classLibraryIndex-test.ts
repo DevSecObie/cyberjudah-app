@@ -51,7 +51,11 @@ beforeEach(() => {
   mockStorage.set('cyberjudah.classIndex.etag', '"edition-1"')
   mockFirst.mockResolvedValue({ n: 43 })
   mockClose.mockResolvedValue(undefined)
-  mockOpen.mockResolvedValue({ getFirstAsync: mockFirst, closeAsync: mockClose })
+  mockOpen.mockResolvedValue({
+    getFirstAsync: mockFirst,
+    closeAsync: mockClose,
+    execAsync: jest.fn(),
+  })
   mockHead.mockResolvedValue({ headers: { get: () => 'W/"edition-1"' } })
   global.fetch = mockHead
   mockMove.mockImplementation(async ({ from, to }: { from: string; to: string }) => {
@@ -128,4 +132,44 @@ it('restores a backup left by an interrupted file replacement at startup', async
   const index = require('../classLibraryIndex')
   expect(await index.refreshClassIndexState()).toEqual({ status: 'ready' })
   expect(mockFiles.get(file)).toBe('old library')
+})
+
+it('reads full downloaded Markdown and metadata after a cold start without fetching', async () => {
+  const index = require('../classLibraryIndex')
+  mockFirst.mockResolvedValue({
+    url: '/classes/test',
+    kind: 'class',
+    title: 'Test class',
+    date: null,
+    teacher: 'Teacher',
+    topics: '["faith",3]',
+    body: '# Notes\n\n**Full content**',
+  })
+  expect(await index.readDownloadedClassNote('/classes/test')).toEqual({
+    url: '/classes/test',
+    kind: 'class',
+    title: 'Test class',
+    date: '',
+    teacher: 'Teacher',
+    topics: ['faith'],
+    body: '# Notes\n\n**Full content**',
+  })
+  expect(mockFirst).toHaveBeenCalledWith(expect.stringContaining('WHERE url = ?'), [
+    '/classes/test',
+  ])
+  expect(mockHead).not.toHaveBeenCalled()
+})
+
+it('does not create a database when the download is absent or removed', async () => {
+  const index = require('../classLibraryIndex')
+  await index.removeClassIndex()
+  expect(await index.readDownloadedClassNote('/classes/test')).toBeNull()
+  expect(mockOpen).not.toHaveBeenCalled()
+})
+
+it('allows online fallback when a note is missing or the downloaded database is unreadable', async () => {
+  const index = require('../classLibraryIndex')
+  mockFirst.mockResolvedValueOnce(null).mockRejectedValueOnce(new Error('database damaged'))
+  expect(await index.readDownloadedClassNote('/classes/new')).toBeNull()
+  expect(await index.readDownloadedClassNote('/classes/test')).toBeNull()
 })
