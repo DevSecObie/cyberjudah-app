@@ -51,3 +51,27 @@ jobs:
         run: |
           message="${UPDATE_MESSAGE:-$(git log -1 --pretty=%s)} (${GITHUB_SHA::7})"
           yarn workspace @bible-strong/expo "update:cyberjudah:$CHANNEL" --message "$message"
+      # Source maps for GlitchTip: the NAS (ask-cyberjudah-monitoring, sourcemap-sync) downloads
+      # every cyberjudah-sourcemaps-* artifact and uploads it, so crash reports show the real file
+      # and line. Never blocks the build: if this fails, only the stack traces stay unreadable.
+      - name: Collect the source maps
+        id: sourcemaps
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          pairs=()
+          for map in apps/expo/dist/_expo/static/js/*/*.hbc.map; do
+            pairs+=("${map%.map}" "$map")
+          done
+          (( ${#pairs[@]} > 0 )) || { echo '::warning::The export wrote no Hermes source maps'; exit 1; }
+          apps/expo/scripts/collect-sourcemaps.sh "$RUNNER_TEMP/sourcemaps" "${pairs[@]}"
+      - uses: actions/upload-artifact@v4
+        if: steps.sourcemaps.outcome == 'success'
+        continue-on-error: true
+        with:
+          name: cyberjudah-sourcemaps-ota-${{ inputs.channel }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/sourcemaps
+          # As long as the app artifact: if the NAS is offline, the maps wait for it.
+          retention-days: 30
+          if-no-files-found: error
