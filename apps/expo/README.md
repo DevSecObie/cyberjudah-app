@@ -74,16 +74,14 @@ Workspace scripts, run as `yarn workspace @bible-strong/expo <script>`:
 
 ```bash
 # Android
-yarn workspace @bible-strong/expo build:android:staging    # internal testing (APK)
 yarn workspace @bible-strong/expo build:android:prod       # production (AAB)
 yarn workspace @bible-strong/expo build:android:prod:apk   # production (APK)
 
 # iOS
-yarn workspace @bible-strong/expo build:ios:staging        # internal testing
 yarn workspace @bible-strong/expo build:ios:prod           # production
 ```
 
-These are local EAS builds. A staging or production build also needs values that are not in git, which `dotenv` loads from two local files:
+These are local EAS builds. A production build also needs values that are not in git, which `dotenv` loads from two local files:
 
 | File | Variables |
 |------|-----------|

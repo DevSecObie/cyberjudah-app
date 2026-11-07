@@ -41,6 +41,16 @@ const PUBLIC_RESOURCE_PATHS = [
   '/timeline/',
 ]
 
+// This fork builds CyberJudah only. Without the profile the app would be the upstream author's
+// Bible Strong, wired to their update server, resource API, EAS project and Firebase, so readers'
+// accounts and data would land on services CyberJudah does not control.
+if (!isCyberJudah) {
+  throw new Error(
+    'EXPO_PUBLIC_RESOURCE_PROFILE must be "cyberjudah": this repository builds only CyberJudah. ' +
+      'Use apps/expo/.env.development or .env.cyberjudah.example.'
+  )
+}
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: process.env.APP_NAME ?? 'dev - Bible Strong',

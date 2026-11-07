@@ -45,14 +45,12 @@ yarn ios                # Run on iOS device/simulator
 ```bash
 # Android
 yarn build:android:dev       # Development build
-yarn build:android:staging   # Staging APK
 yarn build:android:prod      # Production AAB
 yarn build:android:prod:apk  # Production APK
 
 # iOS
 yarn build:ios:dev           # Development build
 yarn build:ios:dev-sim       # Simulator build
-yarn build:ios:staging       # Staging build
 yarn build:ios:prod          # Production build
 ```
 
@@ -107,8 +105,8 @@ yarn clean               # Remove node_modules and caches, reinstall
 
 The app uses environment-based builds with different Firebase configurations:
 
-- Development: `.env.development`
-- Staging: `.env.staging`
+- Development: `.env.development` (the CyberJudah Preview dev app against CyberJudah staging)
+- Staging: `.env.cyberjudah.example` (CI staging builds, `yarn update:cyberjudah:staging`)
 - Production: `.env.production`
 
 ### Data Storage
@@ -225,8 +223,8 @@ Translation files: `i18n/locales/{fr,en}/translation.json`
 
 Three environments configured via `.env.*` files:
 
-- **Development** (`.env.development`): Debug builds, dev Firebase
-- **Staging** (`.env.staging`): Internal testing, staging Firebase
+- **Development** (`.env.development`): the CyberJudah Preview dev app, CyberJudah staging services
+- **Staging** (`.env.cyberjudah.example`): CI staging builds and staging updates
 - **Production** (`.env.production`): App store releases, prod Firebase
 
 Environment variables accessed via `process.env.EXPO_PUBLIC_*`
