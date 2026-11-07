@@ -35,22 +35,21 @@ const firstQueryIndex = (text: string, from = 0) => {
   return Math.min(question, hash)
 }
 
-// `scheme://user:password@host/path?query#hash`. Credentials go: anything before an `@` in the
-// authority (a password may hold `?`, `#` or `@`), or before the first `@` when the authority
-// reads `user:non-port` (a raw `/` in the password ends the authority early). So does everything
-// from the first `?` or `#`; `cut` says the query was dropped.
+// `scheme://user:password@host/path?query#hash`. Credentials go when the authority (up to the
+// first `/`, `?` or `#`) holds an `@`, or when the text up to the first `@` reads like
+// `user:password` (a `:` and no `=` or `&`): a password may hold `/`, `?` or `#`. This errs on the
+// side of redacting (`host:8080/users/@me` loses its host). Everything from the first `?` or `#`
+// left after that goes too; `cut` says it did.
 const redactUrl = (url: string) => {
   const authorityStart = url.indexOf('://') + 3
-  const pathStart = url.indexOf('/', authorityStart)
-  const authorityEnd = pathStart === -1 ? url.length : pathStart
+  const authorityEnd = firstOf(url, ['/', '?', '#'], authorityStart)
   let at = url.lastIndexOf('@', authorityEnd - 1)
   if (at < authorityStart) {
-    const authority = url.slice(authorityStart, authorityEnd)
-    const afterColon = authority.slice(authority.indexOf(':') + 1)
-    const queryStart = firstQueryIndex(url, authorityStart)
-    const nextAt = url.indexOf('@', authorityEnd)
-    const looksLikeUser = authority.includes(':') && afterColon !== '' && !/^\d+$/.test(afterColon)
-    at = looksLikeUser && nextAt !== -1 && (queryStart === -1 || nextAt < queryStart) ? nextAt : -1
+    const firstAt = url.indexOf('@', authorityStart)
+    const userinfo = firstAt === -1 ? '' : url.slice(authorityStart, firstAt)
+    const looksLikeCredentials =
+      userinfo.includes(':') && !userinfo.includes('=') && !userinfo.includes('&')
+    at = looksLikeCredentials ? firstAt : -1
   }
   const result =
     at >= authorityStart ? `${url.slice(0, authorityStart)}[REDACTED]${url.slice(at)}` : url
@@ -63,22 +62,36 @@ const redactUrl = (url: string) => {
   return { url: kept + location, cut: true }
 }
 
-// Text with no scheme: `api/search?q=…`, `search?q=…`, `mailto:a@b.co?subject=…` lose the query
-// (a `?` followed by `=`), and `/notes#…` the fragment. `Why?` and `#1` stay.
-const redactPlain = (text: string) => {
-  const queryStart = firstQueryIndex(text)
-  if (queryStart <= 0 || queryStart === text.length - 1) return text
-  const queryLike =
-    text[queryStart] === '?'
-      ? text.indexOf('=', queryStart) !== -1
-      : text.lastIndexOf('/', queryStart) !== -1
-  return queryLike ? text.slice(0, queryStart) : text
+/** The first index of any of `characters` from `from`, or the text's length. */
+const firstOf = (text: string, characters: string[], from: number) => {
+  let first = text.length
+  for (const character of characters) {
+    const index = text.indexOf(character, from)
+    if (index !== -1 && index < first) first = index
+  }
+  return first
 }
 
-// A URL ends at whitespace (tokens are split on it), a quote or an angle bracket, so each URL in
-// a JSON string is handled on its own. Once a query is cut, the rest of the token goes with it:
-// the query may carry on past a quote or bracket (`?f={"a":1}&token=…`).
-const URL_END = new Set(['"', "'", '`', '<', '>'])
+// Text with no scheme is cut at the first `?` or `#` that is followed somewhere by `=`
+// (`search?q=`, `?q=`, `#access_token=`, `mailto:…?subject=`) or comes after a `/`
+// (`/notes?term`, `/notes#id`); the rest of the token goes. A lone `Why?` or `#1` stays.
+const redactPlain = (text: string) => {
+  const firstSlash = text.indexOf('/')
+  const lastEquals = text.lastIndexOf('=')
+  for (let index = 0; index < text.length - 1; index++) {
+    const character = text[index]
+    if (character !== '?' && character !== '#') continue
+    if (lastEquals > index || (firstSlash !== -1 && firstSlash < index)) {
+      return text.slice(0, index)
+    }
+  }
+  return text
+}
+
+// A URL ends at whitespace (tokens are split on it), a quote, an angle bracket, a bracket, a
+// comma or a `|`, so each URL in a JSON string or a list is handled on its own. Once a query is
+// cut, the rest of the token goes with it: a query may carry on past those characters.
+const URL_END = new Set(['"', "'", '`', '<', '>', '(', ')', '[', ']', '{', '}', ',', '|'])
 
 const redactToken = (token: string) => {
   let result = ''

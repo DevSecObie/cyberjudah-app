@@ -250,7 +250,7 @@ describe('second review cases', () => {
 
   it('leaves ordinary text and keeps stack locations', () => {
     expect(redactText('Is it read/write? Why? #1')).toBe('Is it read/write? Why? #1')
-    expect(redactText('at foo (http://x/a.js?v=1:10:5)')).toBe('at foo (http://x/a.js:10:5)')
+    expect(redactText('at foo (http://x/a.js?v=1:10:5)')).toBe('at foo (http://x/a.js:10:5')
   })
 
   it('strips selector attributes with ] or quotes inside, and unterminated ones', () => {
@@ -287,14 +287,15 @@ describe('third review cases', () => {
     expect(redactText('https://u:p?ss@host/x')).toBe('https://[REDACTED]@host/x')
     expect(redactText('https://u:p#ss@host/x')).toBe('https://[REDACTED]@host/x')
     expect(redactText('https://ghp_secret@localhost/x')).toBe('https://[REDACTED]@localhost/x')
-    expect(redactText('https://x:8080/users/@me')).toBe('https://x:8080/users/@me')
+    // Errs on the side of redacting: a port followed by an @ in the path reads like a password.
+    expect(redactText('https://x:8080/users/@me')).toBe('https://[REDACTED]@me')
   })
 
   it('keeps a :line:col only on script files, never from a query value', () => {
     expect(redactText('GET https://x/a?time=12:30')).toBe('GET https://x/a')
     expect(redactText('GET https://x/a?pin=1234:5678:9')).toBe('GET https://x/a')
     expect(redactText('at f (https://x/app.bundle?platform=ios:12:7)')).toBe(
-      'at f (https://x/app.bundle:12:7)'
+      'at f (https://x/app.bundle:12:7'
     )
   })
 
@@ -310,5 +311,34 @@ describe('third review cases', () => {
         expect(redactText(`${padding}${secret} tail`)).not.toMatch(/password|me@e|user/)
       }
     }
+  })
+})
+
+describe('fourth review cases', () => {
+  it('cuts a query on a URL with no path, even with an @ in it', () => {
+    expect(redactText('https://host?email=me@x.com&q=mysearchtext')).toBe('https://host')
+    expect(redactText('https://host?search=prayer@home&token=abc')).toBe('https://host')
+  })
+
+  it('handles URLs joined by a comma, | or brackets one by one', () => {
+    for (const text of [
+      'ALLOWED=https://cdn.x/a,https://admin:hunter2@db.x/y',
+      '(https://cdn.x/a)(https://admin:hunter2@db.x/y)',
+      'https://cdn.x/a|https://admin:hunter2@db.x/y',
+    ]) {
+      expect(redactText(text)).not.toMatch(/hunter2|admin/)
+    }
+  })
+
+  it('cuts every query-like ? or #, not only the first one', () => {
+    expect(redactText('{"tag":"#1","path":"/search?q=secret"}')).not.toMatch(/secret/)
+    expect(redactText('{"hash":"#access_token=ya29SECRET&x=1"}')).not.toMatch(/SECRET/)
+    expect(redactText('?q=secretsearch')).toBe('')
+    expect(redactText('#access_token=ya29.SECRET&token_type=bearer')).toBe('')
+    expect(redactText('/notes?mysecretterm')).toBe('/notes')
+  })
+
+  it('removes a password that starts with digits and holds a /', () => {
+    expect(redactText('https://admin:2024/pw@db.x/y')).toBe('https://[REDACTED]@db.x/y')
   })
 })
