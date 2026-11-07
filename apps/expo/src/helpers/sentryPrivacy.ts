@@ -17,49 +17,107 @@ type EventHook = (event: ErrorEvent, hint: EventHint) => ErrorEvent | null
 
 const MAX_TEXT_LENGTH = 8_000
 const MAX_DEPTH = 6
-// A stack location left on a URL whose query is dropped: `app.js?v=1:10:5)` keeps `:10:5)`.
-const STACK_LOCATION = /:\d+(?::\d+)?\)?$/
+// No whitespace-free run longer than this survives. Base64, minified code and JSON blobs are no
+// help in a crash report and may hold data, and short runs bound the cost of every regex used
+// here (including the email and JWT patterns in redactDiagnosticText) on the JS thread, while the
+// app reports a crash.
+const MAX_TOKEN_LENGTH = 200
+// A stack location kept on a script URL whose query is dropped: `app.js?v=1:10:5)` -> `:10:5)`.
+const SCRIPT_FILE = /\.(?:js|mjs|cjs|bundle|hbc)$/
+const LINE_AND_COLUMN = /^\?[^\s:]*(:\d+:\d+\)?)$/
+const URL_CHARACTER = /[A-Za-z0-9+.-]/
 
-// Text is scanned token by token (split on whitespace) with indexOf, never with a regex that can
-// backtrack: this runs on the JS thread while the app reports a crash.
-const redactToken = (token: string) => {
-  let result = token
-  // `scheme://user:password@host`: everything before the last `@` of the address goes.
-  const schemeEnd = result.indexOf('://')
-  if (schemeEnd > 0) {
-    const authorityStart = schemeEnd + 3
-    const queryStart = firstQueryIndex(result)
-    const at = result.lastIndexOf('@', queryStart === -1 ? result.length : queryStart)
-    if (at > authorityStart && result.slice(authorityStart, at).includes(':')) {
-      result = `${result.slice(0, authorityStart)}[REDACTED]${result.slice(at)}`
-    }
-  }
-  // Anything with a `/` before `?` or `#` (`https://host/path`, `host/path`, `/notes`) loses the
-  // rest of the token: the query can hold search text, tokens or ids.
-  const queryStart = firstQueryIndex(result)
-  if (
-    queryStart > 0 &&
-    queryStart < result.length - 1 &&
-    result.lastIndexOf('/', queryStart) !== -1
-  ) {
-    const location = result.slice(queryStart).match(STACK_LOCATION)?.[0] ?? ''
-    result = result.slice(0, queryStart) + location
-  }
-  return result
-}
-
-const firstQueryIndex = (token: string) => {
-  const question = token.indexOf('?')
-  const hash = token.indexOf('#')
+const firstQueryIndex = (text: string, from = 0) => {
+  const question = text.indexOf('?', from)
+  const hash = text.indexOf('#', from)
   if (question === -1) return hash
   if (hash === -1) return question
   return Math.min(question, hash)
 }
 
+// `scheme://user:password@host/path?query#hash`. Credentials go: anything before an `@` in the
+// authority (a password may hold `?`, `#` or `@`), or before the first `@` when the authority
+// reads `user:non-port` (a raw `/` in the password ends the authority early). So does everything
+// from the first `?` or `#`; `cut` says the query was dropped.
+const redactUrl = (url: string) => {
+  const authorityStart = url.indexOf('://') + 3
+  const pathStart = url.indexOf('/', authorityStart)
+  const authorityEnd = pathStart === -1 ? url.length : pathStart
+  let at = url.lastIndexOf('@', authorityEnd - 1)
+  if (at < authorityStart) {
+    const authority = url.slice(authorityStart, authorityEnd)
+    const afterColon = authority.slice(authority.indexOf(':') + 1)
+    const queryStart = firstQueryIndex(url, authorityStart)
+    const nextAt = url.indexOf('@', authorityEnd)
+    const looksLikeUser = authority.includes(':') && afterColon !== '' && !/^\d+$/.test(afterColon)
+    at = looksLikeUser && nextAt !== -1 && (queryStart === -1 || nextAt < queryStart) ? nextAt : -1
+  }
+  const result =
+    at >= authorityStart ? `${url.slice(0, authorityStart)}[REDACTED]${url.slice(at)}` : url
+  const queryStart = firstQueryIndex(result, authorityStart)
+  if (queryStart === -1) return { url: result, cut: false }
+  const kept = result.slice(0, queryStart)
+  const location = SCRIPT_FILE.test(kept)
+    ? (result.slice(queryStart).match(LINE_AND_COLUMN)?.[1] ?? '')
+    : ''
+  return { url: kept + location, cut: true }
+}
+
+// Text with no scheme: `api/search?q=…`, `search?q=…`, `mailto:a@b.co?subject=…` lose the query
+// (a `?` followed by `=`), and `/notes#…` the fragment. `Why?` and `#1` stay.
+const redactPlain = (text: string) => {
+  const queryStart = firstQueryIndex(text)
+  if (queryStart <= 0 || queryStart === text.length - 1) return text
+  const queryLike =
+    text[queryStart] === '?'
+      ? text.indexOf('=', queryStart) !== -1
+      : text.lastIndexOf('/', queryStart) !== -1
+  return queryLike ? text.slice(0, queryStart) : text
+}
+
+// A URL ends at whitespace (tokens are split on it), a quote or an angle bracket, so each URL in
+// a JSON string is handled on its own. Once a query is cut, the rest of the token goes with it:
+// the query may carry on past a quote or bracket (`?f={"a":1}&token=…`).
+const URL_END = new Set(['"', "'", '`', '<', '>'])
+
+const redactToken = (token: string) => {
+  let result = ''
+  let position = 0
+  while (position < token.length) {
+    const schemeEnd = token.indexOf('://', position)
+    if (schemeEnd === -1) {
+      result += redactPlain(token.slice(position))
+      break
+    }
+    let schemeStart = schemeEnd
+    while (schemeStart > position && URL_CHARACTER.test(token[schemeStart - 1])) schemeStart--
+    const prefix = token.slice(position, schemeStart)
+    const plain = redactPlain(prefix)
+    result += plain
+    if (plain !== prefix) break
+    let urlEnd = schemeEnd + 3
+    while (urlEnd < token.length && !URL_END.has(token[urlEnd])) urlEnd++
+    const { url, cut } = redactUrl(token.slice(schemeStart, urlEnd))
+    result += url
+    if (cut) break
+    position = urlEnd
+  }
+  return result.length > MAX_TOKEN_LENGTH ? `[${result.length} chars]` : result
+}
+
 export const redactText = (value: string, maxLength = MAX_TEXT_LENGTH) => {
-  // Cut first, so the work is bounded whatever the size of what was thrown.
-  const text = value.length > maxLength ? `${value.slice(0, maxLength)}…` : value
-  return redactDiagnosticText(text.split(/(\s+)/).map(redactToken).join(''), maxLength + 1)
+  // Only about maxLength characters are scanned, cut between tokens so no secret is split in two.
+  let text = value
+  if (text.length > maxLength + MAX_TOKEN_LENGTH) {
+    text = text.slice(0, maxLength + MAX_TOKEN_LENGTH)
+    const lastSpace = text.search(/\s\S*$/)
+    text = lastSpace === -1 ? text : text.slice(0, lastSpace)
+  }
+  const redacted = redactDiagnosticText(
+    text.split(/(\s+)/).map(redactToken).join(''),
+    Number.MAX_SAFE_INTEGER
+  )
+  return redacted.length > maxLength ? `${redacted.slice(0, maxLength)}…` : redacted
 }
 
 // Web click and input breadcrumbs describe the element as a CSS selector whose `[...]`

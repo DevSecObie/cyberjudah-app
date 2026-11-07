@@ -90,8 +90,9 @@ const RootLayout = () => {
     Sentry.init({
       dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
       enabled: !__DEV__,
-      // Which web deployment (production or preview) the error came from.
-      environment: `web:${window.location.hostname}`,
+      environment: 'web',
+      // Which web deployment the error came from, as a tag: environments must stay a fixed set.
+      initialScope: { tags: { 'web.host': window.location.hostname } },
       sampleRate: 0.5,
       sendDefaultPii: false,
       // Readers' data stays out of crash reports (helpers/sentryPrivacy.ts).

@@ -260,11 +260,55 @@ describe('second review cases', () => {
     expect(stripSelectorAttributes('a[title="open')).toBe('a')
   })
 
-  it('stays fast on huge strings with slashes and no query', () => {
-    const blob = 'data:image/png;base64,' + 'ab/cd+ef/'.repeat(20_000)
+  it('replaces long runs, which also bounds the cost of every pattern', () => {
+    expect(redactText(`blob ${'ab/cd+ef/'.repeat(30)} end`)).toBe('blob [270 chars] end')
     const started = Date.now()
-    redactText(blob)
-    redactText('a.b-c.'.repeat(20_000))
-    expect(Date.now() - started).toBeLessThan(250)
+    for (const input of [
+      'data:image/png;base64,' + 'ab/cd+ef/'.repeat(20_000),
+      '.a'.repeat(20_000),
+      '-eyJ'.repeat(20_000),
+      'x.y '.repeat(20_000),
+    ]) {
+      redactText(input)
+    }
+    // Generous on purpose: it guards against seconds of backtracking, not milliseconds.
+    expect(Date.now() - started).toBeLessThan(1_000)
+  })
+})
+
+describe('third review cases', () => {
+  it('finds credentials after an earlier # or ? in the same JSON token', () => {
+    expect(redactText('{"tag":"#1","url":"https://admin:hunter2@localhost/x"}')).toBe(
+      '{"tag":"#1","url":"https://[REDACTED]@localhost/x"}'
+    )
+  })
+
+  it('removes passwords holding ? or #, token-only userinfo, and keeps ports and @ paths', () => {
+    expect(redactText('https://u:p?ss@host/x')).toBe('https://[REDACTED]@host/x')
+    expect(redactText('https://u:p#ss@host/x')).toBe('https://[REDACTED]@host/x')
+    expect(redactText('https://ghp_secret@localhost/x')).toBe('https://[REDACTED]@localhost/x')
+    expect(redactText('https://x:8080/users/@me')).toBe('https://x:8080/users/@me')
+  })
+
+  it('keeps a :line:col only on script files, never from a query value', () => {
+    expect(redactText('GET https://x/a?time=12:30')).toBe('GET https://x/a')
+    expect(redactText('GET https://x/a?pin=1234:5678:9')).toBe('GET https://x/a')
+    expect(redactText('at f (https://x/app.bundle?platform=ios:12:7)')).toBe(
+      'at f (https://x/app.bundle:12:7)'
+    )
+  })
+
+  it('cuts queries without a slash or scheme', () => {
+    expect(redactText('search?q=secret')).toBe('search')
+    expect(redactText('mailto:me@x.com?subject=private')).not.toMatch(/private|me@x/)
+  })
+
+  it('never leaves half a secret at the length limit', () => {
+    for (const secret of ['https://user:password@h/x', 'me@example.com']) {
+      // The first padding ends at the final cut, the second where the scan itself is cut.
+      for (const padding of ['x '.repeat(3_998), 'x '.repeat(4_093)]) {
+        expect(redactText(`${padding}${secret} tail`)).not.toMatch(/password|me@e|user/)
+      }
+    }
   })
 })
