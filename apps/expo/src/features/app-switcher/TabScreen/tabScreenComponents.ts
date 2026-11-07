@@ -1,4 +1,4 @@
-// The screen for each tab type. The web build loads these on demand (tabScreenComponents.web.ts).
+// The screen for each tab type.
 export { default as CompareVersesTabScreen } from '~features/bible/CompareVersesTabScreen'
 export { default as StrongTabScreen } from '~features/lexique/StrongTabScreen'
 export { default as CommentariesTabScreen } from '~features/commentaries/CommentariesTabScreen'

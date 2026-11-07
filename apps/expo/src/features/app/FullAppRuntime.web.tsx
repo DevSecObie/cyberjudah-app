@@ -9,8 +9,7 @@ import {
 import WorkspaceLayout from '~features/app-switcher/WorkspaceLayout'
 import * as Sentry from '@sentry/react-native'
 import { Stack, useLocalSearchParams, usePathname, useSegments } from 'expo-router'
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
-import type { ReactNode } from 'react'
+import { useEffect, useRef } from 'react'
 import { RootSiblingParent } from 'react-native-root-siblings'
 import TrackPlayer from 'react-native-track-player'
 
@@ -26,32 +25,14 @@ import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import type { Theme } from '~themes/index'
 import { PlaybackService } from '../../../playbackService'
 
-// Panels that wait for the reader to act (previews, tags, colors, the class player, What's new)
-// load after the first screen is up, so opening the site only fetches what that screen shows.
-const AssistantLauncher = lazy(() => import('~features/study-assistant/AssistantLauncher.web'))
-const WorkspaceAnalytics = lazy(() => import('~features/app-switcher/WorkspaceAnalytics.web'))
-const ReferencePreviewHost = lazy(
-  () => import('~features/bibleReferencePreview/ReferencePreviewHost')
-)
-const ChangelogModal = lazy(() => import('~common/Changelog'))
-const ColorChangeModal = lazy(() => import('~common/ColorChangeModal'))
-const ColorPickerModal = lazy(() => import('~common/ColorPickerModal'))
-const DockedClassPlayer = lazy(() => import('~features/passageMediaLibrary/DockedClassPlayer'))
-const UnifiedTagsModal = lazy(() => import('~common/UnifiedTagsModal'))
-
-const AfterFirstScreen = ({ children }: { children: ReactNode }) => {
-  const [show, setShow] = useState(false)
-  useEffect(() => {
-    const idle = window.requestIdleCallback
-    if (idle) {
-      const id = idle(() => setShow(true), { timeout: 2000 })
-      return () => window.cancelIdleCallback(id)
-    }
-    const id = setTimeout(() => setShow(true), 500)
-    return () => clearTimeout(id)
-  }, [])
-  return show ? <Suspense fallback={null}>{children}</Suspense> : null
-}
+import AssistantLauncher from '~features/study-assistant/AssistantLauncher.web'
+import WorkspaceAnalytics from '~features/app-switcher/WorkspaceAnalytics.web'
+import ReferencePreviewHost from '~features/bibleReferencePreview/ReferencePreviewHost'
+import ChangelogModal from '~common/Changelog'
+import ColorChangeModal from '~common/ColorChangeModal'
+import ColorPickerModal from '~common/ColorPickerModal'
+import DockedClassPlayer from '~features/passageMediaLibrary/DockedClassPlayer'
+import UnifiedTagsModal from '~common/UnifiedTagsModal'
 
 const NavigationTracking = () => {
   const pathname = usePathname()
@@ -131,17 +112,15 @@ const FullAppRuntime = ({ theme }: { theme: Theme }) => {
               </WorkspaceLayout>
               <ConfirmDialogHost />
               <ThemedToaster />
-              <AfterFirstScreen>
-                <WorkspaceAnalytics />
-                {/* Bible Strong's own assistant stays off; CyberJudah has Ask (as on the phone). */}
-                {!usesCyberJudahEditorial() && <AssistantLauncher />}
-                <DockedClassPlayer />
-                <ChangelogModal />
-                <UnifiedTagsModal />
-                <ReferencePreviewHost />
-                <ColorPickerModal />
-                <ColorChangeModal />
-              </AfterFirstScreen>
+              <WorkspaceAnalytics />
+              {/* Bible Strong's own assistant stays off; CyberJudah has Ask (as on the phone). */}
+              {!usesCyberJudahEditorial() && <AssistantLauncher />}
+              <DockedClassPlayer />
+              <ChangelogModal />
+              <UnifiedTagsModal />
+              <ReferencePreviewHost />
+              <ColorPickerModal />
+              <ColorChangeModal />
             </StrongAudioProvider>
           </BookSelectorSheetProvider>
         </SheetProvider>

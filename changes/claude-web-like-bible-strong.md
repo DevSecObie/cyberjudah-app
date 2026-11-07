@@ -1,0 +1,1 @@
+- The web app is built the way Bible Strong builds web.bible-strong.app: one plain export, with every screen and panel loaded up front instead of fetched the first time it opens. The pre-drawn opening chapter and font preloads are gone; the lion shows until the app is up. Nothing changes in what the app shows or does.
