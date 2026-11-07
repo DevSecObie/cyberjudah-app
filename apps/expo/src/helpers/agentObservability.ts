@@ -62,6 +62,10 @@ const sanitizeString = (value: string, key: string, maxLength = MAX_STRING_LENGT
   return redacted.length > maxLength ? `${redacted.slice(0, maxLength)}…` : redacted
 }
 
+/** Redacts emails, bearer tokens and JWTs from free text, as diagnostic payloads are. */
+export const redactDiagnosticText = (value: string, maxLength = MAX_STRING_LENGTH) =>
+  sanitizeString(value, 'text', maxLength)
+
 const errorSummary = (error: Error): AgentLogPayload => {
   const code = 'code' in error && typeof error.code === 'string' ? error.code : undefined
   return {

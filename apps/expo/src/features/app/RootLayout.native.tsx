@@ -2,6 +2,7 @@ import { ThemeProvider } from '~themes/ThemeProvider'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import AnimatedSplash from './AnimatedSplash'
 import * as Sentry from '@sentry/react-native'
+import * as Updates from 'expo-updates'
 import * as SplashScreen from 'expo-splash-screen'
 import * as Font from 'expo-font'
 import * as Icon from '@expo/vector-icons'
@@ -21,6 +22,7 @@ import { ResourceAccessProvider } from '~features/resources/resourceAccess'
 import { appLogger } from '~helpers/agentObservability'
 import { ignoreSentryErrors } from '~helpers/ignoreSentryErrors'
 import { filterSentryEvent } from '~helpers/sentryEventFilter'
+import { scrubSentryBreadcrumb, withPrivacy } from '~helpers/sentryPrivacy'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { configureQueryManagers, queryClient } from '~helpers/queryClient'
 import { initializeResourceAppCheck } from '~helpers/resourceAppCheck'
@@ -89,6 +91,10 @@ const initSentry = () => {
   sentryInitialized = true
   Sentry.init({
     dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
+    // Only real builds report: a developer's `yarn start` session would page the owner on Telegram.
+    enabled: !__DEV__,
+    // Preview and production builds share one GlitchTip project; the update channel tells them apart.
+    environment: Updates.channel || 'production',
     // Bugs are never sampled, especially during startup where a single failed migration can
     // block the app. Expected conditions (offline, cancelled requests, App Check) and repeats
     // are filtered by `filterSentryEvent`.
@@ -96,7 +102,13 @@ const initSentry = () => {
     sendDefaultPii: false,
     maxBreadcrumbs: 100,
     ignoreErrors: ignoreSentryErrors,
-    beforeSend: filterSentryEvent,
+    // Readers' data stays out of crash reports (helpers/sentryPrivacy.ts). The native iOS SDK
+    // would otherwise record every request URL, query string included, outside these hooks.
+    beforeSend: withPrivacy(filterSentryEvent),
+    beforeBreadcrumb: scrubSentryBreadcrumb,
+    enableNetworkBreadcrumbs: false,
+    attachScreenshot: false,
+    attachViewHierarchy: false,
   })
   appLogger.info('startup', 'sentry.init')
 }

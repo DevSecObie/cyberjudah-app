@@ -254,9 +254,9 @@ const FireAuth = class {
           this.previousEmailVerified = emailVerified
 
           void identifyAnalyticsUser(profile.id)
-          // Keep enough identity to correlate a support report without attaching the
-          // complete Firebase profile (display name, photo URL and account metadata).
-          Sentry.getCurrentScope().setUser({ id: profile.id, email: profile.email })
+          // Only the account id, to match a support report with its crashes. No email: native
+          // crash reports are sent by the native SDK and skip the JS scrubbing in sentryPrivacy.
+          Sentry.getCurrentScope().setUser({ id: profile.id })
           return
         }
 

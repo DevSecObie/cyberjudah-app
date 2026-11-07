@@ -17,6 +17,7 @@ import FullAppRuntime from '~features/app/FullAppRuntime'
 import { ResourceAccessProvider } from '~features/resources/resourceAccess'
 import { configureQueryManagers, queryClient } from '~helpers/queryClient'
 import { filterSentryEvent } from '~helpers/sentryEventFilter'
+import { scrubSentryBreadcrumb, withPrivacy } from '~helpers/sentryPrivacy'
 import useCurrentThemeSelector from '~helpers/useCurrentThemeSelector'
 import type { RootState } from '~redux/modules/reducer'
 import { persistor, startPersistence, store } from '~redux/store'
@@ -88,8 +89,12 @@ const RootLayout = () => {
       })
     Sentry.init({
       dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
+      enabled: !__DEV__,
       sampleRate: 0.5,
-      beforeSend: filterSentryEvent,
+      sendDefaultPii: false,
+      // Readers' data stays out of crash reports (helpers/sentryPrivacy.ts).
+      beforeSend: withPrivacy(filterSentryEvent),
+      beforeBreadcrumb: scrubSentryBreadcrumb,
     })
     return () => {
       active = false
