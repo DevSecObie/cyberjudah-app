@@ -1,5 +1,6 @@
 import { useRootNavigationState, useSegments } from 'expo-router'
 import { atom, useAtomValue } from 'jotai'
+import { atomWithStorage, createJSONStorage } from 'jotai/utils'
 import { Platform, useWindowDimensions } from 'react-native'
 import {
   WORKSPACE_FRAME_GAP,
@@ -13,6 +14,36 @@ export const WORKSPACE_ROUTE_PANEL_BREAKPOINT = 768
 export const workspaceSidebarDockedAtom = atom(true)
 export const workspacePanelClosingAtom = atom(false)
 export const workspaceSidebarHiddenAtom = atom(false)
+/** The side panel's width as the reader last dragged it on the web; null is the default width. */
+/** True while the reader drags the panel's edge, so its width follows the pointer without easing. */
+export const workspacePanelResizingAtom = atom(false)
+// The panel exists only on the web, so the browser's own storage keeps it; a browser that
+// refuses storage (some private windows) just starts at the default width each time.
+const browserStorage = () => ({
+  getItem: (key: string) => {
+    try {
+      return localStorage.getItem(key)
+    } catch {
+      return null
+    }
+  },
+  setItem: (key: string, value: string) => {
+    try {
+      localStorage.setItem(key, value)
+    } catch {}
+  },
+  removeItem: (key: string) => {
+    try {
+      localStorage.removeItem(key)
+    } catch {}
+  },
+})
+export const workspacePanelWidthAtom = atomWithStorage<number | null>(
+  'workspacePanelWidth',
+  null,
+  createJSONStorage<number | null>(browserStorage),
+  { getOnInit: true }
+)
 const panelRoutes = new Set(['(timeline-search)', '(explore)', '(commentary)', 'strong'])
 
 export function useWorkspaceRoutePanel() {
@@ -20,6 +51,7 @@ export function useWorkspaceRoutePanel() {
   const closing = useAtomValue(workspacePanelClosingAtom)
   const sidebarHidden = useAtomValue(workspaceSidebarHiddenAtom)
   const wasDocked = useAtomValue(workspaceSidebarDockedAtom)
+  const preferredPanelWidth = useAtomValue(workspacePanelWidthAtom)
   const segments = useSegments()
   const state = useRootNavigationState()
   const enabled = Platform.OS === 'web' && width >= WORKSPACE_ROUTE_PANEL_BREAKPOINT
@@ -31,6 +63,7 @@ export function useWorkspaceRoutePanel() {
     panelOpen: open,
     sidebarHidden,
     wasDocked,
+    preferredPanelWidth,
   })
   const workspaceState = state?.routes.find(route => route.name === '__root')?.state ?? state
   const routes = workspaceState?.routes.slice(0, (workspaceState.index ?? 0) + 1) ?? []

@@ -1,8 +1,11 @@
 import { goBackOrHome } from '~navigation/goBackOrHome'
+import { backUnderPanel } from '~navigation/backUnderPanel'
+import { navigateWithPageTransition } from '~navigation/pageTransition'
 import { useNavigation, useRouter } from 'expo-router'
-import React, { FC, PropsWithChildren } from 'react'
+import { NavigationRouteContext } from 'expo-router/react-navigation'
+import React, { FC, PropsWithChildren, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
-import { StyleProp, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native'
+import { Platform, StyleProp, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native'
 
 type BackProps = {
   padding?: boolean
@@ -21,6 +24,8 @@ const Back: FC<PropsWithChildren<BackProps>> = ({
   const { t } = useTranslation()
   const router = useRouter()
   const navigation = useNavigation()
+  // Outside a screen there is no route; read it without throwing.
+  const route = useContext(NavigationRouteContext)
 
   const handlePress = () => {
     let currentNavigation: typeof navigation | undefined = navigation
@@ -33,6 +38,14 @@ const Back: FC<PropsWithChildren<BackProps>> = ({
         break
       }
       currentNavigation = currentNavigation.getParent()
+    }
+    // A side panel open beside this page stays open: only the page goes back.
+    const underPanel =
+      Platform.OS === 'web' ? backUnderPanel(navigation as never, route?.key) : undefined
+    if (underPanel) {
+      navigateWithPageTransition(previousPath, underPanel, 'back')
+      onGoBack?.()
+      return
     }
     goBackOrHome(router, previousPath)
     onGoBack?.()

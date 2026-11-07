@@ -369,12 +369,18 @@ const ReturnToSelectedVerseButton = styled('button')<
   }
 })
 
+// On the web the reader is drawn inside the page, not in its own web view, so the window is not the
+// reader's: a side panel can sit beside it. There the message fills the reader, centred in it.
+const IN_PAGE =
+  typeof window !== 'undefined' &&
+  !(window as Window & { ReactNativeWebView?: unknown }).ReactNativeWebView
+
 const ErrorContainer = styled('div')<RootStyles & { headerHeight: number }>(
   ({ settings: { theme, colors, fontFamily }, headerHeight }) => ({
-    position: 'fixed',
+    position: IN_PAGE ? 'absolute' : 'fixed',
     inset: 0,
-    height: '100vh',
-    width: '100vw',
+    height: IN_PAGE ? '100%' : '100vh',
+    width: IN_PAGE ? '100%' : '100vw',
     boxSizing: 'border-box',
     overflow: 'hidden',
     padding: `${headerHeight + 200}px 24px 24px`,
@@ -389,7 +395,7 @@ const ErrorContainer = styled('div')<RootStyles & { headerHeight: number }>(
 )
 
 const ErrorContent = styled('div')({
-  width: 'calc(100vw - 48px)',
+  width: IN_PAGE ? '100%' : 'calc(100vw - 48px)',
   maxWidth: '360px',
   display: 'flex',
   flexDirection: 'column',

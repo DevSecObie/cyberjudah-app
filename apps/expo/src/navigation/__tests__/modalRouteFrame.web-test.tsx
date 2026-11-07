@@ -7,6 +7,8 @@ jest.mock('~themes/ThemeProvider', () => ({ useTheme: () => ({ colors: { reverse
 jest.mock('../useWorkspaceRoutePanel', () => ({
   WORKSPACE_ROUTE_PANEL_WIDTH: 550,
   workspacePanelClosingAtom: jest.requireActual('jotai').atom(false),
+  workspacePanelResizingAtom: jest.requireActual('jotai').atom(false),
+  workspacePanelWidthAtom: jest.requireActual('jotai').atom(null),
   useWorkspaceRoutePanel: () => ({ enabled: mockEnabled }),
 }))
 jest.mock('expo-router', () => ({
