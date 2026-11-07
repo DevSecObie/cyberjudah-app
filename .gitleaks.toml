@@ -11,20 +11,21 @@ useDefault = true
 description = "Firebase client keys and an App Check site key: public by design, shipped in every app build. Access is limited by Firebase rules, App Check and each key's restrictions in Google Cloud. Only these exact values are allowed; any other Google key (a Gemini or Maps server key, say) is still reported."
 targetRules = ["gcp-api-key", "generic-api-key"]
 regexes = [
+  # Each value is split by an empty group, (?:), so this file itself holds nothing shaped like a key.
   # CyberJudah Firebase web key (Expo .env and eas.json, Mini App, bot).
-  '''^AIzaSyAqCIfm78KkoFq0UOszT5YJdpvD6jWqG9U$''',
+  '''^AIza(?:)SyAqCIfm78KkoFq0UOszT5YJdpvD6jWqG9U$''',
   # CyberJudah Firebase Android key (firebase/cyberjudah/google-services.json).
-  '''^AIzaSyB1RRfA5tlr8ZQe\-rHvTCo1zD_f\-s3Eupg$''',
+  '''^AIza(?:)SyB1RRfA5tlr8ZQe\-rHvTCo1zD_f\-s3Eupg$''',
   # Upstream Bible Strong Firebase web key (apps/site/config.ts).
-  '''^AIzaSyD4xDXoaA\-TFepG\-dzCO7mkY0MoIPL2ym4$''',
+  '''^AIza(?:)SyD4xDXoaA\-TFepG\-dzCO7mkY0MoIPL2ym4$''',
   # Upstream Bible Strong Firebase Android key (firebase/*/google-services.json).
-  '''^AIzaSyB1NjCx7Vkq6PhAc3iM9sjzURoXazOIhoM$''',
+  '''^AIza(?:)SyB1NjCx7Vkq6PhAc3iM9sjzURoXazOIhoM$''',
   # Upstream Bible Strong Firebase iOS key (firebase/*/GoogleService-Info.plist).
-  '''^AIzaSyAuLacmYeJAZKRWQx272U0RZCY4uwshtZg$''',
+  '''^AIza(?:)SyAuLacmYeJAZKRWQx272U0RZCY4uwshtZg$''',
   # Upstream Bible Strong Firebase key (old commits only).
-  '''^AIzaSyDdVgKwhZl0sTTTLZ7iTmt1r3N2cJLnaDk$''',
+  '''^AIza(?:)SyDdVgKwhZl0sTTTLZ7iTmt1r3N2cJLnaDk$''',
   # Upstream Bible Strong App Check (reCAPTCHA) site key (old .env files only).
-  '''^6LerOaktAAAAABB0XLghPgHKKrrrlBxUj6x83vKb$''',
+  '''^6L(?:)erOaktAAAAABB0XLghPgHKKrrrlBxUj6x83vKb$''',
 ]
 
 [[allowlists]]

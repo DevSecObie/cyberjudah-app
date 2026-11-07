@@ -2,8 +2,8 @@
 # Reviewed by Data Security on 2026-11-07 against the full history. Add a line only for a value that
 # is not a secret, one that is already revoked, or someone else's credential in old history that only
 # its owner can revoke; say which in a comment. A CyberJudah secret is revoked and replaced, never
-# listed here. Pull requests are scanned with this file as it is on their base branch, so a new line
-# here must merge on its own first.
+# listed here. Every scan reads this file as it is on the default branch, so a new line
+# here must merge into the default branch on its own first.
 
 # Commits by the upstream Bible Strong authors (smontlouis, bulby97; 2019-2026), from before the
 # fork and from upstream merges after it: mostly IDs, hashes, public
