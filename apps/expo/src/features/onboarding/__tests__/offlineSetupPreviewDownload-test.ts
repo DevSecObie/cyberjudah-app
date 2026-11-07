@@ -16,10 +16,10 @@ describe('offline setup preview download', () => {
   })
 
   it('randomly selects among the Bible facts without repeating the current one', () => {
-    expect(OFFLINE_SETUP_BIBLE_FACT_KEYS).toHaveLength(13)
+    expect(OFFLINE_SETUP_BIBLE_FACT_KEYS).toHaveLength(5)
     expect(getRandomBibleFactIndex(undefined, () => 0)).toBe(0)
-    expect(getRandomBibleFactIndex(undefined, () => 0.999)).toBe(12)
+    expect(getRandomBibleFactIndex(undefined, () => 0.999)).toBe(4)
     expect(getRandomBibleFactIndex(0, () => 0)).toBe(1)
-    expect(getRandomBibleFactIndex(6, () => 0.5)).not.toBe(6)
+    expect(getRandomBibleFactIndex(2, () => 0.5)).not.toBe(2)
   })
 })

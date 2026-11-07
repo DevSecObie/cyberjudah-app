@@ -1,17 +1,9 @@
 export const OFFLINE_SETUP_BIBLE_FACT_KEYS = [
-  'offlineSetup.bibleFacts.jehovah',
-  'offlineSetup.bibleFacts.johnLove',
-  'offlineSetup.bibleFacts.lucifer',
-  'offlineSetup.bibleFacts.christTitle',
-  'offlineSetup.bibleFacts.jesusJoshua',
-  'offlineSetup.bibleFacts.hosanna',
-  'offlineSetup.bibleFacts.sheol',
-  'offlineSetup.bibleFacts.gehenna',
-  'offlineSetup.bibleFacts.adamAdamah',
-  'offlineSetup.bibleFacts.adamSide',
-  'offlineSetup.bibleFacts.shalom',
-  'offlineSetup.bibleFacts.strongNumbers',
-  'offlineSetup.bibleFacts.psalm119',
+  'offlineSetup.kjv.john832',
+  'offlineSetup.kjv.john1415',
+  'offlineSetup.kjv.john1717',
+  'offlineSetup.kjv.psalm119105',
+  'offlineSetup.kjv.psalm119142',
 ] as const
 
 export const getRandomBibleFactIndex = (
