@@ -827,6 +827,9 @@ export const loadPublishedNote = async (
   fetcher: typeof fetch = fetch
 ): Promise<PublishedNote & { body: string }> => {
   if (!/^\/[a-z0-9/_-]+$/i.test(notesPath)) throw new Error('CYBERJUDAH_NOTES_PATH_INVALID')
+  const { readDownloadedClassNote } = await import('./classLibraryIndex')
+  const downloaded = await readDownloadedClassNote(notesPath)
+  if (downloaded) return downloaded
   const response = await fetcher(`${DATA_ORIGIN}/api/notes${notesPath}.json`, {
     headers: { accept: 'application/json' },
   })
