@@ -36,10 +36,11 @@ const firstQueryIndex = (text: string, from = 0) => {
 }
 
 // `scheme://user:password@host/path?query#hash`. Credentials go when the authority (up to the
-// first `/`, `?` or `#`) holds an `@`, or when the text up to the first `@` reads like
-// `user:password` (a `:` and no `=` or `&`): a password may hold `/`, `?` or `#`. This errs on the
-// side of redacting (`host:8080/users/@me` loses its host). Everything from the first `?` or `#`
-// left after that goes too; `cut` says it did.
+// first `/`, `?` or `#`) holds an `@`, or when the text up to the first `@` holds a `:` (a
+// password may hold `/`, `?` or `#`). If that text also holds `?`, `#`, `=` or `&`, nothing after
+// the scheme is kept: it may be a password or a query. This errs on the side of redacting
+// (`host:8080/users/@me` loses its host). Everything from the first `?` or `#` goes too; `cut`
+// says the URL lost something that may carry on past it.
 const redactUrl = (url: string) => {
   const authorityStart = url.indexOf('://') + 3
   const authorityEnd = firstOf(url, ['/', '?', '#'], authorityStart)
@@ -47,9 +48,11 @@ const redactUrl = (url: string) => {
   if (at < authorityStart) {
     const firstAt = url.indexOf('@', authorityStart)
     const userinfo = firstAt === -1 ? '' : url.slice(authorityStart, firstAt)
-    const looksLikeCredentials =
-      userinfo.includes(':') && !userinfo.includes('=') && !userinfo.includes('&')
-    at = looksLikeCredentials ? firstAt : -1
+    if (userinfo.includes(':')) {
+      if (/[?#=&]/.test(userinfo))
+        return { url: `${url.slice(0, authorityStart)}[REDACTED]`, cut: true }
+      at = firstAt
+    }
   }
   const result =
     at >= authorityStart ? `${url.slice(0, authorityStart)}[REDACTED]${url.slice(at)}` : url
@@ -72,51 +75,72 @@ const firstOf = (text: string, characters: string[], from: number) => {
   return first
 }
 
-// Text with no scheme is cut at the first `?` or `#` that is followed somewhere by `=`
-// (`search?q=`, `?q=`, `#access_token=`, `mailto:…?subject=`) or comes after a `/`
-// (`/notes?term`, `/notes#id`); the rest of the token goes. A lone `Why?` or `#1` stays.
-const redactPlain = (text: string) => {
-  const firstSlash = text.indexOf('/')
+// Text with no scheme is cut at the first `?` or `#` inside a word (`search?prayer`,
+// `notes#prayer`, `/notes?term`) or followed somewhere by `=` (`?q=`, `#access_token=`,
+// `mailto:…?subject=`). A lone `Why?` or `#1` stays. Right after a URL (`…/Foo_(bar)#note`) any
+// `?` or `#` is cut.
+const redactPlain = (text: string, afterUrl = false) => {
   const lastEquals = text.lastIndexOf('=')
-  for (let index = 0; index < text.length - 1; index++) {
+  for (let index = 0; index < text.length; index++) {
     const character = text[index]
     if (character !== '?' && character !== '#') continue
-    if (lastEquals > index || (firstSlash !== -1 && firstSlash < index)) {
-      return text.slice(0, index)
-    }
+    const insideWord = index > 0 && index < text.length - 1
+    if (afterUrl || insideWord || lastEquals > index)
+      return { text: text.slice(0, index), cut: true }
   }
-  return text
+  return { text, cut: false }
 }
 
 // A URL ends at whitespace (tokens are split on it), a quote, an angle bracket, a bracket, a
-// comma or a `|`, so each URL in a JSON string or a list is handled on its own. Once a query is
+// comma or a `|`, so each URL in a JSON string or a list is handled on its own. Once something is
 // cut, the rest of the token goes with it: a query may carry on past those characters.
 const URL_END = new Set(['"', "'", '`', '<', '>', '(', ')', '[', ']', '{', '}', ',', '|'])
 
 const redactToken = (token: string) => {
   let result = ''
   let position = 0
+  let cut = false
+  let afterUrl = false
   while (position < token.length) {
     const schemeEnd = token.indexOf('://', position)
     if (schemeEnd === -1) {
-      result += redactPlain(token.slice(position))
+      const plain = redactPlain(token.slice(position), afterUrl)
+      result += plain.text
+      cut = plain.cut
       break
     }
     let schemeStart = schemeEnd
     while (schemeStart > position && URL_CHARACTER.test(token[schemeStart - 1])) schemeStart--
-    const prefix = token.slice(position, schemeStart)
-    const plain = redactPlain(prefix)
-    result += plain
-    if (plain !== prefix) break
+    const plain = redactPlain(token.slice(position, schemeStart), afterUrl)
+    result += plain.text
+    if (plain.cut) {
+      cut = true
+      break
+    }
     let urlEnd = schemeEnd + 3
     while (urlEnd < token.length && !URL_END.has(token[urlEnd])) urlEnd++
-    const { url, cut } = redactUrl(token.slice(schemeStart, urlEnd))
-    result += url
-    if (cut) break
+    const url = redactUrl(token.slice(schemeStart, urlEnd))
+    result += url.url
+    if (url.cut) {
+      cut = true
+      break
+    }
     position = urlEnd
+    afterUrl = true
   }
-  return result.length > MAX_TOKEN_LENGTH ? `[${result.length} chars]` : result
+  return {
+    text: result.length > MAX_TOKEN_LENGTH ? `[${result.length} chars]` : result,
+    cut,
+  }
 }
+
+// Secrets that need no URL: `Basic <credentials>`, `token=…`/`password=…` and quoted JSON
+// `"refreshToken": "…"` values (not `AuthError: …`, which is an error, not a secret). Runs only on text whose tokens are at most MAX_TOKEN_LENGTH long.
+const BASIC_CREDENTIALS = /\bBasic\s+[A-Za-z0-9+/=._~-]+/g
+const SECRET_VALUE =
+  /(\b\w*(?:token|password|passwd|pwd|secret|apikey|api_key|auth|session|cookie)\w*)(=|["']\s*:\s*["'])[^\s"'&,;]+/gi
+// Any address, accented letters included (the shared pattern is ASCII-only).
+const EMAIL = /[^\s@"'<>()[\]{},;:]+@[^\s@"'<>()[\]{},;:]+\.[^\s@"'<>()[\]{},;:.]{2,}/g
 
 export const redactText = (value: string, maxLength = MAX_TEXT_LENGTH) => {
   // Only about maxLength characters are scanned, cut between tokens so no secret is split in two.
@@ -126,8 +150,27 @@ export const redactText = (value: string, maxLength = MAX_TEXT_LENGTH) => {
     const lastSpace = text.search(/\s\S*$/)
     text = lastSpace === -1 ? text : text.slice(0, lastSpace)
   }
+  // Once a token loses a query, the rest of its line goes: a search with spaces in it
+  // (`search?q=pray for my mother`) carries on into the next tokens.
+  const lines = text.split('\n').map(line => {
+    let result = ''
+    for (const part of line.split(/(\s+)/)) {
+      if (/^\s*$/.test(part)) {
+        result += part
+        continue
+      }
+      const token = redactToken(part)
+      result += token.text
+      if (token.cut) break
+    }
+    return result
+  })
   const redacted = redactDiagnosticText(
-    text.split(/(\s+)/).map(redactToken).join(''),
+    lines
+      .join('\n')
+      .replace(BASIC_CREDENTIALS, 'Basic [REDACTED]')
+      .replace(SECRET_VALUE, '$1$2[REDACTED]')
+      .replace(EMAIL, '[REDACTED_EMAIL]'),
     Number.MAX_SAFE_INTEGER
   )
   return redacted.length > maxLength ? `${redacted.slice(0, maxLength)}…` : redacted
@@ -155,14 +198,21 @@ export const stripSelectorAttributes = (selector: string) => {
   return result
 }
 
-/** Redacts every string inside a value, at any depth. */
+// What a reader searched for, under any key that names it (appLogger's own list has only
+// `searchtext`): `q`, `query`, `term`, `keyword(s)`, `search…`, `…Search`, `…Query`.
+const SEARCH_KEY = /^(?:q|query|terms?|keywords?|search\w*|\w*(?:search|query))$/i
+
+/** Redacts every string inside a value, at any depth, and whatever a search key holds. */
 const redactDeep = (value: unknown, depth = 0): unknown => {
   if (typeof value === 'string') return redactText(value)
   if (!value || typeof value !== 'object') return value
   if (depth >= MAX_DEPTH) return '[max-depth]'
   if (Array.isArray(value)) return value.map(item => redactDeep(item, depth + 1))
   return Object.fromEntries(
-    Object.entries(value).map(([key, item]) => [key, redactDeep(item, depth + 1)])
+    Object.entries(value).map(([key, item]) => [
+      key,
+      SEARCH_KEY.test(key) && item != null ? '[REDACTED]' : redactDeep(item, depth + 1),
+    ])
   )
 }
 

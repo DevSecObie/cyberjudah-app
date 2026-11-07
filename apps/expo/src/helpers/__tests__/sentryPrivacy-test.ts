@@ -17,13 +17,14 @@ const event = (overrides: Partial<ErrorEvent> = {}): ErrorEvent => ({
 })
 
 describe('redactText', () => {
-  it('drops query strings and fragments from URLs and paths, keeps the rest', () => {
+  // After a cut query the rest of the line goes too (a search can hold spaces).
+  it('drops query strings and fragments from URLs and paths', () => {
     expect(
       redactText(
         'GET https://cyberjudah.io/api/search?q=private+words#top failed; see /notes/42?token=abc'
       )
-    ).toBe('GET https://cyberjudah.io/api/search failed; see /notes/42')
-    expect(redactText('cyberjudah://verse?ref=JHN.3.16 opened')).toBe('cyberjudah://verse opened')
+    ).toBe('GET https://cyberjudah.io/api/search')
+    expect(redactText('cyberjudah://verse?ref=JHN.3.16 opened')).toBe('cyberjudah://verse')
     expect(redactText('Why? Because #1 matters')).toBe('Why? Because #1 matters')
   })
 
@@ -131,7 +132,7 @@ describe('scrubSentryEvent', () => {
     )
     expect(scrubbed.message).toBe('failed for [REDACTED_EMAIL]')
     const exception = scrubbed.exception?.values?.[0]
-    expect(exception?.value).toBe('GET https://cyberjudah.io/x failed')
+    expect(exception?.value).toBe('GET https://cyberjudah.io/x')
     expect(exception?.stacktrace?.frames?.[0]).toEqual({ filename: 'https://cyberjudah.io/app.js' })
     expect(scrubbed.breadcrumbs).toEqual([{ category: 'ui', message: 'ok' }])
     expect(scrubbed.extra).toEqual({ note: '[REDACTED]', count: 2 })
@@ -159,12 +160,12 @@ describe('withPrivacy', () => {
 describe('review cases', () => {
   it('strips queries from scheme-less hosts and relative paths, without eating what follows', () => {
     expect(redactText('fetch failed: cyberjudah.io/api/search?q=private words')).toBe(
-      'fetch failed: cyberjudah.io/api/search words'
+      'fetch failed: cyberjudah.io/api/search'
     )
     expect(redactText('GET api/search?q=secret')).toBe('GET api/search')
     expect(redactText('path:/notes?id=42')).toBe('path:/notes')
     // Privacy over detail: text glued to a query goes with it.
-    expect(redactText('load(https://x/a?b=1),retry=3 failed')).toBe('load(https://x/a failed')
+    expect(redactText('load(https://x/a?b=1),retry=3 failed')).toBe('load(https://x/a')
   })
 
   it('removes passwords from URLs', () => {
@@ -278,14 +279,18 @@ describe('second review cases', () => {
 
 describe('third review cases', () => {
   it('finds credentials after an earlier # or ? in the same JSON token', () => {
-    expect(redactText('{"tag":"#1","url":"https://admin:hunter2@localhost/x"}')).toBe(
-      '{"tag":"#1","url":"https://[REDACTED]@localhost/x"}'
+    // The `#1` inside the token already cuts the rest of it: over-redaction, never a leak.
+    expect(redactText('{"tag":"#1","url":"https://admin:hunter2@localhost/x"}')).not.toMatch(
+      /hunter2|admin/
+    )
+    expect(redactText('{"url":"https://admin:hunter2@localhost/x"}')).toBe(
+      '{"url":"https://[REDACTED]@localhost/x"}'
     )
   })
 
   it('removes passwords holding ? or #, token-only userinfo, and keeps ports and @ paths', () => {
-    expect(redactText('https://u:p?ss@host/x')).toBe('https://[REDACTED]@host/x')
-    expect(redactText('https://u:p#ss@host/x')).toBe('https://[REDACTED]@host/x')
+    expect(redactText('https://u:p?ss@host/x')).toBe('https://[REDACTED]')
+    expect(redactText('https://u:p#ss@host/x')).toBe('https://[REDACTED]')
     expect(redactText('https://ghp_secret@localhost/x')).toBe('https://[REDACTED]@localhost/x')
     // Errs on the side of redacting: a port followed by an @ in the path reads like a password.
     expect(redactText('https://x:8080/users/@me')).toBe('https://[REDACTED]@me')
@@ -340,5 +345,68 @@ describe('fourth review cases', () => {
 
   it('removes a password that starts with digits and holds a /', () => {
     expect(redactText('https://admin:2024/pw@db.x/y')).toBe('https://[REDACTED]@db.x/y')
+  })
+})
+
+describe('fifth review cases', () => {
+  it('removes passwords holding a / and an = or &', () => {
+    for (const text of [
+      'https://user:abc/def==@db.example.com/x',
+      'postgres://admin:s3cr=t/x@db:5432/app',
+      'https://user:p&ss/w@host/x',
+    ]) {
+      expect(redactText(text)).not.toMatch(/abc|def|s3cr|p&ss|admin|user/)
+    }
+  })
+
+  it('cuts a fragment or query right after a URL that ended at a bracket, comma or |', () => {
+    expect(redactText('https://en.wikipedia.org/wiki/Foo_(bar)#my-secret-note')).not.toMatch(
+      /secret/
+    )
+    expect(redactText('https://x.io/notes,abc#prayer-for-son')).not.toMatch(/prayer/)
+    expect(redactText('https://x.io/notes|search?prayer')).not.toMatch(/prayer/)
+  })
+
+  it('drops the rest of the line after a cut query, so searches with spaces go whole', () => {
+    expect(redactText('Failed https://api.x.io/search?q=pray for my mother\nnext line')).toBe(
+      'Failed https://api.x.io/search\nnext line'
+    )
+    expect(redactText('search?q=pray for my mother')).toBe('search')
+  })
+
+  it('cuts a ? or # inside a word, keeps Why? and #1', () => {
+    expect(redactText('search?prayer')).toBe('search')
+    expect(redactText('notes#prayer-for-son')).toBe('notes')
+    expect(redactText('Why? #1 C#')).toBe('Why? #1 C#')
+  })
+
+  it('redacts Basic credentials, secret assignments and quoted JSON secrets', () => {
+    expect(redactText('Authorization: Basic dXNlcjpwYXNzd29yZA==')).toBe(
+      'Authorization: Basic [REDACTED]'
+    )
+    expect(redactText('refresh_token=AMf-vBxSecretRefresh123')).toBe('refresh_token=[REDACTED]')
+    expect(
+      redactText('{"password":"hunter2","refreshToken":"AMf-vBxSecret","count":3}')
+    ).not.toMatch(/hunter2|AMf/)
+    expect(redactText('AuthError: Network request failed')).toBe(
+      'AuthError: Network request failed'
+    )
+  })
+
+  it('redacts non-ASCII email addresses', () => {
+    expect(redactText('sent to josé@exemple.fr')).toBe('sent to [REDACTED_EMAIL]')
+  })
+
+  it('redacts search keys in extra, tags and contexts', () => {
+    const scrubbed = scrubSentryEvent(
+      event({
+        extra: { query: 'pray for my mother', term: 'adultery', count: 2 },
+        tags: { searchTerm: 'my secret', feature: 'search' },
+        contexts: { diagnostic: { q: 'secret words' } },
+      })
+    )
+    expect(JSON.stringify(scrubbed)).not.toMatch(/pray|adultery|my secret|secret words/)
+    expect(scrubbed.extra?.count).toBe(2)
+    expect(scrubbed.tags?.feature).toBe('search')
   })
 })
