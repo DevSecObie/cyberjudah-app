@@ -31,7 +31,7 @@ import { useRouter } from 'expo-router'
 import produce from 'immer'
 import { useSetAtom } from 'jotai/react'
 import { getDefaultStore, PrimitiveAtom } from 'jotai/vanilla'
-import { useEffect, useRef, useState } from 'react'
+import { startTransition, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQueryClient } from '@tanstack/react-query'
 import { AppState, Platform, useWindowDimensions, type ViewStyle } from 'react-native'
@@ -886,11 +886,15 @@ export const BibleDOMWrapper = ({
         const { verseKey: verseId } = verseSelection
         const verseVersion = getDisplayedVersion(verseSelection.version)
 
-        if (selectedVerses[verseId] && verseVersion === (selectedVersesVersion ?? version)) {
-          removeSelectedVerse(verseId)
-        } else {
-          addSelectedVerse(verseId, verseVersion)
-        }
+        // The reader already shows the tapped verse as selected: the rest of the screen (the
+        // selection bar, the tab) follows as a transition, so the tap is painted at once.
+        startTransition(() => {
+          if (selectedVerses[verseId] && verseVersion === (selectedVersesVersion ?? version)) {
+            removeSelectedVerse(verseId)
+          } else {
+            addSelectedVerse(verseId, verseVersion)
+          }
+        })
 
         break
       }
@@ -1232,9 +1236,8 @@ export const BibleDOMWrapper = ({
           toast.success(t('bible.error.databaseRecovered'))
         } catch {
           toast.error(t('bible.error.databaseOpenFailed'))
-        } finally {
-          setIsResettingDatabase(false)
         }
+        setIsResettingDatabase(false)
         break
       }
 

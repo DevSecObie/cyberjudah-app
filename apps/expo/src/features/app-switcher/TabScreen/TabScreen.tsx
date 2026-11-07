@@ -1,7 +1,8 @@
 import { TabCommandContext } from '~common/useTabCommands'
 import { PrimitiveAtom } from 'jotai/vanilla'
+import { selectAtom } from 'jotai/vanilla/utils'
 import { useAtomValue } from 'jotai/react'
-import React, { memo, Ref, Suspense } from 'react'
+import React, { memo, Ref, Suspense, useMemo } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { useAnimatedReaction, useAnimatedStyle } from 'react-native-reanimated'
 import { runOnJS } from 'react-native-worklets'
@@ -91,8 +92,22 @@ export type TabScreenProps = {
   ref?: Ref<View>
 }
 
+// What this screen draws from the tab. A change inside the tab (a selected verse, a new
+// chapter) is read by the tab's own screen: drawing the frame around it again is not needed.
+const tabFrameKey = (tab: TabItem) =>
+  [
+    tab.type,
+    tab.id,
+    tab.title,
+    tab.type === 'commentary' ? isValidCommentaryVerse(tab.data?.verse) : '',
+  ].join('\n')
+
+const isSameTabFrame = (a: TabItem, b: TabItem) =>
+  a === b || (Boolean(a) && Boolean(b) && tabFrameKey(a) === tabFrameKey(b))
+
 const TabScreen = ({ tabAtom, ref }: TabScreenProps) => {
-  const tab = useAtomValue(tabAtom)
+  const tabFrameAtom = useMemo(() => selectAtom(tabAtom, tab => tab, isSameTabFrame), [tabAtom])
+  const tab = useAtomValue(tabFrameAtom)
   const activeTabId = useAtomValue(activeTabIdAtom)
   const appSwitcherMode = useAtomValue(appSwitcherModeAtom)
   const { height: HEIGHT } = useSafeAreaFrame()

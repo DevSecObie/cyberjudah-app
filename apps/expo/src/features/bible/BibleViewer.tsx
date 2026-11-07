@@ -11,7 +11,15 @@ import {
 import type { InlineCommentaryRequest } from '~features/commentaries/InlineCommentaryReader'
 import { useConfirmDialog } from '~common/ConfirmDialog/useConfirmDialog'
 import * as Sentry from '@sentry/react-native'
-import { useCallback, useEffect, useEffectEvent, useLayoutEffect, useRef, useState } from 'react'
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import { Platform, type LayoutChangeEvent } from 'react-native'
 import { useDispatch, useSelector, useStore } from 'react-redux'
 import Box, { RightInsetCleared, TouchableBox, useRightInsetToClear } from '~common/ui/Box'
@@ -386,15 +394,19 @@ const BibleViewer = ({
   })
   // Buttons, swipes and audio all change chapter through these three: plan mode bounds them here.
   const planLocation = { book: book.Numero, chapter }
+  // The new chapter is drawn as a transition: the tap is painted at once and the chapter on
+  // screen stays until the next one is ready.
   const goToPrevAvailableChapter = () => {
-    if (canGoToPreviousPlanChapter(planPassage, planLocation)) actions.goToPrevChapter(coverageData)
+    if (canGoToPreviousPlanChapter(planPassage, planLocation))
+      startTransition(() => actions.goToPrevChapter(coverageData))
   }
   const goToNextAvailableChapter = () => {
-    if (canGoToNextPlanChapter(planPassage, planLocation)) actions.goToNextChapter(coverageData)
+    if (canGoToNextPlanChapter(planPassage, planLocation))
+      startTransition(() => actions.goToNextChapter(coverageData))
   }
   const goToChapter: typeof actions.goToChapter = target => {
     if (isInPlanPassage(planPassage, { book: target.book.Numero, chapter: target.chapter }))
-      actions.goToChapter(target)
+      startTransition(() => actions.goToChapter(target))
   }
 
   const mainChapterRequest = {
@@ -1707,14 +1719,14 @@ const BibleViewer = ({
       if (!chip) return
       const entry = getCommentaryByPublicationId(chip.resourceId, chip.language)
       if (!entry) return
-      const openCommentary = (sectionId = chip.sectionId) =>
+      const openCommentary = () =>
         pushRouteOnce({
           pathname: '/commentary-entry',
           params: {
             projectionId: `${entry.id}:${chip.language}`,
             book: String(book.Numero),
             chapter: String(chapter),
-            sectionId,
+            sectionId: chip.sectionId,
           },
         })
       if (Platform.OS !== 'web') {
