@@ -458,3 +458,49 @@ describe('non-string fields', () => {
     expect(redactText(5 as unknown as string)).toBe(5)
   })
 })
+
+// GlitchTip matches a crash to its uploaded source map through debug_meta and the frame's file
+// name (scripts/stamp-sourcemap-debugid.mjs, .github/workflows/cyberjudah-*). Scrubbing must keep
+// both, or every stack trace stays unreadable.
+describe('source map matching', () => {
+  it('keeps debug_meta and Hermes frame positions', () => {
+    const debugId = '388155a4-17b6-44a6-983b-f967e1a78423'
+    const scrubbed = scrubSentryEvent(
+      event({
+        exception: {
+          values: [
+            {
+              type: 'Error',
+              value: 'boom',
+              stacktrace: {
+                frames: [
+                  {
+                    filename: 'app:///index.android.bundle',
+                    abs_path: 'app:///index.android.bundle',
+                    lineno: 1,
+                    colno: 580635,
+                  },
+                  { filename: 'app:///main.jsbundle', lineno: 1, colno: 12 },
+                ],
+              },
+            },
+          ],
+        },
+        debug_meta: {
+          images: [{ type: 'sourcemap', code_file: 'app:///index.android.bundle', debug_id: debugId }],
+        },
+      })
+    )
+    const frames = scrubbed?.exception?.values?.[0]?.stacktrace?.frames
+    expect(frames?.[0]).toMatchObject({
+      filename: 'app:///index.android.bundle',
+      abs_path: 'app:///index.android.bundle',
+      lineno: 1,
+      colno: 580635,
+    })
+    expect(frames?.[1]).toMatchObject({ filename: 'app:///main.jsbundle', colno: 12 })
+    expect(scrubbed?.debug_meta?.images).toEqual([
+      { type: 'sourcemap', code_file: 'app:///index.android.bundle', debug_id: debugId },
+    ])
+  })
+})

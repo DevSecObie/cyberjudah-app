@@ -83,10 +83,15 @@ jobs:
           security find-identity -v -p codesigning "$RUNNER_TEMP/staging.keychain-db"
       - run: ruby apps/expo/scripts/configure-ios-signing.rb "$RUNNER_TEMP/ios-signing/signing.json"
       - name: Archive and export a signed IPA without uploading
+        env:
+          # Read by the Xcode bundle phase (sentry-xcode.sh, react-native-xcode.sh): the composed
+          # Hermes source map is written here instead of a temporary build folder.
+          SOURCEMAP_FILE: ${{ runner.temp }}/ios-sourcemap/main.jsbundle.map
         run: |
           set -euo pipefail
           workspace=$(find apps/expo/ios -maxdepth 1 -name '*.xcworkspace' -print -quit)
           scheme=$(basename "$workspace" .xcworkspace)
+          mkdir -p "$(dirname "$SOURCEMAP_FILE")"
           xcodebuild -workspace "$workspace" -scheme "$scheme" -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/CyberJudah-Staging.xcarchive" archive > "$RUNNER_TEMP/ios-build.log" 2>&1 || { tail -100 "$RUNNER_TEMP/ios-build.log"; exit 1; }
           # A header patch alone is ineffective when Expo uses the prebuilt React core.
           grep -E 'CompileC .*RCTReactNativeFactory\.(o|mm)' "$RUNNER_TEMP/ios-build.log" > /dev/null || { echo 'Native factory was not compiled from the patched sources'; exit 1; }
@@ -103,6 +108,27 @@ jobs:
             ${{ runner.temp }}/ios-build.log
             ${{ runner.temp }}/ios-export.log
           retention-days: 14
+      # Source maps for GlitchTip: the NAS (ask-cyberjudah-monitoring, sourcemap-sync) downloads
+      # every cyberjudah-sourcemaps-* artifact and uploads it, so crash reports show the real file
+      # and line. Never blocks the build: if this fails, only the stack traces stay unreadable.
+      - name: Collect the source map
+        id: sourcemaps
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          app=$(find "$RUNNER_TEMP/CyberJudah-Staging.xcarchive/Products/Applications" -maxdepth 1 -name '*.app' -print -quit)
+          map="$RUNNER_TEMP/ios-sourcemap/main.jsbundle.map"
+          test -s "$map" || { echo "::warning::No source map at $map"; exit 1; }
+          apps/expo/scripts/collect-sourcemaps.sh "$RUNNER_TEMP/sourcemaps" "$app/main.jsbundle" "$map"
+      - uses: actions/upload-artifact@v4
+        if: steps.sourcemaps.outcome == 'success'
+        continue-on-error: true
+        with:
+          name: cyberjudah-sourcemaps-ios-staging-${{ github.run_id }}
+          path: ${{ runner.temp }}/sourcemaps
+          # As long as the app artifact: if the NAS is offline, the maps wait for it.
+          retention-days: 30
+          if-no-files-found: error
       - name: Remove temporary signing credentials
         if: always()
         run: |
