@@ -410,3 +410,38 @@ describe('fifth review cases', () => {
     expect(scrubbed.tags?.feature).toBe('search')
   })
 })
+
+describe('final review cases', () => {
+  it('keeps redacting the token after Bearer in JSON and assignments', () => {
+    for (const text of [
+      '{"Authorization": "Bearer ya29.a0AfH6SMBopaque"}',
+      'authorization=Bearer ya29.a0AfH6SMBopaque',
+      'token=Bearer sk_live_abc123',
+      'Authorization: Basic Bearer opaque123',
+    ]) {
+      expect(redactText(text)).not.toMatch(/ya29|sk_live|opaque123/)
+    }
+  })
+
+  it('catches the second address in glued text', () => {
+    expect(redactText('`@a.io@sarah.cohen.net')).not.toMatch(/sarah/)
+  })
+
+  it('never throws on events that break their types, and still scrubs them', () => {
+    const broken = {
+      type: undefined,
+      fingerprint: ['a', 5],
+      message: { formatted: 'for reader@example.com' },
+      breadcrumbs: [null, { category: 'ui', message: 'ok' }],
+      exception: {
+        values: [null, { value: 'x', stacktrace: { frames: [null, { filename: 123 }] } }],
+      },
+      threads: { values: [null] },
+    } as unknown as ErrorEvent
+    let scrubbed: ErrorEvent | undefined
+    expect(() => {
+      scrubbed = scrubSentryEvent(broken)
+    }).not.toThrow()
+    expect(JSON.stringify(scrubbed)).not.toMatch(/reader@/)
+  })
+})

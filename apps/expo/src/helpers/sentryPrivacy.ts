@@ -142,7 +142,9 @@ const SECRET_VALUE =
 // Any address, accented letters included (the shared pattern is ASCII-only).
 const EMAIL = /[^\s@"'<>()[\]{},;:]+@[^\s@"'<>()[\]{},;:]+\.[^\s@"'<>()[\]{},;:.]{2,}/g
 
-export const redactText = (value: string, maxLength = MAX_TEXT_LENGTH) => {
+export const redactText = (value: string, maxLength = MAX_TEXT_LENGTH): string => {
+  // Events can break their declared types; throwing here would lose the whole report.
+  if (typeof value !== 'string') return value
   // Only about maxLength characters are scanned, cut between tokens so no secret is split in two.
   let text = value
   if (text.length > maxLength + MAX_TOKEN_LENGTH) {
@@ -165,14 +167,12 @@ export const redactText = (value: string, maxLength = MAX_TEXT_LENGTH) => {
     }
     return result
   })
-  const redacted = redactDiagnosticText(
-    lines
-      .join('\n')
-      .replace(BASIC_CREDENTIALS, 'Basic [REDACTED]')
-      .replace(SECRET_VALUE, '$1$2[REDACTED]')
-      .replace(EMAIL, '[REDACTED_EMAIL]'),
-    Number.MAX_SAFE_INTEGER
-  )
+  // The shared patterns (Bearer tokens, JWTs, emails) go first, so a later pattern can't take
+  // the word `Bearer` for the secret and leave the token after it.
+  const redacted = redactDiagnosticText(lines.join('\n'), Number.MAX_SAFE_INTEGER)
+    .replace(BASIC_CREDENTIALS, 'Basic [REDACTED]')
+    .replace(SECRET_VALUE, '$1$2[REDACTED]')
+    .replace(EMAIL, '[REDACTED_EMAIL]')
   return redacted.length > maxLength ? `${redacted.slice(0, maxLength)}…` : redacted
 }
 
@@ -262,6 +262,7 @@ export const scrubSentryBreadcrumb = (breadcrumb: Breadcrumb): Breadcrumb | null
 type Frame = { vars?: unknown; filename?: string; abs_path?: string }
 const scrubFrames = (frames: Frame[] | undefined) => {
   for (const frame of frames ?? []) {
+    if (!frame) continue
     delete frame.vars
     if (frame.filename) frame.filename = redactText(frame.filename)
     if (frame.abs_path) frame.abs_path = redactText(frame.abs_path)
@@ -295,13 +296,14 @@ export const scrubSentryEvent = (event: ErrorEvent): ErrorEvent => {
   if (event.request) {
     event.request = event.request.url ? { url: redactText(event.request.url) } : {}
   }
-  if (event.message) event.message = redactText(event.message)
+  if (event.message) event.message = redactDeep(event.message) as string
   if (event.transaction) event.transaction = redactText(event.transaction)
-  if (event.fingerprint) event.fingerprint = event.fingerprint.map(part => redactText(part))
+  if (event.fingerprint) event.fingerprint = event.fingerprint.map(part => redactText(String(part)))
   if (event.logentry) event.logentry = redactDeep(event.logentry) as ErrorEvent['logentry']
   if (event.tags) event.tags = redactDeep(event.tags) as ErrorEvent['tags']
 
   for (const exception of event.exception?.values ?? []) {
+    if (!exception) continue
     if (exception.type) exception.type = redactText(exception.type)
     if (exception.value) exception.value = redactText(exception.value)
     if (exception.mechanism?.data) {
@@ -311,10 +313,11 @@ export const scrubSentryEvent = (event: ErrorEvent): ErrorEvent => {
     }
     scrubFrames(exception.stacktrace?.frames)
   }
-  for (const thread of event.threads?.values ?? []) scrubFrames(thread.stacktrace?.frames)
+  for (const thread of event.threads?.values ?? []) scrubFrames(thread?.stacktrace?.frames)
 
   if (event.breadcrumbs) {
     event.breadcrumbs = event.breadcrumbs
+      .filter(Boolean)
       .map(scrubSentryBreadcrumb)
       .filter((breadcrumb): breadcrumb is Breadcrumb => breadcrumb !== null)
   }
