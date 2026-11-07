@@ -173,7 +173,11 @@ const FireAuth = class {
     this.unsubscribeAuth?.()
     this.unsubscribeAuth = onAuthStateChanged(authInstance, async user => {
       const revision = ++this.authRevision
-      if (!user) void identifyAnalyticsUser(null)
+      if (!user) {
+        void identifyAnalyticsUser(null)
+        // Later crashes must not be filed under the account that just signed out.
+        Sentry.getCurrentScope().setUser(null)
+      }
       if (user && user.isAnonymous) {
         console.log('[Auth] Deprecated, user exists and is anonymous', user.uid)
         return

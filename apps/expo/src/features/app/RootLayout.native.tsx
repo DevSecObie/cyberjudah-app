@@ -93,8 +93,9 @@ const initSentry = () => {
     dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
     // Only real builds report: a developer's `yarn start` session would page the owner on Telegram.
     enabled: !__DEV__,
-    // Preview and production builds share one GlitchTip project; the update channel tells them apart.
-    environment: Updates.channel || 'production',
+    // Preview and production builds share one GlitchTip project; the update channel tells them
+    // apart. A build without a channel (a local Release build) must not pass for production.
+    environment: Updates.channel || 'no-channel',
     // Bugs are never sampled, especially during startup where a single failed migration can
     // block the app. Expected conditions (offline, cancelled requests, App Check) and repeats
     // are filtered by `filterSentryEvent`.
@@ -102,11 +103,13 @@ const initSentry = () => {
     sendDefaultPii: false,
     maxBreadcrumbs: 100,
     ignoreErrors: ignoreSentryErrors,
-    // Readers' data stays out of crash reports (helpers/sentryPrivacy.ts). The native iOS SDK
-    // would otherwise record every request URL, query string included, outside these hooks.
+    // Readers' data stays out of crash reports (helpers/sentryPrivacy.ts). Hard native crashes
+    // skip those hooks, so the native SDK records no breadcrumbs of its own: iOS would keep every
+    // request URL (query string included) and the labels of tapped views.
     beforeSend: withPrivacy(filterSentryEvent),
     beforeBreadcrumb: scrubSentryBreadcrumb,
     enableNetworkBreadcrumbs: false,
+    enableAutoBreadcrumbTracking: false,
     attachScreenshot: false,
     attachViewHierarchy: false,
   })

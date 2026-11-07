@@ -149,3 +149,77 @@ describe('withPrivacy', () => {
     expect(seen).toEqual(['drop me', 'keep reader@example.com'])
   })
 })
+
+describe('review cases', () => {
+  it('strips queries from scheme-less hosts and relative paths, without eating what follows', () => {
+    expect(redactText('fetch failed: cyberjudah.io/api/search?q=private words')).toBe(
+      'fetch failed: cyberjudah.io/api/search words'
+    )
+    expect(redactText('GET api/search?q=secret')).toBe('GET api/search')
+    expect(redactText('path:/notes?id=42')).toBe('path:/notes')
+    expect(redactText('load(https://x/a?b=1),retry=3 failed')).toBe(
+      'load(https://x/a),retry=3 failed'
+    )
+  })
+
+  it('removes passwords from URLs', () => {
+    expect(redactText('connect https://admin:s3cret@localhost:8080/db failed')).toBe(
+      'connect https://[REDACTED]@localhost:8080/db failed'
+    )
+  })
+
+  it('drops element attributes (aria-label) from web click and input breadcrumbs', () => {
+    expect(
+      scrubSentryBreadcrumb({
+        category: 'ui.click',
+        message: 'div.css-1x > div[aria-label="My prayer list"]',
+        data: { label: 'My prayer list' },
+      })
+    ).toEqual({ category: 'ui.click', message: 'div.css-1x > div' })
+  })
+
+  it('strips queries nested anywhere in breadcrumb data, extra and contexts', () => {
+    const scrubbed = scrubSentryEvent(
+      event({
+        breadcrumbs: [
+          { category: 'bible-strong.download', data: { request: { link: 'https://h/a?token=1' } } },
+        ],
+        extra: { attempt: { link: 'https://h/b?token=2' } },
+        contexts: { diagnostic: { url: 'https://h/c?token=3', nested: { href: '/d?token=4' } } },
+      })
+    )
+    expect(JSON.stringify(scrubbed)).not.toMatch(/token=/)
+  })
+
+  it('scrubs tags, transaction, fingerprint, exception type, mechanism data and threads', () => {
+    const scrubbed = scrubSentryEvent(
+      event({
+        tags: { link: 'https://h/a?q=secret' },
+        transaction: '/search?q=secret',
+        fingerprint: ['reader@example.com'],
+        exception: {
+          values: [
+            {
+              type: 'Error for reader@example.com',
+              mechanism: { type: 'generic', data: { url: 'https://h/b?q=secret' } },
+            },
+          ],
+        },
+        threads: {
+          values: [{ stacktrace: { frames: [{ filename: '/app.js?q=secret', vars: {} }] } }],
+        },
+      })
+    )
+    expect(JSON.stringify(scrubbed)).not.toMatch(/secret|reader@/)
+    expect(scrubbed.threads?.values?.[0]?.stacktrace?.frames?.[0]).toEqual({ filename: '/app.js' })
+  })
+
+  it('keeps SDK and diagnostic contexts whole (no key redaction, no 500-char cut)', () => {
+    const componentStack = 'in View\n'.repeat(200)
+    const scrubbed = scrubSentryEvent(
+      event({ contexts: { react: { componentStack }, diagnostic: { stateName: 'ready' } } })
+    )
+    expect(scrubbed.contexts?.react?.componentStack).toBe(componentStack)
+    expect(scrubbed.contexts?.diagnostic).toEqual({ stateName: 'ready' })
+  })
+})
