@@ -6,6 +6,8 @@ import { useResponsiveWorkspace } from '~features/app-switcher/utils/useResponsi
 import { getAppleReviewing } from '~helpers/getAppleReviewing'
 import { Image } from 'expo-image'
 import * as Updates from 'expo-updates'
+import * as Application from 'expo-application'
+import Constants from 'expo-constants'
 import { useSetAtom } from 'jotai/react'
 import { memo, useRef, useState, type ComponentPropsWithRef as UIComponentProps } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -76,7 +78,9 @@ const Infos = memo(() => {
   return (
     <Box className="overflow-hidden border-continuous flex-row justify-end px-[16px] py-[8px]">
       <Text className="text-grey text-[9px]">
-        Version: {app.version} {Platform.Version}
+        Version:{' '}
+        {Application.nativeApplicationVersion ?? Constants.expoConfig?.version ?? app.version}{' '}
+        {Platform.Version}
       </Text>
     </Box>
   )

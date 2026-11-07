@@ -1,12 +1,14 @@
 import { ExpoConfig, ConfigContext } from 'expo/config'
 
 const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
-// CyberJudah keeps its own TestFlight version; 28.3 is its first on Bible Strong 28 (Expo 58).
-const APP_VERSION = isCyberJudah ? '28.3.0' : '28.0.1'
-// Patch releases share a runtime and receive the same OTA updates. Any native change must
-// ship in a new major or minor version, which creates a new runtime.
+// CyberJudah's first public release has its own version, independent of Bible Strong.
+const APP_VERSION = isCyberJudah ? '1.0.0' : '28.0.1'
+// Native changes require a separate runtime even when the App Store version stays the same.
+// CyberJudah native revision 1 includes Expo Print; older test builds remain on runtime 28.3.
 const [majorVersion, minorVersion] = APP_VERSION.split('.')
-const RUNTIME_VERSION = `${majorVersion}.${minorVersion}`
+const RUNTIME_VERSION = isCyberJudah
+  ? `${majorVersion}.${minorVersion}.1`
+  : `${majorVersion}.${minorVersion}`
 // The owner's live-editing dev app ("CyberJudah Preview"), installed next to TestFlight builds.
 const isCyberJudahPreview = process.env.BUNDLE_IDENTIFIER === 'io.cyberjudah.app.preview'
 // The Preview app built on Expo's servers (eas.json "cyberjudah-preview") runs without the Mac:

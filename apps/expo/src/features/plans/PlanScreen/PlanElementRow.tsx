@@ -38,6 +38,8 @@ const PlanElementRow = ({
       : slice.type === 'Image'
         ? t('readingPlans.image')
         : undefined
+  // Published chapter notes share an introduction; their title already identifies the reading.
+  const opening = slice.type === 'Text' && slice.notePath ? undefined : size?.opening
   const minutes = size?.words
     ? t('readingPlans.minutes', { count: readingMinutes(size.words) })
     : undefined
@@ -82,9 +84,9 @@ const PlanElementRow = ({
               </Text>
             )}
           </Box>
-          {size?.opening ? (
+          {opening ? (
             <Text className="text-grey text-[14px]" style={{ fontFamily }} numberOfLines={1}>
-              {size.opening}
+              {opening}
             </Text>
           ) : kind ? (
             <Text className="text-grey text-[13px]">{kind}</Text>

@@ -35,7 +35,13 @@ export async function printScreenPdf(html: string, fileName: string, title: stri
     )
   }
   const { printToFileAsync } = await import('expo-print')
-  const result = await printToFileAsync({ html, base64: true, width: 612, height: 792 })
+  const result = await printToFileAsync({
+    html,
+    base64: true,
+    width: 612,
+    height: 792,
+    margins: { top: 36, right: 36, bottom: 36, left: 36 },
+  })
   if (!result.base64) throw new Error('PDF output was empty')
   await sharePdf(result.base64, fileName, title)
 }
