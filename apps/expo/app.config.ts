@@ -143,9 +143,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     ...(isCyberJudah ? ['./plugins/withCyberJudahBilling.js'] : []),
     'expo-sharing',
-    // The web export splits each screen into its own file: as one file it passes Cloudflare's
-    // 25 MB limit, and a phone browser would download every screen before showing the first.
-    ['expo-router', { asyncRoutes: { web: true, default: false } }],
+    'expo-router',
     'expo-asset',
     'expo-image',
     'expo-sqlite',
@@ -296,11 +294,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
           },
   experiments: {
     reactCompiler: true,
-    // Only the web export (yarn web:export) asks for this: each script file holds the modules one
-    // exact set of screens shares, so a screen downloads only what it uses (the default puts
-    // everything two screens share in one file that every page loads first). Phone builds and
-    // updates, including their in-app web views, keep the default.
-    ...(process.env.EXPO_WEB_GRANULAR_CHUNKS === '1' ? { chunking: { mode: 'granular' } } : {}),
   },
   runtimeVersion: RUNTIME_VERSION,
 })
