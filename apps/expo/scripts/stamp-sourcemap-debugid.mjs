@@ -7,7 +7,8 @@
 // carries it as `sentry-dbid-<uuid>`, so it is read from there.
 //
 // Usage: node stamp-sourcemap-debugid.mjs <bundle> <source map>
-// Fails when the bundle has no debug ID, has more than one, or the map already names another one.
+// Fails when the bundle has no debug ID, has more than one, or the map names another one in
+// either spelling (debugId, debug_id).
 import { readFileSync, writeFileSync } from 'node:fs'
 
 const [bundlePath, mapPath] = process.argv.slice(2)
@@ -27,16 +28,18 @@ if (ids.size !== 1) {
 const [debugId] = ids
 
 const map = JSON.parse(readFileSync(mapPath, 'utf8'))
-const existing = (map.debugId || map.debug_id || '').toLowerCase()
-if (existing && existing !== debugId) {
-  console.error(`${mapPath} names debug ID ${existing}, but the bundle has ${debugId}`)
+const named = [map.debugId, map.debug_id].filter(Boolean).map(id => String(id).toLowerCase())
+const wrong = named.find(id => id !== debugId)
+if (wrong) {
+  console.error(`${mapPath} names debug ID ${wrong}, but the bundle has ${debugId}`)
   process.exit(1)
 }
 if (!Array.isArray(map.sources) || typeof map.mappings !== 'string' || map.mappings.length === 0) {
   console.error(`${mapPath} is not a usable source map`)
   process.exit(1)
 }
-if (!existing) {
+// Both spellings, as Sentry's own copy-debugid.js writes them, whichever the reader looks for.
+if (map.debugId !== debugId || map.debug_id !== debugId) {
   map.debugId = debugId
   map.debug_id = debugId
   writeFileSync(mapPath, JSON.stringify(map))

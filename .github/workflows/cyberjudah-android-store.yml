@@ -133,7 +133,8 @@ jobs:
         with:
           name: cyberjudah-sourcemaps-android-store-${{ env.CYBERJUDAH_ANDROID_VERSION_CODE }}-${{ github.run_id }}
           path: ${{ runner.temp }}/sourcemaps
-          retention-days: 7
+          # As long as the app artifact: if the NAS is offline, the maps wait for it.
+          retention-days: 30
           if-no-files-found: error
       - name: Remove the upload key
         if: always()

@@ -59,6 +59,7 @@ jobs:
         continue-on-error: true
         run: |
           set -euo pipefail
+          shopt -s nullglob
           pairs=()
           for map in apps/expo/dist/_expo/static/js/*/*.hbc.map; do
             pairs+=("${map%.map}" "$map")
@@ -71,5 +72,6 @@ jobs:
         with:
           name: cyberjudah-sourcemaps-ota-${{ inputs.channel }}-${{ github.run_id }}
           path: ${{ runner.temp }}/sourcemaps
-          retention-days: 7
+          # As long as the app artifact: if the NAS is offline, the maps wait for it.
+          retention-days: 30
           if-no-files-found: error

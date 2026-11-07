@@ -114,5 +114,6 @@ jobs:
         with:
           name: cyberjudah-sourcemaps-android-staging-${{ github.run_id }}
           path: ${{ runner.temp }}/sourcemaps
-          retention-days: 7
+          # As long as the app artifact: if the NAS is offline, the maps wait for it.
+          retention-days: 30
           if-no-files-found: error
