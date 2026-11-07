@@ -5,9 +5,9 @@
   "scripts": {
     "eas-build-pre-install": "corepack enable && if [ \"$EAS_BUILD_PROFILE\" = production ]; then rm -f .env.production .env.staging .env.development; fi",
     "start": "expo start --dev-client",
-    "update:cyberjudah:staging": "dotenv -e .env.cyberjudah.example -- sh -c 'EXPO_NO_BUNDLE_SPLITTING=true expo export --platform ios --platform android --output-dir dist && open-ota publish --skip-export --dist dist --branch staging \"$@\"' --",
-    "update:cyberjudah:preview": "dotenv -e .env.cyberjudah.example -v \"APP_NAME=CyberJudah Preview\" -v BUNDLE_IDENTIFIER=io.cyberjudah.app.preview -v EAS_BUILD_CHANNEL=preview -- sh -c 'EXPO_NO_BUNDLE_SPLITTING=true expo export --platform ios --output-dir dist && open-ota publish --skip-export --dist dist --branch preview \"$@\"' --",
-    "update:cyberjudah:production": "dotenv -e .env.cyberjudah.production.example -- sh -c 'EXPO_NO_BUNDLE_SPLITTING=true expo export --platform ios --platform android --output-dir dist && open-ota publish --skip-export --dist dist --branch production \"$@\"' --",
+    "update:cyberjudah:staging": "dotenv -e .env.cyberjudah.example -- sh -c 'EXPO_NO_BUNDLE_SPLITTING=true expo export --platform ios --platform android --source-maps --output-dir dist && open-ota publish --skip-export --dist dist --branch staging \"$@\"' --",
+    "update:cyberjudah:preview": "dotenv -e .env.cyberjudah.example -v \"APP_NAME=CyberJudah Preview\" -v BUNDLE_IDENTIFIER=io.cyberjudah.app.preview -v EAS_BUILD_CHANNEL=preview -- sh -c 'EXPO_NO_BUNDLE_SPLITTING=true expo export --platform ios --source-maps --output-dir dist && open-ota publish --skip-export --dist dist --branch preview \"$@\"' --",
+    "update:cyberjudah:production": "dotenv -e .env.cyberjudah.production.example -- sh -c 'EXPO_NO_BUNDLE_SPLITTING=true expo export --platform ios --platform android --source-maps --output-dir dist && open-ota publish --skip-export --dist dist --branch production \"$@\"' --",
     "update:cyberjudah:rollback-to-embedded:production": "dotenv -e .env.cyberjudah.production.example -- open-ota rollback-to-embedded --branch production",
     "build:android:dev": "rm -rf \"${TMPDIR}metro-cache\" && dotenv -c development -- eas build -p android --local --profile development --non-interactive",
     "build:android:prod": "rm -rf \"${TMPDIR}metro-cache\" && dotenv -c production -- eas build -p android --local --profile production --non-interactive",
