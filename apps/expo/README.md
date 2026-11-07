@@ -81,7 +81,7 @@ These are local EAS builds. A production build also needs values that are not in
 
 | File | Variables |
 |------|-----------|
-| `.env` | `SENTRY_AUTH_TOKEN`, `EXPO_PUBLIC_DEEPL_AUTH_KEY`, `YOUTUBE_API_KEY` |
+| `.env` | `EXPO_PUBLIC_DEEPL_AUTH_KEY`, `YOUTUBE_API_KEY` |
 | `.env.local` | `BIBLE_STRONG_ARCHIVE_KEYS` (offline-copy master keys, ADR-0065) |
 
 On a machine without these files, export the variables instead, and only those: an exported variable overrides the value `.env.production` sets. Without `BIBLE_STRONG_ARCHIVE_KEYS` the build still succeeds, but the app cannot decrypt the offline copies of protected Bibles. Check that the build log prints `[bible-strong-archive] Offline-copy key versions: 1` (or later versions), not `none`.

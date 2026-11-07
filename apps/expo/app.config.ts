@@ -211,8 +211,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       '@sentry/react-native/expo',
       {
-        organization: 'sevn-apps',
-        project: 'bible-strong',
+        // Crash reports go to CyberJudah's GlitchTip. No build uploads source maps: with no org or
+        // project here, a developer's SENTRY_AUTH_TOKEN can't send them to the upstream author's
+        // sentry.io org, which this config used to name.
+        url: 'https://errors.cyberjudah.io/',
+        disableAutoUpload: true,
       },
     ],
     ['./plugins/gradleProperties.js'],

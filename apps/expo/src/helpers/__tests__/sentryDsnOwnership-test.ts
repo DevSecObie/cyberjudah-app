@@ -10,8 +10,12 @@ const envFiles = readdirSync(appDir).filter(
 )
 
 describe('Sentry DSN ownership', () => {
+  // The release workflows delete .env.development and .env.production before running the tests,
+  // so only the CyberJudah examples, which every checkout keeps, are required here.
   it('finds the env files', () => {
-    expect(envFiles).toEqual(expect.arrayContaining(['.env.development', '.env.production']))
+    expect(envFiles).toEqual(
+      expect.arrayContaining(['.env.cyberjudah.example', '.env.cyberjudah.production.example'])
+    )
   })
 
   it.each(envFiles)('%s sends crash reports only to CyberJudah or nowhere', name => {

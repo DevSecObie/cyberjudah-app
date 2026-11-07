@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from 'fs'
+import { existsSync, readdirSync, readFileSync } from 'fs'
 import { join } from 'path'
 
 // This repository builds only CyberJudah. `yarn start` once read an .env.development wired to the
@@ -28,9 +28,11 @@ const settings = (name: string) =>
   )
 
 describe('env files stay on CyberJudah', () => {
+  // The release workflows delete .env.development and .env.production before running the tests,
+  // so only the CyberJudah examples, which every checkout keeps, are required here.
   it('finds the env files', () => {
     expect(envFiles).toEqual(
-      expect.arrayContaining(['.env.development', '.env.production', '.env.cyberjudah.example'])
+      expect.arrayContaining(['.env.cyberjudah.example', '.env.cyberjudah.production.example'])
     )
   })
 
@@ -47,14 +49,18 @@ describe('env files stay on CyberJudah', () => {
     expect(settings(name).get('EXPO_PUBLIC_RESOURCE_PROFILE')).toBe('cyberjudah')
   })
 
-  it('.env.development is the staging example run as the Preview dev app', () => {
-    const development = settings('.env.development')
-    const staging = settings('.env.cyberjudah.example')
-    expect(development.get('BUNDLE_IDENTIFIER')).toBe('io.cyberjudah.app.preview')
-    for (const name of ['APP_NAME', 'BUNDLE_IDENTIFIER']) {
-      development.delete(name)
-      staging.delete(name)
+  const hasDevelopment = existsSync(join(appDir, '.env.development'))
+  ;(hasDevelopment ? it : it.skip)(
+    '.env.development is the staging example run as the Preview dev app',
+    () => {
+      const development = settings('.env.development')
+      const staging = settings('.env.cyberjudah.example')
+      expect(development.get('BUNDLE_IDENTIFIER')).toBe('io.cyberjudah.app.preview')
+      for (const name of ['APP_NAME', 'BUNDLE_IDENTIFIER']) {
+        development.delete(name)
+        staging.delete(name)
+      }
+      expect(Object.fromEntries(development)).toEqual(Object.fromEntries(staging))
     }
-    expect(Object.fromEntries(development)).toEqual(Object.fromEntries(staging))
-  })
+  )
 })
