@@ -1,3 +1,4 @@
+import { decodeHTML } from 'entities'
 import { Platform } from 'react-native'
 import { sharePdf } from './sharePdf'
 
@@ -19,6 +20,16 @@ export async function printScreenPdf(html: string, fileName: string, title: stri
     }
     document.body.appendChild(frame)
     return
+  }
+  // WKWebView printing cannot load local image URLs; embed the same offline portraits.
+  for (const match of [...html.matchAll(/src="(file:[^"]+)"/g)]) {
+    const FileSystem = await import('expo-file-system/legacy')
+    const uri = decodeHTML(match[1])
+    const bytes = await FileSystem.readAsStringAsync(uri, {
+      encoding: FileSystem.EncodingType.Base64,
+    })
+    const mime = /\.webp$/i.test(uri) ? 'webp' : /\.jpe?g$/i.test(uri) ? 'jpeg' : 'png'
+    html = html.replace(match[0], `src="data:image/${mime};base64,${bytes}"`)
   }
   if (html.includes('font-family:Literata Book')) {
     const { Asset } = await import('expo-asset')

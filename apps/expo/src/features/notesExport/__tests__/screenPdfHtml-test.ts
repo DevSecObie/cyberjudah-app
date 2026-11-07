@@ -9,8 +9,28 @@ import {
 import { studyScreenPdfHtml } from '../studyScreenPdfHtml'
 
 jest.mock('react-native', () => ({ Platform: { OS: 'ios' } }))
+jest.mock('~i18n', () => ({ t: (key: string) => key }))
 
 describe('screen-faithful PDF content', () => {
+  it('retains the class study header and the entities shown under a verse', () => {
+    const html = classScreenPdfHtml(
+      { title: 'Class' },
+      [{ type: 'verse', title: 'Genesis 1:1', target: 'GEN.1.1', blocks: [] }],
+      baseTheme,
+      {
+        people: [{ name: 'Moses', image: 'file:///offline/moses.webp' }],
+        places: [{ name: 'Egypt' }],
+        topics: ['Leadership'],
+        verseChips: { 'GEN.1.1': [{ name: 'Israel' }] },
+      }
+    )
+    expect(html).toContain('People in this class')
+    expect(html).toContain('file:///offline/moses.webp')
+    expect(html).toContain('Egypt')
+    expect(html).toContain('Leadership')
+    expect(html).toContain('chips on-card')
+    expect(html).toContain('Israel')
+  })
   it('uses the reader palette and retains verse leads, cards, frames and images', () => {
     const html = classScreenPdfHtml(
       { title: 'Class' },
@@ -84,6 +104,47 @@ describe('screen-faithful PDF content', () => {
     expect(html).toContain('<u>')
     expect(html).toContain('שלום λόγος')
     expect(html).toContain('The Word')
+  })
+  it('uses the study card display rules for linked notes and verses', () => {
+    const html = studyScreenPdfHtml(
+      {
+        title: 'Study',
+        content: {
+          ops: [
+            {
+              insert: {
+                'block-entity': {
+                  endpoint: { type: 'note' },
+                  display: {
+                    typeLabel: 'Note',
+                    title: 'My note',
+                    description: 'Hidden note body',
+                  },
+                },
+              },
+            },
+            {
+              insert: {
+                'block-entity': {
+                  endpoint: { type: 'verse', version: 'KJV' },
+                  display: {
+                    typeLabel: 'Passage',
+                    title: 'John 1:1',
+                    description: 'In the beginning',
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+      baseTheme
+    )
+    expect(html).toContain('My note')
+    expect(html).not.toContain('Hidden note body')
+    expect(html).toContain('In the beginning')
+    expect(html).toContain('KJV')
+    expect(html).toContain('#c24553')
   })
   it('keeps formatting without executable HTML or unsafe links', () => {
     expect(pdfInline('<b>safe</b><script>bad()</script><a href="javascript:bad()">words</a>')).toBe(

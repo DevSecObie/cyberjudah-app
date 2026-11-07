@@ -214,16 +214,7 @@ const collectTargets = (blocks: NoteBlock[], into: string[] = []): string[] => {
  * At the head of the notes: the people and places the class's scriptures name, most named first,
  * and the class's topics, each a door to its page.
  */
-export const ClassStudyHeader = ({
-  blocks,
-  topics,
-}: {
-  blocks: NoteBlock[]
-  topics?: string[]
-}) => {
-  const colors = useDeeperColors()
-  const router = useRouter()
-  const portraitOf = usePortraitOf()
+export const useClassStudyData = (blocks: NoteBlock[], topics?: string[]) => {
   const resources = useResourceAccess()
   const sets = [
     ...new Map(
@@ -287,7 +278,58 @@ export const ClassStudyHeader = ({
   const labels = new Map((topicRows.data ?? []).map(row => [row.slug, row.label]))
   const shownTopics = (topics ?? []).filter(slug => labels.has(slug))
 
-  const section = (title: string, rows: typeof ranked) =>
+  const portraitOf = usePortraitOf()
+  const chip = (entity: StrongLexiconChapterEntity, book: number, chapter: number) => ({
+    name: entity.name,
+    image:
+      portraitOf(entity, book, chapter) ??
+      Image.resolveAssetSource(
+        getStrongEntityPlaceholderSource(
+          entity.category === 'supernatural' ? 'other' : entity.category,
+          entity.type,
+          entity.uniqueName
+        )
+      ).uri,
+  })
+  const verseChips = Object.fromEntries(
+    collectTargets(blocks).map(target => {
+      const set = verseSetOf(target)
+      const index = sets.findIndex(row => row.book === set?.book && row.chapter === set?.chapter)
+      const entities = set
+        ? (chapters[index]?.data ?? [])
+            .filter(
+              entity =>
+                ['person', 'place', 'group'].includes(entity.category) &&
+                entity.verses.some(verse => set.verses.has(verse))
+            )
+            .slice(0, 8)
+            .map(entity => chip(entity, set.book, set.chapter))
+        : []
+      return [target, entities]
+    })
+  )
+  const pdfDetails = {
+    people: people.slice(0, 12).map(row => chip(row.entity, row.book, row.chapter)),
+    places: places.slice(0, 12).map(row => chip(row.entity, row.book, row.chapter)),
+    topics: shownTopics.map(slug => labels.get(slug)!),
+    verseChips,
+  }
+  return { people, places, shownTopics, labels, pdfDetails }
+}
+
+export const ClassStudyHeader = ({
+  blocks,
+  topics,
+}: {
+  blocks: NoteBlock[]
+  topics?: string[]
+}) => {
+  const colors = useDeeperColors()
+  const router = useRouter()
+  const portraitOf = usePortraitOf()
+  const { people, places, shownTopics, labels } = useClassStudyData(blocks, topics)
+
+  const section = (title: string, rows: typeof people) =>
     rows.length ? (
       <View style={{ gap: 8 }}>
         <SectionTitle>{title}</SectionTitle>

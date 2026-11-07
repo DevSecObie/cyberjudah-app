@@ -77,7 +77,11 @@ const PublishedNoteScreen = () => {
         title={isEncyclopedia ? 'Encyclopedia' : (note.data?.title ?? chapter?.title ?? '')}
         rightComponent={
           path && !chapter ? (
-            <ClassNotesPdfButton notesPath={path} blocks={note.data?.blocks} />
+            <ClassNotesPdfButton
+              notesPath={path}
+              blocks={note.data?.blocks}
+              topics={note.data?.topics}
+            />
           ) : undefined
         }
       />

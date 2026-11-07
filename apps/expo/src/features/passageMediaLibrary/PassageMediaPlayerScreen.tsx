@@ -159,6 +159,7 @@ const PassageMediaPlayerScreen = () => {
               <ClassNotesPdfButton
                 notesPath={notesPath}
                 blocks={notes.data?.blocks}
+                topics={notes.data?.topics}
                 videoId={videoId}
               />
             ) : undefined

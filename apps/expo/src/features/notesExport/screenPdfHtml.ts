@@ -48,8 +48,20 @@ export const pdfPalette = (theme: Theme) => ({
   background: theme.colors.reverse,
 })
 
+type PdfChip = { name: string; image?: string }
+export type ClassPdfDetails = {
+  people: PdfChip[]
+  places: PdfChip[]
+  topics: string[]
+  verseChips: Record<string, PdfChip[]>
+}
+const chipsHtml = (chips: PdfChip[], onCard = false) =>
+  chips.length
+    ? `<div class="chips${onCard ? ' on-card' : ''}">${chips.map(chip => `<span class="chip">${chip.image && /^(https?:|file:|data:image\/)/.test(chip.image) ? `<img src="${escapePdfHtml(chip.image)}" alt="">` : ''}${escapePdfHtml(chip.name)}</span>`).join('')}</div>`
+    : ''
+
 /** Same ordered block tree as ClassNotesList; no separate Markdown interpretation. */
-export function noteBlocksPdfHtml(blocks: NoteBlock[]): string {
+export function noteBlocksPdfHtml(blocks: NoteBlock[], details?: ClassPdfDetails): string {
   return blocks
     .map(block => {
       switch (block.type) {
@@ -60,13 +72,13 @@ export function noteBlocksPdfHtml(blocks: NoteBlock[]): string {
         case 'rule':
           return '<hr>'
         case 'quote':
-          return `<blockquote>${noteBlocksPdfHtml(block.blocks)}</blockquote>`
+          return `<blockquote>${noteBlocksPdfHtml(block.blocks, details)}</blockquote>`
         case 'reading':
-          return `<section class="reading">${noteBlocksPdfHtml(block.blocks)}</section>`
+          return `<section class="reading">${noteBlocksPdfHtml(block.blocks, details)}</section>`
         case 'aside':
-          return `<aside><h3>${escapePdfHtml(block.label)}</h3>${noteBlocksPdfHtml(block.blocks)}</aside>`
+          return `<aside><h3>${escapePdfHtml(block.label)}</h3>${noteBlocksPdfHtml(block.blocks, details)}</aside>`
         case 'list':
-          return `<ul>${block.items.map(item => `<li>${noteBlocksPdfHtml(item)}</li>`).join('')}</ul>`
+          return `<ul>${block.items.map(item => `<li>${noteBlocksPdfHtml(item, details)}</li>`).join('')}</ul>`
         case 'image': {
           const src = safePdfUrl(block.uri)
           return src ? `<figure><img src="${escapePdfHtml(src)}" alt=""></figure>` : ''
@@ -76,7 +88,7 @@ export function noteBlocksPdfHtml(blocks: NoteBlock[]): string {
           return `<figure><div class="shown-frame" style="background-image:url('${escapePdfHtml(src)}');background-position:${block.x}% ${block.y}%"></div><figcaption><a href="${escapePdfHtml(safePdfUrl(block.href))}">${escapePdfHtml(block.label)}</a></figcaption></figure>`
         }
         case 'verse':
-          return `<section class="verse-card"><header><strong>${escapePdfHtml(block.title)}</strong> <span class="muted">KJV</span>${block.seek ? ` <a class="time" href="${escapePdfHtml(safePdfUrl(block.seek.href))}">${escapePdfHtml(block.seek.label)}</a>` : ''}</header><div class="verse-words">${noteBlocksPdfHtml(block.blocks)}</div></section>`
+          return `<section class="verse-card"><header><strong>${escapePdfHtml(block.title)}</strong> <span class="muted">KJV</span>${block.seek ? ` <a class="time" href="${escapePdfHtml(safePdfUrl(block.seek.href))}">${escapePdfHtml(block.seek.label)}</a>` : ''}</header><div class="verse-words">${noteBlocksPdfHtml(block.blocks, details)}</div>${chipsHtml(details?.verseChips[block.target ?? ''] ?? [], true)}</section>`
       }
     })
     .join('')
@@ -103,15 +115,33 @@ export function screenPdfDocument(title: string, body: string, theme: Theme): st
   .study-body { white-space:normal; } .study-body p { white-space:pre-wrap; }
   .study-embed { color:rgb(48,51,107); background:rgba(89,131,240,.06); border-radius:10px; padding:10px; margin:12px 0; }
   .inline-verse { color:rgb(48,51,107); } .inline-strong { color:rgb(9,132,227); }
+  .chips { margin:8px 0 16px; } .chip { display:inline-flex; align-items:center; gap:8px; margin:0 8px 8px 0; padding:3px 12px 3px 3px; border-radius:12px; background:${theme.colors.lightGrey}; font-size:14px; font-weight:600; break-inside:avoid; }
+  .chip img { width:32px; height:32px; border-radius:8px; object-fit:cover; } .on-card .chip { background:${c.surface}; } .topic { padding:9px 14px; font-weight:400; background:${c.surface}; } .topic::before { content:'●'; color:${c.link}; margin-right:8px; }
   table { border-collapse:collapse; width:100%; } td,th { border:1px solid ${c.border}; padding:6px; }
   </style></head><body>${body}</body></html>`
 }
 
-export function classScreenPdfHtml(note: PublishedNote, blocks: NoteBlock[], theme: Theme): string {
+export function classScreenPdfHtml(
+  note: PublishedNote,
+  blocks: NoteBlock[],
+  theme: Theme,
+  details?: ClassPdfDetails
+): string {
   const meta = [note.date ? longDate(note.date) : '', note.teacher].filter(Boolean).join(' · ')
+  const header = details
+    ? [
+        details.people.length
+          ? `<div class="muted">People in this class</div>${chipsHtml(details.people)}`
+          : '',
+        details.places.length ? `<div class="muted">Places</div>${chipsHtml(details.places)}` : '',
+        details.topics.length
+          ? `<div class="muted">Topics</div><div class="chips">${details.topics.map(topic => `<span class="chip topic">${escapePdfHtml(topic)}</span>`).join('')}</div>`
+          : '',
+      ].join('')
+    : ''
   return screenPdfDocument(
     note.title ?? 'Class notes',
-    `<h1>${escapePdfHtml(note.title)}</h1><p class="note-meta">${escapePdfHtml(meta)}</p>${noteBlocksPdfHtml(blocks)}`,
+    `<h1>${escapePdfHtml(note.title)}</h1><p class="note-meta">${escapePdfHtml(meta)}</p>${header}${noteBlocksPdfHtml(blocks, details)}`,
     theme
   )
 }
