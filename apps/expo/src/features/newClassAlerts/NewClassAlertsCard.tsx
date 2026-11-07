@@ -12,7 +12,7 @@ import {
   newClassAlertsAvailable,
   readNewClassAlertsChoice,
   type NewClassAlertsResult,
-} from './newClassAlerts'
+} from './newClassAlertSettings'
 
 const LABEL = 'New class alerts'
 

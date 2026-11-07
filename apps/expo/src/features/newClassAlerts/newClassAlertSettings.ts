@@ -1,4 +1,4 @@
-/** Alerts for new classes arrive on phones only; the web app has none (newClassAlerts.native.ts). */
+/** Alerts for new classes arrive on phones only; the web app has none (newClassAlertSettings.native.ts). */
 export type NewClassAlertsResult = 'on' | 'off' | 'denied' | 'unavailable' | 'error'
 export const newClassAlertsAvailable = () => false
 export const readNewClassAlertsChoice = () => false

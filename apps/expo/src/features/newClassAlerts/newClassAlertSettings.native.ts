@@ -61,18 +61,30 @@ export const enableNewClassAlerts = async (): Promise<NewClassAlertsResult> => {
   }
 }
 
-/** Turns alerts off: leaves the topic and deletes the phone's Firebase token. */
+/**
+ * Turns alerts off: leaves the topic, then deletes the phone's Firebase token. The choice is saved
+ * as off only once the phone has left the topic: if that fails (offline, say), the phone would still
+ * get alerts, so the switch stays on and shows the error instead.
+ */
 export const disableNewClassAlerts = async (): Promise<NewClassAlertsResult> => {
-  store.set(KEY, false)
   const loaded = loadMessaging()
-  if (!loaded) return 'off'
-  try {
-    const { module, messaging } = loaded
-    await module.unsubscribeFromTopic(messaging, topic())
-    await module.deleteToken(messaging)
-    await module.setAutoInitEnabled(messaging, false)
+  if (!loaded) {
+    // No messaging in this build: it can't be subscribed.
+    store.set(KEY, false)
     return 'off'
+  }
+  const { module, messaging } = loaded
+  try {
+    await module.unsubscribeFromTopic(messaging, topic())
   } catch {
     return 'error'
   }
+  store.set(KEY, false)
+  try {
+    // Off the topic already; the token and auto-init are tidying, so a failure here doesn't
+    // turn the switch back on.
+    await module.deleteToken(messaging)
+    await module.setAutoInitEnabled(messaging, false)
+  } catch {}
+  return 'off'
 }

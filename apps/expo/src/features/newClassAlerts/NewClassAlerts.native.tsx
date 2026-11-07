@@ -5,7 +5,7 @@ import { AppState, Platform } from 'react-native'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import { readCachedClassLibrary } from '~features/passageMediaLibrary/cyberJudahClasses'
 import { takeNewClassPress } from './newClassAlertInbox.native'
-import { loadMessaging } from './newClassAlerts.native'
+import { loadMessaging } from './newClassAlertSettings.native'
 import { NEW_CLASS_CHANNEL, readNewClassPress, type NewClassPress } from './newClassAlertRules'
 
 /** The launch alert is read once per launch, not again when navigation remounts. */
