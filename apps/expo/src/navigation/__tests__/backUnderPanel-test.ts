@@ -5,7 +5,12 @@ type State = {
   index: number
   routes: { key: string; name: string; state?: { key: string } }[]
 }
-const nav = (state: State, parent?: ReturnType<typeof nav>) => ({
+type Nav = {
+  getState: () => State
+  getParent: () => Nav | undefined
+  dispatch: jest.Mock
+}
+const nav = (state: State, parent?: Nav): Nav => ({
   getState: () => state,
   getParent: () => parent,
   dispatch: jest.fn(),
