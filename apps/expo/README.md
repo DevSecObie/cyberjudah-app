@@ -22,13 +22,9 @@ The app needs a custom development client. It does not run in Expo Go.
    yarn install
    ```
 
-2. **Create the environment file**
+2. **Check the environment file**
 
-   ```bash
-   cp apps/expo/.env.example apps/expo/.env.development
-   ```
-
-   `.env.example` documents every variable. You need your own Firebase project for local development: the native Google Services files referenced by the environment file, and the `EXPO_PUBLIC_FIREBASE_*` values for the Web runtime. Staging and production use `.env.staging` and `.env.production`. Do not commit these files.
+   The committed `.env.development` already runs the CyberJudah Preview dev app against CyberJudah staging, so there is nothing to copy. `.env.example` documents every variable. Put only the values you need to change in `.env.local` (not committed): an empty value there overrides the committed one. Staging uses `.env.cyberjudah.example` and production `.env.production`. This repository builds only CyberJudah: `app.config.ts` refuses to run without `EXPO_PUBLIC_RESOURCE_PROFILE=cyberjudah`.
 
 3. **Build a development client**
 
@@ -74,20 +70,18 @@ Workspace scripts, run as `yarn workspace @bible-strong/expo <script>`:
 
 ```bash
 # Android
-yarn workspace @bible-strong/expo build:android:staging    # internal testing (APK)
 yarn workspace @bible-strong/expo build:android:prod       # production (AAB)
 yarn workspace @bible-strong/expo build:android:prod:apk   # production (APK)
 
 # iOS
-yarn workspace @bible-strong/expo build:ios:staging        # internal testing
 yarn workspace @bible-strong/expo build:ios:prod           # production
 ```
 
-These are local EAS builds. A staging or production build also needs values that are not in git, which `dotenv` loads from two local files:
+These are local EAS builds. A production build also needs values that are not in git, which `dotenv` loads from two local files:
 
 | File | Variables |
 |------|-----------|
-| `.env` | `SENTRY_AUTH_TOKEN`, `EXPO_PUBLIC_DEEPL_AUTH_KEY`, `YOUTUBE_API_KEY` |
+| `.env` | `EXPO_PUBLIC_DEEPL_AUTH_KEY`, `YOUTUBE_API_KEY` |
 | `.env.local` | `BIBLE_STRONG_ARCHIVE_KEYS` (offline-copy master keys, ADR-0065) |
 
 On a machine without these files, export the variables instead, and only those: an exported variable overrides the value `.env.production` sets. Without `BIBLE_STRONG_ARCHIVE_KEYS` the build still succeeds, but the app cannot decrypt the offline copies of protected Bibles. Check that the build log prints `[bible-strong-archive] Offline-copy key versions: 1` (or later versions), not `none`.

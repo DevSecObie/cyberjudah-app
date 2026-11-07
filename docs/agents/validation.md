@@ -134,12 +134,10 @@ Build commands use EAS local builds and can be slow. Run only when the change af
 
 ```bash
 yarn workspace @bible-strong/expo build:android:dev
-yarn workspace @bible-strong/expo build:android:staging
 yarn workspace @bible-strong/expo build:android:prod
 yarn workspace @bible-strong/expo build:android:prod:apk
 yarn workspace @bible-strong/expo build:ios:dev
 yarn workspace @bible-strong/expo build:ios:dev-sim
-yarn workspace @bible-strong/expo build:ios:staging
 yarn workspace @bible-strong/expo build:ios:prod
 ```
 

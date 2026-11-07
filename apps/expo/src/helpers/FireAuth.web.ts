@@ -202,7 +202,8 @@ export class WebFireAuth {
         this.previousEmailVerified = emailVerified
         void identifyAnalyticsUser(profile.id)
         this.onLogin?.({ profile, accountEntryClassification })
-        Sentry.getCurrentScope().setUser(profile)
+        // Only the account id, to match a support report with its crashes (sentryPrivacy.ts).
+        Sentry.getCurrentScope().setUser({ id: profile.id })
         return
       }
 

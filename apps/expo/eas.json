@@ -18,17 +18,6 @@
       },
       "ios": { "simulator": true }
     },
-    "staging": {
-      "channel": "staging",
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      }
-    },
-    "staging-simulator": {
-      "extends": "staging",
-      "ios": { "simulator": true }
-    },
     "cyberjudah-preview": {
       "channel": "preview",
       "distribution": "internal",
