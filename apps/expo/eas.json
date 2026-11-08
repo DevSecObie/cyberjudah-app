@@ -24,7 +24,6 @@
         "ANDROID_GOOGLE_SERVICES_FILE": "./firebase/cyberjudah/google-services.json",
         "IOS_GOOGLE_SERVICES_FILE": "./firebase/cyberjudah-production/GoogleService-Info.plist",
         "SENTRY_DISABLE_AUTO_UPLOAD": "true",
-        "EXPO_PUBLIC_SENTRY_DSN": "",
         "EXPO_PUBLIC_AUTOMATIC_UPDATES": "false"
       }
     },
@@ -52,7 +51,6 @@
         "ANDROID_GOOGLE_SERVICES_FILE": "./firebase/cyberjudah/google-services.json",
         "IOS_GOOGLE_SERVICES_FILE": "./firebase/cyberjudah-production/GoogleService-Info.plist",
         "SENTRY_DISABLE_AUTO_UPLOAD": "true",
-        "EXPO_PUBLIC_SENTRY_DSN": "",
         "EXPO_PUBLIC_AUTOMATIC_UPDATES": "false"
       }
     },
@@ -77,7 +75,6 @@
         "ANDROID_GOOGLE_SERVICES_FILE": "./firebase/cyberjudah/google-services.json",
         "IOS_GOOGLE_SERVICES_FILE": "./firebase/cyberjudah-production/GoogleService-Info.plist",
         "SENTRY_DISABLE_AUTO_UPLOAD": "true",
-        "EXPO_PUBLIC_SENTRY_DSN": "",
         "EXPO_PUBLIC_AUTOMATIC_UPDATES": "false"
       }
     },
@@ -98,7 +95,6 @@
         "ANDROID_GOOGLE_SERVICES_FILE": "./firebase/cyberjudah/google-services.json",
         "IOS_GOOGLE_SERVICES_FILE": "./firebase/cyberjudah-production/GoogleService-Info.plist",
         "SENTRY_DISABLE_AUTO_UPLOAD": "true",
-        "EXPO_PUBLIC_SENTRY_DSN": "",
         "EXPO_PUBLIC_AUTOMATIC_UPDATES": "false"
       }
     },
@@ -122,7 +118,6 @@
         "ANDROID_GOOGLE_SERVICES_FILE": "./firebase/cyberjudah/google-services.json",
         "IOS_GOOGLE_SERVICES_FILE": "./firebase/cyberjudah-production/GoogleService-Info.plist",
         "SENTRY_DISABLE_AUTO_UPLOAD": "true",
-        "EXPO_PUBLIC_SENTRY_DSN": "",
         "EXPO_PUBLIC_AUTOMATIC_UPDATES": "false"
       }
     }
