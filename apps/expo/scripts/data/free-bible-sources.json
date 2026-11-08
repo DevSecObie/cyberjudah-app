@@ -24,6 +24,26 @@
       "credit": "Louis Segond 1910, domaine public. Texte : eBible.org (fraLSG)."
     },
     {
+      "id": "FMAR",
+      "catalogId": "bible:FMAR",
+      "file": "bibles/bible-fmar.json.zip",
+      "entry": "bible-fmar.json",
+      "title": "Bible David Martin (1744)",
+      "language": "fr",
+      "source": {
+        "kind": "sword-module",
+        "publisher": "CrossWire Bible Society",
+        "page": "https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=FreBDM1744",
+        "url": "https://www.crosswire.org/ftpmirror/pub/sword/packages/rawzip/FreBDM1744.zip",
+        "module": "FreBDM1744",
+        "edition": "SWORD module FreBDM1744 version 2.0 (2021-02-17), Calvin versification; text source http://earnestlycontending.com/BibleMartin/index.html",
+        "sha256": "96fe27fb3e8ee0ba4ffa2b747d1848ca2411258767ee410c7393563446045628"
+      },
+      "licence": "Public domain",
+      "licenceStatement": "DistributionLicense=Public Domain (CrossWire module configuration).",
+      "credit": "La Sainte Bible, version David Martin 1744, domaine public. Texte : module SWORD FreBDM1744 (CrossWire Bible Society)."
+    },
+    {
       "id": "ASV",
       "catalogId": "bible:ASV",
       "file": "bibles/bible-asv.json.zip",

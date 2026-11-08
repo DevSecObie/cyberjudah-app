@@ -5,7 +5,10 @@ Reads scripts/data/free-bible-sources.json. For each Bible it downloads (or reus
 the pinned source archive, checks its sha256, transcribes every verse exactly, and writes
 public/offline/<file> with the same entry name, schema and text identity rules as upstream's
 buildCanonicalBibleFromLegacy (apps/resource-studio/src/legacyBiblePublication.ts).
-No text is edited: no headings, notes or red words are added.
+No text is edited: no headings, notes or red words are added. Sources are either eBible.org
+verse-per-line files (taken line by line) or CrossWire SWORD modules (read with pysword==0.2.8):
+for those, titles and notes are left out, other markup is unwrapped, whitespace that only
+surrounded markup becomes one space, and versification slots without text are left out.
 
 Usage: python3 -I scripts/build-free-bibles.py [--cache DIR] [ID ...]
 """
@@ -107,19 +110,79 @@ def read_ebible_vpl(archive, member):
     return verses, count
 
 
+# OSIS book names of the 66 books, in Bible Strong book order.
+OSIS_BOOKS = (
+    'Gen Exod Lev Num Deut Josh Judg Ruth 1Sam 2Sam 1Kgs 2Kgs 1Chr 2Chr Ezra Neh Esth Job Ps Prov '
+    'Eccl Song Isa Jer Lam Ezek Dan Hos Joel Amos Obad Jonah Mic Nah Hab Zeph Hag Zech Mal Matt Mark '
+    'Luke John Acts Rom 1Cor 2Cor Gal Eph Phil Col 1Thess 2Thess 1Tim 2Tim Titus Phlm Heb Jas 1Pet '
+    '2Pet 1John 2John 3John Jude Rev'
+).split()
+# Only these OSIS elements may appear. Titles (the module's section headings) and notes are not
+# verse text and are left out with their content; every other element is unwrapped.
+SWORD_DROPPED = re.compile(r'<(title|note)\b[^>]*>.*?</\1>', re.S)
+SWORD_ALLOWED = {'title', 'note', 'transChange', 'div', 'chapter', 'lg', 'l'}
+REMOVED = '\x00'
+
+
+def osis_verse_text(raw, where):
+    for tag in re.findall(r'<\s*/?\s*([A-Za-z]+)', raw):
+        if tag not in SWORD_ALLOWED:
+            raise SystemExit(f'{where}: unsupported OSIS element <{tag}>')
+    if '&' in raw or REMOVED in raw:
+        raise SystemExit(f'{where}: unexpected entity or control character')
+    text = re.sub(r'<[^>]*>', REMOVED, SWORD_DROPPED.sub(REMOVED, raw))
+    # Whitespace that only surrounded removed markup becomes one space (none at the ends);
+    # whitespace inside the text itself is kept as published.
+    text = re.sub(r'[ \t\n]*\x00[ \t\n\x00]*', lambda m: ' ' if m.group(0).strip(REMOVED) else '', text)
+    return text.strip()
+
+
+def read_sword_module(archive_path, module):
+    from pysword.modules import SwordModules  # pip install pysword==0.2.8
+
+    modules = SwordModules(str(archive_path))
+    modules.parse_modules()
+    bible = modules.get_bible_from_module(module)
+    structure = bible.get_structure().get_books()
+    books = structure.get('ot', []) + structure.get('nt', [])
+    if [b.osis_name for b in books] != OSIS_BOOKS:
+        raise SystemExit(f'{module}: books are not the 66-book canon')
+    verses, count, skipped = {}, 0, []
+    for number, book in enumerate(books, 1):
+        book_key = str(canonical_book_id(number))
+        for chapter in range(1, book.num_chapters + 1):
+            for verse in range(1, book.chapter_lengths[chapter - 1] + 1):
+                where = f'{module} {book.osis_name} {chapter}:{verse}'
+                raw = bible.get(books=[book.osis_name], chapters=[chapter], verses=[verse], clean=False)
+                text = osis_verse_text(raw, where)
+                if text == '':
+                    # A slot of the versification that the module leaves without text.
+                    skipped.append(f'{book.osis_name} {chapter}:{verse}')
+                    continue
+                verses.setdefault(book_key, {}).setdefault(str(chapter), {})[str(verse)] = {
+                    'text': text, 'startTags': [], 'layout': [], 'notes': [], 'headings': []}
+                count += 1
+    if skipped:
+        print(json.dumps({'module': module, 'emptySlotsLeftOut': skipped}, ensure_ascii=False))
+    return verses, count
+
+
 def build(bible, cache):
     source = bible['source']
     archive = fetch(source, cache)
-    if source['kind'] != 'ebible-vpl':
+    if source['kind'] == 'ebible-vpl':
+        verses, count = read_ebible_vpl(archive, source['member'])
+    elif source['kind'] == 'sword-module':
+        verses, count = read_sword_module(cache / Path(source['url']).name, source['module'])
+    else:
         raise SystemExit(f"{bible['id']}: unsupported source kind {source['kind']}")
-    verses, count = read_ebible_vpl(archive, source['member'])
     text_sha256 = hash_verses(verses)
     publication = {
         'format': 'bible-strong-canonical-bible',
         'schemaVersion': SCHEMA_VERSION,
         'applicationVersionId': bible['id'],
         'datasetId': f"ordinary-bible-{bible['id'].lower()}",
-        'sourceVersion': f"{source['url']}#{source['member']}@{source['sha256'][:12]}",
+        'sourceVersion': f"{source['url']}#{source.get('member') or source['module']}@{source['sha256'][:12]}",
         'textRevision': f"{bible['id'].lower()}-{text_sha256[:20]}",
         'textSha256': text_sha256,
         'sourceSha256': source['sha256'],

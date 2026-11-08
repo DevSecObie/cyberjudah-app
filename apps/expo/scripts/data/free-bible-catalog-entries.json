@@ -65,6 +65,28 @@
     "textSha256": "d64cc5438cd9a643ae603d017e3799fb39c2c8cd852dc662ac645d0e0a381586",
     "verseCount": 31099
   },
+  "bible:FMAR": {
+    "id": "bible:FMAR",
+    "file": "bibles/bible-fmar.json.zip",
+    "entry": "bible-fmar.json",
+    "entries": {
+      "canonical": {
+        "entry": "bible-fmar.json",
+        "sha256": "17849b26007fd3630aaee588ae99861de8306fc07cf4b8c936e28514dc661f02",
+        "bytes": 6796345
+      }
+    },
+    "archiveSha256": "a07196fd3ebff6eba60c420e7db19a46c94e4cc70fe904c8a5c54d84b46b306e",
+    "archiveBytes": 1549200,
+    "contentSha256": "17849b26007fd3630aaee588ae99861de8306fc07cf4b8c936e28514dc661f02",
+    "contentBytes": 6796345,
+    "installedBytes": 13592690,
+    "peakInstallationBytes": 21938235,
+    "strategy": "sqlite-import",
+    "textRevision": "fmar-936f3c311b48629d43d2",
+    "textSha256": "936f3c311b48629d43d278d18e454178e8b891e36c507cca9f54b0fc4dde4195",
+    "verseCount": 31166
+  },
   "bible:LSG": {
     "id": "bible:LSG",
     "file": "bibles/bible-lsg.json.zip",
