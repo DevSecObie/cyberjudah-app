@@ -1,0 +1,34 @@
+# Gitleaks settings for the Secret scan workflow (.github/workflows/secret-scan.yml).
+# The default rules all stay on. The allowlist below only covers exact values that are public by
+# design, so any other key or secret of the same shape is still reported.
+# Old findings that were reviewed are listed by fingerprint in .gitleaksignore. A CyberJudah secret
+# never goes in either file: revoke and replace it, then remove it.
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Firebase client keys and an App Check site key: public by design, shipped in every app build. Access is limited by Firebase rules, App Check and each key's restrictions in Google Cloud. Only these exact values are allowed; any other Google key (a Gemini or Maps server key, say) is still reported."
+targetRules = ["gcp-api-key", "generic-api-key"]
+regexes = [
+  # Each value is split by an empty group, (?:), so this file itself holds nothing shaped like a key.
+  # CyberJudah Firebase web key (Expo .env and eas.json, Mini App, bot).
+  '''^AIza(?:)SyAqCIfm78KkoFq0UOszT5YJdpvD6jWqG9U$''',
+  # CyberJudah Firebase Android key (firebase/cyberjudah/google-services.json).
+  '''^AIza(?:)SyB1RRfA5tlr8ZQe\-rHvTCo1zD_f\-s3Eupg$''',
+  # Upstream Bible Strong Firebase web key (apps/site/config.ts).
+  '''^AIza(?:)SyD4xDXoaA\-TFepG\-dzCO7mkY0MoIPL2ym4$''',
+  # Upstream Bible Strong Firebase Android key (firebase/*/google-services.json).
+  '''^AIza(?:)SyB1NjCx7Vkq6PhAc3iM9sjzURoXazOIhoM$''',
+  # Upstream Bible Strong Firebase iOS key (firebase/*/GoogleService-Info.plist).
+  '''^AIza(?:)SyAuLacmYeJAZKRWQx272U0RZCY4uwshtZg$''',
+  # Upstream Bible Strong Firebase key (old commits only).
+  '''^AIza(?:)SyDdVgKwhZl0sTTTLZ7iTmt1r3N2cJLnaDk$''',
+  # Upstream Bible Strong App Check (reCAPTCHA) site key (old .env files only).
+  '''^6L(?:)erOaktAAAAABB0XLghPgHKKrrrlBxUj6x83vKb$''',
+]
+
+[[allowlists]]
+description = "CocoaPods lockfiles: the SPEC CHECKSUMS and PODFILE CHECKSUM entries are SHA-1 hashes of pod specs, not secrets, and every pod update or upstream merge regenerates them."
+targetRules = ["generic-api-key"]
+paths = ['''(^|/)Podfile\.lock$''', '''(^|/)Pods/Manifest\.lock$''']
