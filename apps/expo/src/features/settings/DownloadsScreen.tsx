@@ -750,7 +750,6 @@ const DownloadsScreen = () => {
     { value: 'notDownloaded' as const, label: t('downloads.filter.notDownloaded') },
   ]
   const languageOptions = [
-    { value: 'fr' as const, label: t('versionCatalog.language.fr') },
     { value: 'en' as const, label: t('versionCatalog.language.en') },
     { value: 'other' as const, label: t('downloads.language.original') },
   ]

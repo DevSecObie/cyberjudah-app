@@ -66,9 +66,21 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     supportsTablet: true,
     infoPlist: {
       UIBackgroundModes: ['audio'],
+      UIApplicationSceneManifest: {
+        UIApplicationSupportsMultipleScenes: false,
+        UISceneConfigurations: {
+          UIWindowSceneSessionRoleApplication: [
+            {
+              UISceneConfigurationName: 'Default Configuration',
+              UISceneClassName: 'UIWindowScene',
+              UISceneDelegateClassName: 'EXExpoAppSceneDelegate',
+            },
+          ],
+        },
+      },
       ITSAppUsesNonExemptEncryption: false,
       CFBundleAllowMixedLocalizations: true,
-      CFBundleLocalizations: ['en', 'fr'],
+      CFBundleLocalizations: ['en'],
       CFBundleDevelopmentRegion: 'en',
     },
 

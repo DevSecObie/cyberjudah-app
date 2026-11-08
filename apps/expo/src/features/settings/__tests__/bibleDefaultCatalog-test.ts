@@ -31,7 +31,7 @@ describe('Bible default catalogs', () => {
 
     expect(catalog).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ id: 'FMAR', language: 'fr' }),
+        expect.objectContaining({ id: 'KJVA', language: 'en' }),
         expect.objectContaining({ id: 'KJV', language: 'en' }),
       ])
     )

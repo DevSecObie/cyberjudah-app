@@ -19,7 +19,11 @@ import {
   type ResourcesLanguageState,
 } from 'src/state/resourcesLanguage'
 import type { ResourceLanguage } from '~helpers/databaseTypes'
-import { getDefaultBibleVersion } from '~helpers/languageUtils'
+import {
+  getDefaultBibleVersion,
+  ENABLED_APP_LANGUAGES,
+  isAppLanguageEnabled,
+} from '~helpers/languageUtils'
 // Icons mapping using SVG files
 const icons = {
   strong: require('~assets/images/tab-icons/lexique.svg'),
@@ -85,11 +89,11 @@ const SegmentedLanguageToggle = ({
 
   const containerWidth = isLarge ? 200 : 100
   const height = isLarge ? 44 : 36
-  const indicatorWidth = containerWidth / 2 - 4
+  const indicatorWidth = containerWidth / ENABLED_APP_LANGUAGES.length - 6
   const indicatorStyle: AnimatedStyle<ViewStyle> = {
     position: 'absolute',
     top: 3,
-    left: value === 'fr' ? 3 : containerWidth / 2 + 1,
+    left: ENABLED_APP_LANGUAGES.length === 1 || value === 'fr' ? 3 : containerWidth / 2 + 1,
     width: indicatorWidth,
     height: height - 6,
     backgroundColor: theme.colors.primary,
@@ -123,16 +127,18 @@ const SegmentedLanguageToggle = ({
       {/* Animated sliding indicator */}
       <Animated.View style={indicatorStyle} />
 
-      {/* FR Button */}
-      <Pressable
-        accessibilityLabel="Français"
-        accessibilityRole="radio"
-        accessibilityState={{ checked: value === 'fr' }}
-        onPress={() => onChange('fr')}
-        style={{ flex: 1, justifyContent: 'center', alignItems: 'center', zIndex: 1 }}
-      >
-        <Animated.Text style={frenchTextStyle}>{isLarge ? 'Français' : 'FR'}</Animated.Text>
-      </Pressable>
+      {/* Retain the French choice for a later release. */}
+      {isAppLanguageEnabled('fr') && (
+        <Pressable
+          accessibilityLabel="Français"
+          accessibilityRole="radio"
+          accessibilityState={{ checked: value === 'fr' }}
+          onPress={() => onChange('fr')}
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center', zIndex: 1 }}
+        >
+          <Animated.Text style={frenchTextStyle}>{isLarge ? 'Français' : 'FR'}</Animated.Text>
+        </Pressable>
+      )}
 
       {/* EN Button */}
       <Pressable

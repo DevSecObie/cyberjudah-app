@@ -23,8 +23,8 @@ const initializeLanguage = async (locale: string, cachedLanguage?: string) => {
 afterEach(() => jest.restoreAllMocks())
 
 it.each([
-  ['fr-FR', 'fr'],
-  ['fr-CA', 'fr'],
+  ['fr-FR', 'en'],
+  ['fr-CA', 'en'],
   ['en-US', 'en'],
   ['en-GB', 'en'],
   ['de-CH', 'en'],
@@ -42,10 +42,10 @@ it.each([
 it.each([
   ['de-CH', 'fr'],
   ['fr-FR', 'en'],
-])('preserves saved %s / %s preferences', async (locale, saved) => {
+])('uses English despite saved %s / %s preferences', async (locale, saved) => {
   const { i18n, getLanguage } = await initializeLanguage(locale, saved)
-  expect(i18n.language).toBe(saved)
-  expect(getLanguage()).toBe(saved)
+  expect(i18n.language).toBe('en')
+  expect(getLanguage()).toBe('en')
 })
 
 it('ignores an unsupported cached language', async () => {

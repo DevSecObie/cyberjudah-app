@@ -1,3 +1,4 @@
+import { isAppLanguageEnabled } from '~helpers/languageUtils'
 import { getDefaultStore, useAtom, useAtomValue, useSetAtom } from 'jotai'
 
 import type { ResourceLanguage } from '~helpers/databaseTypes'
@@ -28,15 +29,24 @@ const getDefaultResourcesLanguage = (): ResourcesLanguageState => {
 // Jotai atom with MMKV persistence
 export const resourcesLanguageAtom = atomWithAsyncStorage<ResourcesLanguageState>(
   'resourcesLanguage',
-  getDefaultResourcesLanguage()
+  getDefaultResourcesLanguage(),
+  {
+    migrate: value =>
+      Object.fromEntries(
+        Object.entries(value).map(([key, language]) => [
+          key,
+          isAppLanguageEnabled(language) ? language : 'en',
+        ])
+      ) as ResourcesLanguageState,
+  }
 )
 
 // React hooks
 export const useResourceLanguage = (dbId: keyof ResourcesLanguageState) => {
   const [state, setState] = useAtom(resourcesLanguageAtom)
-  const lang = state[dbId]
+  const lang = isAppLanguageEnabled(state[dbId]) ? state[dbId] : 'en'
   const setLang = (newLang: ResourceLanguage) => {
-    setState(prev => ({ ...prev, [dbId]: newLang }))
+    setState(prev => ({ ...prev, [dbId]: isAppLanguageEnabled(newLang) ? newLang : 'en' }))
   }
   return [lang, setLang] as const
 }
@@ -49,17 +59,17 @@ export const useSetResourcesLanguage = () => useSetAtom(resourcesLanguageAtom)
 export const getResourceLanguage = (dbId: keyof ResourcesLanguageState): ResourceLanguage => {
   const store = getDefaultStore()
   const state = store.get(resourcesLanguageAtom)
-  return state[dbId]
+  return isAppLanguageEnabled(state[dbId]) ? state[dbId] : 'en'
 }
 
 // Reset all resources to a specific language
 export const resetAllResourcesLanguage = (lang: ResourceLanguage) => {
   const store = getDefaultStore()
   store.set(resourcesLanguageAtom, {
-    STRONG: lang,
-    DICTIONNAIRE: lang,
-    NAVE: lang,
-    MHY: lang,
-    TIMELINE: lang,
+    STRONG: isAppLanguageEnabled(lang) ? lang : 'en',
+    DICTIONNAIRE: isAppLanguageEnabled(lang) ? lang : 'en',
+    NAVE: isAppLanguageEnabled(lang) ? lang : 'en',
+    MHY: isAppLanguageEnabled(lang) ? lang : 'en',
+    TIMELINE: isAppLanguageEnabled(lang) ? lang : 'en',
   })
 }

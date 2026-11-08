@@ -14,8 +14,8 @@ import { ONLINE_BIBLE_VERSION_IDS } from '../ordinaryBibleVersions'
 
 describe('mobile resource catalog', () => {
   it('declares every ordinary Bible identity exactly once', () => {
-    expect(getMobileBibleVersionIds()).toHaveLength(13)
-    expect(new Set(getMobileBibleVersionIds()).size).toBe(13)
+    expect(getMobileBibleVersionIds()).toHaveLength(6)
+    expect(new Set(getMobileBibleVersionIds()).size).toBe(6)
   })
 
   it('makes every ordinary Bible available through Online delivery', () => {
@@ -144,11 +144,11 @@ describe('mobile resource catalog', () => {
   })
 
   it('describes historical Bible and database archive entries', () => {
-    const ost = getMobileResourceCatalogEntry('bible:FMAR')
-    expect(new URL(ost.url).pathname).toBe('/v1/offline-artifacts/bibles/bible-fmar.json.zip')
+    const ost = getMobileResourceCatalogEntry('bible:WEB1833')
+    expect(new URL(ost.url).pathname).toBe('/v1/offline-artifacts/bibles/bible-web1833.json.zip')
     expect(ost).toEqual(
       expect.objectContaining({
-        entry: 'bible-fmar.json',
+        entry: 'bible-web1833.json',
         strategy: 'sqlite-import',
       })
     )

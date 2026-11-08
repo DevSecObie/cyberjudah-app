@@ -58,14 +58,14 @@ export const CDN_URL = 'https://assets.cyberjudah.io/'
 export const cdnUrl = (path: string) => `${CDN_URL}${path}`
 
 // French database URLs
-export const databasesRef = {
-  NAVE: getMobileResourceCatalogEntry('database:NAVE:fr').url,
-  TIMELINE: getMobileResourceCatalogEntry('database:TIMELINE:fr').url,
+export const databasesRef: Partial<Record<RemoteDatabaseId, string>> = {
+  NAVE: BUNDLED_MOBILE_RESOURCE_CATALOG.resources['database:NAVE:fr']?.url,
+  TIMELINE: BUNDLED_MOBILE_RESOURCE_CATALOG.resources['database:TIMELINE:fr']?.url,
 }
 
 // English database URLs
 export const databasesEnRef: Partial<Record<RemoteDatabaseId, string>> = {
-  NAVE: getMobileResourceCatalogEntry('database:NAVE:en').url,
+  NAVE: BUNDLED_MOBILE_RESOURCE_CATALOG.resources['database:NAVE:en']?.url,
   TIMELINE: getMobileResourceCatalogEntry('database:TIMELINE:en').url,
 }
 

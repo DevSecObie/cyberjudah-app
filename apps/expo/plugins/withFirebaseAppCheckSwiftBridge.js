@@ -24,15 +24,22 @@ const normalizeFirebaseInitialization = contents => {
       ''
     )
 
-  const windowInitialization = '    window = UIWindow(frame: UIScreen.main.bounds)'
-  if (!withoutGeneratedFirebaseBlocks.includes(windowInitialization)) {
+  // Expo's installed scene delegate owns the window on iOS 27. Keep App Check before
+  // Firebase, and initialize both before UIKit connects that scene and starts React Native.
+  const factoryAssignment = '    reactNativeFactory = factory'
+  if (!withoutGeneratedFirebaseBlocks.includes(factoryAssignment)) {
     throw new Error('FIREBASE_APP_CHECK_SWIFT_INITIALIZATION_POINT_MISSING')
   }
-
-  return withoutGeneratedFirebaseBlocks.replace(
-    windowInitialization,
-    `${windowInitialization}\n${FIREBASE_INITIALIZATION}`
-  )
+  return withoutGeneratedFirebaseBlocks
+    .replace(
+      'class AppDelegate: ExpoAppDelegate {',
+      'class AppDelegate: ExpoAppDelegate, ExpoReactNativeFactoryProvider {'
+    )
+    .replace(
+      /\n#if os\(iOS\) \|\| os\(tvOS\)\n\s*window = UIWindow\(frame: UIScreen.main.bounds\)[\s\S]*?\n#endif\n/,
+      '\n'
+    )
+    .replace(factoryAssignment, `${factoryAssignment}\n${FIREBASE_INITIALIZATION}`)
 }
 
 module.exports = config =>
@@ -71,3 +78,5 @@ module.exports = config =>
       return config
     },
   ])
+
+module.exports.normalizeFirebaseInitialization = normalizeFirebaseInitialization

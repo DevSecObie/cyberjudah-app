@@ -22,6 +22,11 @@ export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number]
 export const ACTIVE_LANGUAGES = ['fr', 'en'] as const
 export type ActiveLanguage = (typeof ACTIVE_LANGUAGES)[number]
 
+// Retain locale data for later; the clean release currently enables English only.
+export const ENABLED_APP_LANGUAGES: readonly ActiveLanguage[] = ['en']
+export const isAppLanguageEnabled = (language: string): language is ActiveLanguage =>
+  ENABLED_APP_LANGUAGES.some(enabled => enabled === language)
+
 // Type guard to check if a language is supported
 export const isSupportedLanguage = (lang: string): lang is SupportedLanguage =>
   SUPPORTED_LANGUAGES.includes(lang as SupportedLanguage)
@@ -38,7 +43,7 @@ export const DEFAULT_LANGUAGE: ActiveLanguage = 'en'
  * Maps language codes to their default Bible version
  */
 export const DEFAULT_BIBLE_VERSIONS: Record<ActiveLanguage, DefaultVersionCode> = {
-  fr: 'FMAR',
+  fr: 'KJV',
   en: 'KJV',
 }
 

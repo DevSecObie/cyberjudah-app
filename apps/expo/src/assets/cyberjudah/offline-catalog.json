@@ -2,7 +2,7 @@
   "format": "bible-strong-mobile-resource-catalog",
   "schemaVersion": 1,
   "generatedAt": "2026-10-30T03:32:29.671Z",
-  "resourceCount": 10,
+  "resourceCount": 11,
   "resources": {
     "bible:KJV": {
       "id": "bible:KJV",
@@ -217,6 +217,27 @@
       "peakInstallationBytes": 8416906,
       "strategy": "archive-extract",
       "resourceRevision": "cj-strong-lexicon-resources-62d693464d0f06c08deb7897"
+    },
+    "database:NAVE:en": {
+      "id": "database:NAVE:en",
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/databases/en/nave.sqlite.zip?sha256=3e76be5791d33d23b21fb40f334d4e2b28c968d69e19ea41d6c0f32fed824766",
+      "file": "databases/en/nave.sqlite.zip",
+      "entry": "nave.sqlite",
+      "entries": {
+        "canonical": {
+          "entry": "nave.sqlite",
+          "sha256": "473c70d6cd86ae4da8db99a2957aa6234d6d46b06d8ae1857b0ff7a2b0c6bf9d",
+          "bytes": 7402496
+        }
+      },
+      "archiveSha256": "3e76be5791d33d23b21fb40f334d4e2b28c968d69e19ea41d6c0f32fed824766",
+      "archiveBytes": 2010816,
+      "contentSha256": "473c70d6cd86ae4da8db99a2957aa6234d6d46b06d8ae1857b0ff7a2b0c6bf9d",
+      "contentBytes": 7402496,
+      "resourceRevision": "nave-en-a3ca283196d0eb084276",
+      "installedBytes": 7402496,
+      "peakInstallationBytes": 16815808,
+      "strategy": "archive-extract"
     }
   }
 }

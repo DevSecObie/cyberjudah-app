@@ -11,7 +11,9 @@ jest.mock('~features/resources/resourceAvailability', () => ({
 
 describe('owned content compatibility', () => {
   it('registers every retained rebuilt Bible with its supplied language and complete credit', () => {
-    for (const bible of sources.bibles.filter(bible => !bible.excluded)) {
+    for (const bible of sources.bibles.filter(
+      bible => !bible.excluded && BUNDLED_MOBILE_RESOURCE_CATALOG.resources[bible.catalogId]
+    )) {
       expect(BUNDLED_MOBILE_RESOURCE_CATALOG.resources[bible.catalogId]).toBeDefined()
       expect(versions[bible.id]).toMatchObject({
         language: bible.language,

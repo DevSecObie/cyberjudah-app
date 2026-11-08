@@ -146,7 +146,7 @@ def package():
         data = artifact.read_bytes()
         if digest(data) != entry['archiveSha256'] or len(data) != entry['archiveBytes']:
             raise ValueError('RELEASE_ARCHIVE_CHECKSUM_MISMATCH:' + resource_id)
-        entry['url'] = 'https://api.cyberjudah.io/v1/offline-artifacts/' + entry['file']
+        entry['url'] = 'https://api.cyberjudah.io/v1/offline-artifacts/' + entry['file'] + ('?sha256=' + entry['archiveSha256'] if resource_id == 'database:NAVE:en' else '')
     catalog['resourceCount'] = len(catalog['resources'])
     CATALOG_PATH.write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + '\n')
     (APP / 'public/offline/catalog.json').write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + '\n')

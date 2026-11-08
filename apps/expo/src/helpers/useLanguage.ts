@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { ActiveLanguage } from '~helpers/languageUtils'
-import { DEFAULT_LANGUAGE, isActiveLanguage, getDateLocale } from '~helpers/languageUtils'
+import { DEFAULT_LANGUAGE, isAppLanguageEnabled, getDateLocale } from '~helpers/languageUtils'
 
 /**
  * React hook to get the current language code
@@ -21,7 +21,7 @@ import { DEFAULT_LANGUAGE, isActiveLanguage, getDateLocale } from '~helpers/lang
 const useLanguage = (): ActiveLanguage => {
   const { i18n } = useTranslation()
   const lang = i18n.language
-  return isActiveLanguage(lang) ? lang : DEFAULT_LANGUAGE
+  return isAppLanguageEnabled(lang) ? lang : DEFAULT_LANGUAGE
 }
 
 export default useLanguage
