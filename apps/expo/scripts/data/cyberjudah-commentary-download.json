@@ -1,0 +1,21 @@
+{
+  "id": "database:cyberjudah:en",
+  "url": "https://api.cyberjudah.io/v1/offline-artifacts/commentaries/commentary-cyberjudah-en.sqlite.zip?sha256=9efb84b16a7f2ca863a4b22c3ac577449ef91a36a7d7f041a9d857a147cdb78e",
+  "file": "commentaries/commentary-cyberjudah-en.sqlite.zip",
+  "entry": "commentary-cyberjudah-en.sqlite",
+  "entries": {
+    "canonical": {
+      "entry": "commentary-cyberjudah-en.sqlite",
+      "sha256": "f73bbe560e874bd039706602d96b63d73c0912484c82afacb72d67ee647e35cb",
+      "bytes": 45436928
+    }
+  },
+  "archiveSha256": "9efb84b16a7f2ca863a4b22c3ac577449ef91a36a7d7f041a9d857a147cdb78e",
+  "archiveBytes": 10815928,
+  "contentSha256": "f73bbe560e874bd039706602d96b63d73c0912484c82afacb72d67ee647e35cb",
+  "contentBytes": 45436928,
+  "resourceRevision": "cyberjudah-en-69ffac2e2e1e87e96c93",
+  "installedBytes": 45436928,
+  "peakInstallationBytes": 64690785,
+  "strategy": "archive-extract"
+}

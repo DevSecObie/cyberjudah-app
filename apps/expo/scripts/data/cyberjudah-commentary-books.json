@@ -1,0 +1,407 @@
+[
+  {
+    "id": 1,
+    "code": "Gen",
+    "slug": "genesis"
+  },
+  {
+    "id": 2,
+    "code": "Exo",
+    "slug": "exodus"
+  },
+  {
+    "id": 3,
+    "code": "Lev",
+    "slug": "leviticus"
+  },
+  {
+    "id": 4,
+    "code": "Num",
+    "slug": "numbers"
+  },
+  {
+    "id": 5,
+    "code": "Deu",
+    "slug": "deuteronomy"
+  },
+  {
+    "id": 6,
+    "code": "Jos",
+    "slug": "joshua"
+  },
+  {
+    "id": 7,
+    "code": "Jdg",
+    "slug": "judges"
+  },
+  {
+    "id": 8,
+    "code": "Rut",
+    "slug": "ruth"
+  },
+  {
+    "id": 9,
+    "code": "1Sa",
+    "slug": "1-samuel"
+  },
+  {
+    "id": 10,
+    "code": "2Sa",
+    "slug": "2-samuel"
+  },
+  {
+    "id": 11,
+    "code": "1Ki",
+    "slug": "1-kings"
+  },
+  {
+    "id": 12,
+    "code": "2Ki",
+    "slug": "2-kings"
+  },
+  {
+    "id": 13,
+    "code": "1Ch",
+    "slug": "1-chronicles"
+  },
+  {
+    "id": 14,
+    "code": "2Ch",
+    "slug": "2-chronicles"
+  },
+  {
+    "id": 15,
+    "code": "Ezr",
+    "slug": "ezra"
+  },
+  {
+    "id": 16,
+    "code": "Neh",
+    "slug": "nehemiah"
+  },
+  {
+    "id": 17,
+    "code": "Est",
+    "slug": "esther"
+  },
+  {
+    "id": 18,
+    "code": "Job",
+    "slug": "job"
+  },
+  {
+    "id": 19,
+    "code": "Psa",
+    "slug": "psalms"
+  },
+  {
+    "id": 20,
+    "code": "Pro",
+    "slug": "proverbs"
+  },
+  {
+    "id": 21,
+    "code": "Ecc",
+    "slug": "ecclesiastes"
+  },
+  {
+    "id": 22,
+    "code": "Sng",
+    "slug": "song-of-solomon"
+  },
+  {
+    "id": 23,
+    "code": "Isa",
+    "slug": "isaiah"
+  },
+  {
+    "id": 24,
+    "code": "Jer",
+    "slug": "jeremiah"
+  },
+  {
+    "id": 25,
+    "code": "Lam",
+    "slug": "lamentations"
+  },
+  {
+    "id": 26,
+    "code": "Ezk",
+    "slug": "ezekiel"
+  },
+  {
+    "id": 27,
+    "code": "Dan",
+    "slug": "daniel"
+  },
+  {
+    "id": 28,
+    "code": "Hos",
+    "slug": "hosea"
+  },
+  {
+    "id": 29,
+    "code": "Jol",
+    "slug": "joel"
+  },
+  {
+    "id": 30,
+    "code": "Amo",
+    "slug": "amos"
+  },
+  {
+    "id": 31,
+    "code": "Oba",
+    "slug": "obadiah"
+  },
+  {
+    "id": 32,
+    "code": "Jon",
+    "slug": "jonah"
+  },
+  {
+    "id": 33,
+    "code": "Mic",
+    "slug": "micah"
+  },
+  {
+    "id": 34,
+    "code": "Nam",
+    "slug": "nahum"
+  },
+  {
+    "id": 35,
+    "code": "Hab",
+    "slug": "habakkuk"
+  },
+  {
+    "id": 36,
+    "code": "Zep",
+    "slug": "zephaniah"
+  },
+  {
+    "id": 37,
+    "code": "Hag",
+    "slug": "haggai"
+  },
+  {
+    "id": 38,
+    "code": "Zec",
+    "slug": "zechariah"
+  },
+  {
+    "id": 39,
+    "code": "Mal",
+    "slug": "malachi"
+  },
+  {
+    "id": 40,
+    "code": "Mat",
+    "slug": "matthew"
+  },
+  {
+    "id": 41,
+    "code": "Mrk",
+    "slug": "mark"
+  },
+  {
+    "id": 42,
+    "code": "Luk",
+    "slug": "luke"
+  },
+  {
+    "id": 43,
+    "code": "Jhn",
+    "slug": "john"
+  },
+  {
+    "id": 44,
+    "code": "Act",
+    "slug": "acts"
+  },
+  {
+    "id": 45,
+    "code": "Rom",
+    "slug": "romans"
+  },
+  {
+    "id": 46,
+    "code": "1Co",
+    "slug": "1-corinthians"
+  },
+  {
+    "id": 47,
+    "code": "2Co",
+    "slug": "2-corinthians"
+  },
+  {
+    "id": 48,
+    "code": "Gal",
+    "slug": "galatians"
+  },
+  {
+    "id": 49,
+    "code": "Eph",
+    "slug": "ephesians"
+  },
+  {
+    "id": 50,
+    "code": "Php",
+    "slug": "philippians"
+  },
+  {
+    "id": 51,
+    "code": "Col",
+    "slug": "colossians"
+  },
+  {
+    "id": 52,
+    "code": "1Th",
+    "slug": "1-thessalonians"
+  },
+  {
+    "id": 53,
+    "code": "2Th",
+    "slug": "2-thessalonians"
+  },
+  {
+    "id": 54,
+    "code": "1Ti",
+    "slug": "1-timothy"
+  },
+  {
+    "id": 55,
+    "code": "2Ti",
+    "slug": "2-timothy"
+  },
+  {
+    "id": 56,
+    "code": "Tit",
+    "slug": "titus"
+  },
+  {
+    "id": 57,
+    "code": "Phm",
+    "slug": "philemon"
+  },
+  {
+    "id": 58,
+    "code": "Heb",
+    "slug": "hebrews"
+  },
+  {
+    "id": 59,
+    "code": "Jas",
+    "slug": "james"
+  },
+  {
+    "id": 60,
+    "code": "1Pe",
+    "slug": "1-peter"
+  },
+  {
+    "id": 61,
+    "code": "2Pe",
+    "slug": "2-peter"
+  },
+  {
+    "id": 62,
+    "code": "1Jn",
+    "slug": "1-john"
+  },
+  {
+    "id": 63,
+    "code": "2Jn",
+    "slug": "2-john"
+  },
+  {
+    "id": 64,
+    "code": "3Jn",
+    "slug": "3-john"
+  },
+  {
+    "id": 65,
+    "code": "Jud",
+    "slug": "jude"
+  },
+  {
+    "id": 66,
+    "code": "Rev",
+    "slug": "revelation"
+  },
+  {
+    "id": 67,
+    "code": "1Es",
+    "slug": "1-esdras"
+  },
+  {
+    "id": 68,
+    "code": "2Es",
+    "slug": "2-esdras"
+  },
+  {
+    "id": 69,
+    "code": "Tob",
+    "slug": "tobit"
+  },
+  {
+    "id": 70,
+    "code": "Jdt",
+    "slug": "judith"
+  },
+  {
+    "id": 71,
+    "code": "EsG",
+    "slug": "esther-greek"
+  },
+  {
+    "id": 72,
+    "code": "Wis",
+    "slug": "wisdom-of-solomon"
+  },
+  {
+    "id": 73,
+    "code": "Sir",
+    "slug": "sirach"
+  },
+  {
+    "id": 74,
+    "code": "Bar",
+    "slug": "baruch"
+  },
+  {
+    "id": 75,
+    "code": "LJe",
+    "slug": "epistle-of-jeremiah"
+  },
+  {
+    "id": 76,
+    "code": "S3Y",
+    "slug": "song-of-the-three-children"
+  },
+  {
+    "id": 77,
+    "code": "Sus",
+    "slug": "susanna"
+  },
+  {
+    "id": 78,
+    "code": "Bel",
+    "slug": "bel-and-the-dragon"
+  },
+  {
+    "id": 79,
+    "code": "Man",
+    "slug": "prayer-of-manasseh"
+  },
+  {
+    "id": 80,
+    "code": "1Ma",
+    "slug": "1-maccabees"
+  },
+  {
+    "id": 81,
+    "code": "2Ma",
+    "slug": "2-maccabees"
+  }
+]
