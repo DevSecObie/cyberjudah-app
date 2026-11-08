@@ -58,7 +58,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     bundleIdentifier: process.env.BUNDLE_IDENTIFIER ?? 'io.cyberjudah.app',
     appleTeamId: process.env.CYBERJUDAH_APPLE_TEAM_ID ?? 'M8DUMWBXLH',
-    buildNumber: '316',
+    buildNumber: '317',
     googleServicesFile:
       process.env.IOS_GOOGLE_SERVICES_FILE ??
       './firebase/cyberjudah-production/GoogleService-Info.plist',
