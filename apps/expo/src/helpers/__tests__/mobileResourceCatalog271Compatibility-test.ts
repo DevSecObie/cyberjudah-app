@@ -1,3 +1,8 @@
+// Test historical catalog compatibility with the complete upstream fixture.
+jest.mock('@bible-strong/resource-catalog/catalog', () =>
+  require('../../../test/jestUpstreamPackageCatalogFixture')
+)
+jest.mock('~assets/cyberjudah/excluded-upstream-resources.json', () => [])
 import {
   acceptsServedCatalogIn2711,
   BHG_ARCHIVE_ENTRY_IN_2711,

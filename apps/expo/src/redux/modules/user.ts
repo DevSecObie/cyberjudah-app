@@ -1,3 +1,4 @@
+import { STUDY_PUBLICATION_ENABLED } from '~helpers/serviceConnections'
 import { normalizeInlineCommentaries } from '~features/commentaries/inlineCommentarySelection'
 import { AnyAction, createSlice, PayloadAction, ThunkAction } from '@reduxjs/toolkit'
 import type { JSONValue } from 'expo/build/dom/dom.types'
@@ -651,7 +652,7 @@ const getInitialState = (): UserState => ({
     wordAnnotations: {},
     settings: {
       defaultBibleVersion: getDefaultBibleVersion(getLanguage()),
-      defaultStrongBibleVersionId: getLanguage() === 'en' ? 'KJV' : 'LSG',
+      defaultStrongBibleVersionId: 'KJV',
       alignContent: 'left',
       lineHeight: 'normal',
       fontSizeScale: 0,
@@ -1513,7 +1514,9 @@ const userSlice = createSlice({
       removeEntityInTags(state, 'studies', action.payload)
     })
     builder.addCase(publishStudyAction, (state, action) => {
+      if (!STUDY_PUBLICATION_ENABLED) return
       const study = state.bible.studies[action.payload.id]
+      if (!study) return
       study.published = action.payload.publish
       study.modified_at = Date.now()
     })

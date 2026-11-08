@@ -89,6 +89,7 @@ export function createBibleDownloadItem(versionId: string): DownloadItem {
 export function createInterlinearSidecarDownloadItem(lang: ResourceLanguage): DownloadItem {
   const publication = getInterlinearBiblePublication()
   const artifact = publication.indexes[lang]
+  if (!artifact) throw new Error(`INTERLINEAR_INDEX_UNAVAILABLE:${lang}`)
   return {
     id: createOfflineCopyId({
       kind: 'interlinear-index',
@@ -141,11 +142,12 @@ export const completeInterlinearDownloadPlan = (
   }
   if (bringsText) {
     for (const language of INTERLINEAR_LANGUAGES) {
+      if (!publication.indexes[language]) continue
       const index = createInterlinearSidecarDownloadItem(language)
       const installed = readInstalled(index.id)
       if (
         installed &&
-        installed.archiveSha256 !== publication.indexes[language].archiveSha256 &&
+        installed.archiveSha256 !== publication.indexes[language]!.archiveSha256 &&
         !plan.some(item => item.id === index.id)
       ) {
         plan.push(index)

@@ -1,3 +1,4 @@
+jest.mock('../mobileResourceCatalog', () => require('../../../test/jestUpstreamCatalogFixture'))
 /* eslint-disable import/first */
 
 jest.mock('expo-file-system/legacy', () => ({}))

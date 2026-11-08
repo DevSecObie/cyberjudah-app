@@ -84,6 +84,12 @@ export const useVersionCatalog = (
       grc: t('versionCatalog.language.grc'),
       'he-grc': t('versionCatalog.language.heGrc'),
       la: t('versionCatalog.language.la'),
+      th: 'ไทย',
+      sl: 'Slovenščina',
+      pt: 'Português',
+      ar: 'العربية',
+      nl: 'Nederlands',
+      fi: 'Suomi',
     },
     profiles: {
       'word-for-word': t('versionCatalog.style.wordForWord'),

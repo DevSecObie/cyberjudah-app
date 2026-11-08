@@ -11,7 +11,19 @@ export type BibleVersificationId =
   | 'theotex-septuagint'
   | 'clementine-vulgate'
 
-export type BibleVersionLanguage = 'fr' | 'en' | 'he' | 'grc' | 'he-grc' | 'la'
+export type BibleVersionLanguage =
+  | 'fr'
+  | 'en'
+  | 'he'
+  | 'grc'
+  | 'he-grc'
+  | 'la'
+  | 'th'
+  | 'sl'
+  | 'pt'
+  | 'ar'
+  | 'nl'
+  | 'fi'
 
 export type TranslationReadingProfile =
   | 'word-for-word'
@@ -59,8 +71,8 @@ export const versions: Record<string, Version> = {
     type: 'fr',
     language: 'fr',
     readingProfile: 'word-for-word',
-    hasRedWords: true,
-    hasPericope: true,
+    hasRedWords: false,
+    hasPericope: false,
     strongDatasetId: 'LSG',
   },
   NBS: {
@@ -107,8 +119,8 @@ export const versions: Record<string, Version> = {
     id: 'BHG',
     name: 'Bible hébraïque et grecque',
     name_en: 'Hebrew & Greek Bible',
-    c: 'STEPBible.org / Tyndale House Cambridge — CC BY 4.0',
-    sourceUrl: 'https://github.com/STEPBible/STEPBible-Data',
+    c: 'Westminster Leningrad Codex and Scrivener 1894 (public domain). Hebrew word tags: Open Scriptures Hebrew Bible Project, CC BY 4.0. Greek word tags: Maurice A. Robinson (public domain).',
+    sourceUrl: 'https://github.com/openscriptures/morphhb',
     type: 'other',
     language: 'he-grc',
     readingProfile: null,
@@ -173,7 +185,7 @@ export const versions: Record<string, Version> = {
     readingProfile: 'thought-for-thought',
     hasRedWords: true,
     hasPericope: true,
-    },
+  },
   FMAR: {
     id: 'FMAR',
     name: 'Martin 1744',
@@ -181,8 +193,8 @@ export const versions: Record<string, Version> = {
     type: 'fr',
     language: 'fr',
     readingProfile: 'word-for-word',
-    hasRedWords: true,
-    hasPericope: true,
+    hasRedWords: false,
+    hasPericope: false,
   },
   LAU: {
     id: 'LAU',
@@ -233,8 +245,9 @@ export const versions: Record<string, Version> = {
   },
   KJV: {
     id: 'KJV',
+    canonId: 'kjv-1611',
     name: 'King James Version',
-    c: 'Public Domain except in the United Kingdom (Crown rights)',
+    c: 'King James Version with Apocrypha (public domain). Strong’s dictionaries: Open Scriptures, CC BY-SA. Brown–Driver–Briggs transcription and Strong index: Open Scriptures Hebrew Bible Project, CC BY 4.0.',
     sourceUrl: 'https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=KJV',
     type: 'en',
     language: 'en',
@@ -251,7 +264,7 @@ export const versions: Record<string, Version> = {
     type: 'en',
     language: 'en',
     readingProfile: 'balanced',
-    hasPericope: true,
+    hasPericope: false,
     strongDatasetId: 'BSB',
   },
   ASV: {
@@ -262,7 +275,7 @@ export const versions: Record<string, Version> = {
     type: 'en',
     language: 'en',
     readingProfile: 'word-for-word',
-    hasPericope: true,
+    hasPericope: false,
     strongDatasetId: 'ASV',
   },
   DARBY: {
@@ -273,7 +286,7 @@ export const versions: Record<string, Version> = {
     type: 'en',
     language: 'en',
     readingProfile: 'word-for-word',
-    hasPericope: true,
+    hasPericope: false,
     strongDatasetId: 'DARBY_EN',
   },
   RLT: {
@@ -287,6 +300,16 @@ export const versions: Record<string, Version> = {
     hasRedWords: true,
     hasPericope: true,
     strongDatasetId: 'RLT',
+  },
+  WEB1833: {
+    id: 'WEB1833',
+    name: 'Noah Webster Bible (1833)',
+    sourceUrl: 'https://ebible.org/find/details.php?id=engwebster',
+    type: 'en',
+    language: 'en',
+    readingProfile: 'word-for-word',
+    hasRedWords: false,
+    hasPericope: false,
   },
   RWEBSTER: {
     id: 'RWEBSTER',
@@ -329,7 +352,7 @@ export const versions: Record<string, Version> = {
     readingProfile: 'word-for-word',
     hasRedWords: true,
     hasPericope: true,
-    },
+  },
   NIV: {
     id: 'NIV',
     name: 'New International Version',
@@ -339,7 +362,7 @@ export const versions: Record<string, Version> = {
     readingProfile: 'balanced',
     hasRedWords: true,
     hasPericope: true,
-    },
+  },
   BCC1923: {
     id: 'BCC1923',
     name: 'Bible catholique Crampon 1923',
@@ -467,7 +490,7 @@ export const versions: Record<string, Version> = {
     readingProfile: 'thought-for-thought',
     hasRedWords: true,
     hasPericope: true,
-    },
+  },
   AMP: {
     id: 'AMP',
     name: 'Amplified Bible',
@@ -544,6 +567,134 @@ export const versions: Record<string, Version> = {
     readingProfile: null,
   },
 }
+
+// Metadata and verbatim licence credits supplied by the content rebuild.
+Object.assign(versions, {
+  FMAR: {
+    id: 'FMAR',
+    name: 'Bible David Martin (1744)',
+    c: 'La Sainte Bible, version David Martin 1744, domaine public. Texte : module SWORD FreBDM1744 (CrossWire Bible Society).',
+    sourceUrl: 'https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=FreBDM1744',
+    type: 'fr',
+    language: 'fr',
+    readingProfile: 'word-for-word',
+    hasRedWords: false,
+    hasPericope: false,
+  },
+  WEB1833: {
+    id: 'WEB1833',
+    name: 'Noah Webster Bible (1833)',
+    c: 'The Holy Bible, in the Common Version, with Amendments of the language by Noah Webster, LL.D. (1833), public domain. Text: eBible.org (engwebster).',
+    sourceUrl: 'https://ebible.org/find/details.php?id=engwebster',
+    type: 'en',
+    language: 'en',
+    readingProfile: 'word-for-word',
+    hasRedWords: false,
+    hasPericope: false,
+  },
+  KJVA: {
+    id: 'KJVA',
+    name: 'King James Version with Apocrypha (1769 text)',
+    c: 'King James Version (1769 standard text) with Apocrypha, public domain (Crown patent applies to printing in the UK). Text: CrossWire Bible Society and eBible.org (eng-kjv).',
+    sourceUrl: 'https://ebible.org/find/details.php?id=eng-kjv',
+    type: 'en',
+    language: 'en',
+    readingProfile: 'word-for-word',
+    hasRedWords: false,
+    hasPericope: false,
+    canonId: 'kjv-1611',
+  },
+  TR1624: {
+    id: 'TR1624',
+    name: 'Elzevir Textus Receptus (1624)',
+    c: 'Elzevir Textus Receptus (1624), edited by Abraham and Bonaventure Elzevir; transcription by Maurice Robinson. CC BY-NC-SA 4.0. Text: CrossWire Bible Society (Elzevir module).',
+    sourceUrl: 'https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=Elzevir',
+    type: 'other',
+    language: 'grc',
+    readingProfile: null,
+    hasRedWords: false,
+    hasPericope: false,
+  },
+  TR1894: {
+    id: 'TR1894',
+    name: 'Textus Receptus (Scrivener 1894)',
+    c: 'Textus Receptus, Scrivener 1894 readings of the CrossWire TR module (base Stephens 1550 with Scrivener 1894 variants). CC BY-NC-SA 4.0. Text: CrossWire Bible Society (TR module).',
+    sourceUrl: 'https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=TR',
+    type: 'other',
+    language: 'grc',
+    readingProfile: null,
+    hasRedWords: false,
+    hasPericope: false,
+  },
+  THAIKJV: {
+    id: 'THAIKJV',
+    name: 'Thai King James Version',
+    c: 'พระคัมภีร์ภาษาไทยฉบับ KJV (Thai KJV), copyright © 2003 Philip Pope, CC BY-NC-ND 4.0. Text: eBible.org (thaKJV).',
+    sourceUrl: 'https://ebible.org/find/details.php?id=thaKJV',
+    type: 'other',
+    language: 'th',
+    readingProfile: null,
+    hasRedWords: false,
+    hasPericope: false,
+  },
+  BLIVRETR: {
+    id: 'BLIVRETR',
+    name: 'Bíblia Livre, edição Textus Receptus',
+    c: 'Bíblia Livre (BLIVRE), Copyright © Diego Santos, Mario Sérgio, e Marco Teles, http://sites.google.com/site/biblialivre/ - fevereiro de 2018. Licença Creative Commons Atribuição 4.0 Brasil (http://creativecommons.org/licenses/by/4.0/br/). Texto: eBible.org (porbr2018).',
+    sourceUrl: 'https://ebible.org/find/details.php?id=porbr2018',
+    type: 'other',
+    language: 'pt',
+    readingProfile: null,
+    hasRedWords: false,
+    hasPericope: false,
+  },
+  SVD: {
+    id: 'SVD',
+    name: 'Smith–Van Dyck Arabic Bible',
+    c: 'Smith–Van Dyck Arabic Bible (Syrian Mission, American Bible Society), public domain. Text: eBible.org (arb-vd).',
+    sourceUrl: 'https://ebible.org/find/details.php?id=arb-vd',
+    type: 'other',
+    language: 'ar',
+    readingProfile: null,
+    hasRedWords: false,
+    hasPericope: false,
+  },
+  SLOKJV: {
+    id: 'SLOKJV',
+    name: 'Sveto pismo Kralja Jakoba (Slovenian KJV)',
+    c: 'Sveto pismo Kralja Jakoba (SloKJV), Marjan Šavli in Barbara Hojkar Šavli, CC BY-NC-ND 4.0. Besedilo: CrossWire Bible Society (SloKJV), https://github.com/msavli/SloKJV.',
+    sourceUrl: 'https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=SloKJV',
+    type: 'other',
+    language: 'sl',
+    readingProfile: null,
+    hasRedWords: false,
+    hasPericope: false,
+  },
+  DUTSVVA: {
+    id: 'DUTSVVA',
+    name: 'Statenvertaling (1637) met de apocriefe boeken',
+    c: 'Statenvertaling (1637), met de apocriefe boeken, publiek domein. Tekst: CrossWire Bible Society (DutSVVA), naar github.com/Isidore-Guild/statenvertaling.',
+    sourceUrl: 'https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=DutSVVA',
+    type: 'other',
+    language: 'nl',
+    readingProfile: null,
+    hasRedWords: false,
+    hasPericope: false,
+    canonId: 'statenvertaling-apocrypha',
+  },
+  FINBIBLIA: {
+    id: 'FINBIBLIA',
+    name: 'Biblia 1776',
+    c: 'Biblia (1776), Suomen kirkkoraamattu, public domain. Text: CrossWire Bible Society (FinBiblia), SWORD version by Tero Favorin.',
+    sourceUrl: 'https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=FinBiblia',
+    type: 'other',
+    language: 'fi',
+    readingProfile: null,
+    hasRedWords: false,
+    hasPericope: false,
+    canonId: 'kjv-1611',
+  },
+})
 
 export const getBibleVersionCanonId = (versionId: string): BibleCanonId =>
   versions[versionId]?.canonId ?? 'protestant-66'

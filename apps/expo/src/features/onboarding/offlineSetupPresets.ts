@@ -1,3 +1,5 @@
+import { hasMobileResourceCatalogEntry } from '~helpers/mobileResourceCatalog'
+import { requiresStrongLexiconCore } from '~helpers/strongLexiconCore'
 import { getSimpleStrongModuleId } from '@bible-strong/resource-domain/strong-lexicon'
 import { versions } from '~helpers/bibleVersions'
 import { databases } from '~helpers/databases'
@@ -143,7 +145,8 @@ const getDictionaryOptions = (
     options.push({
       id: `dictionary:${dictionary.resource.work}:${dictionary.resourceId}:${resourceLang}`,
       label,
-      description: dictionary.description || undefined,
+      description:
+        [dictionary.description, dictionary.attribution].filter(Boolean).join(' · ') || undefined,
       language: resourceLang,
       labelKey: resourceLang === currentLang ? undefined : 'offlineSetup.option.localizedResource',
       selections: [
@@ -420,7 +423,7 @@ const flattenResourceSections = (sections: OfflineSetupSection[]): OfflineSetupS
   return [{ id: 'resources', options }, ...(otherLanguages ? [otherLanguages] : [])]
 }
 
-export const getOfflineSetupFolderSections = (
+const getAllOfflineSetupFolderSections = (
   folderId: OfflineSetupFolderId,
   lang: ResourceLanguage
 ): OfflineSetupSection[] => {
@@ -434,6 +437,53 @@ export const getOfflineSetupFolderSections = (
     case 'original-languages':
       return flattenResourceSections(getOriginalLanguageSections(lang))
   }
+}
+
+const availableSelection = (selection: OnboardingResourceSelection): boolean => {
+  const id = getOnboardingResourceSelectionId(selection)
+  if (selection.kind === 'dictionary') {
+    return (
+      hasMobileResourceCatalogEntry('dictionary-directory') &&
+      hasMobileResourceCatalogEntry(`database:${selection.resourceId}:${selection.lang}`)
+    )
+  }
+  return hasMobileResourceCatalogEntry(id)
+}
+
+export const getOfflineSetupFolderSections = (
+  folderId: OfflineSetupFolderId,
+  lang: ResourceLanguage
+): OfflineSetupSection[] => {
+  const options = (items: OfflineSetupOption[]) =>
+    items.flatMap(option => {
+      const independentModule = option.selections.some(
+        selection =>
+          selection.kind === 'strong-lexicon' &&
+          selection.moduleId &&
+          !requiresStrongLexiconCore(selection.moduleId) &&
+          (selection.moduleId === 'resources' || selection.moduleId === 'entities')
+      )
+      const selections = independentModule
+        ? option.selections.filter(
+            selection => !(selection.kind === 'strong-lexicon' && selection.moduleId === 'core')
+          )
+        : option.selections
+      const requires = (option.requires ?? []).filter(
+        id => !(independentModule && id === 'strong-lexicon:core')
+      )
+      if (
+        !selections.length ||
+        !selections.every(availableSelection) ||
+        requires.some(id => !hasMobileResourceCatalogEntry(id))
+      )
+        return []
+      return [{ ...option, selections, requires }]
+    })
+  return getAllOfflineSetupFolderSections(folderId, lang).map(section => ({
+    ...section,
+    options: options(section.options),
+    groups: section.groups?.map(group => ({ ...group, options: options(group.options) })),
+  }))
 }
 
 export const getDefaultOfflineSetupFolderOptionIds = (

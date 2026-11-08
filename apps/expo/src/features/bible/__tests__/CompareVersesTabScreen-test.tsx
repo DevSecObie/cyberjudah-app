@@ -1,3 +1,11 @@
+// These reader/transport algorithms retain the complete upstream fixture.
+jest.mock('@bible-strong/resource-catalog/catalog', () =>
+  require('../../../../test/jestUpstreamPackageCatalogFixture')
+)
+jest.mock('~helpers/strongBibleCatalog', () =>
+  require('../../../../test/jestUpstreamStrongCatalogFixture')
+)
+jest.mock('~assets/cyberjudah/excluded-upstream-resources.json', () => [])
 import React from 'react'
 import { act, create, type ReactTestRenderer } from 'react-test-renderer'
 

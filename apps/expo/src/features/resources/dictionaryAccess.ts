@@ -1,3 +1,5 @@
+import dictionaryCredits from '~assets/cyberjudah/dictionary-credits.json'
+import { hasMobileResourceCatalogEntry } from '~helpers/mobileResourceCatalog'
 import { ResourceAccessError } from './resourceAccessError'
 import { getLocalResourceAvailability, offlineResourceRegistry } from './resourceAvailability'
 import type { ResourceLanguage } from '~helpers/databaseTypes'
@@ -55,7 +57,7 @@ export type DictionaryPassageDiscoveryEntry = Schema.Schema.Type<
   typeof DictionaryPassageDiscoveryResponseDto
 >['entries'][number]
 
-export const KNOWN_DICTIONARY_WORKS: readonly DictionaryWork[] = (
+const UPSTREAM_DICTIONARY_WORKS: readonly DictionaryWork[] = (
   [
     [
       'westphal',
@@ -145,9 +147,37 @@ export const KNOWN_DICTIONARY_WORKS: readonly DictionaryWork[] = (
   edition: '',
   source: '',
   attribution: '',
+  ...(
+    dictionaryCredits as Partial<
+      Record<string, { edition: string; source: string; attribution: string }>
+    >
+  )[resourceId],
   onlineAccess: true,
   offlineDownload: true,
 }))
+
+export const KNOWN_DICTIONARY_WORKS: readonly DictionaryWork[] = [
+  ...UPSTREAM_DICTIONARY_WORKS,
+  {
+    resource: {
+      kind: 'dictionary' as const,
+      work: 'jewish-encyclopedia',
+      language: 'en' as const,
+      revision: 'catalog',
+    },
+    resourceId: 'JEWISH_ENCYCLOPEDIA',
+    title: 'The Jewish Encyclopedia (1901–1906)',
+    abbreviation: 'Jewish Encyclopedia',
+    authors: ['Isidore Singer, editor'],
+    description:
+      'A reference work, not the classes’ teaching: the twelve volumes of 1901–1906, from our own scans, each article with its volume and page.',
+    edition: 'Funk and Wagnalls, New York, 1901–1906',
+    source: 'CyberJudah library (archive.org scans)',
+    attribution: 'The Jewish Encyclopedia, Isidore Singer, editor (1901–1906). Public domain.',
+    onlineAccess: true,
+    offlineDownload: true,
+  },
+]
 
 export type DictionaryAccess = {
   listWorks?: (language?: ResourceLanguage) => Promise<DictionaryWork[]>
@@ -325,28 +355,34 @@ const getInstalledDictionaryEntries = () =>
 
 const getReadableDictionaryWorks = async (language?: ResourceLanguage) => {
   const works = await Promise.all(
-    KNOWN_DICTIONARY_WORKS.filter(work => !language || work.resource.language === language).map(
-      async work => {
-        try {
-          const installed = await resolveInstalledDictionary(
-            work.resource.work,
-            work.resource.language
-          )
-          return installed ? { work, installed } : undefined
-        } catch (error) {
-          if (error instanceof ResourceAccessError && error.code === 'INVALID_OFFLINE_COPY')
-            return undefined
-          throw error
-        }
+    KNOWN_DICTIONARY_WORKS.filter(
+      work =>
+        (!language || work.resource.language === language) &&
+        hasMobileResourceCatalogEntry(`database:${work.resourceId}:${work.resource.language}`)
+    ).map(async work => {
+      try {
+        const installed = await resolveInstalledDictionary(
+          work.resource.work,
+          work.resource.language
+        )
+        return installed ? { work, installed } : undefined
+      } catch (error) {
+        if (error instanceof ResourceAccessError && error.code === 'INVALID_OFFLINE_COPY')
+          return undefined
+        throw error
       }
-    )
+    })
   )
   return works.filter(work => work !== undefined)
 }
 
 export const localDictionaryAccess: DictionaryAccess = {
   listWorks: async language =>
-    KNOWN_DICTIONARY_WORKS.filter(work => !language || work.resource.language === language),
+    KNOWN_DICTIONARY_WORKS.filter(
+      work =>
+        (!language || work.resource.language === language) &&
+        hasMobileResourceCatalogEntry(`database:${work.resourceId}:${work.resource.language}`)
+    ),
   getAvailability: async (language, work = getDefaultDictionaryWork(language)) => {
     try {
       return (await resolveInstalledDictionary(work, language))
@@ -1233,7 +1269,7 @@ export const createHybridDictionaryAccess = ({
           throw error
       }
     }
-    if (await isOnline()) return remoteOperation()
+    if (remotelyReadableLanguages.size > 0 && (await isOnline())) return remoteOperation()
     if (local.status !== 'available' && local.reason === 'invalid-offline-copy') {
       throw new ResourceAccessError('INVALID_OFFLINE_COPY', [
         'acquire-offline-copy',
@@ -1292,7 +1328,7 @@ export const createHybridDictionaryAccess = ({
   }
   return {
     listWorks: async language => {
-      if (await isOnline()) {
+      if (remotelyReadableLanguages.size > 0 && (await isOnline())) {
         try {
           return (await online.listWorks?.(language)) ?? []
         } catch (error) {
@@ -1322,7 +1358,7 @@ export const createHybridDictionaryAccess = ({
     getDirectoryAvailability: async () => {
       const local = await directoryAvailability()
       if (local.status === 'available') return local
-      if (await isOnline()) return { status: 'available' }
+      if (remotelyReadableLanguages.size > 0 && (await isOnline())) return { status: 'available' }
       return local
     },
     listByLetter: (letter, language = 'fr', work = getDefaultDictionaryWork(language)) =>

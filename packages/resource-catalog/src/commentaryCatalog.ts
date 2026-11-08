@@ -1,3 +1,4 @@
+import ownedCommentary from './cyberjudah-commentary.json'
 import { BUNDLED_MOBILE_RESOURCE_CATALOG } from './catalog'
 import { COMMENTARY_DESCRIPTIONS } from './commentaryDescriptions'
 
@@ -350,9 +351,13 @@ export const BASE_COMMENTARY_CATALOG = [
   }),
 ] as const satisfies readonly CommentaryCatalogEntry[]
 
-export const COMMENTARY_CATALOG = BASE_COMMENTARY_CATALOG.filter(entry =>
-  entry.languages.some(language =>
-    `database:${entry.publicationId}:${language}` in BUNDLED_MOBILE_RESOURCE_CATALOG.resources
+export const COMMENTARY_CATALOG = [
+  ...BASE_COMMENTARY_CATALOG,
+  ownedCommentary as CommentaryCatalogEntry,
+].filter(entry =>
+  entry.languages.some(
+    language =>
+      `database:${entry.publicationId}:${language}` in BUNDLED_MOBILE_RESOURCE_CATALOG.resources
   )
 )
 

@@ -1,10 +1,14 @@
 export type BibleCanonId =
+  | 'kjv-1611'
+  | 'statenvertaling-apocrypha'
   | 'protestant-66'
   | 'catholic-73'
   | 'clementine-vulgate'
   | 'theotex-septuagint'
 
 export const BIBLE_CANON_IDS = [
+  'kjv-1611',
+  'statenvertaling-apocrypha',
   'protestant-66',
   'catholic-73',
   'clementine-vulgate',

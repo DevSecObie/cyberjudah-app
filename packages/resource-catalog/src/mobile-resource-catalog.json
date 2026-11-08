@@ -2,200 +2,29 @@
   "format": "bible-strong-mobile-resource-catalog",
   "schemaVersion": 1,
   "generatedAt": "2026-10-08T17:23:43.000Z",
-  "resourceCount": 81,
+  "resourceCount": 26,
   "resources": {
     "bible-interlinear:BHG:en": {
       "id": "bible-interlinear:BHG:en",
       "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-step-interlinear-en.sqlite.zip",
       "file": "bibles/bible-step-interlinear-en.sqlite.zip",
-      "entry": "bible-step-interlinear-en.sqlite",
+      "entry": "bible-bhg-interlinear-en.sqlite",
       "entries": {
         "canonical": {
-          "entry": "bible-step-interlinear-en.sqlite",
-          "sha256": "be13b954bda6cef2525d46d2421c7ea64f80adf0f0c34e7b767d40eb96526a34",
-          "bytes": 55119872
+          "entry": "bible-bhg-interlinear-en.sqlite",
+          "sha256": "d7c715143ca92d92152888b494f1d6426614f840eee4700aeb1cb88cdb64b1de",
+          "bytes": 36962304
         }
       },
-      "archiveSha256": "5bcfee1b51c1a24222475f6bbdae0ea433a620102987a0448a883eed3dacf2eb",
-      "archiveBytes": 22945644,
-      "contentSha256": "be13b954bda6cef2525d46d2421c7ea64f80adf0f0c34e7b767d40eb96526a34",
-      "contentBytes": 55119872,
-      "installedBytes": 55119872,
-      "peakInstallationBytes": 89775344,
+      "archiveSha256": "c6f5c2eec37cbc721cbe9cf461173d88ed63c57ad5b7773b953cb4cec1e68e38",
+      "archiveBytes": 14038749,
+      "contentSha256": "d7c715143ca92d92152888b494f1d6426614f840eee4700aeb1cb88cdb64b1de",
+      "contentBytes": 36962304,
+      "installedBytes": 36962304,
+      "peakInstallationBytes": 124925661,
       "strategy": "archive-extract",
-      "textRevision": "bhg-803c482ed06005693547",
-      "textSha256": "803c482ed06005693547f9ea04a2dcbec4718c1d97ab0c531d60600e4c3a9d8f",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-step-interlinear-en.sqlite.encrypted.zip?sha256=b504db86bca7a96b3753e775b5380078a8a217b20232bd5e9ac41f5ef9e5cf93",
-        "file": "bibles/bible-step-interlinear-en.sqlite.encrypted.zip",
-        "sha256": "b504db86bca7a96b3753e775b5380078a8a217b20232bd5e9ac41f5ef9e5cf93",
-        "bytes": 22647648,
-        "keyVersion": 1
-      }
-    },
-    "bible-interlinear:BHG:fr": {
-      "id": "bible-interlinear:BHG:fr",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-step-interlinear-fr.sqlite.zip",
-      "file": "bibles/bible-step-interlinear-fr.sqlite.zip",
-      "entry": "bible-step-interlinear-fr.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "bible-step-interlinear-fr.sqlite",
-          "sha256": "e5581a22d74be411e762936a5094e1ad4873c6fe7b98cbb49adc25fbd8ea2294",
-          "bytes": 54296576
-        }
-      },
-      "archiveSha256": "01c757b213c0b467a6ae0d405f7e911ea516eed4159485b591f5b3196e9905ec",
-      "archiveBytes": 22536568,
-      "contentSha256": "e5581a22d74be411e762936a5094e1ad4873c6fe7b98cbb49adc25fbd8ea2294",
-      "contentBytes": 54296576,
-      "installedBytes": 54296576,
-      "peakInstallationBytes": 88358116,
-      "strategy": "archive-extract",
-      "textRevision": "bhg-803c482ed06005693547",
-      "textSha256": "803c482ed06005693547f9ea04a2dcbec4718c1d97ab0c531d60600e4c3a9d8f",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-step-interlinear-fr.sqlite.encrypted.zip?sha256=b580dbed617e666923cbc6f4cf5da54d3fcf9b89b1ada02ff3b463a0e140b8ab",
-        "file": "bibles/bible-step-interlinear-fr.sqlite.encrypted.zip",
-        "sha256": "b580dbed617e666923cbc6f4cf5da54d3fcf9b89b1ada02ff3b463a0e140b8ab",
-        "bytes": 22253986,
-        "keyVersion": 1
-      }
-    },
-    "bible-strong:ASV": {
-      "id": "bible-strong:ASV",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-asv-strong.sqlite.zip?sha256=ea9243d6563d9f8f2c931206af406e4431c2ec3f40452449faee4223529abd75",
-      "file": "bibles/bible-asv-strong.sqlite.zip",
-      "entry": "bible-asv-strong.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "bible-asv-strong.sqlite",
-          "sha256": "9abca0bc108902061b93653dfd197a0aefc124ab683eba25fee855028f115aca",
-          "bytes": 25235456
-        }
-      },
-      "archiveSha256": "ea9243d6563d9f8f2c931206af406e4431c2ec3f40452449faee4223529abd75",
-      "archiveBytes": 10804779,
-      "contentSha256": "9abca0bc108902061b93653dfd197a0aefc124ab683eba25fee855028f115aca",
-      "contentBytes": 25235456,
-      "installedBytes": 25235456,
-      "peakInstallationBytes": 41446271,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-asv-strong.sqlite.encrypted.zip?sha256=ea84bbe2eb72d91bea5893ff7c33834d3875ca1fb595939b3ac51537dceeb5fd",
-        "file": "bibles/bible-asv-strong.sqlite.encrypted.zip",
-        "sha256": "ea84bbe2eb72d91bea5893ff7c33834d3875ca1fb595939b3ac51537dceeb5fd",
-        "bytes": 10787077,
-        "keyVersion": 1
-      }
-    },
-    "bible-strong:BSB": {
-      "id": "bible-strong:BSB",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-bsb-strong.sqlite.zip?sha256=81761d61ed06cbe4d6bd730257eb1947989abe49b98316323e1ab5b5b5fc62df",
-      "file": "bibles/bible-bsb-strong.sqlite.zip",
-      "entry": "bible-bsb-strong.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "bible-bsb-strong.sqlite",
-          "sha256": "52d5415fc3dd2241ec8e982c1a35559dbf869c67476b9a250270084497f265d7",
-          "bytes": 30302208
-        }
-      },
-      "archiveSha256": "81761d61ed06cbe4d6bd730257eb1947989abe49b98316323e1ab5b5b5fc62df",
-      "archiveBytes": 13297125,
-      "contentSha256": "52d5415fc3dd2241ec8e982c1a35559dbf869c67476b9a250270084497f265d7",
-      "contentBytes": 30302208,
-      "installedBytes": 30302208,
-      "peakInstallationBytes": 50139233,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-bsb-strong.sqlite.encrypted.zip?sha256=c471a1c2172759898e67206525dc9e297ffb893a0d4ecb6c16c50e0b2c60b62c",
-        "file": "bibles/bible-bsb-strong.sqlite.encrypted.zip",
-        "sha256": "c471a1c2172759898e67206525dc9e297ffb893a0d4ecb6c16c50e0b2c60b62c",
-        "bytes": 13278070,
-        "keyVersion": 1
-      }
-    },
-    "bible-strong:DARBY": {
-      "id": "bible-strong:DARBY",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-darby-strong.sqlite.zip?sha256=3896bbd275c527b023f12e36a1cbe0850d251e41670852b7b5d7c7fc3c99e24e",
-      "file": "bibles/bible-darby-strong.sqlite.zip",
-      "entry": "bible-darby-strong.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "bible-darby-strong.sqlite",
-          "sha256": "c110542f99e376a7cc3b6c23a918d95df36574a026fae5f886630730fe37041b",
-          "bytes": 26546176
-        }
-      },
-      "archiveSha256": "3896bbd275c527b023f12e36a1cbe0850d251e41670852b7b5d7c7fc3c99e24e",
-      "archiveBytes": 11007520,
-      "contentSha256": "c110542f99e376a7cc3b6c23a918d95df36574a026fae5f886630730fe37041b",
-      "contentBytes": 26546176,
-      "installedBytes": 26546176,
-      "peakInstallationBytes": 43186751,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-darby-strong.sqlite.encrypted.zip?sha256=5ddea474072aa1b5ec90fc230c01db9a576681adb5f6744a0f7558187e4a3531",
-        "file": "bibles/bible-darby-strong.sqlite.encrypted.zip",
-        "sha256": "5ddea474072aa1b5ec90fc230c01db9a576681adb5f6744a0f7558187e4a3531",
-        "bytes": 10980601,
-        "keyVersion": 1
-      }
-    },
-    "bible-strong:DBR": {
-      "id": "bible-strong:DBR",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-dbr-strong.sqlite.zip?sha256=59b6bae495d1f871f16a4a71b673b72dce2b2466e4e0c384248d59d31709b229",
-      "file": "bibles/bible-dbr-strong.sqlite.zip",
-      "entry": "bible-dbr-strong.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "bible-dbr-strong.sqlite",
-          "sha256": "aca81984aa03b2f7f5bf25d3c667df59a852343897dd6a87c4bbf3063d62f598",
-          "bytes": 30068736
-        }
-      },
-      "archiveSha256": "59b6bae495d1f871f16a4a71b673b72dce2b2466e4e0c384248d59d31709b229",
-      "archiveBytes": 13060072,
-      "contentSha256": "aca81984aa03b2f7f5bf25d3c667df59a852343897dd6a87c4bbf3063d62f598",
-      "contentBytes": 30068736,
-      "installedBytes": 30068736,
-      "peakInstallationBytes": 49598130,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-dbr-strong.sqlite.encrypted.zip?sha256=bca19a43a16734da41f0c9386d5d14377ff94ef31c9fd6376a6cbfe910bec665",
-        "file": "bibles/bible-dbr-strong.sqlite.encrypted.zip",
-        "sha256": "bca19a43a16734da41f0c9386d5d14377ff94ef31c9fd6376a6cbfe910bec665",
-        "bytes": 13047312,
-        "keyVersion": 1
-      }
-    },
-    "bible-strong:DBY": {
-      "id": "bible-strong:DBY",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-dby-strong.sqlite.zip?sha256=1808547d9a9c73770db8baf5584ff04d08224b87d4b272ad8bd1fabd56351dd2",
-      "file": "bibles/bible-dby-strong.sqlite.zip",
-      "entry": "bible-dby-strong.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "bible-dby-strong.sqlite",
-          "sha256": "6a3d981d60a61447f1a3c6b7a92536cccf85382557b84d6c56f274d8b073cd44",
-          "bytes": 30113792
-        }
-      },
-      "archiveSha256": "1808547d9a9c73770db8baf5584ff04d08224b87d4b272ad8bd1fabd56351dd2",
-      "archiveBytes": 13052787,
-      "contentSha256": "6a3d981d60a61447f1a3c6b7a92536cccf85382557b84d6c56f274d8b073cd44",
-      "contentBytes": 30113792,
-      "installedBytes": 30113792,
-      "peakInstallationBytes": 49641566,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-dby-strong.sqlite.encrypted.zip?sha256=3ee632d5c1429e1e46897f2ab5f1386d11b38a438e38f8013aef7c9eef32c656",
-        "file": "bibles/bible-dby-strong.sqlite.encrypted.zip",
-        "sha256": "3ee632d5c1429e1e46897f2ab5f1386d11b38a438e38f8013aef7c9eef32c656",
-        "bytes": 13040853,
-        "keyVersion": 1
-      }
+      "textRevision": "1eea4e4d68d6009562a0e1a09902070d9503b98f9deb23cb8aa9f65c00ac4467",
+      "textSha256": "1eea4e4d68d6009562a0e1a09902070d9503b98f9deb23cb8aa9f65c00ac4467"
     },
     "bible-strong:KJV": {
       "id": "bible-strong:KJV",
@@ -205,2013 +34,547 @@
       "entries": {
         "canonical": {
           "entry": "bible-kjv-strong.sqlite",
-          "sha256": "6feba4763cd09f583309cbee80eda15209d66492d1c8decafb91c15637b61b1a",
-          "bytes": 26411008
+          "sha256": "345068423582d1e02ee9a6f2a5755ba40284b40952a62b372c47f3240621a437",
+          "bytes": 28119040
         }
       },
-      "archiveSha256": "cc04e24089093e462327f01625ab127f875309a007085edde7682df965fdf77c",
-      "archiveBytes": 11368761,
-      "contentSha256": "6feba4763cd09f583309cbee80eda15209d66492d1c8decafb91c15637b61b1a",
-      "contentBytes": 26411008,
-      "installedBytes": 26411008,
-      "peakInstallationBytes": 43446735,
+      "archiveSha256": "1d206b604ad900962d52ea06915d76e391fc0af6efc9676cf2226160bbf9ce68",
+      "archiveBytes": 12575234,
+      "contentSha256": "345068423582d1e02ee9a6f2a5755ba40284b40952a62b372c47f3240621a437",
+      "contentBytes": 28119040,
+      "installedBytes": 28119040,
+      "peakInstallationBytes": 96932354,
       "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-kjv-strong.sqlite.encrypted.zip?sha256=49ee3d85fb696db7f4d2950ee0621b256d1709d160ea3a2af0da34fbb45621b7",
-        "file": "bibles/bible-kjv-strong.sqlite.encrypted.zip",
-        "sha256": "49ee3d85fb696db7f4d2950ee0621b256d1709d160ea3a2af0da34fbb45621b7",
-        "bytes": 11358339,
-        "keyVersion": 1
-      }
-    },
-    "bible-strong:LSG": {
-      "id": "bible-strong:LSG",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-lsg-strong.sqlite.zip?sha256=d016e09fcf3b7f3913594e156c711900a5175b8ca0b18ec842352003bdd16bcd",
-      "file": "bibles/bible-lsg-strong.sqlite.zip",
-      "entry": "bible-lsg-strong.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "bible-lsg-strong.sqlite",
-          "sha256": "e9a8f0f39f2bb52fb66f1fe964303e51edd15f25625e182a353af1fe63ac7b52",
-          "bytes": 29999104
-        }
-      },
-      "archiveSha256": "d016e09fcf3b7f3913594e156c711900a5175b8ca0b18ec842352003bdd16bcd",
-      "archiveBytes": 12998213,
-      "contentSha256": "e9a8f0f39f2bb52fb66f1fe964303e51edd15f25625e182a353af1fe63ac7b52",
-      "contentBytes": 29999104,
-      "installedBytes": 29999104,
-      "peakInstallationBytes": 49446915,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-lsg-strong.sqlite.encrypted.zip?sha256=dbcf60d374c91021478e0e567c46cf05c0e5904b47d947b40625cfa881e93bd0",
-        "file": "bibles/bible-lsg-strong.sqlite.encrypted.zip",
-        "sha256": "dbcf60d374c91021478e0e567c46cf05c0e5904b47d947b40625cfa881e93bd0",
-        "bytes": 12983867,
-        "keyVersion": 1
-      }
-    },
-    "bible-strong:NASB1995": {
-      "id": "bible-strong:NASB1995",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-nasb1995-strong.sqlite.zip",
-      "file": "bibles/bible-nasb1995-strong.sqlite.zip",
-      "entry": "bible-nasb1995-strong.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "bible-nasb1995-strong.sqlite",
-          "sha256": "1fba8a9f2712dad6cba7d7f13e9d45f4499733ff68d9743d047b2d6116f90a16",
-          "bytes": 26009600
-        }
-      },
-      "archiveSha256": "48877fec53a9808350c01e6f51c3ede585bcdb700d8e98eaaab905cd192611d9",
-      "archiveBytes": 11421825,
-      "contentSha256": "1fba8a9f2712dad6cba7d7f13e9d45f4499733ff68d9743d047b2d6116f90a16",
-      "contentBytes": 26009600,
-      "installedBytes": 26009600,
-      "peakInstallationBytes": 43046139,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-nasb1995-strong.sqlite.encrypted.zip?sha256=8a3c97942ad23530b43c231d1e3114dea350b5a6ffba69c5e8a866aa657da8ee",
-        "file": "bibles/bible-nasb1995-strong.sqlite.encrypted.zip",
-        "sha256": "8a3c97942ad23530b43c231d1e3114dea350b5a6ffba69c5e8a866aa657da8ee",
-        "bytes": 11404614,
-        "keyVersion": 1
-      }
-    },
-    "bible-strong:NASB2020": {
-      "id": "bible-strong:NASB2020",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-nasb2020-strong.sqlite.zip",
-      "file": "bibles/bible-nasb2020-strong.sqlite.zip",
-      "entry": "bible-nasb2020-strong.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "bible-nasb2020-strong.sqlite",
-          "sha256": "1253df40700517745db0b53aad7f39b37250394dfeb9299b53420130e851dde8",
-          "bytes": 26746880
-        }
-      },
-      "archiveSha256": "1fed7cfd55b6d3940209c540de409a3e94168f86e2b73d89d62858d96a3f9773",
-      "archiveBytes": 11713422,
-      "contentSha256": "1253df40700517745db0b53aad7f39b37250394dfeb9299b53420130e851dde8",
-      "contentBytes": 26746880,
-      "installedBytes": 26746880,
-      "peakInstallationBytes": 44229348,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-nasb2020-strong.sqlite.encrypted.zip?sha256=da6f9aaf9155f13d2206f49ea7783a69204ae3c71106961fc40e2d3771b16dae",
-        "file": "bibles/bible-nasb2020-strong.sqlite.encrypted.zip",
-        "sha256": "da6f9aaf9155f13d2206f49ea7783a69204ae3c71106961fc40e2d3771b16dae",
-        "bytes": 11696718,
-        "keyVersion": 1
-      }
-    },
-    "bible-strong:RLT": {
-      "id": "bible-strong:RLT",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-rlt-strong.sqlite.zip",
-      "file": "bibles/bible-rlt-strong.sqlite.zip",
-      "entry": "bible-rlt-strong.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "bible-rlt-strong.sqlite",
-          "sha256": "ebfa78ab73cdd008b235ad8cc383b73d8a594760562afb591de90435f8b59e81",
-          "bytes": 26386432
-        }
-      },
-      "archiveSha256": "407f2936e5ae4837ab7513a3dacc33c773e10baaa58629188ac907092c893b4e",
-      "archiveBytes": 11360309,
-      "contentSha256": "ebfa78ab73cdd008b235ad8cc383b73d8a594760562afb591de90435f8b59e81",
-      "contentBytes": 26386432,
-      "installedBytes": 26386432,
-      "peakInstallationBytes": 43408753,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-rlt-strong.sqlite.encrypted.zip?sha256=aa5dec8a2df6aa5d2c86116c712103b1945b183232409ba3dc682304660cd4b2",
-        "file": "bibles/bible-rlt-strong.sqlite.encrypted.zip",
-        "sha256": "aa5dec8a2df6aa5d2c86116c712103b1945b183232409ba3dc682304660cd4b2",
-        "bytes": 11352224,
-        "keyVersion": 1
-      }
-    },
-    "bible-strong:RV1895": {
-      "id": "bible-strong:RV1895",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-rv1895-strong.sqlite.zip?sha256=91d6ae74cfccc2d8453790f399e926c60c31b69c1d02ee29196bd28b5c0834b4",
-      "file": "bibles/bible-rv1895-strong.sqlite.zip",
-      "entry": "bible-rv1895-strong.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "bible-rv1895-strong.sqlite",
-          "sha256": "d65db7d1bc231b95a8af4af7405dd9c995d473ef7bca00955d56ba33608e9af5",
-          "bytes": 26120192
-        }
-      },
-      "archiveSha256": "91d6ae74cfccc2d8453790f399e926c60c31b69c1d02ee29196bd28b5c0834b4",
-      "archiveBytes": 10988840,
-      "contentSha256": "d65db7d1bc231b95a8af4af7405dd9c995d473ef7bca00955d56ba33608e9af5",
-      "contentBytes": 26120192,
-      "installedBytes": 26120192,
-      "peakInstallationBytes": 42675387,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-rv1895-strong.sqlite.encrypted.zip?sha256=ac4666a0b678a36b370258577e6705e6014cafd9cc2ec904997ffe4a02e840ed",
-        "file": "bibles/bible-rv1895-strong.sqlite.encrypted.zip",
-        "sha256": "ac4666a0b678a36b370258577e6705e6014cafd9cc2ec904997ffe4a02e840ed",
-        "bytes": 10981982,
-        "keyVersion": 1
-      }
-    },
-    "bible-strong:RWEBSTER": {
-      "id": "bible-strong:RWEBSTER",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-rwebster-strong.sqlite.zip?sha256=2d0e47112554d5a198b53b7a4372e7b08b411d4316ee6d70400f3278eab0710a",
-      "file": "bibles/bible-rwebster-strong.sqlite.zip",
-      "entry": "bible-rwebster-strong.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "bible-rwebster-strong.sqlite",
-          "sha256": "0f3a9ce0a7cd7bbd45a1cec8d8ce67248a8a03b74d03238fa09ab4fb8f17d0fb",
-          "bytes": 25235456
-        }
-      },
-      "archiveSha256": "2d0e47112554d5a198b53b7a4372e7b08b411d4316ee6d70400f3278eab0710a",
-      "archiveBytes": 10861235,
-      "contentSha256": "0f3a9ce0a7cd7bbd45a1cec8d8ce67248a8a03b74d03238fa09ab4fb8f17d0fb",
-      "contentBytes": 25235456,
-      "installedBytes": 25235456,
-      "peakInstallationBytes": 41511195,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-rwebster-strong.sqlite.encrypted.zip?sha256=1e9dc74435e5ccbfa3652d8b2cb2f5f5e227f69bd71ba3a5e56c308ac45e61e7",
-        "file": "bibles/bible-rwebster-strong.sqlite.encrypted.zip",
-        "sha256": "1e9dc74435e5ccbfa3652d8b2cb2f5f5e227f69bd71ba3a5e56c308ac45e61e7",
-        "bytes": 10848338,
-        "keyVersion": 1
-      }
-    },
-    "bible:AMP": {
-      "id": "bible:AMP",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-amp.json.zip?sha256=63444714a34b6299e98c4bd0fc249c1d849b0079fa1e8cc32caef31a35aa9b72",
-      "file": "bibles/bible-amp.json.zip",
-      "entry": "bible-amp.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-amp.json",
-          "sha256": "ed8730cdc6ceccda92f4c4cc5cad27e97d4245f45c9cd8fb6824515b68658247",
-          "bytes": 7477763
-        }
-      },
-      "archiveSha256": "63444714a34b6299e98c4bd0fc249c1d849b0079fa1e8cc32caef31a35aa9b72",
-      "archiveBytes": 1766847,
-      "contentSha256": "ed8730cdc6ceccda92f4c4cc5cad27e97d4245f45c9cd8fb6824515b68658247",
-      "contentBytes": 7477763,
-      "installedBytes": 9347204,
-      "peakInstallationBytes": 24605372,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-amp.json.encrypted.zip?sha256=23642cc002f21bd76f3323af7b8a3fa283e4ff140a8598f41b3032e1bed4002e",
-        "file": "bibles/bible-amp.json.encrypted.zip",
-        "sha256": "23642cc002f21bd76f3323af7b8a3fa283e4ff140a8598f41b3032e1bed4002e",
-        "bytes": 1768416,
-        "keyVersion": 1
-      }
-    },
-    "bible:ASV": {
-      "id": "bible:ASV",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-asv.json.zip?sha256=ad67f929ab9f7f58847efd883ff8e395648331cb9b672cd2ffa171a718fae7bb",
-      "file": "bibles/bible-asv.json.zip",
-      "entry": "bible-asv.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-asv.json",
-          "sha256": "3ec83d8aab5d419eddcd1b92c95922e8d5b6c16cda28371ed54d5f688b29b325",
-          "bytes": 9968405
-        }
-      },
-      "archiveSha256": "ad67f929ab9f7f58847efd883ff8e395648331cb9b672cd2ffa171a718fae7bb",
-      "archiveBytes": 1737975,
-      "contentSha256": "3ec83d8aab5d419eddcd1b92c95922e8d5b6c16cda28371ed54d5f688b29b325",
-      "contentBytes": 9968405,
-      "installedBytes": 12460507,
-      "peakInstallationBytes": 32090795,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-asv.json.encrypted.zip?sha256=e1ace79dec0b8746b4488d989c3320db86757c9dfd19b8da13f581c1ea1891fd",
-        "file": "bibles/bible-asv.json.encrypted.zip",
-        "sha256": "e1ace79dec0b8746b4488d989c3320db86757c9dfd19b8da13f581c1ea1891fd",
-        "bytes": 1738863,
-        "keyVersion": 1
-      }
-    },
-    "bible:BCC1923": {
-      "id": "bible:BCC1923",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-bcc1923.json.zip?sha256=5572566d3cc939543f4e11a37887748b8a05949385cf02ac2bcc94eb21729a1f",
-      "file": "bibles/bible-bcc1923.json.zip",
-      "entry": "bible-bcc1923.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-bcc1923.json",
-          "sha256": "12419853215b435b7868647461049693b334ee59740e5d8ad98b2be322053c37",
-          "bytes": 7596677
-        }
-      },
-      "archiveSha256": "5572566d3cc939543f4e11a37887748b8a05949385cf02ac2bcc94eb21729a1f",
-      "archiveBytes": 1761252,
-      "contentSha256": "12419853215b435b7868647461049693b334ee59740e5d8ad98b2be322053c37",
-      "contentBytes": 7596677,
-      "installedBytes": 9495847,
-      "peakInstallationBytes": 24957910,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-bcc1923.json.encrypted.zip?sha256=3796a9583bd1972ac7a51950ac463cfcdb84c3f18d060beeb6125951d7aef528",
-        "file": "bibles/bible-bcc1923.json.encrypted.zip",
-        "sha256": "3796a9583bd1972ac7a51950ac463cfcdb84c3f18d060beeb6125951d7aef528",
-        "bytes": 1762912,
-        "keyVersion": 1
-      }
-    },
-    "bible:BDS": {
-      "id": "bible:BDS",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-bds.json.zip?sha256=21cad4dc406f90d8c02a241a27065097be2d0a9bf8a80a5481a2383bcfd0a29a",
-      "file": "bibles/bible-bds.json.zip",
-      "entry": "bible-bds.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-bds.json",
-          "sha256": "34fcb410dde56f197f549d30eff68f0b7115ecd0295337a4107b773c22b0a402",
-          "bytes": 7374998
-        }
-      },
-      "archiveSha256": "21cad4dc406f90d8c02a241a27065097be2d0a9bf8a80a5481a2383bcfd0a29a",
-      "archiveBytes": 1758040,
-      "contentSha256": "34fcb410dde56f197f549d30eff68f0b7115ecd0295337a4107b773c22b0a402",
-      "contentBytes": 7374998,
-      "installedBytes": 9218748,
-      "peakInstallationBytes": 24285022,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-bds.json.encrypted.zip?sha256=1c8d1bb2f9152d352d304e8db8894f758dc5853806d89d3f6b7825b933525ace",
-        "file": "bibles/bible-bds.json.encrypted.zip",
-        "sha256": "1c8d1bb2f9152d352d304e8db8894f758dc5853806d89d3f6b7825b933525ace",
-        "bytes": 1759773,
-        "keyVersion": 1
-      }
-    },
-    "bible:BFC": {
-      "id": "bible:BFC",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-bfc.json.zip?sha256=64b02fc9d7d7e319cb91494ccd6b8f0a07037eb06432f3d662aeeb5ac69397fc",
-      "file": "bibles/bible-bfc.json.zip",
-      "entry": "bible-bfc.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-bfc.json",
-          "sha256": "24206a07bf064861c3313266549ad2c876264c8f92be09fa59eb8c0f421f993a",
-          "bytes": 8162667
-        }
-      },
-      "archiveSha256": "64b02fc9d7d7e319cb91494ccd6b8f0a07037eb06432f3d662aeeb5ac69397fc",
-      "archiveBytes": 1956829,
-      "contentSha256": "24206a07bf064861c3313266549ad2c876264c8f92be09fa59eb8c0f421f993a",
-      "contentBytes": 8162667,
-      "installedBytes": 10203334,
-      "peakInstallationBytes": 26891405,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-bfc.json.encrypted.zip?sha256=d043ff97d43eb2343e5e3638c5e7f47dc7e0f554ab84c316201cb9be22d063e8",
-        "file": "bibles/bible-bfc.json.encrypted.zip",
-        "sha256": "d043ff97d43eb2343e5e3638c5e7f47dc7e0f554ab84c316201cb9be22d063e8",
-        "bytes": 1958832,
-        "keyVersion": 1
-      }
+      "textRevision": "kjv-canonical-f21bd3e1dab7e7261c58",
+      "textSha256": "f21bd3e1dab7e7261c5879203321bacce1b08695f3467687ccffc4fa210c9140"
     },
     "bible:BHG": {
       "id": "bible:BHG",
       "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-step.json.zip",
       "file": "bibles/bible-step.json.zip",
-      "entry": "bible-step.json",
+      "entry": "BHG.json",
       "entries": {
         "canonical": {
-          "entry": "bible-step.json",
-          "sha256": "0b52f772b5484ee4c420d9234b760cb2aec022e1add3e0e23fb6b65ee513f811",
-          "bytes": 7305397
+          "entry": "BHG.json",
+          "sha256": "6a64b1d4d8c9865e9d98d40cd359fdac762a42f1fbb0c620e70a6f526243d794",
+          "bytes": 9013920
         }
       },
-      "archiveSha256": "5d7b283e3e20ec748844acfe46877bae7e4e6045d4e4455116f6218a54b18fd6",
-      "archiveBytes": 1783949,
-      "contentSha256": "0b52f772b5484ee4c420d9234b760cb2aec022e1add3e0e23fb6b65ee513f811",
-      "contentBytes": 7305397,
-      "installedBytes": 9131747,
-      "peakInstallationBytes": 24104710,
+      "archiveSha256": "ab91f7c23a3e91732823ab2abf36205fcd3b90567f45f61d37f0acd19d5515bd",
+      "archiveBytes": 1851335,
+      "contentSha256": "6a64b1d4d8c9865e9d98d40cd359fdac762a42f1fbb0c620e70a6f526243d794",
+      "contentBytes": 9013920,
+      "installedBytes": 18027840,
+      "peakInstallationBytes": 28893095,
       "strategy": "sqlite-import",
-      "textRevision": "bhg-803c482ed06005693547",
-      "textSha256": "803c482ed06005693547f9ea04a2dcbec4718c1d97ab0c531d60600e4c3a9d8f",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-step.json.encrypted.zip?sha256=4134a28abfe274a435a782ff6dc8a9f8ef294ca558e8746848249a3bb16305eb",
-        "file": "bibles/bible-step.json.encrypted.zip",
-        "sha256": "4134a28abfe274a435a782ff6dc8a9f8ef294ca558e8746848249a3bb16305eb",
-        "bytes": 1785005,
-        "keyVersion": 1
-      }
-    },
-    "bible:BHS": {
-      "id": "bible:BHS",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-hebrew.json.zip",
-      "file": "bibles/bible-hebrew.json.zip",
-      "entry": "bible-hebrew.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-hebrew.json",
-          "sha256": "d21777aa6c78076c051e79880973bd1f78b1feb52cc51e2f46a3693bdfa31615",
-          "bytes": 5566623
-        }
-      },
-      "archiveSha256": "1fdc858fad816433ce0380b2e2cbf9973e4cdaf24ca74b01cb8c1e279ee7e8c2",
-      "archiveBytes": 1381187,
-      "contentSha256": "d21777aa6c78076c051e79880973bd1f78b1feb52cc51e2f46a3693bdfa31615",
-      "contentBytes": 5566623,
-      "installedBytes": 6958279,
-      "peakInstallationBytes": 18392609,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-hebrew.json.encrypted.zip?sha256=af3a45bd196677373fd8b0a4f6ba0062fbfe9c6f3f65350a90c686dc26ea047c",
-        "file": "bibles/bible-hebrew.json.encrypted.zip",
-        "sha256": "af3a45bd196677373fd8b0a4f6ba0062fbfe9c6f3f65350a90c686dc26ea047c",
-        "bytes": 1382139,
-        "keyVersion": 1
-      }
-    },
-    "bible:BSB": {
-      "id": "bible:BSB",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-bsb.json.zip?sha256=1a4ba83d6852e24e057767fc35702f1e257df3974c81df32268c7af0d89df1bb",
-      "file": "bibles/bible-bsb.json.zip",
-      "entry": "bible-bsb.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-bsb.json",
-          "sha256": "b831450be9a01b32da70edccb9fb07e9757e81bf9f4b693632fdfa2ecaadbadd",
-          "bytes": 14673823
-        }
-      },
-      "archiveSha256": "1a4ba83d6852e24e057767fc35702f1e257df3974c81df32268c7af0d89df1bb",
-      "archiveBytes": 2384055,
-      "contentSha256": "b831450be9a01b32da70edccb9fb07e9757e81bf9f4b693632fdfa2ecaadbadd",
-      "contentBytes": 14673823,
-      "installedBytes": 18342279,
-      "peakInstallationBytes": 47038267,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-bsb.json.encrypted.zip?sha256=886a454eec99604d672149b61760017041e739e5395960141624bd5c0152abbf",
-        "file": "bibles/bible-bsb.json.encrypted.zip",
-        "sha256": "886a454eec99604d672149b61760017041e739e5395960141624bd5c0152abbf",
-        "bytes": 2385869,
-        "keyVersion": 1
-      }
-    },
-    "bible:CHU": {
-      "id": "bible:CHU",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-chu.json.zip?sha256=23b8318e6c71f1fbbd7fedd5d04869e0c8a6ecca88ff5f495910988af02521ff",
-      "file": "bibles/bible-chu.json.zip",
-      "entry": "bible-chu.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-chu.json",
-          "sha256": "028e5757034633f46b9578cc45c23a93517be526c6fe3f3d5af5b75f4572ebe4",
-          "bytes": 6459564
-        }
-      },
-      "archiveSha256": "23b8318e6c71f1fbbd7fedd5d04869e0c8a6ecca88ff5f495910988af02521ff",
-      "archiveBytes": 1422660,
-      "contentSha256": "028e5757034633f46b9578cc45c23a93517be526c6fe3f3d5af5b75f4572ebe4",
-      "contentBytes": 6459564,
-      "installedBytes": 8074455,
-      "peakInstallationBytes": 21135868,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-chu.json.encrypted.zip?sha256=090491499776188c0c49eaba93ef4eab0dd70895bf6a7d5a8b3d351cc5db56d9",
-        "file": "bibles/bible-chu.json.encrypted.zip",
-        "sha256": "090491499776188c0c49eaba93ef4eab0dd70895bf6a7d5a8b3d351cc5db56d9",
-        "bytes": 1423876,
-        "keyVersion": 1
-      }
-    },
-    "bible:CSB": {
-      "id": "bible:CSB",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-csb.json.zip?sha256=add7026a0758d7b5b0f50dca7871457e722543f854bf0f7274e2304de30e44cd",
-      "file": "bibles/bible-csb.json.zip",
-      "entry": "bible-csb.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-csb.json",
-          "sha256": "9eb475dd788ea11c597b7c70fe60b0cc772576544f2da9e0a6f7a5c80e90aeec",
-          "bytes": 6691739
-        }
-      },
-      "archiveSha256": "add7026a0758d7b5b0f50dca7871457e722543f854bf0f7274e2304de30e44cd",
-      "archiveBytes": 1464284,
-      "contentSha256": "9eb475dd788ea11c597b7c70fe60b0cc772576544f2da9e0a6f7a5c80e90aeec",
-      "contentBytes": 6691739,
-      "installedBytes": 8364674,
-      "peakInstallationBytes": 21884615,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-csb.json.encrypted.zip?sha256=fe62e84f419b502c52eabd7e5cb07262a1cc3139208829ad8b76e43dd25374f9",
-        "file": "bibles/bible-csb.json.encrypted.zip",
-        "sha256": "fe62e84f419b502c52eabd7e5cb07262a1cc3139208829ad8b76e43dd25374f9",
-        "bytes": 1465310,
-        "keyVersion": 1
-      }
-    },
-    "bible:DARBY": {
-      "id": "bible:DARBY",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-darby.json.zip?sha256=878a8a8a029f876b6a2de3603487153a53e173e1a2d6e9831b2c79b78d2c67b2",
-      "file": "bibles/bible-darby.json.zip",
-      "entry": "bible-darby.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-darby.json",
-          "sha256": "d24481c2691298ff79b6df0451a94fda1f04266a25ed3d3e15da2edabf8f0881",
-          "bytes": 7751840
-        }
-      },
-      "archiveSha256": "878a8a8a029f876b6a2de3603487153a53e173e1a2d6e9831b2c79b78d2c67b2",
-      "archiveBytes": 1528821,
-      "contentSha256": "d24481c2691298ff79b6df0451a94fda1f04266a25ed3d3e15da2edabf8f0881",
-      "contentBytes": 7751840,
-      "installedBytes": 9689800,
-      "peakInstallationBytes": 25159012,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-darby.json.encrypted.zip?sha256=3d2c866f325a4ddb8cb63699e90f3492143b0a2ca63a91f21d05dcc3cce55683",
-        "file": "bibles/bible-darby.json.encrypted.zip",
-        "sha256": "3d2c866f325a4ddb8cb63699e90f3492143b0a2ca63a91f21d05dcc3cce55683",
-        "bytes": 1529621,
-        "keyVersion": 1
-      }
-    },
-    "bible:DBR": {
-      "id": "bible:DBR",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-dbr.json.zip?sha256=734a4824f7c98a6467901be083f7733e4f35eac2119d0d24ae61966fc8c13967",
-      "file": "bibles/bible-dbr.json.zip",
-      "entry": "bible-dbr.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-dbr.json",
-          "sha256": "34fb35dce7380129f1c0ea27652602bf9390377f9cb4e7aaa56d651f66155494",
-          "bytes": 10503355
-        }
-      },
-      "archiveSha256": "734a4824f7c98a6467901be083f7733e4f35eac2119d0d24ae61966fc8c13967",
-      "archiveBytes": 2040682,
-      "contentSha256": "34fb35dce7380129f1c0ea27652602bf9390377f9cb4e7aaa56d651f66155494",
-      "contentBytes": 10503355,
-      "installedBytes": 13129194,
-      "peakInstallationBytes": 34053788,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-dbr.json.encrypted.zip?sha256=6f532624c2c9393b1e78af611515e1722f33a57383d193329da714470a6673b4",
-        "file": "bibles/bible-dbr.json.encrypted.zip",
-        "sha256": "6f532624c2c9393b1e78af611515e1722f33a57383d193329da714470a6673b4",
-        "bytes": 2042818,
-        "keyVersion": 1
-      }
-    },
-    "bible:DBY": {
-      "id": "bible:DBY",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-dby.json.zip?sha256=a5cf1ac6b453d506f91bc4df5e5a566adc68eea1c55ba92134ee68adf2aa2503",
-      "file": "bibles/bible-dby.json.zip",
-      "entry": "bible-dby.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-dby.json",
-          "sha256": "909e43ccdcef4fed39d6e455ae041fdea85558bca1e225db0964b9d2fcec2289",
-          "bytes": 10106560
-        }
-      },
-      "archiveSha256": "a5cf1ac6b453d506f91bc4df5e5a566adc68eea1c55ba92134ee68adf2aa2503",
-      "archiveBytes": 1928064,
-      "contentSha256": "909e43ccdcef4fed39d6e455ae041fdea85558bca1e225db0964b9d2fcec2289",
-      "contentBytes": 10106560,
-      "installedBytes": 12633200,
-      "peakInstallationBytes": 32726452,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-dby.json.encrypted.zip?sha256=fcab49b730880c5c40a095bb491ffd785cced6ae3e09b260780b7c96d9097d6e",
-        "file": "bibles/bible-dby.json.encrypted.zip",
-        "sha256": "fcab49b730880c5c40a095bb491ffd785cced6ae3e09b260780b7c96d9097d6e",
-        "bytes": 1930098,
-        "keyVersion": 1
-      }
-    },
-    "bible:DEL": {
-      "id": "bible:DEL",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-del.json.zip?sha256=3860a08c13a61fe7554ada5832a32f341e8afb17a984e9371b4eb96af42e0680",
-      "file": "bibles/bible-del.json.zip",
-      "entry": "bible-del.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-del.json",
-          "sha256": "280965a0c91cf6150f9dcd10f198c616faf768c93e0c56e619d9028966a7e259",
-          "bytes": 9519345
-        }
-      },
-      "archiveSha256": "3860a08c13a61fe7554ada5832a32f341e8afb17a984e9371b4eb96af42e0680",
-      "archiveBytes": 1914775,
-      "contentSha256": "280965a0c91cf6150f9dcd10f198c616faf768c93e0c56e619d9028966a7e259",
-      "contentBytes": 9519345,
-      "installedBytes": 11899182,
-      "peakInstallationBytes": 30938516,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-del.json.encrypted.zip?sha256=0a5a33d56f5ed8672499ae2d34fd454084dd6f1538e3a63d1ada05b22c3ba50e",
-        "file": "bibles/bible-del.json.encrypted.zip",
-        "sha256": "0a5a33d56f5ed8672499ae2d34fd454084dd6f1538e3a63d1ada05b22c3ba50e",
-        "bytes": 1916026,
-        "keyVersion": 1
-      }
-    },
-    "bible:EASY": {
-      "id": "bible:EASY",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-easy.json.zip?sha256=b52149535bef50aa173ff5e1fcdb2a7966e3ca89547328dac055c6ebf7c3d8e7",
-      "file": "bibles/bible-easy.json.zip",
-      "entry": "bible-easy.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-easy.json",
-          "sha256": "2a53c2b17c2c096438623b1a2e1f2708db3350d29ac8a6c1d40bf6949fbeb6df",
-          "bytes": 7733618
-        }
-      },
-      "archiveSha256": "b52149535bef50aa173ff5e1fcdb2a7966e3ca89547328dac055c6ebf7c3d8e7",
-      "archiveBytes": 1645555,
-      "contentSha256": "2a53c2b17c2c096438623b1a2e1f2708db3350d29ac8a6c1d40bf6949fbeb6df",
-      "contentBytes": 7733618,
-      "installedBytes": 9667023,
-      "peakInstallationBytes": 25238249,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-easy.json.encrypted.zip?sha256=c6286785f8d1c28c8ebeac13141d4f3ef6142495d0de04bd81ddeb09774f4cfa",
-        "file": "bibles/bible-easy.json.encrypted.zip",
-        "sha256": "c6286785f8d1c28c8ebeac13141d4f3ef6142495d0de04bd81ddeb09774f4cfa",
-        "bytes": 1646942,
-        "keyVersion": 1
-      }
-    },
-    "bible:ESV": {
-      "id": "bible:ESV",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-esv.json.zip?sha256=b56c548b9ca50f0b257dbdcb1f604287d016876fa89f8c4692383225a8375776",
-      "file": "bibles/bible-esv.json.zip",
-      "entry": "bible-esv.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-esv.json",
-          "sha256": "681a761c15644c7e7bf603dda4e1913782ffd4b5864c1aff28daca6a7f50b0a8",
-          "bytes": 6472570
-        }
-      },
-      "archiveSha256": "b56c548b9ca50f0b257dbdcb1f604287d016876fa89f8c4692383225a8375776",
-      "archiveBytes": 1406744,
-      "contentSha256": "681a761c15644c7e7bf603dda4e1913782ffd4b5864c1aff28daca6a7f50b0a8",
-      "contentBytes": 6472570,
-      "installedBytes": 8090713,
-      "peakInstallationBytes": 21156828,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-esv.json.encrypted.zip?sha256=a4918f7cfc0c708fba88272f5b2d63e7fbcc4bcf6895949d48160d16cf58cbc3",
-        "file": "bibles/bible-esv.json.encrypted.zip",
-        "sha256": "a4918f7cfc0c708fba88272f5b2d63e7fbcc4bcf6895949d48160d16cf58cbc3",
-        "bytes": 1407795,
-        "keyVersion": 1
-      }
+      "textRevision": "1eea4e4d68d6009562a0e1a09902070d9503b98f9deb23cb8aa9f65c00ac4467",
+      "textSha256": "1eea4e4d68d6009562a0e1a09902070d9503b98f9deb23cb8aa9f65c00ac4467"
     },
     "bible:FMAR": {
       "id": "bible:FMAR",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-fmar.json.zip?sha256=935b1a464fdd494dd6e79c880cd62ec2920aa3a5b9623fd3304c6d81739094a8",
       "file": "bibles/bible-fmar.json.zip",
       "entry": "bible-fmar.json",
       "entries": {
         "canonical": {
           "entry": "bible-fmar.json",
-          "sha256": "92b7ae5b6ca55afa00c20dfe28d0abb51c397c922136bf5695e9c74d24953df9",
-          "bytes": 7109899
+          "sha256": "17849b26007fd3630aaee588ae99861de8306fc07cf4b8c936e28514dc661f02",
+          "bytes": 6796345
         }
       },
-      "archiveSha256": "935b1a464fdd494dd6e79c880cd62ec2920aa3a5b9623fd3304c6d81739094a8",
-      "archiveBytes": 1588298,
-      "contentSha256": "92b7ae5b6ca55afa00c20dfe28d0abb51c397c922136bf5695e9c74d24953df9",
-      "contentBytes": 7109899,
-      "installedBytes": 8887374,
-      "peakInstallationBytes": 23289551,
+      "archiveSha256": "fe8b199d8f4df58f4fda81bab3b12c2bfe176069cf50decd8fd9735fea10f9d9",
+      "archiveBytes": 1549200,
+      "contentSha256": "17849b26007fd3630aaee588ae99861de8306fc07cf4b8c936e28514dc661f02",
+      "contentBytes": 6796345,
+      "installedBytes": 13592690,
+      "peakInstallationBytes": 21938235,
       "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-fmar.json.encrypted.zip?sha256=c3f4ff4f0ff430734dd43e01edbaa7a799b8b648924529d287e3f9c8a146ef7c",
-        "file": "bibles/bible-fmar.json.encrypted.zip",
-        "sha256": "c3f4ff4f0ff430734dd43e01edbaa7a799b8b648924529d287e3f9c8a146ef7c",
-        "bytes": 1589680,
-        "keyVersion": 1
-      }
-    },
-    "bible:FRC97": {
-      "id": "bible:FRC97",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-frc97.json.zip?sha256=701c5198abf5277778eb05d13c026f58843f0f1c8fdcde97b05d61d323f89095",
-      "file": "bibles/bible-frc97.json.zip",
-      "entry": "bible-frc97.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-frc97.json",
-          "sha256": "b9596ae4ccd8aa9993f6c45111faed820ae6b27903feed91c9a70ce2dd7cace1",
-          "bytes": 7930050
-        }
-      },
-      "archiveSha256": "701c5198abf5277778eb05d13c026f58843f0f1c8fdcde97b05d61d323f89095",
-      "archiveBytes": 1923951,
-      "contentSha256": "b9596ae4ccd8aa9993f6c45111faed820ae6b27903feed91c9a70ce2dd7cace1",
-      "contentBytes": 7930050,
-      "installedBytes": 9912563,
-      "peakInstallationBytes": 26151383,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-frc97.json.encrypted.zip?sha256=b0b68392c46f067a42ab90192acd163b08e4db80d9c831f975ee4a6f532495cd",
-        "file": "bibles/bible-frc97.json.encrypted.zip",
-        "sha256": "b0b68392c46f067a42ab90192acd163b08e4db80d9c831f975ee4a6f532495cd",
-        "bytes": 1926054,
-        "keyVersion": 1
-      }
-    },
-    "bible:GW": {
-      "id": "bible:GW",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-gw.json.zip?sha256=91e25a3715ab233cca63768530cb6b83de64e05b5de1e15c4dccfc963ba2c9eb",
-      "file": "bibles/bible-gw.json.zip",
-      "entry": "bible-gw.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-gw.json",
-          "sha256": "0b6664cbcd2e7730f801a7d02c10be38a64cb9e998e084e068b0780439784841",
-          "bytes": 6705562
-        }
-      },
-      "archiveSha256": "91e25a3715ab233cca63768530cb6b83de64e05b5de1e15c4dccfc963ba2c9eb",
-      "archiveBytes": 1471514,
-      "contentSha256": "0b6664cbcd2e7730f801a7d02c10be38a64cb9e998e084e068b0780439784841",
-      "contentBytes": 6705562,
-      "installedBytes": 8381953,
-      "peakInstallationBytes": 21934658,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-gw.json.encrypted.zip?sha256=3e90f4efbf6742ba403f1635d744a33f7e5ee57c542d27afcff1de06122a78b7",
-        "file": "bibles/bible-gw.json.encrypted.zip",
-        "sha256": "3e90f4efbf6742ba403f1635d744a33f7e5ee57c542d27afcff1de06122a78b7",
-        "bytes": 1472713,
-        "keyVersion": 1
-      }
-    },
-    "bible:KJF": {
-      "id": "bible:KJF",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-kjf.json.zip?sha256=fa4f193750f499198c4cbaf3a7a54c4ad1dc4036ea77bbd5a430768c478696c6",
-      "file": "bibles/bible-kjf.json.zip",
-      "entry": "bible-kjf.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-kjf.json",
-          "sha256": "435ea4d6091538669a167c618c7cbb8d23af365f5d9f20a59f97977a690c08df",
-          "bytes": 6736776
-        }
-      },
-      "archiveSha256": "fa4f193750f499198c4cbaf3a7a54c4ad1dc4036ea77bbd5a430768c478696c6",
-      "archiveBytes": 1506232,
-      "contentSha256": "435ea4d6091538669a167c618c7cbb8d23af365f5d9f20a59f97977a690c08df",
-      "contentBytes": 6736776,
-      "installedBytes": 8420970,
-      "peakInstallationBytes": 22068810,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-kjf.json.encrypted.zip?sha256=c1ad71bd106bf56fe19e5b764426e7cf7f154a764e09c1f2eecb6f535dfc61bd",
-        "file": "bibles/bible-kjf.json.encrypted.zip",
-        "sha256": "c1ad71bd106bf56fe19e5b764426e7cf7f154a764e09c1f2eecb6f535dfc61bd",
-        "bytes": 1507400,
-        "keyVersion": 1
-      }
+      "textRevision": "fmar-936f3c311b48629d43d2",
+      "textSha256": "936f3c311b48629d43d278d18e454178e8b891e36c507cca9f54b0fc4dde4195",
+      "verseCount": 31166,
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-fmar.json.zip"
     },
     "bible:KJV": {
       "id": "bible:KJV",
       "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-kjv.json.zip",
       "file": "bibles/bible-kjv.json.zip",
-      "entry": "bible-kjv.json",
+      "entry": "KJV.json",
       "entries": {
         "canonical": {
-          "entry": "bible-kjv.json",
-          "sha256": "7da5e7cb9e15ac84b0530f11cb6a59146d467730930a37d309d20bafe01eba12",
-          "bytes": 12459817
+          "entry": "KJV.json",
+          "sha256": "c9fd062f126eb35b7bc2a5cac695beace63cc8c694a2c709bb920b870bae42cc",
+          "bytes": 7402713
         }
       },
-      "archiveSha256": "39cb465539995944b70ce8785bfadb00228161648aacbe1513635c4a9947a692",
-      "archiveBytes": 1968288,
-      "contentSha256": "7da5e7cb9e15ac84b0530f11cb6a59146d467730930a37d309d20bafe01eba12",
-      "contentBytes": 12459817,
-      "installedBytes": 15574772,
-      "peakInstallationBytes": 39876605,
+      "archiveSha256": "aa19436ac65981855b95cbfa8cd415f727b3b78a90bb1ee15f955c61d3d1964d",
+      "archiveBytes": 1662054,
+      "contentSha256": "c9fd062f126eb35b7bc2a5cac695beace63cc8c694a2c709bb920b870bae42cc",
+      "contentBytes": 7402713,
+      "installedBytes": 14805426,
+      "peakInstallationBytes": 23870193,
       "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-kjv.json.encrypted.zip?sha256=b6acb1f13d84946683f2270787213d3c01a22d589c49820f2fbc5576fffaa023",
-        "file": "bibles/bible-kjv.json.encrypted.zip",
-        "sha256": "b6acb1f13d84946683f2270787213d3c01a22d589c49820f2fbc5576fffaa023",
-        "bytes": 1969990,
-        "keyVersion": 1
-      }
-    },
-    "bible:LAU": {
-      "id": "bible:LAU",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-lau.json.zip?sha256=6bc27e11b7832766ac0039d1f6df3ae9ad7bf8ed7902a2598bafb29049d2010c",
-      "file": "bibles/bible-lau.json.zip",
-      "entry": "bible-lau.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-lau.json",
-          "sha256": "880426bb1ac473ec76ac02074c0d37c3ed63abb9aeb5c0819dae0b49d91f70b1",
-          "bytes": 6866547
-        }
-      },
-      "archiveSha256": "6bc27e11b7832766ac0039d1f6df3ae9ad7bf8ed7902a2598bafb29049d2010c",
-      "archiveBytes": 1574687,
-      "contentSha256": "880426bb1ac473ec76ac02074c0d37c3ed63abb9aeb5c0819dae0b49d91f70b1",
-      "contentBytes": 6866547,
-      "installedBytes": 8583184,
-      "peakInstallationBytes": 22539280,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-lau.json.encrypted.zip?sha256=5594a5725b310042ecca795000b8879280cf2ee86ea0bd0fda865e112b25af41",
-        "file": "bibles/bible-lau.json.encrypted.zip",
-        "sha256": "5594a5725b310042ecca795000b8879280cf2ee86ea0bd0fda865e112b25af41",
-        "bytes": 1576046,
-        "keyVersion": 1
-      }
-    },
-    "bible:LSG": {
-      "id": "bible:LSG",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-lsg.json.zip?sha256=3b7493d86668da238aa0ea283ecafeece9af2ce278fcbbe289ebbc5701a33201",
-      "file": "bibles/bible-lsg.json.zip",
-      "entry": "bible-lsg.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-lsg.json",
-          "sha256": "24badf390678d9dc633b957deae3f375cd8567e2edf636005f0fb842bfd56fba",
-          "bytes": 6869899
-        }
-      },
-      "archiveSha256": "3b7493d86668da238aa0ea283ecafeece9af2ce278fcbbe289ebbc5701a33201",
-      "archiveBytes": 1518742,
-      "contentSha256": "24badf390678d9dc633b957deae3f375cd8567e2edf636005f0fb842bfd56fba",
-      "contentBytes": 6869899,
-      "installedBytes": 8587374,
-      "peakInstallationBytes": 22485062,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-lsg.json.encrypted.zip?sha256=e22166133144ea0971be67df78e43085d69da00302dac638c2c5ec2e07f192df",
-        "file": "bibles/bible-lsg.json.encrypted.zip",
-        "sha256": "e22166133144ea0971be67df78e43085d69da00302dac638c2c5ec2e07f192df",
-        "bytes": 1519995,
-        "keyVersion": 1
-      }
-    },
-    "bible:LXX": {
-      "id": "bible:LXX",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-lxx.json.zip",
-      "file": "bibles/bible-lxx.json.zip",
-      "entry": "bible-lxx.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-lxx.json",
-          "sha256": "251b0a475f0532f0b4bef49c2d331fc79b19c18733cb9b9b9a25308b263a763a",
-          "bytes": 7321171
-        }
-      },
-      "archiveSha256": "422c5f9f11a7d520f425814b45e74dcd5f678627b8b28f4d187d53a75bb7717f",
-      "archiveBytes": 1581981,
-      "contentSha256": "251b0a475f0532f0b4bef49c2d331fc79b19c18733cb9b9b9a25308b263a763a",
-      "contentBytes": 7321171,
-      "installedBytes": 9151464,
-      "peakInstallationBytes": 23920064,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-lxx.json.encrypted.zip?sha256=ef4d937d25a28ee51bcd889b7906b0ffcf42e9114678d1c6727b8faa0fcca45f",
-        "file": "bibles/bible-lxx.json.encrypted.zip",
-        "sha256": "ef4d937d25a28ee51bcd889b7906b0ffcf42e9114678d1c6727b8faa0fcca45f",
-        "bytes": 1583152,
-        "keyVersion": 1
-      }
-    },
-    "bible:LXX_FR": {
-      "id": "bible:LXX_FR",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-lxx-french.json.zip",
-      "file": "bibles/bible-lxx-french.json.zip",
-      "entry": "bible-lxx-french.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-lxx-french.json",
-          "sha256": "caaec6baaf8eb3730c3b976f9a2054121f5fd8b067953dff4a8180d01c4f8d7c",
-          "bytes": 3692798
-        }
-      },
-      "archiveSha256": "52985c0a25ccf3685374927874f1844c53b6904e27397126669120495035a961",
-      "archiveBytes": 1092727,
-      "contentSha256": "caaec6baaf8eb3730c3b976f9a2054121f5fd8b067953dff4a8180d01c4f8d7c",
-      "contentBytes": 3692798,
-      "installedBytes": 4615998,
-      "peakInstallationBytes": 12404271,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-lxx-french.json.encrypted.zip?sha256=38e0a675d41c21496d9d33ce31e07d34f31dd26ba0f9417457b51d9528b182e0",
-        "file": "bibles/bible-lxx-french.json.encrypted.zip",
-        "sha256": "38e0a675d41c21496d9d33ce31e07d34f31dd26ba0f9417457b51d9528b182e0",
-        "bytes": 1093680,
-        "keyVersion": 1
-      }
-    },
-    "bible:NASB1995": {
-      "id": "bible:NASB1995",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-nasb1995.json.zip",
-      "file": "bibles/bible-nasb1995.json.zip",
-      "entry": "bible-nasb1995.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-nasb1995.json",
-          "sha256": "2bf72aeebadb7519a2a9c5e8812cee27a8ee62adcdb0e28bef7be19918dbefe7",
-          "bytes": 28865428
-        }
-      },
-      "archiveSha256": "41c5c122e92916017747078fe303e3a99e04c84bc64a55e43c6c13b24a77b646",
-      "archiveBytes": 3941192,
-      "contentSha256": "2bf72aeebadb7519a2a9c5e8812cee27a8ee62adcdb0e28bef7be19918dbefe7",
-      "contentBytes": 28865428,
-      "installedBytes": 36081785,
-      "peakInstallationBytes": 91669882,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-nasb1995.json.encrypted.zip?sha256=7c83802c488fdd7dcd39272531026fe1136f9360ac600babc73d2b0cf5615d97",
-        "file": "bibles/bible-nasb1995.json.encrypted.zip",
-        "sha256": "7c83802c488fdd7dcd39272531026fe1136f9360ac600babc73d2b0cf5615d97",
-        "bytes": 3945061,
-        "keyVersion": 1
-      }
-    },
-    "bible:NASB2020": {
-      "id": "bible:NASB2020",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-nasb2020.json.zip",
-      "file": "bibles/bible-nasb2020.json.zip",
-      "entry": "bible-nasb2020.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-nasb2020.json",
-          "sha256": "0dad2ebd61170946dee5e4ded8462387c720d8e6ebb87ac17067cae72df02904",
-          "bytes": 29500427
-        }
-      },
-      "archiveSha256": "74ba4900f358d6a5a1f4e085070014bd47bc4f4c99706fe29aeee7fec66d2f46",
-      "archiveBytes": 4028375,
-      "contentSha256": "0dad2ebd61170946dee5e4ded8462387c720d8e6ebb87ac17067cae72df02904",
-      "contentBytes": 29500427,
-      "installedBytes": 36875534,
-      "peakInstallationBytes": 93687046,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-nasb2020.json.encrypted.zip?sha256=66fada30e466adc416b58e72ef0f0b6997c0df48749844f31457fb25d0299aad",
-        "file": "bibles/bible-nasb2020.json.encrypted.zip",
-        "sha256": "66fada30e466adc416b58e72ef0f0b6997c0df48749844f31457fb25d0299aad",
-        "bytes": 4032479,
-        "keyVersion": 1
-      }
-    },
-    "bible:NBS": {
-      "id": "bible:NBS",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-nbs.json.zip?sha256=4dcec326f60383e02ca67eac4e29474f19d4bc4e93073f2515e73e75072cec3f",
-      "file": "bibles/bible-nbs.json.zip",
-      "entry": "bible-nbs.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-nbs.json",
-          "sha256": "a001bde3d15c44ab912f4e38d8818212dd12d5e564fb51bff3a78c9a7fed8428",
-          "bytes": 6894744
-        }
-      },
-      "archiveSha256": "4dcec326f60383e02ca67eac4e29474f19d4bc4e93073f2515e73e75072cec3f",
-      "archiveBytes": 1540274,
-      "contentSha256": "a001bde3d15c44ab912f4e38d8818212dd12d5e564fb51bff3a78c9a7fed8428",
-      "contentBytes": 6894744,
-      "installedBytes": 8618430,
-      "peakInstallationBytes": 22584824,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-nbs.json.encrypted.zip?sha256=0cde36173591346795f49b73e8e94fa8c034f76ffed5feab87499fe0bc32e456",
-        "file": "bibles/bible-nbs.json.encrypted.zip",
-        "sha256": "0cde36173591346795f49b73e8e94fa8c034f76ffed5feab87499fe0bc32e456",
-        "bytes": 1541879,
-        "keyVersion": 1
-      }
-    },
-    "bible:NEG79": {
-      "id": "bible:NEG79",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-neg79.json.zip?sha256=411175263616a438bd0800555330ab358d500e34f07d0c16e98b0f55e96e4e1f",
-      "file": "bibles/bible-neg79.json.zip",
-      "entry": "bible-neg79.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-neg79.json",
-          "sha256": "138c2121826e6b40aecbaf0f44535309884d00f7ea22d2d58508b508979c6ded",
-          "bytes": 6764243
-        }
-      },
-      "archiveSha256": "411175263616a438bd0800555330ab358d500e34f07d0c16e98b0f55e96e4e1f",
-      "archiveBytes": 1504374,
-      "contentSha256": "138c2121826e6b40aecbaf0f44535309884d00f7ea22d2d58508b508979c6ded",
-      "contentBytes": 6764243,
-      "installedBytes": 8455304,
-      "peakInstallationBytes": 22149590,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-neg79.json.encrypted.zip?sha256=39bf34d5783411187ceab38da743024d8fe5cad046f5841710e974c2d12a493c",
-        "file": "bibles/bible-neg79.json.encrypted.zip",
-        "sha256": "39bf34d5783411187ceab38da743024d8fe5cad046f5841710e974c2d12a493c",
-        "bytes": 1505672,
-        "keyVersion": 1
-      }
-    },
-    "bible:NET": {
-      "id": "bible:NET",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-net.json.zip?sha256=fbea31417256255c28afe53d5bda58199971e4c810a46b9942662183eaac786b",
-      "file": "bibles/bible-net.json.zip",
-      "entry": "bible-net.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-net.json",
-          "sha256": "fc71fabc740a68a4a74ecf3750f37c22e01410f4f2538f814601966d9c65737b",
-          "bytes": 7005160
-        }
-      },
-      "archiveSha256": "fbea31417256255c28afe53d5bda58199971e4c810a46b9942662183eaac786b",
-      "archiveBytes": 1547872,
-      "contentSha256": "fc71fabc740a68a4a74ecf3750f37c22e01410f4f2538f814601966d9c65737b",
-      "contentBytes": 7005160,
-      "installedBytes": 8756450,
-      "peakInstallationBytes": 22926880,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-net.json.encrypted.zip?sha256=5d8d72a13b4eda87d4b552e285eef0db42f6a6f8f13f46b92f07267013e63b34",
-        "file": "bibles/bible-net.json.encrypted.zip",
-        "sha256": "5d8d72a13b4eda87d4b552e285eef0db42f6a6f8f13f46b92f07267013e63b34",
-        "bytes": 1549126,
-        "keyVersion": 1
-      }
-    },
-    "bible:NFC": {
-      "id": "bible:NFC",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-nfc.json.zip?sha256=f8f94f87f1fe0f42aa1ca9af3fa14bdc718f9f894e77cafda367b11b476bc1c8",
-      "file": "bibles/bible-nfc.json.zip",
-      "entry": "bible-nfc.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-nfc.json",
-          "sha256": "80b33ba3875a2169306a7d6dd1d45313dcd0f04e76310ca36643cab0c8b00683",
-          "bytes": 8201149
-        }
-      },
-      "archiveSha256": "f8f94f87f1fe0f42aa1ca9af3fa14bdc718f9f894e77cafda367b11b476bc1c8",
-      "archiveBytes": 1951257,
-      "contentSha256": "80b33ba3875a2169306a7d6dd1d45313dcd0f04e76310ca36643cab0c8b00683",
-      "contentBytes": 8201149,
-      "installedBytes": 10251437,
-      "peakInstallationBytes": 27001166,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-nfc.json.encrypted.zip?sha256=b9c10318cb17b16ee364273fcce67f7d1e01d4ac0492b1c2264ffea8b39722a1",
-        "file": "bibles/bible-nfc.json.encrypted.zip",
-        "sha256": "b9c10318cb17b16ee364273fcce67f7d1e01d4ac0492b1c2264ffea8b39722a1",
-        "bytes": 1953331,
-        "keyVersion": 1
-      }
-    },
-    "bible:NIV": {
-      "id": "bible:NIV",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-niv.json.zip?sha256=c6e07613016f7323912738eb90a1ac1f4877fc5e48046c597535dece44d596d0",
-      "file": "bibles/bible-niv.json.zip",
-      "entry": "bible-niv.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-niv.json",
-          "sha256": "373be2737fc2fa1cbc16bbe1704fb79415292cb15f40a60a06c0aa1225ce10fc",
-          "bytes": 6561000
-        }
-      },
-      "archiveSha256": "c6e07613016f7323912738eb90a1ac1f4877fc5e48046c597535dece44d596d0",
-      "archiveBytes": 1452120,
-      "contentSha256": "373be2737fc2fa1cbc16bbe1704fb79415292cb15f40a60a06c0aa1225ce10fc",
-      "contentBytes": 6561000,
-      "installedBytes": 8201250,
-      "peakInstallationBytes": 21475957,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-niv.json.encrypted.zip?sha256=9ed3a62563d9899114db2b562628d30ac920b83e09a5afc1179e6214fbe0512b",
-        "file": "bibles/bible-niv.json.encrypted.zip",
-        "sha256": "9ed3a62563d9899114db2b562628d30ac920b83e09a5afc1179e6214fbe0512b",
-        "bytes": 1453340,
-        "keyVersion": 1
-      }
-    },
-    "bible:NKJV": {
-      "id": "bible:NKJV",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-nkjv.json.zip?sha256=a08d2d557206cba7d0e0f850fc633a0bc5d39ed54c76b6cbd959085a3465f96b",
-      "file": "bibles/bible-nkjv.json.zip",
-      "entry": "bible-nkjv.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-nkjv.json",
-          "sha256": "ee525874d74d6fc9fd8e0b5995d06d40fef50e980c27090cbb5630dde319ee84",
-          "bytes": 6620345
-        }
-      },
-      "archiveSha256": "a08d2d557206cba7d0e0f850fc633a0bc5d39ed54c76b6cbd959085a3465f96b",
-      "archiveBytes": 1442590,
-      "contentSha256": "ee525874d74d6fc9fd8e0b5995d06d40fef50e980c27090cbb5630dde319ee84",
-      "contentBytes": 6620345,
-      "installedBytes": 8275432,
-      "peakInstallationBytes": 21644147,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-nkjv.json.encrypted.zip?sha256=4e5954cba1731f44a0e59b5cf0fc8a1707da073057cd42ae47c56cfad5a66c73",
-        "file": "bibles/bible-nkjv.json.encrypted.zip",
-        "sha256": "4e5954cba1731f44a0e59b5cf0fc8a1707da073057cd42ae47c56cfad5a66c73",
-        "bytes": 1443675,
-        "keyVersion": 1
-      }
-    },
-    "bible:NLT": {
-      "id": "bible:NLT",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-nlt.json.zip?sha256=f8cb74a706cd7ce96ad4987f75ffe253cd161cdeb20af056b5c18f588b5be27b",
-      "file": "bibles/bible-nlt.json.zip",
-      "entry": "bible-nlt.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-nlt.json",
-          "sha256": "88fec651e006a4384436428331e12f635002ca1e4f8e8c8efee451d4786b8e7c",
-          "bytes": 6773088
-        }
-      },
-      "archiveSha256": "f8cb74a706cd7ce96ad4987f75ffe253cd161cdeb20af056b5c18f588b5be27b",
-      "archiveBytes": 1537113,
-      "contentSha256": "88fec651e006a4384436428331e12f635002ca1e4f8e8c8efee451d4786b8e7c",
-      "contentBytes": 6773088,
-      "installedBytes": 8466360,
-      "peakInstallationBytes": 22213940,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-nlt.json.encrypted.zip?sha256=645e0b0c74ba2a65f26bedee707e97cad9c6bef4efaa3aa1df23f78420acf7fe",
-        "file": "bibles/bible-nlt.json.encrypted.zip",
-        "sha256": "645e0b0c74ba2a65f26bedee707e97cad9c6bef4efaa3aa1df23f78420acf7fe",
-        "bytes": 1538493,
-        "keyVersion": 1
-      }
-    },
-    "bible:NVS78P": {
-      "id": "bible:NVS78P",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-nvs78p.json.zip?sha256=b83f76761c04feb2ef3229c73692490278fd124b7f99bb1fd4f9c76d6d74b3b6",
-      "file": "bibles/bible-nvs78p.json.zip",
-      "entry": "bible-nvs78p.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-nvs78p.json",
-          "sha256": "faa882cc97eef50af49ed4e0c371d7fc00ef36a7936d3c44f063a15e5cf3bc29",
-          "bytes": 6792317
-        }
-      },
-      "archiveSha256": "b83f76761c04feb2ef3229c73692490278fd124b7f99bb1fd4f9c76d6d74b3b6",
-      "archiveBytes": 1553186,
-      "contentSha256": "faa882cc97eef50af49ed4e0c371d7fc00ef36a7936d3c44f063a15e5cf3bc29",
-      "contentBytes": 6792317,
-      "installedBytes": 8490397,
-      "peakInstallationBytes": 22290472,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-nvs78p.json.encrypted.zip?sha256=78e365ab82deca3b0db4757824498d6ef8e5fd905d0752a869b664d0720b9a19",
-        "file": "bibles/bible-nvs78p.json.encrypted.zip",
-        "sha256": "78e365ab82deca3b0db4757824498d6ef8e5fd905d0752a869b664d0720b9a19",
-        "bytes": 1554712,
-        "keyVersion": 1
-      }
-    },
-    "bible:OST": {
-      "id": "bible:OST",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-ost.json.zip?sha256=f9b867113143a6bb54b1d7df62173fcff3e07db031f5172ba12e03d3a48dac12",
-      "file": "bibles/bible-ost.json.zip",
-      "entry": "bible-ost.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-ost.json",
-          "sha256": "9aeb644e4dc2f936ba39a31713f1803fb62d2654f71c9f9c53a4b7d08daa97eb",
-          "bytes": 6650270
-        }
-      },
-      "archiveSha256": "f9b867113143a6bb54b1d7df62173fcff3e07db031f5172ba12e03d3a48dac12",
-      "archiveBytes": 1503637,
-      "contentSha256": "9aeb644e4dc2f936ba39a31713f1803fb62d2654f71c9f9c53a4b7d08daa97eb",
-      "contentBytes": 6650270,
-      "installedBytes": 8312838,
-      "peakInstallationBytes": 21804686,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-ost.json.encrypted.zip?sha256=33ef3e0d17dcc01d298c85456ed471d966ad3520bc41121e599b32c4d9a0243a",
-        "file": "bibles/bible-ost.json.encrypted.zip",
-        "sha256": "33ef3e0d17dcc01d298c85456ed471d966ad3520bc41121e599b32c4d9a0243a",
-        "bytes": 1504844,
-        "keyVersion": 1
-      }
-    },
-    "bible:PDV2017": {
-      "id": "bible:PDV2017",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-pdv2017.json.zip?sha256=9b8fa1dde74859fe924e1c867648288e7f36a8f8361515e83fee64041d4d8781",
-      "file": "bibles/bible-pdv2017.json.zip",
-      "entry": "bible-pdv2017.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-pdv2017.json",
-          "sha256": "4485197a1c2c52fd5f227bac5065dba157c65cfe91c3e86a11b3557ed5622f1d",
-          "bytes": 8348469
-        }
-      },
-      "archiveSha256": "9b8fa1dde74859fe924e1c867648288e7f36a8f8361515e83fee64041d4d8781",
-      "archiveBytes": 1863402,
-      "contentSha256": "4485197a1c2c52fd5f227bac5065dba157c65cfe91c3e86a11b3557ed5622f1d",
-      "contentBytes": 8348469,
-      "installedBytes": 10435587,
-      "peakInstallationBytes": 27344855,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-pdv2017.json.encrypted.zip?sha256=b3c10a2051d99f120dd1322db7a29e035344d35234ded6271477daecf89c0ade",
-        "file": "bibles/bible-pdv2017.json.encrypted.zip",
-        "sha256": "b3c10a2051d99f120dd1322db7a29e035344d35234ded6271477daecf89c0ade",
-        "bytes": 1865268,
-        "keyVersion": 1
-      }
-    },
-    "bible:POV": {
-      "id": "bible:POV",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-pov.json.zip?sha256=889a55d421475237c87925dbc642cfbda3f4260b8f44bb84a2c07642437846d9",
-      "file": "bibles/bible-pov.json.zip",
-      "entry": "bible-pov.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-pov.json",
-          "sha256": "7aea90e922bc70a794450fd512c7210e6431ae692dbf7723f9def1e2789afa66",
-          "bytes": 2186409
-        }
-      },
-      "archiveSha256": "889a55d421475237c87925dbc642cfbda3f4260b8f44bb84a2c07642437846d9",
-      "archiveBytes": 556921,
-      "contentSha256": "7aea90e922bc70a794450fd512c7210e6431ae692dbf7723f9def1e2789afa66",
-      "contentBytes": 2186409,
-      "installedBytes": 2733012,
-      "peakInstallationBytes": 7240683,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-pov.json.encrypted.zip?sha256=f067eb1aa69ff28ee023a021a345c48f6a91408669ccf2257ef39942eba4dc3d",
-        "file": "bibles/bible-pov.json.encrypted.zip",
-        "sha256": "f067eb1aa69ff28ee023a021a345c48f6a91408669ccf2257ef39942eba4dc3d",
-        "bytes": 557608,
-        "keyVersion": 1
-      }
-    },
-    "bible:RLT": {
-      "id": "bible:RLT",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-rlt.json.zip",
-      "file": "bibles/bible-rlt.json.zip",
-      "entry": "bible-rlt.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-rlt.json",
-          "sha256": "336d3a623512e464519e91b05ac8c76efb1fb2af9aaf8b7b8e7d3f901f306ea9",
-          "bytes": 12724834
-        }
-      },
-      "archiveSha256": "82ed07bf657347372fa8115c7584002860865f0fda8e03390da2e34c5bf29509",
-      "archiveBytes": 1980896,
-      "contentSha256": "336d3a623512e464519e91b05ac8c76efb1fb2af9aaf8b7b8e7d3f901f306ea9",
-      "contentBytes": 12724834,
-      "installedBytes": 15906043,
-      "peakInstallationBytes": 40691124,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-rlt.json.encrypted.zip?sha256=a48f8161dfed017bec2119e509f7911ca92ccec0a8fbfc6a5abd5643a53a060e",
-        "file": "bibles/bible-rlt.json.encrypted.zip",
-        "sha256": "a48f8161dfed017bec2119e509f7911ca92ccec0a8fbfc6a5abd5643a53a060e",
-        "bytes": 1982674,
-        "keyVersion": 1
-      }
-    },
-    "bible:RV1895": {
-      "id": "bible:RV1895",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-rv1895.json.zip?sha256=48925d5dc5d998ece8ea5f5aa9172ed156f78614553a7b159ea22ecb0b1436db",
-      "file": "bibles/bible-rv1895.json.zip",
-      "entry": "bible-rv1895.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-rv1895.json",
-          "sha256": "243e74bbb41fa7a63342668d500e0604bc21fe99686efdf2778e4b7b497c6bf0",
-          "bytes": 8083317
-        }
-      },
-      "archiveSha256": "48925d5dc5d998ece8ea5f5aa9172ed156f78614553a7b159ea22ecb0b1436db",
-      "archiveBytes": 1542180,
-      "contentSha256": "243e74bbb41fa7a63342668d500e0604bc21fe99686efdf2778e4b7b497c6bf0",
-      "contentBytes": 8083317,
-      "installedBytes": 10104147,
-      "peakInstallationBytes": 26175022,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-rv1895.json.encrypted.zip?sha256=d3606a6f7bc2851a6585c6e22756b614c2d3c06ae18ebc6b068fddcaecf5bbca",
-        "file": "bibles/bible-rv1895.json.encrypted.zip",
-        "sha256": "d3606a6f7bc2851a6585c6e22756b614c2d3c06ae18ebc6b068fddcaecf5bbca",
-        "bytes": 1543216,
-        "keyVersion": 1
-      }
-    },
-    "bible:RWEBSTER": {
-      "id": "bible:RWEBSTER",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-rwebster.json.zip?sha256=6f7c909c8d4817064e2b1d03d2eea8e8a34bfa1fcc136ce57e10f70e4efdd121",
-      "file": "bibles/bible-rwebster.json.zip",
-      "entry": "bible-rwebster.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-rwebster.json",
-          "sha256": "080ccc4cf0cd2b854e5b47d64a60f8d91606ecec307077c43a7f516bbdb7add9",
-          "bytes": 11346823
-        }
-      },
-      "archiveSha256": "6f7c909c8d4817064e2b1d03d2eea8e8a34bfa1fcc136ce57e10f70e4efdd121",
-      "archiveBytes": 1899353,
-      "contentSha256": "080ccc4cf0cd2b854e5b47d64a60f8d91606ecec307077c43a7f516bbdb7add9",
-      "contentBytes": 11346823,
-      "installedBytes": 14183529,
-      "peakInstallationBytes": 36437479,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-rwebster.json.encrypted.zip?sha256=988ceff39939aee44e6b95e160d167cb078026654bfbb89520e282f96eed142a",
-        "file": "bibles/bible-rwebster.json.encrypted.zip",
-        "sha256": "988ceff39939aee44e6b95e160d167cb078026654bfbb89520e282f96eed142a",
-        "bytes": 1900956,
-        "keyVersion": 1
-      }
-    },
-    "bible:S21": {
-      "id": "bible:S21",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-s21.json.zip?sha256=9879b627da1af08b35267c257bb9a548f335711da089ad7789487d9a1ccd5f59",
-      "file": "bibles/bible-s21.json.zip",
-      "entry": "bible-s21.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-s21.json",
-          "sha256": "c2bfc9a6fac38a004470aba659e42ab2c9ef8fd8ee151378d7ffa24d9f7ae06d",
-          "bytes": 6889338
-        }
-      },
-      "archiveSha256": "9879b627da1af08b35267c257bb9a548f335711da089ad7789487d9a1ccd5f59",
-      "archiveBytes": 1580141,
-      "contentSha256": "c2bfc9a6fac38a004470aba659e42ab2c9ef8fd8ee151378d7ffa24d9f7ae06d",
-      "contentBytes": 6889338,
-      "installedBytes": 8611673,
-      "peakInstallationBytes": 22614352,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-s21.json.encrypted.zip?sha256=6b4485214c0d3645953914733a73ea6d1714fab57fad5af2741be04dd196571b",
-        "file": "bibles/bible-s21.json.encrypted.zip",
-        "sha256": "6b4485214c0d3645953914733a73ea6d1714fab57fad5af2741be04dd196571b",
-        "bytes": 1581567,
-        "keyVersion": 1
-      }
-    },
-    "bible:SBLGNT": {
-      "id": "bible:SBLGNT",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-greek.json.zip",
-      "file": "bibles/bible-greek.json.zip",
-      "entry": "bible-greek.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-greek.json",
-          "sha256": "dcbdc3b6a37a53d10ae070ce507d8be819ee7b205ef0a17850f90d71a619e80f",
-          "bytes": 1735842
-        }
-      },
-      "archiveSha256": "786024b54c615abf89b87d525f4ff5443ba8ceda7811f3cb5596598ec8eac315",
-      "archiveBytes": 429367,
-      "contentSha256": "dcbdc3b6a37a53d10ae070ce507d8be819ee7b205ef0a17850f90d71a619e80f",
-      "contentBytes": 1735842,
-      "installedBytes": 2169803,
-      "peakInstallationBytes": 5733846,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-greek.json.encrypted.zip?sha256=74414b9c4daf89f7296d754cb43537a3191f5d215f076e9f3c2d61b48c41f986",
-        "file": "bibles/bible-greek.json.encrypted.zip",
-        "sha256": "74414b9c4daf89f7296d754cb43537a3191f5d215f076e9f3c2d61b48c41f986",
-        "bytes": 429721,
-        "keyVersion": 1
-      }
-    },
-    "bible:TLV": {
-      "id": "bible:TLV",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-tlv.json.zip?sha256=ce68f23f1c2148bcb581dcf8253e24d8fc2a93d2c7afbae5b583e0488097518d",
-      "file": "bibles/bible-tlv.json.zip",
-      "entry": "bible-tlv.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-tlv.json",
-          "sha256": "6290ba7d3424394936bb74c64bb98f6d8bb1bd913c28400ed9dcf7dcaa379b8a",
-          "bytes": 6321428
-        }
-      },
-      "archiveSha256": "ce68f23f1c2148bcb581dcf8253e24d8fc2a93d2c7afbae5b583e0488097518d",
-      "archiveBytes": 1416934,
-      "contentSha256": "6290ba7d3424394936bb74c64bb98f6d8bb1bd913c28400ed9dcf7dcaa379b8a",
-      "contentBytes": 6321428,
-      "installedBytes": 7901785,
-      "peakInstallationBytes": 20712285,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-tlv.json.encrypted.zip?sha256=0c55921fa53e2370475152d734961977a2413afa2ed2761c6f8895ba908fa434",
-        "file": "bibles/bible-tlv.json.encrypted.zip",
-        "sha256": "0c55921fa53e2370475152d734961977a2413afa2ed2761c6f8895ba908fa434",
-        "bytes": 1417975,
-        "keyVersion": 1
-      }
+      "textRevision": "kjv-canonical-f21bd3e1dab7e7261c58",
+      "textSha256": "f21bd3e1dab7e7261c5879203321bacce1b08695f3467687ccffc4fa210c9140"
     },
     "bible:TR1624": {
       "id": "bible:TR1624",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-TR1624.json.zip",
       "file": "bibles/bible-TR1624.json.zip",
       "entry": "bible-TR1624.json",
       "entries": {
         "canonical": {
           "entry": "bible-TR1624.json",
-          "sha256": "1e71d30b26eef6da9034a2e6a288f2163cfe351debcd6dd051a656965a450646",
-          "bytes": 1581364
+          "sha256": "0b603ea3a6007ad65cab3f807dc818a1be890c9c8ec4ed16b20604bc01cf78a3",
+          "bytes": 2068583
         }
       },
-      "archiveSha256": "8cf88fb8e65a5ec4b4012780714452003428d014e5c81562fd95705a93f79d6a",
-      "archiveBytes": 346138,
-      "contentSha256": "1e71d30b26eef6da9034a2e6a288f2163cfe351debcd6dd051a656965a450646",
-      "contentBytes": 1581364,
-      "installedBytes": 1976705,
-      "peakInstallationBytes": 5171802,
+      "archiveSha256": "be66129fb8662f612a0333977880be7e53c607367480d619254273b0c519f215",
+      "archiveBytes": 381848,
+      "contentSha256": "0b603ea3a6007ad65cab3f807dc818a1be890c9c8ec4ed16b20604bc01cf78a3",
+      "contentBytes": 2068583,
+      "installedBytes": 4137166,
+      "peakInstallationBytes": 6587597,
       "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-TR1624.json.encrypted.zip?sha256=557f51f6ea69a07ccfd11896dbf40f2086b2da2e71fe2ebe938c614adf09c0f1",
-        "file": "bibles/bible-TR1624.json.encrypted.zip",
-        "sha256": "557f51f6ea69a07ccfd11896dbf40f2086b2da2e71fe2ebe938c614adf09c0f1",
-        "bytes": 346336,
-        "keyVersion": 1
-      }
+      "textRevision": "tr1624-5c7486ef87ed820bdb0a",
+      "textSha256": "5c7486ef87ed820bdb0a15237a4024cbd820e6b8f32b2973fde14d832f2ea826",
+      "verseCount": 7957,
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-TR1624.json.zip"
     },
     "bible:TR1894": {
       "id": "bible:TR1894",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-TR1894.json.zip",
       "file": "bibles/bible-TR1894.json.zip",
       "entry": "bible-TR1894.json",
       "entries": {
         "canonical": {
           "entry": "bible-TR1894.json",
-          "sha256": "8de07ba65e0bd117c53f05d8b0cc16c7896a3a4c5a6ebe0f0d9d5904e436b021",
-          "bytes": 1742040
+          "sha256": "d0d2734f9785bd6a530a492767a5acc62dda969f116669b128bfff0b08729037",
+          "bytes": 2067297
         }
       },
-      "archiveSha256": "28eb4367e548c6b7e662715c928dd76cf97e38e0e58daef6a0c4ba4c30e03a46",
-      "archiveBytes": 420289,
-      "contentSha256": "8de07ba65e0bd117c53f05d8b0cc16c7896a3a4c5a6ebe0f0d9d5904e436b021",
-      "contentBytes": 1742040,
-      "installedBytes": 2177550,
-      "peakInstallationBytes": 5742116,
+      "archiveSha256": "1e0726a6e55fe1e8a6cf47caad09545cf4dacca91d02d17a8044fdf3c092f18e",
+      "archiveBytes": 381769,
+      "contentSha256": "d0d2734f9785bd6a530a492767a5acc62dda969f116669b128bfff0b08729037",
+      "contentBytes": 2067297,
+      "installedBytes": 4134594,
+      "peakInstallationBytes": 6583660,
       "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-TR1894.json.encrypted.zip?sha256=81d1f94fd55f1e4a18d49ae0d3f6432860ad4e2945f6220f49255c621c524472",
-        "file": "bibles/bible-TR1894.json.encrypted.zip",
-        "sha256": "81d1f94fd55f1e4a18d49ae0d3f6432860ad4e2945f6220f49255c621c524472",
-        "bytes": 420635,
-        "keyVersion": 1
-      }
-    },
-    "bible:VUL": {
-      "id": "bible:VUL",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-vul.json.zip",
-      "file": "bibles/bible-vul.json.zip",
-      "entry": "bible-vul.json",
-      "entries": {
-        "canonical": {
-          "entry": "bible-vul.json",
-          "sha256": "8c6cbfd62267ef507c5eaf0f2cd086c1b647adf9126ae62b18dd139699b408b5",
-          "bytes": 4321077
-        }
-      },
-      "archiveSha256": "be85124e5ede35a4fcf21635b6e73015ecba30d52326484b16b07f75b9531011",
-      "archiveBytes": 1452560,
-      "contentSha256": "8c6cbfd62267ef507c5eaf0f2cd086c1b647adf9126ae62b18dd139699b408b5",
-      "contentBytes": 4321077,
-      "installedBytes": 5401347,
-      "peakInstallationBytes": 14714697,
-      "strategy": "sqlite-import",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/bibles/bible-vul.json.encrypted.zip?sha256=cf07d262c64f5a822ecb1286516d8347dfcbb5539a75ebc76e8dda80de314fa7",
-        "file": "bibles/bible-vul.json.encrypted.zip",
-        "sha256": "cf07d262c64f5a822ecb1286516d8347dfcbb5539a75ebc76e8dda80de314fa7",
-        "bytes": 1453675,
-        "keyVersion": 1
-      }
-    },
-    "database:BOST:fr": {
-      "id": "database:BOST:fr",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-bost-fr.sqlite.zip?sha256=f5e66b831c5b95f0033b69fa0eb44fe8dce2e5c2cae78e248bfd9636d4d659ca",
-      "file": "dictionaries/dictionary-bost-fr.sqlite.zip",
-      "entry": "dictionnaire.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "dictionnaire.sqlite",
-          "sha256": "6f1da4f3d0230309446247d9dfc2ba204469214f1cd072afb8cf6f196b136399",
-          "bytes": 16232448
-        }
-      },
-      "archiveSha256": "f5e66b831c5b95f0033b69fa0eb44fe8dce2e5c2cae78e248bfd9636d4d659ca",
-      "archiveBytes": 4193372,
-      "contentSha256": "6f1da4f3d0230309446247d9dfc2ba204469214f1cd072afb8cf6f196b136399",
-      "contentBytes": 16232448,
-      "resourceRevision": "dictionary-bost-fr-6aab80e0a06bb152e43d",
-      "installedBytes": 16232448,
-      "peakInstallationBytes": 23489693,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/dictionaries/dictionary-bost-fr.sqlite.encrypted.zip?sha256=4de9394b10f93db588fed42bdc26d6c807753491942837c5882b8b267fc01c51",
-        "file": "dictionaries/dictionary-bost-fr.sqlite.encrypted.zip",
-        "sha256": "4de9394b10f93db588fed42bdc26d6c807753491942837c5882b8b267fc01c51",
-        "bytes": 4197605,
-        "keyVersion": 1
-      }
-    },
-    "database:CALMET:fr": {
-      "id": "database:CALMET:fr",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-calmet-fr.sqlite.zip?sha256=b57a08ddb67427a8f8f7b3dc7c6ded800c148a76c4ce244bed0b768baf493ac7",
-      "file": "dictionaries/dictionary-calmet-fr.sqlite.zip",
-      "entry": "dictionnaire.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "dictionnaire.sqlite",
-          "sha256": "44ebe0a0730dc46da16d4117588421e2abacd303fcf2393ce9dfff570fdf4b9f",
-          "bytes": 29667328
-        }
-      },
-      "archiveSha256": "b57a08ddb67427a8f8f7b3dc7c6ded800c148a76c4ce244bed0b768baf493ac7",
-      "archiveBytes": 7970993,
-      "contentSha256": "44ebe0a0730dc46da16d4117588421e2abacd303fcf2393ce9dfff570fdf4b9f",
-      "contentBytes": 29667328,
-      "resourceRevision": "dictionary-calmet-fr-8c62871c189f48162551",
-      "installedBytes": 29667328,
-      "peakInstallationBytes": 43284070,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/dictionaries/dictionary-calmet-fr.sqlite.encrypted.zip?sha256=277d1900a57f969fd367eae6ac5f810dc66937f582fd0f811440171f551ff17d",
-        "file": "dictionaries/dictionary-calmet-fr.sqlite.encrypted.zip",
-        "sha256": "277d1900a57f969fd367eae6ac5f810dc66937f582fd0f811440171f551ff17d",
-        "bytes": 7975844,
-        "keyVersion": 1
-      }
-    },
-    "database:DICTIONNAIRE:en": {
-      "id": "database:DICTIONNAIRE:en",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/databases/en/dictionnaire.sqlite.zip",
-      "file": "databases/en/dictionnaire.sqlite.zip",
-      "entry": "dictionnaire.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "dictionnaire.sqlite",
-          "sha256": "20bba5cccf99d4fc2dffccce861cac596e814bd9178d93ecbf4ef488078e50d6",
-          "bytes": 22532096
-        }
-      },
-      "archiveSha256": "7da622e2b6d11d0d41766a1f5aba9b091f157eed8161aa45be2ebc3981cb0621",
-      "archiveBytes": 6819899,
-      "contentSha256": "20bba5cccf99d4fc2dffccce861cac596e814bd9178d93ecbf4ef488078e50d6",
-      "contentBytes": 22532096,
-      "installedBytes": 22532096,
-      "peakInstallationBytes": 33754795,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/databases/en/dictionnaire.sqlite.encrypted.zip?sha256=679061fd882fac5b6d28487bf2a2c87021e84d249107cc83403abf9185fbc25d",
-        "file": "databases/en/dictionnaire.sqlite.encrypted.zip",
-        "sha256": "679061fd882fac5b6d28487bf2a2c87021e84d249107cc83403abf9185fbc25d",
-        "bytes": 6818252,
-        "keyVersion": 1
-      }
-    },
-    "database:DICTIONNAIRE:fr": {
-      "id": "database:DICTIONNAIRE:fr",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/databases/dictionnaire.sqlite.zip",
-      "file": "databases/dictionnaire.sqlite.zip",
-      "entry": "dictionnaire.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "dictionnaire.sqlite",
-          "sha256": "de510c259915c889c7dc154f25418c9753355e774d1938afaa876ce661e9697c",
-          "bytes": 24456192
-        }
-      },
-      "archiveSha256": "b124243c601ba224b9907f7bd8c8cca104ae56acad1f2140164080e0e46ba09b",
-      "archiveBytes": 6602491,
-      "contentSha256": "de510c259915c889c7dc154f25418c9753355e774d1938afaa876ce661e9697c",
-      "contentBytes": 24456192,
-      "installedBytes": 24456192,
-      "peakInstallationBytes": 35717486,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/databases/dictionnaire.sqlite.encrypted.zip?sha256=0ecd0a7ff3ee78fc039c92de4dd1ed8f54bf12344b94ee32cc10e0ff5f5f3e49",
-        "file": "databases/dictionnaire.sqlite.encrypted.zip",
-        "sha256": "0ecd0a7ff3ee78fc039c92de4dd1ed8f54bf12344b94ee32cc10e0ff5f5f3e49",
-        "bytes": 6608194,
-        "keyVersion": 1
-      }
-    },
-    "database:EASTON_WEBSTER:en": {
-      "id": "database:EASTON_WEBSTER:en",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-easton-webster-en.sqlite.zip?sha256=a3f2ff0be3b191ab2ae98b7d156b2cf2ecec1c14a0d362a814e6206baa9dc2bb",
-      "file": "dictionaries/dictionary-easton-webster-en.sqlite.zip",
-      "entry": "dictionnaire.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "dictionnaire.sqlite",
-          "sha256": "522f0adb81bf82b00f2497eff7c40b5cb7e5851c1873d927781abedd6d7131e4",
-          "bytes": 35986432
-        }
-      },
-      "archiveSha256": "a3f2ff0be3b191ab2ae98b7d156b2cf2ecec1c14a0d362a814e6206baa9dc2bb",
-      "archiveBytes": 8574652,
-      "contentSha256": "522f0adb81bf82b00f2497eff7c40b5cb7e5851c1873d927781abedd6d7131e4",
-      "contentBytes": 35986432,
-      "resourceRevision": "dictionary-easton-webster-en-a30602d83b4a84e776d9",
-      "installedBytes": 35986432,
-      "peakInstallationBytes": 51245247,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/dictionaries/dictionary-easton-webster-en.sqlite.encrypted.zip?sha256=2417d2b26d0601b63ceff5f2ae85e39499528bf5cdbf67c8af3b32b43d98aa12",
-        "file": "dictionaries/dictionary-easton-webster-en.sqlite.encrypted.zip",
-        "sha256": "2417d2b26d0601b63ceff5f2ae85e39499528bf5cdbf67c8af3b32b43d98aa12",
-        "bytes": 8562504,
-        "keyVersion": 1
-      }
+      "textRevision": "tr1894-3a28626c2371d8b1ecf1",
+      "textSha256": "3a28626c2371d8b1ecf1bd9802c3ce779d9bd9cacd773be63f183a39701345ec",
+      "verseCount": 7957,
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-TR1894.json.zip"
     },
     "database:ISBE:en": {
       "id": "database:ISBE:en",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-isbe-en.sqlite.zip?sha256=2717dd90faccdd95e71376265dbdcd134c7015f9c81d7bc6764f99c32236d847",
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-isbe-en.sqlite.zip",
       "file": "dictionaries/dictionary-isbe-en.sqlite.zip",
       "entry": "dictionnaire.sqlite",
       "entries": {
         "canonical": {
           "entry": "dictionnaire.sqlite",
-          "sha256": "d77a77ab221744b1cce85bf085489a9425f2d4d39114e3d61e1a82f9467bb117",
-          "bytes": 74260480
+          "sha256": "ce1cfe6a0dac8d7f3d1690a31926224afda373f0f75010e38529dce5bfb2cd5b",
+          "bytes": 70811648
         }
       },
-      "archiveSha256": "2717dd90faccdd95e71376265dbdcd134c7015f9c81d7bc6764f99c32236d847",
-      "archiveBytes": 19328517,
-      "contentSha256": "d77a77ab221744b1cce85bf085489a9425f2d4d39114e3d61e1a82f9467bb117",
-      "contentBytes": 74260480,
-      "resourceRevision": "dictionary-isbe-en-fbaaa93d38286457cfa8",
-      "installedBytes": 74260480,
-      "peakInstallationBytes": 107627347,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/dictionaries/dictionary-isbe-en.sqlite.encrypted.zip?sha256=2eba2f7dc57c196f14485c816e2c94bf289f3d5167ac3f2d6cc07fe0711943dc",
-        "file": "dictionaries/dictionary-isbe-en.sqlite.encrypted.zip",
-        "sha256": "2eba2f7dc57c196f14485c816e2c94bf289f3d5167ac3f2d6cc07fe0711943dc",
-        "bytes": 19322430,
-        "keyVersion": 1
-      }
-    },
-    "database:LELIEVRE:fr": {
-      "id": "database:LELIEVRE:fr",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-lelievre-fr.sqlite.zip?sha256=a42ee7cabc37eb0247f6cf7c173048159d757b8bbdd270f88c8a698f6689cf73",
-      "file": "dictionaries/dictionary-lelievre-fr.sqlite.zip",
-      "entry": "dictionnaire.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "dictionnaire.sqlite",
-          "sha256": "847eb01bee6766b7d4bb0a62b4a09a555e7e027f0a13e210ac352532e4ee2df4",
-          "bytes": 1236992
-        }
-      },
-      "archiveSha256": "a42ee7cabc37eb0247f6cf7c173048159d757b8bbdd270f88c8a698f6689cf73",
-      "archiveBytes": 324437,
-      "contentSha256": "847eb01bee6766b7d4bb0a62b4a09a555e7e027f0a13e210ac352532e4ee2df4",
-      "contentBytes": 1236992,
-      "resourceRevision": "dictionary-lelievre-fr-2dbdf9b5e684dd81a797",
-      "installedBytes": 1236992,
-      "peakInstallationBytes": 1795644,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/dictionaries/dictionary-lelievre-fr.sqlite.encrypted.zip?sha256=9a2f6a5fd834f833d14b1855eed1c19fe9448cabf4267aee650fd538cc6ec2ec",
-        "file": "dictionaries/dictionary-lelievre-fr.sqlite.encrypted.zip",
-        "sha256": "9a2f6a5fd834f833d14b1855eed1c19fe9448cabf4267aee650fd538cc6ec2ec",
-        "bytes": 325269,
-        "keyVersion": 1
-      }
-    },
-    "database:NAVE:en": {
-      "id": "database:NAVE:en",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/databases/en/nave.sqlite.zip",
-      "file": "databases/en/nave.sqlite.zip",
-      "entry": "nave.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "nave.sqlite",
-          "sha256": "85ebea651a48023c8c31b2a805c3805d9189f479b3848e9053c270845ee687a0",
-          "bytes": 7402496
-        }
-      },
-      "archiveSha256": "0e94c41d69e852c0cfb1ca72431110e3f7e22a1ff31a78304258894296230ee1",
-      "archiveBytes": 2010815,
-      "contentSha256": "85ebea651a48023c8c31b2a805c3805d9189f479b3848e9053c270845ee687a0",
-      "contentBytes": 7402496,
-      "installedBytes": 7402496,
-      "peakInstallationBytes": 10825308,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/databases/en/nave.sqlite.encrypted.zip?sha256=9e457cf49d2da638099041f28911caec459421b4366eb27bc0d46d37ec864cf8",
-        "file": "databases/en/nave.sqlite.encrypted.zip",
-        "sha256": "9e457cf49d2da638099041f28911caec459421b4366eb27bc0d46d37ec864cf8",
-        "bytes": 2008904,
-        "keyVersion": 1
-      }
-    },
-    "database:NAVE:fr": {
-      "id": "database:NAVE:fr",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/databases/nave-fr.sqlite.zip",
-      "file": "databases/nave-fr.sqlite.zip",
-      "entry": "nave-fr.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "nave-fr.sqlite",
-          "sha256": "8a5769b3b526cb8fdf119936758864773ff74908af949a4354d7d38b58a9ef6b",
-          "bytes": 7791616
-        }
-      },
-      "archiveSha256": "75df3e31501ef968b7d9343244e45fcbe8563f893e0c8fce82064ca2436c9dd3",
-      "archiveBytes": 2068972,
-      "contentSha256": "8a5769b3b526cb8fdf119936758864773ff74908af949a4354d7d38b58a9ef6b",
-      "contentBytes": 7791616,
-      "installedBytes": 7791616,
-      "peakInstallationBytes": 11339677,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/databases/nave-fr.sqlite.encrypted.zip?sha256=b50989cc10edb5e9f97c25d3e30aaef8a68cf848a6ba975fa9c5c7fcf6ca9bd8",
-        "file": "databases/nave-fr.sqlite.encrypted.zip",
-        "sha256": "b50989cc10edb5e9f97c25d3e30aaef8a68cf848a6ba975fa9c5c7fcf6ca9bd8",
-        "bytes": 2066971,
-        "keyVersion": 1
-      }
+      "archiveSha256": "b92328990eb5cd3a0fdbab2b672e2a27b15e12e5af58d75dfb86840f98349e09",
+      "archiveBytes": 18386627,
+      "contentSha256": "ce1cfe6a0dac8d7f3d1690a31926224afda373f0f75010e38529dce5bfb2cd5b",
+      "contentBytes": 70811648,
+      "resourceRevision": "dictionary-isbe-en-704cd50851ffb1a32540",
+      "installedBytes": 70811648,
+      "peakInstallationBytes": 102578017,
+      "strategy": "archive-extract"
     },
     "database:SMITH:en": {
       "id": "database:SMITH:en",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-smith-en.sqlite.zip?sha256=1fad8d7c24aa1c6c6c7020ff8ab853ee405d022e62381e3c721e3f362f13b054",
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-smith-en.sqlite.zip",
       "file": "dictionaries/dictionary-smith-en.sqlite.zip",
       "entry": "dictionnaire.sqlite",
       "entries": {
         "canonical": {
           "entry": "dictionnaire.sqlite",
-          "sha256": "f403b11896e33d3b59331562d8f00364588d151c16b4ad8a8712d2573b769e3f",
-          "bytes": 12128256
+          "sha256": "95d7e4d3f856f73224026af8b20b08db1fa2db8de09c290f68a9ca8204930f3c",
+          "bytes": 11567104
         }
       },
-      "archiveSha256": "1fad8d7c24aa1c6c6c7020ff8ab853ee405d022e62381e3c721e3f362f13b054",
-      "archiveBytes": 3150884,
-      "contentSha256": "f403b11896e33d3b59331562d8f00364588d151c16b4ad8a8712d2573b769e3f",
-      "contentBytes": 12128256,
-      "resourceRevision": "dictionary-smith-en-1116731be2ed4d9d7fde",
-      "installedBytes": 12128256,
-      "peakInstallationBytes": 17571011,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/dictionaries/dictionary-smith-en.sqlite.encrypted.zip?sha256=dad73c2fa46fa720d079228624f47ca782b484ef7785cf0d2bd2bf3ee406a157",
-        "file": "dictionaries/dictionary-smith-en.sqlite.encrypted.zip",
-        "sha256": "dad73c2fa46fa720d079228624f47ca782b484ef7785cf0d2bd2bf3ee406a157",
-        "bytes": 3151536,
-        "keyVersion": 1
-      }
+      "archiveSha256": "6e19cfd37963dd4425b2c850f46ae4e44ec25b985280ae3d5e11a2d4eab4a209",
+      "archiveBytes": 3023350,
+      "contentSha256": "95d7e4d3f856f73224026af8b20b08db1fa2db8de09c290f68a9ca8204930f3c",
+      "contentBytes": 11567104,
+      "resourceRevision": "dictionary-smith-en-9d44f52c019e178726ab",
+      "installedBytes": 11567104,
+      "peakInstallationBytes": 16779023,
+      "strategy": "archive-extract"
     },
     "database:TIMELINE:en": {
       "id": "database:TIMELINE:en",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/databases/en/bible-timeline-events.json.zip",
       "file": "databases/en/bible-timeline-events.json.zip",
       "entry": "bible-timeline-events.json",
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/databases/en/bible-timeline-events.json.zip",
       "entries": {
         "canonical": {
           "entry": "bible-timeline-events.json",
-          "sha256": "7cf9ff871b30f9d9cb235c9742d16d278e73da2e2c708235f2337bba18b5efc1",
-          "bytes": 1397921
+          "sha256": "638ddeb827f11f1297c3e6aa4c3e77397bf7b6792c730d42c2d4886988580e4e",
+          "bytes": 1661080
         }
       },
-      "archiveSha256": "3b8795a95a473924dd6674bcace464954cefea5252d2b02ded3624845ffa83ef",
-      "archiveBytes": 488026,
-      "contentSha256": "7cf9ff871b30f9d9cb235c9742d16d278e73da2e2c708235f2337bba18b5efc1",
-      "contentBytes": 1397921,
-      "installedBytes": 1397921,
-      "peakInstallationBytes": 2168840,
+      "archiveSha256": "089ea36f7a9e37176055aa8b79230e908c281facd36111d55e0d6e458e940e8a",
+      "archiveBytes": 527700,
+      "contentSha256": "638ddeb827f11f1297c3e6aa4c3e77397bf7b6792c730d42c2d4886988580e4e",
+      "contentBytes": 1661080,
+      "installedBytes": 1661080,
+      "peakInstallationBytes": 5510940,
       "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/databases/en/bible-timeline-events.json.encrypted.zip?sha256=c438d3f82435c283a305ff8747fd3f5c698514c5968f50984af4ef74f809e76e",
-        "file": "databases/en/bible-timeline-events.json.encrypted.zip",
-        "sha256": "c438d3f82435c283a305ff8747fd3f5c698514c5968f50984af4ef74f809e76e",
-        "bytes": 486670,
-        "keyVersion": 1
-      }
+      "resourceRevision": "cj-timeline-720785d96785a1384c479be23c543a4b95a78ab8c4fd6515ead17f608016c0c5"
     },
     "database:TIMELINE:fr": {
       "id": "database:TIMELINE:fr",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/databases/bible-timeline-events.json.zip",
       "file": "databases/bible-timeline-events.json.zip",
       "entry": "bible-timeline-events.json",
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/databases/bible-timeline-events.json.zip",
       "entries": {
         "canonical": {
           "entry": "bible-timeline-events.json",
-          "sha256": "fe4d7e06145f65683f2380e61f55b0d6cd53a8386bb1964da2de9971099da818",
-          "bytes": 1520517
+          "sha256": "638ddeb827f11f1297c3e6aa4c3e77397bf7b6792c730d42c2d4886988580e4e",
+          "bytes": 1661080
         }
       },
-      "archiveSha256": "e563a61d5d8ab2b336713193fc23be68e60318367aeda6201f1ce2cc3c657ed2",
-      "archiveBytes": 532641,
-      "contentSha256": "fe4d7e06145f65683f2380e61f55b0d6cd53a8386bb1964da2de9971099da818",
-      "contentBytes": 1520517,
-      "installedBytes": 1520517,
-      "peakInstallationBytes": 2361132,
+      "archiveSha256": "089ea36f7a9e37176055aa8b79230e908c281facd36111d55e0d6e458e940e8a",
+      "archiveBytes": 527700,
+      "contentSha256": "638ddeb827f11f1297c3e6aa4c3e77397bf7b6792c730d42c2d4886988580e4e",
+      "contentBytes": 1661080,
+      "installedBytes": 1661080,
+      "peakInstallationBytes": 5510940,
       "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/databases/bible-timeline-events.json.encrypted.zip?sha256=47c7ee73284f21b703c67e20f31713d9b62ce692a729eb02729836d832de02b3",
-        "file": "databases/bible-timeline-events.json.encrypted.zip",
-        "sha256": "47c7ee73284f21b703c67e20f31713d9b62ce692a729eb02729836d832de02b3",
-        "bytes": 532154,
-        "keyVersion": 1
-      }
+      "resourceRevision": "cj-timeline-720785d96785a1384c479be23c543a4b95a78ab8c4fd6515ead17f608016c0c5"
     },
     "database:UNFOLDINGWORD_TW:en": {
       "id": "database:UNFOLDINGWORD_TW:en",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-unfoldingword-translation-words-en.sqlite.zip?sha256=c5285db5431cbd132b61af7c43a8f4c59cf6119dea157b6cfb2eeca2bfae0470",
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-unfoldingword-translation-words-en.sqlite.zip",
       "file": "dictionaries/dictionary-unfoldingword-translation-words-en.sqlite.zip",
       "entry": "dictionnaire.sqlite",
       "entries": {
         "canonical": {
           "entry": "dictionnaire.sqlite",
-          "sha256": "0f5e053a71f1c7cd89be08c00057a0467c0a4ec395556eba7d0d908249c6d7cd",
-          "bytes": 5726208
+          "sha256": "ce1348dc8a5ea4100f8b333e07cf79ec991ec193587143a1199d3d26011fa112",
+          "bytes": 5459968
         }
       },
-      "archiveSha256": "c5285db5431cbd132b61af7c43a8f4c59cf6119dea157b6cfb2eeca2bfae0470",
-      "archiveBytes": 1149839,
-      "contentSha256": "0f5e053a71f1c7cd89be08c00057a0467c0a4ec395556eba7d0d908249c6d7cd",
-      "contentBytes": 5726208,
-      "resourceRevision": "dictionary-unfoldingword-translation-words-en-61f474304e5c228ce37e",
-      "installedBytes": 5726208,
-      "peakInstallationBytes": 7907455,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/dictionaries/dictionary-unfoldingword-translation-words-en.sqlite.encrypted.zip?sha256=fec3190e841569079dcf2ca4d4ee285280147d8672fd3154fdfd8e0b45201b00",
-        "file": "dictionaries/dictionary-unfoldingword-translation-words-en.sqlite.encrypted.zip",
-        "sha256": "fec3190e841569079dcf2ca4d4ee285280147d8672fd3154fdfd8e0b45201b00",
-        "bytes": 1150956,
-        "keyVersion": 1
-      }
-    },
-    "database:WESTPHAL:fr": {
-      "id": "database:WESTPHAL:fr",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-westphal-fr.sqlite.zip?sha256=f0136627d5dfc357246f0d28f3193594926d73367bf67bc87396d921a554df1c",
-      "file": "dictionaries/dictionary-westphal-fr.sqlite.zip",
-      "entry": "dictionnaire.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "dictionnaire.sqlite",
-          "sha256": "cfa65e5a70ba6e61d719e50bc2668cd4767453970b936a1b158f0af8bf4f4271",
-          "bytes": 51221504
-        }
-      },
-      "archiveSha256": "f0136627d5dfc357246f0d28f3193594926d73367bf67bc87396d921a554df1c",
-      "archiveBytes": 11932927,
-      "contentSha256": "cfa65e5a70ba6e61d719e50bc2668cd4767453970b936a1b158f0af8bf4f4271",
-      "contentBytes": 51221504,
-      "resourceRevision": "dictionary-westphal-fr-1b193470a5d75f75a72d",
-      "installedBytes": 51221504,
-      "peakInstallationBytes": 72627596,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/dictionaries/dictionary-westphal-fr.sqlite.encrypted.zip?sha256=d0474a9d0ddd1c6f96f13421d9ac49077ce13c8046d642cd2800964049f1fe57",
-        "file": "dictionaries/dictionary-westphal-fr.sqlite.encrypted.zip",
-        "sha256": "d0474a9d0ddd1c6f96f13421d9ac49077ce13c8046d642cd2800964049f1fe57",
-        "bytes": 11923079,
-        "keyVersion": 1
-      }
-    },
-    "dictionary-directory": {
-      "id": "dictionary-directory",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-directory.sqlite.zip?sha256=d41aebc41e227c84d59c9d84ecbbae7ec880c15ada57b9e0b5a03da9d07a04f2",
-      "file": "dictionaries/dictionary-directory.sqlite.zip",
-      "entry": "dictionary-directory.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "dictionary-directory.sqlite",
-          "sha256": "f9f11d12fc94def83f753824c8939c29e9afccccd5134c313d34090ef3d15283",
-          "bytes": 23240704
-        }
-      },
-      "archiveSha256": "d41aebc41e227c84d59c9d84ecbbae7ec880c15ada57b9e0b5a03da9d07a04f2",
-      "archiveBytes": 7346539,
-      "contentSha256": "f9f11d12fc94def83f753824c8939c29e9afccccd5134c313d34090ef3d15283",
-      "contentBytes": 23240704,
-      "resourceRevision": "dictionary-directory-1731e1bc9c4b6676be23",
-      "installedBytes": 23240704,
-      "peakInstallationBytes": 35175330,
-      "strategy": "archive-extract",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/dictionaries/dictionary-directory.sqlite.encrypted.zip?sha256=4636eea83c765d0e045c607894241e02c8ddbe9317c0209f38c0e0a5ef23b6a4",
-        "file": "dictionaries/dictionary-directory.sqlite.encrypted.zip",
-        "sha256": "4636eea83c765d0e045c607894241e02c8ddbe9317c0209f38c0e0a5ef23b6a4",
-        "bytes": 7307570,
-        "keyVersion": 1
-      }
-    },
-    "strong-lexicon:core": {
-      "id": "strong-lexicon:core",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/databases/strong_lexicon.core.sqlite.zip?sha256=386c4801c520fc0688253d1db5fbfa21152bab323e54479dad03476e9b4e4fb4",
-      "file": "databases/strong_lexicon.core.sqlite.zip",
-      "entry": "strong_lexicon.core.sqlite",
-      "entries": {
-        "canonical": {
-          "entry": "strong_lexicon.core.sqlite",
-          "sha256": "77a6358eb8bf395997f4cbd990816dc6fb34054b3ab7d1574f36d78891cca54f",
-          "bytes": 32182272
-        }
-      },
-      "archiveSha256": "386c4801c520fc0688253d1db5fbfa21152bab323e54479dad03476e9b4e4fb4",
-      "archiveBytes": 6908566,
-      "contentSha256": "77a6358eb8bf395997f4cbd990816dc6fb34054b3ab7d1574f36d78891cca54f",
-      "contentBytes": 32182272,
-      "installedBytes": 32182272,
-      "peakInstallationBytes": 44954464,
-      "strategy": "archive-extract",
-      "resourceRevision": "strong-lexicon-core-fe91da3f72fe28da25c60833",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/databases/strong_lexicon.core.sqlite.encrypted.zip?sha256=fc95b7e7ce04f1bcaab8422bd06ac85d1b24abeef04a22fce150e566b6799a20",
-        "file": "databases/strong_lexicon.core.sqlite.encrypted.zip",
-        "sha256": "fc95b7e7ce04f1bcaab8422bd06ac85d1b24abeef04a22fce150e566b6799a20",
-        "bytes": 6891693,
-        "keyVersion": 1
-      }
+      "archiveSha256": "a567080caa343964c28f015978ad45718bbba57e33ef0aa94a1b41e3b87b5231",
+      "archiveBytes": 1113441,
+      "contentSha256": "ce1348dc8a5ea4100f8b333e07cf79ec991ec193587143a1199d3d26011fa112",
+      "contentBytes": 5459968,
+      "resourceRevision": "dictionary-unfoldingword-translation-words-en-c2bf27f2c5330be28fed",
+      "installedBytes": 5459968,
+      "peakInstallationBytes": 7559421,
+      "strategy": "archive-extract"
     },
     "strong-lexicon:entities": {
       "id": "strong-lexicon:entities",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/databases/bible_entities.production.sqlite.zip?sha256=a5e45f1fcf91a6f6d70cdb31878354777076456263b40888cd4ef717c27e1f6f",
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/databases/bible_entities.production.sqlite.zip",
       "file": "databases/bible_entities.production.sqlite.zip",
-      "entry": "bible_entities.production.sqlite",
+      "entry": "bible_entities.cyberjudah.sqlite",
       "entries": {
         "canonical": {
-          "entry": "bible_entities.production.sqlite",
-          "sha256": "1fffddc9e20aaa96dd0c32457c6f4da12acf65a5855328adafe701ea21f032f9",
-          "bytes": 19873792
+          "entry": "bible_entities.cyberjudah.sqlite",
+          "sha256": "ab98db61a9284e84d1c92aee85b522bdcbb4479823b0d33d9b58d1e3514c9f95",
+          "bytes": 4460544
         }
       },
-      "archiveSha256": "a5e45f1fcf91a6f6d70cdb31878354777076456263b40888cd4ef717c27e1f6f",
-      "archiveBytes": 5369895,
-      "contentSha256": "1fffddc9e20aaa96dd0c32457c6f4da12acf65a5855328adafe701ea21f032f9",
-      "contentBytes": 19873792,
-      "installedBytes": 19873792,
-      "peakInstallationBytes": 29030241,
+      "archiveSha256": "a5814fa69aa65d8ab59d069a3c416ee74e73917ef225b1e90407c69fc4787124",
+      "archiveBytes": 853648,
+      "contentSha256": "ab98db61a9284e84d1c92aee85b522bdcbb4479823b0d33d9b58d1e3514c9f95",
+      "contentBytes": 4460544,
+      "installedBytes": 4460544,
+      "peakInstallationBytes": 14235280,
       "strategy": "archive-extract",
-      "resourceRevision": "strong-lexicon-entities-98e0d81b2004d9073eb51d6f",
-      "coreRevision": "strong-lexicon-core-fe91da3f72fe28da25c60833",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/databases/bible_entities.production.sqlite.encrypted.zip?sha256=66ce44dc2828163bb2fd0d07093d081aee959dc759af55a62504863f9ed4c208",
-        "file": "databases/bible_entities.production.sqlite.encrypted.zip",
-        "sha256": "66ce44dc2828163bb2fd0d07093d081aee959dc759af55a62504863f9ed4c208",
-        "bytes": 5342932,
-        "keyVersion": 1
-      }
+      "resourceRevision": "cj-entities-513f496a6bd60bf1a5d5e02f0e8982b7d12057eec4aa75e2f70b32729111c27f"
     },
     "strong-lexicon:resources": {
       "id": "strong-lexicon:resources",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/databases/strong_lexicon.resources.sqlite.zip?sha256=55a390e1a845138b4f397ae51a714d4825b409e587a8b91c3dd836b534814e28",
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/databases/strong_lexicon.resources.sqlite.zip",
       "file": "databases/strong_lexicon.resources.sqlite.zip",
       "entry": "strong_lexicon.resources.sqlite",
       "entries": {
         "canonical": {
           "entry": "strong_lexicon.resources.sqlite",
-          "sha256": "b4709a918d527e8fbc7abfbca53f5b4088c005048f1da42f75a4f0f616553409",
-          "bytes": 52072448
+          "sha256": "fe3ff674e8430bc792a0b398f6f71678c8bd2e1faa82b96412d846a4823a9f5c",
+          "bytes": 3911680
         }
       },
-      "archiveSha256": "55a390e1a845138b4f397ae51a714d4825b409e587a8b91c3dd836b534814e28",
-      "archiveBytes": 11492502,
-      "contentSha256": "b4709a918d527e8fbc7abfbca53f5b4088c005048f1da42f75a4f0f616553409",
-      "contentBytes": 52072448,
-      "installedBytes": 52072448,
-      "peakInstallationBytes": 73099693,
+      "archiveSha256": "9f40acb68b3035a1e0315c8b09770d65e462eb2d86d24b60c7268e6486c50957",
+      "archiveBytes": 593546,
+      "contentSha256": "fe3ff674e8430bc792a0b398f6f71678c8bd2e1faa82b96412d846a4823a9f5c",
+      "contentBytes": 3911680,
+      "installedBytes": 3911680,
+      "peakInstallationBytes": 12328586,
       "strategy": "archive-extract",
-      "resourceRevision": "strong-lexicon-resources-4ad1a07442692f44a6babcfe",
-      "coreRevision": "strong-lexicon-core-fe91da3f72fe28da25c60833",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/databases/strong_lexicon.resources.sqlite.encrypted.zip?sha256=dc75280924fb8a7903ed33a88764f704775e6659638ba3e51475e1798b958e43",
-        "file": "databases/strong_lexicon.resources.sqlite.encrypted.zip",
-        "sha256": "dc75280924fb8a7903ed33a88764f704775e6659638ba3e51475e1798b958e43",
-        "bytes": 11435183,
-        "keyVersion": 1
-      }
+      "resourceRevision": "cj-strong-lexicon-resources-62d693464d0f06c08deb7897"
     },
     "strong-lexicon:simple-en": {
       "id": "strong-lexicon:simple-en",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/databases/strong_lexicon.simple-en.sqlite.zip?sha256=a3007c4054b1dc461dd5d2deb4e94a2859224e633ee3becb806329b263a9e0db",
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/databases/strong_lexicon.simple-en.sqlite.zip",
       "file": "databases/strong_lexicon.simple-en.sqlite.zip",
       "entry": "strong_lexicon.simple-en.sqlite",
       "entries": {
         "canonical": {
           "entry": "strong_lexicon.simple-en.sqlite",
-          "sha256": "dfb47bb9d77076195f7227a094c523cf2bf6bd817e108de9e0146adc233aeac3",
-          "bytes": 16015360
+          "sha256": "d35640d5be903b18ac510d30f5b445a7b1a84679efad6945ec385d88fd7b4646",
+          "bytes": 4218880
         }
       },
-      "archiveSha256": "a3007c4054b1dc461dd5d2deb4e94a2859224e633ee3becb806329b263a9e0db",
-      "archiveBytes": 3269402,
-      "contentSha256": "dfb47bb9d77076195f7227a094c523cf2bf6bd817e108de9e0146adc233aeac3",
-      "contentBytes": 16015360,
-      "installedBytes": 16015360,
-      "peakInstallationBytes": 35300122,
+      "archiveSha256": "459c5ddab56ed876d0ac41c62f588c0fa810fec7bf767ce8207bac2b75a4ebc4",
+      "archiveBytes": 1329091,
+      "contentSha256": "d35640d5be903b18ac510d30f5b445a7b1a84679efad6945ec385d88fd7b4646",
+      "contentBytes": 4218880,
+      "installedBytes": 4218880,
+      "peakInstallationBytes": 13985731,
       "strategy": "archive-extract",
-      "resourceRevision": "strong-lexicon-simple-en-784af9ff9fc29bf892cb0b55",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/databases/strong_lexicon.simple-en.sqlite.encrypted.zip?sha256=88ac56a8782abbfc22d7e9a67c4b3819ede2e7ca6500853c84be04afd6497140",
-        "file": "databases/strong_lexicon.simple-en.sqlite.encrypted.zip",
-        "sha256": "88ac56a8782abbfc22d7e9a67c4b3819ede2e7ca6500853c84be04afd6497140",
-        "bytes": 3226408,
-        "keyVersion": 1
-      }
+      "resourceRevision": "cj-strong-lexicon-simple-en-56322e6946d5ea24f1fa8228"
     },
-    "strong-lexicon:simple-fr": {
-      "id": "strong-lexicon:simple-fr",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/databases/strong_lexicon.simple-fr.sqlite.zip?sha256=0f0dd7545a43b732760ac49be7ca789a7787e3e9b02c39929b99cb102a84aaae",
-      "file": "databases/strong_lexicon.simple-fr.sqlite.zip",
-      "entry": "strong_lexicon.simple-fr.sqlite",
+    "database:JEWISH_ENCYCLOPEDIA:en": {
+      "id": "database:JEWISH_ENCYCLOPEDIA:en",
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-jewish-encyclopedia-en.sqlite.zip",
+      "file": "dictionaries/dictionary-jewish-encyclopedia-en.sqlite.zip",
+      "entry": "dictionnaire.sqlite",
       "entries": {
         "canonical": {
-          "entry": "strong_lexicon.simple-fr.sqlite",
-          "sha256": "3b07deead67516e370043d5afc01ed0413e0db9d95c8d56355fcac89511e7f06",
-          "bytes": 22970368
+          "entry": "dictionnaire.sqlite",
+          "sha256": "920007a0866f302e93a4f36680d60b951331f27698dd36d73b9595a60d7669b9",
+          "bytes": 65773568
         }
       },
-      "archiveSha256": "0f0dd7545a43b732760ac49be7ca789a7787e3e9b02c39929b99cb102a84aaae",
-      "archiveBytes": 3482614,
-      "contentSha256": "3b07deead67516e370043d5afc01ed0413e0db9d95c8d56355fcac89511e7f06",
-      "contentBytes": 22970368,
-      "installedBytes": 22970368,
-      "peakInstallationBytes": 49423350,
-      "strategy": "archive-extract",
-      "resourceRevision": "strong-lexicon-simple-fr-944bd06dc903ffaf83df9b51",
-      "encryptedArchive": {
-        "url": "https://api.cyberjudah.io/v1/offline-archives/databases/strong_lexicon.simple-fr.sqlite.encrypted.zip?sha256=067afbe74c65b695bef34f7670859ad6f396058b073233cd3228d599872a3996",
-        "file": "databases/strong_lexicon.simple-fr.sqlite.encrypted.zip",
-        "sha256": "067afbe74c65b695bef34f7670859ad6f396058b073233cd3228d599872a3996",
-        "bytes": 3464092,
-        "keyVersion": 1
-      }
+      "archiveSha256": "0c0e7c5be1211a9ae60321452625d2dc7ce8a035730884323300c0b92bca37ab",
+      "archiveBytes": 22612534,
+      "contentSha256": "920007a0866f302e93a4f36680d60b951331f27698dd36d73b9595a60d7669b9",
+      "contentBytes": 65773568,
+      "resourceRevision": "dictionary-jewish-encyclopedia-en-920007a0866f302e93a4",
+      "installedBytes": 65773568,
+      "peakInstallationBytes": 219933238,
+      "strategy": "archive-extract"
+    },
+    "database:cyberjudah:en": {
+      "id": "database:cyberjudah:en",
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/commentaries/commentary-cyberjudah-en.sqlite.zip",
+      "file": "commentaries/commentary-cyberjudah-en.sqlite.zip",
+      "entry": "commentary-cyberjudah-en.sqlite",
+      "entries": {
+        "canonical": {
+          "entry": "commentary-cyberjudah-en.sqlite",
+          "sha256": "44ac3f18de746e915cec004264f747b50fec7d33c60a7a7792cc620b0a2e461c",
+          "bytes": 45436928
+        }
+      },
+      "archiveSha256": "240416f02b0cc77db0913bde230e16630f43d36e3357450d6323719a4dd42a26",
+      "archiveBytes": 10815799,
+      "contentSha256": "44ac3f18de746e915cec004264f747b50fec7d33c60a7a7792cc620b0a2e461c",
+      "contentBytes": 45436928,
+      "resourceRevision": "cyberjudah-en-d0c6866063a83d92d3d0",
+      "installedBytes": 45436928,
+      "peakInstallationBytes": 64690637,
+      "strategy": "archive-extract"
+    },
+    "bible:WEB1833": {
+      "id": "bible:WEB1833",
+      "file": "bibles/bible-web1833.json.zip",
+      "entry": "bible-web1833.json",
+      "entries": {
+        "canonical": {
+          "entry": "bible-web1833.json",
+          "sha256": "f28dbb46a6d15daa945c5ce5d13a9c1b7e144719fd79bf77a0b712f190d202e1",
+          "bytes": 6270806
+        }
+      },
+      "archiveSha256": "074912f2290b29706815e79c0b1f3c0e84d7bd886e4cfb8b6726e4e6754c819d",
+      "archiveBytes": 1410901,
+      "contentSha256": "f28dbb46a6d15daa945c5ce5d13a9c1b7e144719fd79bf77a0b712f190d202e1",
+      "contentBytes": 6270806,
+      "installedBytes": 12541612,
+      "peakInstallationBytes": 20223319,
+      "strategy": "sqlite-import",
+      "textRevision": "web1833-fe372b2275718d7c1a2c",
+      "textSha256": "fe372b2275718d7c1a2cb08e8c655a7af981e58f0a2da34830c351a16934db86",
+      "verseCount": 31102,
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-web1833.json.zip"
+    },
+    "bible:BLIVRETR": {
+      "id": "bible:BLIVRETR",
+      "file": "bibles/bible-blivretr.json.zip",
+      "entry": "bible-blivretr.json",
+      "entries": {
+        "canonical": {
+          "entry": "bible-blivretr.json",
+          "sha256": "6edf199b971eab4b77e15460e9fa49183bdc8c53ba40b3f9e9e9d66e8b43982d",
+          "bytes": 6018084
+        }
+      },
+      "archiveSha256": "246583247b6725a9ec761efd16dc9878de6493bb3e3b5b9ae133832ea20909b8",
+      "archiveBytes": 1412015,
+      "contentSha256": "6edf199b971eab4b77e15460e9fa49183bdc8c53ba40b3f9e9e9d66e8b43982d",
+      "contentBytes": 6018084,
+      "installedBytes": 12036168,
+      "peakInstallationBytes": 19466267,
+      "strategy": "sqlite-import",
+      "textRevision": "blivretr-31ede4f1d1e135d3df01",
+      "textSha256": "31ede4f1d1e135d3df01206d4ba6e05908a2846c2182efb9a2ee0e7b8a9bb95c",
+      "verseCount": 31102,
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-blivretr.json.zip"
+    },
+    "bible:DUTSVVA": {
+      "id": "bible:DUTSVVA",
+      "file": "bibles/bible-dutsvva.json.zip",
+      "entry": "bible-dutsvva.json",
+      "entries": {
+        "canonical": {
+          "entry": "bible-dutsvva.json",
+          "sha256": "5237f3cfd2760ed6a5f7b053382c0620744a48536ac758e257f3b968bd2781c7",
+          "bytes": 7695068
+        }
+      },
+      "archiveSha256": "bff774ed249b0f6c092eb7526ce7007be1a73487a037d1086f12ba53af6dd5f3",
+      "archiveBytes": 1786623,
+      "contentSha256": "5237f3cfd2760ed6a5f7b053382c0620744a48536ac758e257f3b968bd2781c7",
+      "contentBytes": 7695068,
+      "installedBytes": 15390136,
+      "peakInstallationBytes": 24871827,
+      "strategy": "sqlite-import",
+      "textRevision": "dutsvva-9698e4f94b3f6f5ff351",
+      "textSha256": "9698e4f94b3f6f5ff351ed73753ab44fc9d2522385a466e7525462410771bc57",
+      "verseCount": 36939,
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-dutsvva.json.zip"
+    },
+    "bible:FINBIBLIA": {
+      "id": "bible:FINBIBLIA",
+      "file": "bibles/bible-finbiblia.json.zip",
+      "entry": "bible-finbiblia.json",
+      "entries": {
+        "canonical": {
+          "entry": "bible-finbiblia.json",
+          "sha256": "c0ca52f3e64bbdebd683282cf7acb128556e135a9dcca64f6d9587f0767136b9",
+          "bytes": 7271145
+        }
+      },
+      "archiveSha256": "98eeb5a23db8ec7f590b0919d6ff4a32ae3195247cfd09f1289966d623de6281",
+      "archiveBytes": 1672068,
+      "contentSha256": "c0ca52f3e64bbdebd683282cf7acb128556e135a9dcca64f6d9587f0767136b9",
+      "contentBytes": 7271145,
+      "installedBytes": 14542290,
+      "peakInstallationBytes": 23485503,
+      "strategy": "sqlite-import",
+      "textRevision": "finbiblia-0d9a4624471c5147baff",
+      "textSha256": "0d9a4624471c5147baff8340b2aa3b2c2a1e9ff471c892f7f4b99311c06f31e5",
+      "verseCount": 35445,
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-finbiblia.json.zip"
+    },
+    "bible:KJVA": {
+      "id": "bible:KJVA",
+      "file": "bibles/bible-kjva.json.zip",
+      "entry": "bible-kjva.json",
+      "entries": {
+        "canonical": {
+          "entry": "bible-kjva.json",
+          "sha256": "15af6eaa5efed109dd4644ebeebf6068a357a4620d3bca36aaac3310d8ad4671",
+          "bytes": 7457016
+        }
+      },
+      "archiveSha256": "fa16c822b6f705754fffb2c558f0b1d57a5403488eb27397b78545477809e8dc",
+      "archiveBytes": 1699224,
+      "contentSha256": "15af6eaa5efed109dd4644ebeebf6068a357a4620d3bca36aaac3310d8ad4671",
+      "contentBytes": 7457016,
+      "installedBytes": 14914032,
+      "peakInstallationBytes": 24070272,
+      "strategy": "sqlite-import",
+      "textRevision": "kjva-44d5bd450df14db7ffc8",
+      "textSha256": "44d5bd450df14db7ffc81c6f5588d75dc40824f64e8a9eb3c60e0d52fc5d170c",
+      "verseCount": 36822,
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-kjva.json.zip"
+    },
+    "bible:SLOKJV": {
+      "id": "bible:SLOKJV",
+      "file": "bibles/bible-slokjv.json.zip",
+      "entry": "bible-slokjv.json",
+      "entries": {
+        "canonical": {
+          "entry": "bible-slokjv.json",
+          "sha256": "c760c2b61cc7ff0a483f2ef18a2d153775b30594a98428cf15c36ab858c5a3fa",
+          "bytes": 6021379
+        }
+      },
+      "archiveSha256": "126efdac34db1f9a6873fd4c94ba86502b97a79038111a16690657e6e739c8c8",
+      "archiveBytes": 1473371,
+      "contentSha256": "c760c2b61cc7ff0a483f2ef18a2d153775b30594a98428cf15c36ab858c5a3fa",
+      "contentBytes": 6021379,
+      "installedBytes": 12042758,
+      "peakInstallationBytes": 19537508,
+      "strategy": "sqlite-import",
+      "textRevision": "slokjv-d03e6c8a56e57bbeb86e",
+      "textSha256": "d03e6c8a56e57bbeb86ebb1badcd176cf6c7d353d92222faa171b88d7dd8bbde",
+      "verseCount": 31102,
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-slokjv.json.zip"
+    },
+    "bible:SVD": {
+      "id": "bible:SVD",
+      "file": "bibles/bible-svd.json.zip",
+      "entry": "bible-svd.json",
+      "entries": {
+        "canonical": {
+          "entry": "bible-svd.json",
+          "sha256": "54528f5c19801ca03a36f79851704019ee656e35432de119e4e591ab00d65d17",
+          "bytes": 9564130
+        }
+      },
+      "archiveSha256": "476d5f4093291d1d5bea19f21c21b381417e55f46c37a52ca8a2f0c2de48eaf5",
+      "archiveBytes": 1693847,
+      "contentSha256": "54528f5c19801ca03a36f79851704019ee656e35432de119e4e591ab00d65d17",
+      "contentBytes": 9564130,
+      "installedBytes": 19128260,
+      "peakInstallationBytes": 30386237,
+      "strategy": "sqlite-import",
+      "textRevision": "svd-f08af8ed2e9c8f97e1a2",
+      "textSha256": "f08af8ed2e9c8f97e1a252bd9fe65185472ea487bfec8650bcd80086c1f50073",
+      "verseCount": 31104,
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-svd.json.zip"
+    },
+    "bible:THAIKJV": {
+      "id": "bible:THAIKJV",
+      "file": "bibles/bible-thaikjv.json.zip",
+      "entry": "bible-thaikjv.json",
+      "entries": {
+        "canonical": {
+          "entry": "bible-thaikjv.json",
+          "sha256": "571c6cd310b41ae910f632ab4fd9350afd21247afb8edb2827763eea5e355cc2",
+          "bytes": 13915903
+        }
+      },
+      "archiveSha256": "2c37b58640b4da899ddec476f17a5b243ae555a23206999175cef76bf5d28b29",
+      "archiveBytes": 2109661,
+      "contentSha256": "571c6cd310b41ae910f632ab4fd9350afd21247afb8edb2827763eea5e355cc2",
+      "contentBytes": 13915903,
+      "installedBytes": 27831806,
+      "peakInstallationBytes": 43857370,
+      "strategy": "sqlite-import",
+      "textRevision": "thaikjv-d595771b56797b8c0dfe",
+      "textSha256": "d595771b56797b8c0dfe7733d696225e569e9fc6d48784abc20bb19fd8642a5a",
+      "verseCount": 31102,
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-thaikjv.json.zip"
+    },
+    "dictionary-directory": {
+      "id": "dictionary-directory",
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-directory.sqlite.zip",
+      "file": "dictionaries/dictionary-directory.sqlite.zip",
+      "entry": "dictionary-directory.sqlite",
+      "entries": {
+        "canonical": {
+          "entry": "dictionary-directory.sqlite",
+          "sha256": "ee22797abfb49d0d1c6f2dfaf8fbd4c2836a4b6536cdbd6fa213f0f6a07fbf64",
+          "bytes": 12156928
+        }
+      },
+      "archiveSha256": "d28e60966cf3a4d66f09f662afbff80368f6b2b578ccb357b74652bececaeb2b",
+      "archiveBytes": 4060846,
+      "contentSha256": "ee22797abfb49d0d1c6f2dfaf8fbd4c2836a4b6536cdbd6fa213f0f6a07fbf64",
+      "contentBytes": 12156928,
+      "resourceRevision": "dictionary-directory-62027210bd4f7672d173",
+      "installedBytes": 12156928,
+      "peakInstallationBytes": 18650441,
+      "strategy": "archive-extract"
     }
   }
 }

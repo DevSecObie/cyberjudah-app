@@ -1,3 +1,11 @@
+// Exercise upstream publication algorithms with their historical complete fixtures.
+jest.mock('@bible-strong/resource-catalog/catalog', () =>
+  require('../../../../test/jestUpstreamPackageCatalogFixture')
+)
+jest.mock('~helpers/strongBibleCatalog', () =>
+  require('../../../../test/jestUpstreamStrongCatalogFixture')
+)
+jest.mock('~assets/cyberjudah/excluded-upstream-resources.json', () => [])
 import {
   loadBibleReadingMain,
   loadBibleReadingParallelVerses,

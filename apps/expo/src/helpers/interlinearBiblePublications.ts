@@ -40,13 +40,13 @@ export type InterlinearPublicationArtifact = {
 
 export type InterlinearBiblePublication = {
   applicationVersionId: InterlinearBibleVersionId
-  datasetId: 'STEP'
-  sourceVersion: 'TAHOT/TAGNT'
+  datasetId: string
+  sourceVersion: string
   attribution: string
-  license: 'CC BY 4.0'
+  license: string
   sourceUrl: string
   text: InterlinearPublicationArtifact
-  indexes: Record<ResourceLanguage, InterlinearPublicationArtifact>
+  indexes: Partial<Record<ResourceLanguage, InterlinearPublicationArtifact>>
 }
 
 const toArtifact = (entry: InterlinearBibleCatalogArtifact): InterlinearPublicationArtifact => ({
@@ -71,10 +71,9 @@ export const getInterlinearBiblePublication = (
   return {
     ...BHG_INTERLINEAR_IDENTITY,
     text: toArtifact(publication.text),
-    indexes: {
-      fr: toArtifact(publication.indexes.fr),
-      en: toArtifact(publication.indexes.en),
-    },
+    indexes: Object.fromEntries(
+      Object.entries(publication.indexes).map(([language, index]) => [language, toArtifact(index)])
+    ),
   }
 }
 

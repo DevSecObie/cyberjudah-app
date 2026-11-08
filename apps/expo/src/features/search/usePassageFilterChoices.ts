@@ -51,6 +51,8 @@ export function usePassageFilterChoices(canon: SearchCanon, resolvedSelectedVers
   ]
 
   const canonLabels: Record<Exclude<SearchCanon, ''>, string> = {
+    'kjv-1611': 'King James (1611)',
+    'statenvertaling-apocrypha': 'Statenvertaling (1637)',
     'protestant-66': t('search.canon.protestant'),
     'catholic-73': t('search.canon.catholic'),
     'clementine-vulgate': t('search.canon.clementine'),

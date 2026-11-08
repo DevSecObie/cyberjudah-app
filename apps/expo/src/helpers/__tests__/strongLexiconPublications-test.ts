@@ -1,4 +1,16 @@
+// These reader/transport algorithms retain the complete upstream fixture.
+jest.mock('@bible-strong/resource-catalog/catalog', () =>
+  require('../../../test/jestUpstreamPackageCatalogFixture')
+)
+jest.mock('~helpers/strongBibleCatalog', () =>
+  require('../../../test/jestUpstreamStrongCatalogFixture')
+)
+jest.mock('~assets/cyberjudah/excluded-upstream-resources.json', () => [])
+jest.mock('~helpers/mobileResourceCatalog', () =>
+  require('../../../test/jestUpstreamCatalogFixture')
+)
 import { createStrongLexiconModuleDownloadPlan } from '../strongLexiconDownloadItems'
+import { BUNDLED_MOBILE_RESOURCE_CATALOG } from '../mobileResourceCatalog'
 import { getStrongLexiconPublication } from '../strongLexiconPublications'
 
 jest.mock('~helpers/firebase', () => ({
@@ -10,13 +22,15 @@ describe('Strong lexicon modular publications', () => {
     expect(getStrongLexiconPublication('core')).toMatchObject({
       required: true,
       entry: 'strong_lexicon.core.sqlite',
-      archiveBytes: 6_543_526,
+      archiveBytes: BUNDLED_MOBILE_RESOURCE_CATALOG.resources['strong-lexicon:core'].archiveBytes,
     })
     expect(
-      getStrongLexiconPublication('core').url.endsWith('databases/strong_lexicon.core.sqlite.zip')
+      new URL(getStrongLexiconPublication('core').url).pathname.endsWith(
+        'databases/strong_lexicon.core.sqlite.zip'
+      )
     ).toBe(true)
     expect(
-      getStrongLexiconPublication('resources').url.endsWith(
+      new URL(getStrongLexiconPublication('resources').url).pathname.endsWith(
         'databases/strong_lexicon.resources.sqlite.zip'
       )
     ).toBe(true)
@@ -25,13 +39,13 @@ describe('Strong lexicon modular publications', () => {
       entry: 'bible_entities.production.sqlite',
     })
     expect(
-      getStrongLexiconPublication('entities').url.endsWith(
+      new URL(getStrongLexiconPublication('entities').url).pathname.endsWith(
         'databases/bible_entities.production.sqlite.zip'
       )
     ).toBe(true)
     expect(getStrongLexiconPublication('core')).toMatchObject({
-      contentBytes: 30_371_840,
-      contentSha256: '4697c3a496a7e647922114771a0332530a21c86752fb67d1d98cf7bfd00fd3e1',
+      contentBytes: BUNDLED_MOBILE_RESOURCE_CATALOG.resources['strong-lexicon:core'].contentBytes,
+      contentSha256: BUNDLED_MOBILE_RESOURCE_CATALOG.resources['strong-lexicon:core'].contentSha256,
     })
   })
 

@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 import { readMobileResourceCatalog } from '../mobileResourceCatalog'
 
 const bundledCatalogPath = fileURLToPath(
-  new URL('../../../../resource-catalog/src/mobile-resource-catalog.json', import.meta.url)
+  new URL('./fixtures/upstream-resource-catalog.json', import.meta.url)
 )
 
 const nextText = {
@@ -33,6 +33,7 @@ const readPatchedCatalog = async (patch: (resources: Resources) => void) => {
   }
 }
 
+// Historical multi-locale compatibility is exercised using the complete upstream fixture.
 describe('mobile resource catalog text declarations', () => {
   it('reads the text the bundled catalog declares for BHG and both indexes', async () => {
     const { resources } = await readMobileResourceCatalog(bundledCatalogPath)

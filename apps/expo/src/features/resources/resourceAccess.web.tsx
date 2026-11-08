@@ -1,3 +1,5 @@
+import { DYNAMIC_RESOURCE_API_ENABLED } from '~helpers/serviceConnections'
+import { hasMobileResourceCatalogEntry } from '~helpers/mobileResourceCatalog'
 import { createLayeredStrongLexiconAccess } from './layeredStrongLexiconAccess'
 import {
   createCommentaryReadingAccess,
@@ -80,9 +82,12 @@ export type ResourceAccessRegistry = {
 }
 
 const isOnline = async () => onlineManager.isOnline()
-const resourceApiBaseUrl = getConfiguredResourceApiBaseUrl(
+const configuredResourceApiBaseUrl = getConfiguredResourceApiBaseUrl(
   Constants.expoConfig?.extra?.resourceApiUrl as string | undefined
 )
+const resourceApiBaseUrl: string | undefined = DYNAMIC_RESOURCE_API_ENABLED
+  ? configuredResourceApiBaseUrl
+  : undefined
 
 const unavailableAccess = <Access extends object>(): Access =>
   new Proxy(
@@ -98,7 +103,11 @@ const bibleVersions = new Set(resourceApiBaseUrl ? ONLINE_BIBLE_VERSION_IDS : []
 const strongBibleVersions = new Set(resourceApiBaseUrl ? STRONG_BIBLE_FALLBACK_PRIORITY : [])
 const languages = new Set<ResourceLanguage>(resourceApiBaseUrl ? ['fr', 'en'] : [])
 const strongLexiconModules = new Set(
-  resourceApiBaseUrl ? ['core', 'resources', 'entities', 'simple-fr', 'simple-en'] : []
+  resourceApiBaseUrl
+    ? ['core', 'resources', 'entities', 'simple-fr', 'simple-en'].filter(id =>
+        hasMobileResourceCatalogEntry(`strong-lexicon:${id}`)
+      )
+    : []
 )
 const commentaryCollections = new Set(resourceApiBaseUrl ? ['MHY'] : [])
 

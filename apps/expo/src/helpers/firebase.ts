@@ -59,14 +59,12 @@ export const cdnUrl = (path: string) => `${CDN_URL}${path}`
 
 // French database URLs
 export const databasesRef = {
-  DICTIONNAIRE: getMobileResourceCatalogEntry('database:DICTIONNAIRE:fr').url,
   NAVE: getMobileResourceCatalogEntry('database:NAVE:fr').url,
   TIMELINE: getMobileResourceCatalogEntry('database:TIMELINE:fr').url,
 }
 
 // English database URLs
 export const databasesEnRef: Partial<Record<RemoteDatabaseId, string>> = {
-  DICTIONNAIRE: getMobileResourceCatalogEntry('database:DICTIONNAIRE:en').url,
   NAVE: getMobileResourceCatalogEntry('database:NAVE:en').url,
   TIMELINE: getMobileResourceCatalogEntry('database:TIMELINE:en').url,
 }

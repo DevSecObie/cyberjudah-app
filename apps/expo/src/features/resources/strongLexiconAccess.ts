@@ -1,3 +1,5 @@
+import canonicalBookMap from '~assets/cyberjudah/canonical-book-map.json'
+import cyberJudahEntityBookCodes from '~assets/cyberjudah/entity-book-codes.json'
 import { getSimpleStrongModuleId } from '@bible-strong/resource-domain/strong-lexicon'
 import type { SQLiteDatabase } from '~helpers/sqlite'
 import type { ResourceLanguage } from '~helpers/databaseTypes'
@@ -550,7 +552,14 @@ const TIPNR_BOOK_CODES = [
   'Rev',
 ] as const
 
-export const getTipnrBookCode = (book: number): string | undefined => TIPNR_BOOK_CODES[book - 1]
+const ownedEntityCodes = new Map(
+  cyberJudahEntityBookCodes.map((code, index) => [
+    (canonicalBookMap.sourceToCanonical as Record<string, number>)[String(index + 1)] ?? index + 1,
+    code,
+  ])
+)
+export const getTipnrBookCode = (book: number): string | undefined =>
+  ownedEntityCodes.get(book) ?? TIPNR_BOOK_CODES[book - 1]
 
 type ChapterEntityRow = {
   uniqueName: string

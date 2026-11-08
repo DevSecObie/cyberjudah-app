@@ -211,8 +211,9 @@ describe('bcvParser', () => {
       expect(osisToBibleReferenceTarget('PssSol.1.1')?.book).toBe(77)
     })
 
-    it('rejects apocryphal OSIS codes outside the supported Clementine canon', () => {
-      expect(osisToBibleReferenceTarget('PrMan.1.1')).toBeUndefined()
+    it('preserves the stable upstream id for 4 Maccabees while adding Prayer of Manasseh', () => {
+      expect(osisToBibleReferenceTarget('4Macc.1.1')?.book).toBe(76)
+      expect(osisToBibleReferenceTarget('PrMan.1.1')?.book).toBe(84)
     })
   })
 })

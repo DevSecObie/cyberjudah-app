@@ -12,7 +12,7 @@ export type VersionCatalogItem = Version & {
 }
 
 export type VersionCatalogLabels = {
-  languages: Record<BibleVersionLanguage, string>
+  languages: Partial<Record<BibleVersionLanguage, string>>
   profiles: Record<TranslationReadingProfile, string>
   other: string
 }
@@ -117,14 +117,18 @@ export const getVersionCatalogSections = ({
       if (right === 'he-grc') return 1
       if (left === uiLanguage) return -1
       if (right === uiLanguage) return 1
-      return labels.languages[left].localeCompare(labels.languages[right], uiLanguage, {
-        sensitivity: 'base',
-      })
+      return (labels.languages[left] ?? left).localeCompare(
+        labels.languages[right] ?? right,
+        uiLanguage,
+        {
+          sensitivity: 'base',
+        }
+      )
     })
 
     return languages.map(language => ({
       key: language,
-      title: labels.languages[language],
+      title: labels.languages[language] ?? language,
       data: versionsByLanguage.get(language) || [],
     }))
   }

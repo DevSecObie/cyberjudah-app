@@ -13,9 +13,9 @@ import {
 import { makeResourceWebHandler } from '../app'
 
 const chapter = {
-  versionId: 'LSG',
-  revision: 'lsg-test-revision',
-  textRevision: 'lsg-text-revision',
+  versionId: 'FMAR',
+  revision: 'fmar-test-revision',
+  textRevision: 'fmar-text-revision',
   book: 1,
   chapter: 1,
   verses: [
@@ -121,7 +121,7 @@ describe('v1 Bible chapter API', () => {
     const web = makeResourceWebHandler(repository)
     try {
       const response = await web.handler(
-        request('/v1/bibles/chapters?versions=LSG%2CDBY&book=1&chapter=1')
+        request('/v1/bibles/chapters?versions=FMAR%2CWEB1833&book=1&chapter=1')
       )
       assert.equal(response.status, 200, await response.clone().text())
       assert.equal(batchReads, 1)
@@ -129,7 +129,7 @@ describe('v1 Bible chapter API', () => {
         (
           (await response.json()) as { chapters: { resource: { versionId: string } }[] }
         ).chapters.map(value => value.resource.versionId),
-        ['LSG', 'DBY']
+        ['FMAR', 'WEB1833']
       )
     } finally {
       await web.dispose()
@@ -139,18 +139,18 @@ describe('v1 Bible chapter API', () => {
   it('returns the canonical DTO in verse order with the active revision and ETag', async () => {
     const web = makeResourceWebHandler(repository)
     try {
-      const response = await web.handler(request('/v1/bibles/LSG/books/1/chapters/1'))
+      const response = await web.handler(request('/v1/bibles/FMAR/books/1/chapters/1'))
 
       assert.equal(response.status, 200)
-      assert.equal(response.headers.get('x-resource-revision'), 'lsg-test-revision')
+      assert.equal(response.headers.get('x-resource-revision'), 'fmar-test-revision')
       assert.equal(response.headers.get('x-request-id'), 'request-test-123')
       assert.match(response.headers.get('etag') ?? '', /^"[a-f0-9]{64}"$/)
       assert.deepEqual(await response.json(), {
         resource: {
           kind: 'bible-text',
-          versionId: 'LSG',
-          revision: 'lsg-test-revision',
-          textRevision: 'lsg-text-revision',
+          versionId: 'FMAR',
+          revision: 'fmar-test-revision',
+          textRevision: 'fmar-text-revision',
         },
         book: 1,
         chapter: 1,
@@ -164,10 +164,10 @@ describe('v1 Bible chapter API', () => {
   it('returns 304 when If-None-Match accepts the current representation ETag', async () => {
     const web = makeResourceWebHandler(repository)
     try {
-      const first = await web.handler(request('/v1/bibles/LSG/books/1/chapters/1'))
+      const first = await web.handler(request('/v1/bibles/FMAR/books/1/chapters/1'))
       const etag = first.headers.get('etag')!
       const conditional = await web.handler(
-        request('/v1/bibles/LSG/books/1/chapters/1', { 'if-none-match': `"other", W/${etag}` })
+        request('/v1/bibles/FMAR/books/1/chapters/1', { 'if-none-match': `"other", W/${etag}` })
       )
 
       assert.equal(conditional.status, 304)
@@ -182,7 +182,7 @@ describe('v1 Bible chapter API', () => {
     const web = makeResourceWebHandler(repository)
     try {
       const response = await web.handler(
-        request('/v1/bibles/LSG/verses?references=1-1-2,1-1-1,1-1-2')
+        request('/v1/bibles/FMAR/verses?references=1-1-2,1-1-1,1-1-2')
       )
 
       assert.equal(response.status, 200)
@@ -190,7 +190,7 @@ describe('v1 Bible chapter API', () => {
       assert.deepEqual(await response.json(), {
         resource: {
           kind: 'bible-text',
-          versionId: 'LSG',
+          versionId: 'FMAR',
           revision: chapter.revision,
           textRevision: chapter.textRevision,
         },
@@ -207,7 +207,7 @@ describe('v1 Bible chapter API', () => {
   it('rejects malformed verse selections at the HTTP boundary', async () => {
     const web = makeResourceWebHandler(repository)
     try {
-      const response = await web.handler(request('/v1/bibles/LSG/verses?references=1-1-1,1-1--2'))
+      const response = await web.handler(request('/v1/bibles/FMAR/verses?references=1-1-1,1-1--2'))
       const body = (await response.json()) as Record<string, unknown>
 
       assert.equal(response.status, 400)
@@ -220,7 +220,7 @@ describe('v1 Bible chapter API', () => {
   it('reports a missing cross-chapter verse selection without calling it a missing chapter', async () => {
     const web = makeResourceWebHandler(repository)
     try {
-      const response = await web.handler(request('/v1/bibles/LSG/verses?references=2-1-1,3-1-1'))
+      const response = await web.handler(request('/v1/bibles/FMAR/verses?references=2-1-1,3-1-1'))
       const body = (await response.json()) as Record<string, unknown>
 
       assert.equal(response.status, 404)
@@ -233,12 +233,12 @@ describe('v1 Bible chapter API', () => {
   it('returns the active publication coverage for zero-copy navigation', async () => {
     const web = makeResourceWebHandler(repository)
     try {
-      const response = await web.handler(request('/v1/bibles/LSG/coverage'))
+      const response = await web.handler(request('/v1/bibles/FMAR/coverage'))
       assert.equal(response.status, 200)
       assert.deepEqual(await response.json(), {
         resource: {
           kind: 'bible-text',
-          versionId: 'LSG',
+          versionId: 'FMAR',
           revision: chapter.revision,
           textRevision: chapter.textRevision,
         },
@@ -275,7 +275,7 @@ describe('v1 Bible chapter API', () => {
           .pipe(Effect.map(({ verseNumbersByBookChapter: _, ...coverage }) => coverage)),
     })
     try {
-      const response = await web.handler(request('/v1/bibles/LSG/coverage'))
+      const response = await web.handler(request('/v1/bibles/FMAR/coverage'))
       assert.equal(response.status, 200)
       assert.equal('verseNumbersByBookChapter' in ((await response.json()) as object), false)
     } finally {
@@ -286,7 +286,7 @@ describe('v1 Bible chapter API', () => {
   it('returns publication-owned pericopes for zero-copy browsing', async () => {
     const web = makeResourceWebHandler(repository)
     try {
-      const response = await web.handler(request('/v1/bibles/LSG/pericopes'))
+      const response = await web.handler(request('/v1/bibles/FMAR/pericopes'))
       assert.equal(response.status, 200)
       const payload = (await response.json()) as { verses: unknown[] }
       assert.equal(payload.verses.length, 1)
@@ -301,10 +301,10 @@ describe('v1 Bible chapter API', () => {
     try {
       const cases = [
         ['/v1/bibles/UNKNOWN/books/1/chapters/1', 404, 'BIBLE_UNSUPPORTED'],
-        ['/v1/bibles/LSG/books/0/chapters/1', 400, 'INVALID_RESOURCE_REQUEST'],
-        ['/v1/bibles/LSG/books/1/chapters/2', 404, 'BIBLE_CHAPTER_NOT_FOUND'],
-        ['/v1/bibles/LSG/books/1/chapters/3', 503, 'BIBLE_PUBLICATION_INACTIVE'],
-        ['/v1/bibles/LSG/books/1/chapters/4', 500, 'RESOURCE_INTERNAL_FAILURE'],
+        ['/v1/bibles/FMAR/books/0/chapters/1', 400, 'INVALID_RESOURCE_REQUEST'],
+        ['/v1/bibles/FMAR/books/1/chapters/2', 404, 'BIBLE_CHAPTER_NOT_FOUND'],
+        ['/v1/bibles/FMAR/books/1/chapters/3', 503, 'BIBLE_PUBLICATION_INACTIVE'],
+        ['/v1/bibles/FMAR/books/1/chapters/4', 500, 'RESOURCE_INTERNAL_FAILURE'],
       ] as const
 
       for (const [path, status, code] of cases) {

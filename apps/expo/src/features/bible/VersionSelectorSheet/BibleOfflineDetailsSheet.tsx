@@ -253,11 +253,7 @@ const BibleOfflineDetailsSheet = ({ sheetRef, version }: Props) => {
                 </Text>
               )}
             </Box>
-            {!!version.c && (
-              <Text className="text-tertiary text-[13px]" numberOfLines={2}>
-                {version.c}
-              </Text>
-            )}
+            {!!version.c && <Text className="text-tertiary text-[13px]">{version.c}</Text>}
           </Box>
         </Box>
 

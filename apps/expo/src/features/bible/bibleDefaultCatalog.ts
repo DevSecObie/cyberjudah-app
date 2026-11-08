@@ -1,3 +1,4 @@
+import { hasMobileResourceCatalogEntry } from '~helpers/mobileResourceCatalog'
 import { versions, type Version } from '~helpers/bibleVersions'
 import {
   STRONG_BIBLE_PUBLICATIONS,
@@ -14,6 +15,9 @@ export const getBibleDefaultCatalog = (kind: BibleDefaultSelectionKind): Version
   }
 
   return Object.values(versions).filter(
-    version => !version.hidden && (version.language === 'fr' || version.language === 'en')
+    version =>
+      !version.hidden &&
+      hasMobileResourceCatalogEntry(`bible:${version.id}`) &&
+      (version.language === 'fr' || version.language === 'en')
   )
 }

@@ -6,7 +6,7 @@ import { loadBibleContentChapter } from '~features/resources/bibleContentAccess'
  * Compatibility adapter for existing callers. New resource-source behaviour
  * belongs in BibleContentAccess.
  */
-const loadBibleChapter = async (book: number, chapter: number, version: string = 'LSG') =>
+const loadBibleChapter = async (book: number, chapter: number, version: string = 'KJV') =>
   loadBibleContentChapter({ book, chapter, version })
 
 export default loadBibleChapter

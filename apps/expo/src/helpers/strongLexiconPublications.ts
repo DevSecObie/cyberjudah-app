@@ -1,4 +1,4 @@
-import { resourceArtifactUrl } from './mobileResourceCatalog'
+import { getMobileResourceCatalogEntry, resourceArtifactUrl } from './mobileResourceCatalog'
 
 export type StrongLexiconModuleId = 'core' | 'resources' | 'entities' | 'simple-fr' | 'simple-en'
 
@@ -80,4 +80,9 @@ export const STRONG_LEXICON_PUBLICATIONS: Record<
 
 export const getStrongLexiconPublication = (
   moduleId: StrongLexiconModuleId
-): StrongLexiconPublicationArtifact => STRONG_LEXICON_PUBLICATIONS[moduleId]
+): StrongLexiconPublicationArtifact => {
+  const artifact = getMobileResourceCatalogEntry(`strong-lexicon:${moduleId}`)
+  const { coreRevision: _historicalCoreRevision, ...identity } =
+    STRONG_LEXICON_PUBLICATIONS[moduleId]
+  return { ...identity, ...artifact, id: moduleId }
+}

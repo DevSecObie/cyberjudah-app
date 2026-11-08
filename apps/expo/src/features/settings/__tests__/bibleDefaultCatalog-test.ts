@@ -31,7 +31,7 @@ describe('Bible default catalogs', () => {
 
     expect(catalog).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ id: 'LSG', language: 'fr' }),
+        expect.objectContaining({ id: 'FMAR', language: 'fr' }),
         expect.objectContaining({ id: 'KJV', language: 'en' }),
       ])
     )
@@ -44,20 +44,7 @@ describe('Bible default catalogs', () => {
   it('only offers Bibles backed by a Strong publication for the Strong default', () => {
     const catalogIds = getBibleDefaultCatalog('strong').map(version => version.id)
 
-    expect(catalogIds).toEqual([
-      'LSG',
-      'DBY',
-      'DBR',
-      'KJV',
-      'NASB2020',
-      'NASB1995',
-      'BSB',
-      'ASV',
-      'DARBY',
-      'RLT',
-      'RWEBSTER',
-      'RV1895',
-    ])
+    expect(catalogIds).toEqual(['KJV'])
     expect(catalogIds).not.toContain('BFC')
   })
 })

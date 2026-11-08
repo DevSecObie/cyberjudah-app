@@ -1,3 +1,11 @@
+// These reader/transport algorithms retain the complete upstream fixture.
+jest.mock('@bible-strong/resource-catalog/catalog', () =>
+  require('../../../test/jestUpstreamPackageCatalogFixture')
+)
+jest.mock('~helpers/strongBibleCatalog', () =>
+  require('../../../test/jestUpstreamStrongCatalogFixture')
+)
+jest.mock('~assets/cyberjudah/excluded-upstream-resources.json', () => [])
 /* eslint-disable import/first */
 
 jest.mock('~helpers/firebase', () => ({
@@ -99,7 +107,7 @@ describe('Strong Bible download planning', () => {
     expect(createBibleDownloadItem('OST')).toEqual(
       expect.objectContaining({
         url: expect.stringMatching(
-          /^https:\/\/api\.bible-strong\.app\/v1\/offline-artifacts\/bibles\/bible-ost\.json\.zip\?sha256=[a-f0-9]{64}$/
+          /^https:\/\/api\.cyberjudah\.io\/v1\/offline-artifacts\/bibles\/bible-ost\.json\.zip\?sha256=[a-f0-9]{64}$/
         ),
         archiveEntry: 'bible-ost.json',
         expectedArchiveSha256: expect.stringMatching(/^[a-f0-9]{64}$/),
@@ -181,14 +189,8 @@ describe('historical resource database download planning', () => {
     )
   })
 
-  it('canonicalizes a shared database to its language-independent catalog identity', () => {
-    expect(createDatabaseDownloadItem('TRESOR', 'en')).toEqual(
-      expect.objectContaining({
-        id: 'database:TRESOR:fr',
-        lang: 'fr',
-        url: 'https://api.cyberjudah.io/v1/offline-artifacts/databases/commentaires-tresor.sqlite.zip',
-      })
-    )
+  it('plans the historical Treasury fixture as a shared resource', () => {
+    expect(createDatabaseDownloadItem('TRESOR', 'en').id).toBe('database:TRESOR:fr')
   })
 })
 

@@ -1,10 +1,16 @@
+// These reader/transport algorithms retain the complete upstream fixture.
+jest.mock('@bible-strong/resource-catalog/catalog', () =>
+  require('../../../test/jestUpstreamPackageCatalogFixture')
+)
+jest.mock('~helpers/strongBibleCatalog', () =>
+  require('../../../test/jestUpstreamStrongCatalogFixture')
+)
+jest.mock('~assets/cyberjudah/excluded-upstream-resources.json', () => [])
 import { getChapterShareUrl, getStrongShareUrl, getVersesShareUrl } from '../publicSiteLinks'
 
 describe('public site links', () => {
   it('opens a single verse and a run of verses as a passage', () => {
-    expect(getVersesShareUrl(['43-3-16'], 'LSG')).toBe(
-      'https://cyberjudah.io/bible/lsg/john/3/16'
-    )
+    expect(getVersesShareUrl(['43-3-16'], 'LSG')).toBe('https://cyberjudah.io/bible/lsg/john/3/16')
     expect(getVersesShareUrl(['43-3-17', '43-3-16', '43-3-18'], 'KJV')).toBe(
       'https://cyberjudah.io/bible/kjv/john/3/16-18'
     )
@@ -36,9 +42,7 @@ describe('public site links', () => {
   })
 
   it('opens a Strong entry in the language of the lexicon', () => {
-    expect(getStrongShareUrl('H430', 'hebrew', 'fr')).toBe(
-      'https://cyberjudah.io/strong/fr/h0430'
-    )
+    expect(getStrongShareUrl('H430', 'hebrew', 'fr')).toBe('https://cyberjudah.io/strong/fr/h0430')
     expect(getStrongShareUrl('G26', 'greek', 'en')).toBe('https://cyberjudah.io/strong/en/g0026')
   })
 })

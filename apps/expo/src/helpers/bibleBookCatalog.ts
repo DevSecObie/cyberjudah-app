@@ -1,3 +1,4 @@
+import canonicalBookMap from '~assets/cyberjudah/canonical-book-map.json'
 import books, { type Book } from '~assets/bible_versions/books-desc'
 import { isBibleCanonId, type BibleCanonId } from '@bible-strong/resource-domain/bible-canon'
 
@@ -86,6 +87,8 @@ const THEOTEX_SEPTUAGINT_BOOK_ORDER = [
 ]
 
 const BOOK_ORDER_BY_CANON: Record<BibleCanonId, number[]> = {
+  'kjv-1611': canonicalBookMap.canonOrder,
+  'statenvertaling-apocrypha': [...canonicalBookMap.canonOrder.slice(0, -27), 75, ...NEW_TESTAMENT],
   'protestant-66': PROTESTANT_BOOK_ORDER,
   'catholic-73': CATHOLIC_BOOK_ORDER,
   'clementine-vulgate': CLEMENTINE_BOOK_ORDER,
@@ -101,6 +104,7 @@ export const getBookCorpus = (bookId: number): BibleBookCorpus | undefined => {
   if (bookId >= 40 && bookId <= 66) return 'new'
   if (bookId >= 67 && bookId <= 73) return 'deuterocanonical'
   if (bookId >= 74 && bookId <= 77) return 'septuagint'
+  if (bookId >= 78 && bookId <= 84) return 'deuterocanonical'
   return undefined
 }
 

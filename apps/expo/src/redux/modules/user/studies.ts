@@ -1,3 +1,4 @@
+import { STUDY_PUBLICATION_ENABLED } from '~helpers/serviceConnections'
 import { createAction } from '@reduxjs/toolkit'
 import { Study } from '../user'
 import type { Dispatch } from 'redux'
@@ -41,6 +42,7 @@ export const publishStudyAction = createAction(
 // Thunk for async publish
 export function publishStudy(id: string, publish = true) {
   return async (dispatch: Dispatch) => {
+    if (!STUDY_PUBLICATION_ENABLED) return
     await dispatch(publishStudyAction(id, publish))
   }
 }

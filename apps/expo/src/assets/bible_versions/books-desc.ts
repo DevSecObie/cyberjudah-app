@@ -1,10 +1,13 @@
+import cyberJudahBooks from '../cyberjudah/books.json'
+import canonicalBookMap from '../cyberjudah/canonical-book-map.json'
+
 export interface Book {
   Numero: number
   Nom: string
   Chapitres: number
 }
 
-export const sections = [
+const upstreamSections = [
   {
     title: 'Loi',
     data: [
@@ -452,7 +455,7 @@ export const sections = [
   },
 ]
 
-const books = [
+const upstreamBooks = [
   {
     Numero: 1,
     Nom: 'Genèse',
@@ -840,4 +843,10 @@ const books = [
   },
 ] as const
 
+const additionalBooks: Book[] = canonicalBookMap.additionalBooks.map(identity => {
+  const source = cyberJudahBooks.find(book => book.id === identity.sourceId)!
+  return { Numero: identity.canonicalId, Nom: source.name, Chapitres: Math.max(...source.chapters) }
+})
+const books: readonly Book[] = [...upstreamBooks, ...additionalBooks]
+export const sections = [...upstreamSections, { title: 'Apocrypha', data: additionalBooks }]
 export default books

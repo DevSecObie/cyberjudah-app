@@ -20,7 +20,7 @@ const orderVerses = (verses: VerseIds) => {
 
 export default async ({
   verses,
-  version = 'LSG',
+  version = 'KJV',
   hasVerseNumbers = false,
   hasInlineVerses = true,
   hasQuotes = false,

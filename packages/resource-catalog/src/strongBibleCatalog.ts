@@ -1,3 +1,7 @@
+import { BUNDLED_MOBILE_RESOURCE_CATALOG } from './catalog'
+
+const hasStrongArtifact = (id: string) =>
+  Boolean(BUNDLED_MOBILE_RESOURCE_CATALOG.resources[`bible-strong:${id}`])
 export type StrongBibleVersionId =
   | 'LSG'
   | 'DBY'
@@ -13,6 +17,7 @@ export type StrongBibleVersionId =
   | 'RV1895'
 
 export type StrongBibleDatasetId =
+  | 'CYBERJUDAH'
   | 'LSG'
   | 'DBY'
   | 'DBYR'
@@ -26,18 +31,12 @@ export type StrongBibleDatasetId =
   | 'RWEBSTER'
   | 'RV1895'
 
-export const FRENCH_STRONG_BIBLE_PRIORITY = ['LSG', 'DBY', 'DBR'] as const
-export const ENGLISH_STRONG_BIBLE_PRIORITY = [
-  'KJV',
-  'NASB2020',
-  'NASB1995',
-  'BSB',
-  'ASV',
-  'DARBY',
-  'RLT',
-  'RWEBSTER',
-  'RV1895',
-] as const
+export const FRENCH_STRONG_BIBLE_PRIORITY = (['LSG', 'DBY', 'DBR'] as const).filter(
+  hasStrongArtifact
+)
+export const ENGLISH_STRONG_BIBLE_PRIORITY = (
+  ['KJV', 'NASB2020', 'NASB1995', 'BSB', 'ASV', 'DARBY', 'RLT', 'RWEBSTER', 'RV1895'] as const
+).filter(hasStrongArtifact)
 export const STRONG_BIBLE_FALLBACK_PRIORITY = [
   ...FRENCH_STRONG_BIBLE_PRIORITY,
   ...ENGLISH_STRONG_BIBLE_PRIORITY,
@@ -47,7 +46,7 @@ const DATASET_BY_VERSION = {
   LSG: 'LSG',
   DBY: 'DBY',
   DBR: 'DBYR',
-  KJV: 'KJV',
+  KJV: 'CYBERJUDAH',
   NASB2020: 'NASB2020',
   NASB1995: 'NASB1995',
   BSB: 'BSB',
@@ -64,9 +63,7 @@ export const isStrongBibleVersionId = (value: string): value is StrongBibleVersi
 export const getStrongBibleCatalogIdentity = (versionId: StrongBibleVersionId) => ({
   versionId,
   datasetId: DATASET_BY_VERSION[versionId],
-  language: FRENCH_STRONG_BIBLE_PRIORITY.includes(
-    versionId as (typeof FRENCH_STRONG_BIBLE_PRIORITY)[number]
-  )
+  language: (['LSG', 'DBY', 'DBR'] as readonly string[]).includes(versionId)
     ? ('fr' as const)
     : ('en' as const),
 })

@@ -1,3 +1,4 @@
+import { requiresStrongLexiconCore } from './strongLexiconCore'
 import {
   getStrongModuleSchema,
   isStandaloneStrongModule,
@@ -12,7 +13,10 @@ import { downloadResourceArtifact } from './downloadResourceArtifact'
 import { verifyFileSha256 } from './fileIntegrity'
 import { unzipOfflineArchive } from './offlineArchiveSource'
 import { createOfflineCopyId } from './offlineCopyId'
-import { getMobileResourceCatalogEntry } from './mobileResourceCatalog'
+import {
+  getMobileResourceCatalogEntry,
+  hasMobileResourceCatalogEntry,
+} from './mobileResourceCatalog'
 import {
   MAX_STRONG_LEXICON_ARCHIVE_BYTES,
   validateBoundedZipArchive,
@@ -358,7 +362,7 @@ export const validateStrongLexiconModuleDatabase = async (
     metadata.moduleKind !== moduleId ||
     metadata.resourceIdentity !== `strong-lexicon:${moduleId}` ||
     revision !== publication.resourceRevision ||
-    (!isStandaloneStrongModule(moduleId) && metadata.coreRevision !== publication.coreRevision)
+    (requiresStrongLexiconCore(moduleId) && metadata.coreRevision !== publication.coreRevision)
   ) {
     return {
       status: 'incompatible',
@@ -367,7 +371,10 @@ export const validateStrongLexiconModuleDatabase = async (
     }
   }
 
-  if (moduleId === 'resources' || moduleId === 'entities') {
+  if (
+    (moduleId === 'resources' || moduleId === 'entities') &&
+    requiresStrongLexiconCore(moduleId)
+  ) {
     const core = await getCoreAvailability()
     if (core.status !== 'available') {
       return { status: 'core-missing', moduleId }
@@ -398,6 +405,8 @@ const withInstalledModule = async <Result>(
 export const getStrongLexiconModuleAvailability = async (
   moduleId: StrongLexiconModuleId
 ): Promise<StrongLexiconModuleAvailability> => {
+  if (!hasMobileResourceCatalogEntry(`strong-lexicon:${moduleId}`))
+    return { status: 'missing', moduleId }
   const cached = validatedModules.get(moduleId)
   if (cached) return cached
 

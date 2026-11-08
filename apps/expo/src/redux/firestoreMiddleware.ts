@@ -1,3 +1,4 @@
+import { STUDY_PUBLICATION_ENABLED } from '~helpers/serviceConnections'
 import { isAnyOf, Middleware } from '@reduxjs/toolkit'
 import { Platform } from 'react-native'
 import { appLogger } from '~helpers/agentObservability'
@@ -874,6 +875,7 @@ const firestoreMiddleware: Middleware = store => next => async action => {
             data: {
               ...(removeUndefinedVariables(obj) as SyncRecord),
               content: { ops: studyContent || [] },
+              ...(!STUDY_PUBLICATION_ENABLED && { published: false }),
             },
             merge: true,
           }

@@ -17,7 +17,10 @@ const withResources = (
   resources: {
     ...base.resources,
     ...Object.fromEntries(
-      Object.entries(resources).map(([id, patch]) => [id, { ...base.resources[id]!, ...patch }])
+      Object.entries(resources).map(([id, patch]) => [
+        id,
+        { ...(base.resources[id] ?? base.resources['bible-interlinear:BHG:en']), ...patch, id },
+      ])
     ),
   },
 })
@@ -38,18 +41,14 @@ const nextText = {
 }
 
 describe('interlinear Bible publication catalog', () => {
-  it('publishes the original-language Bible and both indexes for one text', () => {
+  it('publishes the owned original-language text with its matching English index only', () => {
     const publication = resolveInterlinearBiblePublication()
-
     assert.equal(publication.applicationVersionId, 'BHG')
-    assert.equal(publication.datasetId, 'STEP')
+    assert.equal(publication.datasetId, 'CYBERJUDAH')
     assert.ok(publication.text.text)
-    assert.deepEqual(publication.indexes.fr.text, publication.text.text)
-    assert.deepEqual(publication.indexes.en.text, publication.text.text)
-    assert.equal(
-      publication.text.text.textRevision,
-      `bhg-${publication.text.text.textSha256.slice(0, 20)}`
-    )
+    assert.equal(publication.indexes.fr, undefined)
+    assert.deepEqual(publication.indexes.en?.text, publication.text.text)
+    assert.match(publication.text.text.textSha256, /^[a-f0-9]{64}$/)
     assert.deepEqual(findInterlinearBibleCatalogMismatches(BUNDLED_MOBILE_RESOURCE_CATALOG), [])
   })
 
@@ -67,8 +66,8 @@ describe('interlinear Bible publication catalog', () => {
     assert.equal(publication.text.archiveSha256, 'a'.repeat(64))
     assert.equal(publication.text.archiveBytes, 1784741)
     assert.deepEqual(publication.text.text, nextText)
-    assert.equal(publication.indexes.fr.archiveSha256, 'b'.repeat(64))
-    assert.deepEqual(publication.indexes.en.text, nextText)
+    assert.equal(publication.indexes.fr!.archiveSha256, 'b'.repeat(64))
+    assert.deepEqual(publication.indexes.en!.text, nextText)
   })
 
   it('completes a catalog that predates the declaration from one listing the same archives', () => {
@@ -101,10 +100,7 @@ describe('interlinear Bible publication catalog', () => {
       'bible:BHG': { archiveSha256: 'a'.repeat(64), ...nextText },
     })
 
-    assert.deepEqual(findInterlinearBibleCatalogMismatches(textOnly), [
-      'bible-interlinear:BHG:en',
-      'bible-interlinear:BHG:fr',
-    ])
+    assert.deepEqual(findInterlinearBibleCatalogMismatches(textOnly), ['bible-interlinear:BHG:en'])
     assert.deepEqual(
       findInterlinearBibleCatalogMismatches(withoutTextDeclarations(textOnly)),
       [],
@@ -112,13 +108,11 @@ describe('interlinear Bible publication catalog', () => {
     )
   })
 
-  it('rejects a catalog that lost one of the three entries', () => {
-    const { 'bible-interlinear:BHG:en': _removed, ...resources } =
-      BUNDLED_MOBILE_RESOURCE_CATALOG.resources
-
+  it('rejects a catalog without its base text', () => {
+    const { 'bible:BHG': _removed, ...resources } = BUNDLED_MOBILE_RESOURCE_CATALOG.resources
     assert.throws(
       () => resolveInterlinearBiblePublication({ ...BUNDLED_MOBILE_RESOURCE_CATALOG, resources }),
-      /INTERLINEAR_BIBLE_CATALOG_ENTRY_MISSING:bible-interlinear:BHG:en/
+      /INTERLINEAR_BIBLE_CATALOG_ENTRY_MISSING:bible:BHG/
     )
   })
 })

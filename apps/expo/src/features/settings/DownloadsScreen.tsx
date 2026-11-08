@@ -1,3 +1,5 @@
+import { hasMobileResourceCatalogEntry } from '~helpers/mobileResourceCatalog'
+import { requiresStrongLexiconCore } from '~helpers/strongLexiconCore'
 import { getSimpleStrongModuleId } from '@bible-strong/resource-domain/strong-lexicon'
 import { useConfirmDialog } from '~common/ConfirmDialog/useConfirmDialog'
 import React, { useState } from 'react'
@@ -86,6 +88,7 @@ function buildDatabaseItems(
   const allDbs = databases(lang)
   return LANGUAGE_SPECIFIC_DBS.flatMap(dbId => {
     if (
+      !hasMobileResourceCatalogEntry(`database:${dbId}:${lang}`) ||
       dbId === 'BIBLES' ||
       dbId === 'MHY' ||
       (!includeLegacyDictionary && dbId === 'DICTIONNAIRE') ||
@@ -111,6 +114,7 @@ function buildDatabaseItems(
 
 function buildDictionaryItems(works: readonly DictionaryWork[]): UnifiedItem[] {
   return works.flatMap(work => {
+    if (!hasMobileResourceCatalogEntry('dictionary-directory')) return []
     const identity = {
       kind: 'dictionary' as const,
       work: work.resource.work,
@@ -124,7 +128,7 @@ function buildDictionaryItems(works: readonly DictionaryWork[]): UnifiedItem[] {
         {
           id: item.id,
           name,
-          subtitle: [work.description, work.edition].filter(Boolean).join(' · '),
+          subtitle: [work.description, work.edition, work.attribution].filter(Boolean).join(' · '),
           estimatedSize: item.estimatedSize,
           lang: work.resource.language,
           searchText: [work.title, work.abbreviation, work.source, ...work.authors]
@@ -139,95 +143,87 @@ function buildDictionaryItems(works: readonly DictionaryWork[]): UnifiedItem[] {
 }
 
 function buildCommentaryItems(lang: ResourceLanguage): UnifiedItem[] {
-  return getCommentaryCatalogForLanguage(lang).map(entry => {
-    const identity = {
-      kind: 'commentary' as const,
-      resourceId: entry.publicationId,
-      language: lang,
-    }
-    const item = createCommentaryDownloadItem(identity, entry.title)
-    return {
-      id: item.id,
-      name: entry.title,
-      subtitle: `${entry.author} · ${entry.rights}`,
-      estimatedSize: item.estimatedSize,
-      lang,
-      searchText: [entry.title, entry.author, entry.shortName, entry.tradition, ...entry.tags]
-        .join(' ')
-        .toLocaleLowerCase(),
-    }
-  })
+  return getCommentaryCatalogForLanguage(lang)
+    .filter(entry => hasMobileResourceCatalogEntry(`database:${entry.publicationId}:${lang}`))
+    .map(entry => {
+      const identity = {
+        kind: 'commentary' as const,
+        resourceId: entry.publicationId,
+        language: lang,
+      }
+      const item = createCommentaryDownloadItem(identity, entry.title)
+      return {
+        id: item.id,
+        name: entry.title,
+        subtitle: `${entry.author} · ${entry.rights}`,
+        estimatedSize: item.estimatedSize,
+        lang,
+        searchText: [entry.title, entry.author, entry.shortName, entry.tradition, ...entry.tags]
+          .join(' ')
+          .toLocaleLowerCase(),
+      }
+    })
 }
 
 function buildStrongLexiconItems(
   lang: ResourceLanguage,
   t: (key: string, options?: Record<string, unknown>) => string
 ): UnifiedItem[] {
-  return [
-    ...[lang].map(locale => ({
-      id: createOfflineCopyId({
-        kind: 'strong-lexicon-module',
-        moduleId: getSimpleStrongModuleId(locale),
-      }),
+  const modules: {
+    moduleId: StrongLexiconModuleId
+    name: string
+    subtitle: string
+    searchText: string
+  }[] = [
+    {
+      moduleId: getSimpleStrongModuleId(lang),
       name: t(
-        locale === 'fr'
+        lang === 'fr'
           ? 'offlineSetup.resources.simpleLexiconFr'
           : 'offlineSetup.resources.simpleLexiconEn'
       ),
       subtitle: t('offlineSetup.option.simpleLexiconDescription'),
-      estimatedSize: createOfflineCopyDownloadItem({
-        kind: 'strong-lexicon-module',
-        moduleId: getSimpleStrongModuleId(locale),
-      }).estimatedSize,
-      lang: locale,
       searchText: 'strong lexique simple grec hébreu français anglais',
-    })),
-    {
-      id: createOfflineCopyId({ kind: 'strong-lexicon-module', moduleId: 'core' }),
-      name: t('offlineSetup.resources.detailedLexicon'),
-      parentItemId: createOfflineCopyId({
-        kind: 'strong-lexicon-module',
-        moduleId: getSimpleStrongModuleId(lang),
-      }),
-      subtitle: t('offlineSetup.option.strongLexiconDescription'),
-      estimatedSize: createOfflineCopyDownloadItem({
-        kind: 'strong-lexicon-module',
-        moduleId: 'core',
-      }).estimatedSize,
-      lang: 'other',
-      searchText: 'strong lexique grec hébreu core step morphology'.toLowerCase(),
     },
     {
-      id: createOfflineCopyId({ kind: 'strong-lexicon-module', moduleId: 'resources' }),
+      moduleId: 'core',
+      name: t('offlineSetup.resources.detailedLexicon'),
+      subtitle: t('offlineSetup.option.strongLexiconDescription'),
+      searchText: 'strong lexique grec hébreu core step morphology',
+    },
+    {
+      moduleId: 'resources',
       name: t('offlineSetup.resources.greekDictionary'),
       subtitle: t('offlineSetup.option.greekDictionaryDescription'),
-      parentItemId: createOfflineCopyId({ kind: 'strong-lexicon-module', moduleId: 'core' }),
-      estimatedSize: createOfflineCopyDownloadItem({
-        kind: 'strong-lexicon-module',
-        moduleId: 'resources',
-      }).estimatedSize,
-      lang: 'other',
-      searchText: 'strong grec lsj tflsj ressources'.toLowerCase(),
+      searchText: 'strong grec lsj tflsj ressources',
     },
     {
-      id: createOfflineCopyId({ kind: 'strong-lexicon-module', moduleId: 'entities' }),
+      moduleId: 'entities',
       name: t('offlineSetup.resources.entities'),
       subtitle: t('offlineSetup.option.entitiesDescription'),
-      parentItemId: createOfflineCopyId({ kind: 'strong-lexicon-module', moduleId: 'core' }),
-      estimatedSize: createOfflineCopyDownloadItem({
-        kind: 'strong-lexicon-module',
-        moduleId: 'entities',
-      }).estimatedSize,
-      lang: 'other',
-      searchText: 'strong entités bibliques personnes lieux groupes'.toLowerCase(),
+      searchText: 'strong entités bibliques personnes lieux groupes',
     },
   ]
+  return modules
+    .filter(({ moduleId }) => hasMobileResourceCatalogEntry(`strong-lexicon:${moduleId}`))
+    .map(({ moduleId, ...labels }) => ({
+      ...labels,
+      id: createOfflineCopyId({ kind: 'strong-lexicon-module', moduleId }),
+      estimatedSize: createOfflineCopyDownloadItem({ kind: 'strong-lexicon-module', moduleId })
+        .estimatedSize,
+      parentItemId:
+        requiresStrongLexiconCore(moduleId) && moduleId !== 'core'
+          ? createOfflineCopyId({ kind: 'strong-lexicon-module', moduleId: 'core' })
+          : undefined,
+      lang: moduleId.startsWith('simple-') ? lang : 'other',
+    }))
 }
 
 function buildSharedDatabaseItems(): UnifiedItem[] {
   const allDbs = databases('fr')
   return SHARED_DBS.filter(
-    (dbId): dbId is Exclude<DatabaseId, 'BIBLES'> => dbId !== 'BIBLES' && dbId in allDbs
+    (dbId): dbId is Exclude<DatabaseId, 'BIBLES'> =>
+      dbId !== 'BIBLES' && dbId in allDbs && hasMobileResourceCatalogEntry(`database:${dbId}:fr`)
   ).map(dbId => {
     const db = allDbs[dbId as keyof typeof allDbs]
     return {
@@ -246,7 +242,9 @@ function buildAllSections(
   t: (key: string, options?: Record<string, unknown>) => string,
   dictionaryWorks: readonly DictionaryWork[]
 ): UnifiedSection[] {
-  const allVersions = Object.values(versions) as Version[]
+  const allVersions = (Object.values(versions) as Version[]).filter(version =>
+    hasMobileResourceCatalogEntry(`bible:${version.id}`)
+  )
   const bibleGroups = new Map(
     buildBibleVersionGroups(allVersions, appLang).map(group => [
       group.key,

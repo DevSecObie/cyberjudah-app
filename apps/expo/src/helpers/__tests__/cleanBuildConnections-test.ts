@@ -41,7 +41,10 @@ describe('clean build connections', () => {
       ...sourceFiles(path.join(app, 'src')),
       path.join(app, 'app.config.ts'),
       path.join(app, 'eas.json'),
-      path.join(app, '.env.production'),
+      ...fs
+        .readdirSync(app)
+        .filter(name => /^\.env(?:\.|$)/.test(name))
+        .map(name => path.join(app, name)),
     ].filter(fs.existsSync)
     const offending = files
       .filter(file => forbiddenHosts.test(read(file)))

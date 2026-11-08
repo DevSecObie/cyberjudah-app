@@ -1,3 +1,5 @@
+import { hasMobileResourceCatalogEntry } from '~helpers/mobileResourceCatalog'
+import { requiresStrongLexiconCore } from '~helpers/strongLexiconCore'
 import { isStandaloneStrongModule } from '@bible-strong/resource-domain/strong-lexicon'
 import type { DownloadItem } from '~state/downloadQueue'
 import {
@@ -184,7 +186,11 @@ export const getDefaultOnboardingResourceSelection = (
 export const getOnboardingDatabaseResourceOptions = (
   lang: ResourceLanguage
 ): OnboardingDatabaseResourceOption[] =>
-  Object.values(databases(lang)).filter(db => lang === 'fr' || db.id !== 'MHY')
+  Object.values(databases(lang)).filter(
+    db =>
+      (lang === 'fr' || db.id !== 'MHY') &&
+      hasMobileResourceCatalogEntry(`database:${db.id}:${db.id === 'TRESOR' ? 'fr' : lang}`)
+  )
 
 export const createDownloadItemFromOnboardingSelection = (
   resource: OnboardingResourceSelection
@@ -201,7 +207,7 @@ export const createDownloadItemFromOnboardingSelection = (
   if (resource.kind === 'strong-lexicon') {
     const moduleId = resource.moduleId ?? 'core'
     const item = createStrongLexiconModuleDownloadItem(moduleId)
-    return isStandaloneStrongModule(moduleId)
+    return !requiresStrongLexiconCore(moduleId)
       ? item
       : {
           ...item,

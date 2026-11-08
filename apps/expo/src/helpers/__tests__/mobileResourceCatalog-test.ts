@@ -14,13 +14,13 @@ import { ONLINE_BIBLE_VERSION_IDS } from '../ordinaryBibleVersions'
 
 describe('mobile resource catalog', () => {
   it('declares every ordinary Bible identity exactly once', () => {
-    expect(getMobileBibleVersionIds()).toHaveLength(47)
-    expect(new Set(getMobileBibleVersionIds()).size).toBe(47)
+    expect(getMobileBibleVersionIds()).toHaveLength(13)
+    expect(new Set(getMobileBibleVersionIds()).size).toBe(13)
   })
 
   it('makes every ordinary Bible available through Online delivery', () => {
     expect(ONLINE_BIBLE_VERSION_IDS).toEqual(getMobileBibleVersionIds())
-    expect(ONLINE_BIBLE_VERSION_IDS).toContain('PDV2017')
+    expect(ONLINE_BIBLE_VERSION_IDS).toContain('KJVA')
   })
 
   it('contains every downloadable resource as a ZIP', () => {
@@ -58,7 +58,7 @@ describe('mobile resource catalog', () => {
       resources: {
         ...BUNDLED_MOBILE_RESOURCE_CATALOG.resources,
         'bible:FUTURE': {
-          ...BUNDLED_MOBILE_RESOURCE_CATALOG.resources['bible:NBS'],
+          ...BUNDLED_MOBILE_RESOURCE_CATALOG.resources['bible:KJV'],
           id: 'bible:FUTURE',
         },
       },
@@ -85,12 +85,12 @@ describe('mobile resource catalog', () => {
       generatedAt: '2099-01-01T00:00:00.000Z',
       resources: {
         ...BUNDLED_MOBILE_RESOURCE_CATALOG.resources,
-        'bible:NBS': {
-          ...BUNDLED_MOBILE_RESOURCE_CATALOG.resources['bible:NBS'],
+        'bible:KJV': {
+          ...BUNDLED_MOBILE_RESOURCE_CATALOG.resources['bible:KJV'],
           archiveSha256: undefined,
           entries: {
             canonical: {
-              entry: '../bible-nbs.json',
+              entry: '../KJV.json',
               bytes: 0,
               sha256: 'not-a-sha256',
             },
@@ -102,13 +102,13 @@ describe('mobile resource catalog', () => {
     expect(isMobileResourceCatalog(malformedCatalog)).toBe(false)
     expect(resolveMobileResourceCatalog(malformedCatalog)).toBe(BUNDLED_MOBILE_RESOURCE_CATALOG)
 
-    const nbs = BUNDLED_MOBILE_RESOURCE_CATALOG.resources['bible:NBS']
+    const nbs = BUNDLED_MOBILE_RESOURCE_CATALOG.resources['bible:KJV']
     expect(
       isMobileResourceCatalog({
         ...BUNDLED_MOBILE_RESOURCE_CATALOG,
         resources: {
           ...BUNDLED_MOBILE_RESOURCE_CATALOG.resources,
-          'bible:NBS': { ...nbs, url: `${nbs.url}?sha256=${'0'.repeat(64)}` },
+          'bible:KJV': { ...nbs, url: `${nbs.url}?sha256=${'0'.repeat(64)}` },
         },
       })
     ).toBe(false)
@@ -130,12 +130,12 @@ describe('mobile resource catalog', () => {
   })
 
   it('ships Bibles as canonical JSON alone, headings and words of Jesus included (ADR-0066)', () => {
-    const nbs = getMobileResourceCatalogEntry('bible:NBS')
-    expect(new URL(nbs.url).pathname).toBe('/v1/offline-artifacts/bibles/bible-nbs.json.zip')
+    const nbs = getMobileResourceCatalogEntry('bible:KJV')
+    expect(new URL(nbs.url).pathname).toBe('/v1/offline-artifacts/bibles/bible-kjv.json.zip')
     expect(nbs).toEqual(
       expect.objectContaining({
-        entry: 'bible-nbs.json',
-        entries: { canonical: expect.objectContaining({ entry: 'bible-nbs.json' }) },
+        entry: 'KJV.json',
+        entries: { canonical: expect.objectContaining({ entry: 'KJV.json' }) },
       })
     )
     expect(() => getMobileResourceCatalogEntry('bible-pericope:NBS')).toThrow(
@@ -144,29 +144,31 @@ describe('mobile resource catalog', () => {
   })
 
   it('describes historical Bible and database archive entries', () => {
-    const ost = getMobileResourceCatalogEntry('bible:OST')
-    expect(new URL(ost.url).pathname).toBe('/v1/offline-artifacts/bibles/bible-ost.json.zip')
+    const ost = getMobileResourceCatalogEntry('bible:FMAR')
+    expect(new URL(ost.url).pathname).toBe('/v1/offline-artifacts/bibles/bible-fmar.json.zip')
     expect(ost).toEqual(
       expect.objectContaining({
-        entry: 'bible-ost.json',
+        entry: 'bible-fmar.json',
         strategy: 'sqlite-import',
       })
     )
-    const nave = getMobileResourceCatalogEntry('database:NAVE:fr')
-    expect(new URL(nave.url).pathname).toBe('/v1/offline-artifacts/databases/nave-fr.sqlite.zip')
+    const nave = getMobileResourceCatalogEntry('database:TIMELINE:en')
+    expect(new URL(nave.url).pathname).toBe(
+      '/v1/offline-artifacts/databases/en/bible-timeline-events.json.zip'
+    )
     expect(nave).toEqual(
       expect.objectContaining({
-        entry: 'nave-fr.sqlite',
+        entry: 'bible-timeline-events.json',
         strategy: 'archive-extract',
       })
     )
   })
 
   it('can route immutable artifacts through a local development server', () => {
-    const entry = BUNDLED_MOBILE_RESOURCE_CATALOG.resources['bible:LSG']
+    const entry = BUNDLED_MOBILE_RESOURCE_CATALOG.resources['bible:KJV']
     const query = new URL(entry.url).search
     expect(resolveMobileResourceArtifactUrl(entry, 'http://10.0.2.2:8788')).toBe(
-      `http://10.0.2.2:8788/bibles/bible-lsg.json.zip${query}`
+      `http://10.0.2.2:8788/bibles/bible-kjv.json.zip${query}`
     )
     expect(resolveMobileResourceArtifactUrl(entry, 'file:///tmp/resources')).toBe(entry.url)
     expect(resolveMobileResourceArtifactUrl(entry, 'not-a-url')).toBe(entry.url)
@@ -175,11 +177,11 @@ describe('mobile resource catalog', () => {
         { ...entry, url: `${entry.url.split('?')[0]}?sha256=${'a'.repeat(64)}` },
         'http://10.0.2.2:8788'
       )
-    ).toBe(`http://10.0.2.2:8788/bibles/bible-lsg.json.zip?sha256=${'a'.repeat(64)}`)
+    ).toBe(`http://10.0.2.2:8788/bibles/bible-kjv.json.zip?sha256=${'a'.repeat(64)}`)
   })
 
   it('keeps the catalog CDN when no local artifact server is explicitly configured', () => {
-    const entry = BUNDLED_MOBILE_RESOURCE_CATALOG.resources['bible:LSG']
+    const entry = BUNDLED_MOBILE_RESOURCE_CATALOG.resources['bible:KJV']
     const runtime = globalThis as typeof globalThis & { __DEV__?: boolean }
     const previousDevelopmentMode = runtime.__DEV__
     runtime.__DEV__ = true
@@ -187,7 +189,7 @@ describe('mobile resource catalog', () => {
     try {
       configureResourceArtifactBaseUrl('http://127.0.0.1:8788')
       expect(resolveMobileResourceArtifactUrl(entry)).toBe(
-        `http://127.0.0.1:8788/bibles/bible-lsg.json.zip${new URL(entry.url).search}`
+        `http://127.0.0.1:8788/bibles/bible-kjv.json.zip${new URL(entry.url).search}`
       )
 
       configureResourceArtifactBaseUrl(undefined)

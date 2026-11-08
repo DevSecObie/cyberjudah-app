@@ -352,48 +352,16 @@ describe('Studies Reducer', () => {
   })
 
   describe('publishStudyAction', () => {
-    it('should set published to true', () => {
+    it.each([true, false])('ignores publication actions (%s) in the clean build', publish => {
+      const study = createStudy('study-1', { published: false, modified_at: 100 })
       const state = {
         ...initialState,
-        bible: {
-          ...initialState.bible,
-          studies: {
-            'study-1': createStudy('study-1', { published: false }),
-          },
-        },
+        bible: { ...initialState.bible, studies: { 'study-1': study } },
       } as UserState
-      const newState = userReducer(state, publishStudyAction('study-1', true))
-      expect(newState.bible.studies['study-1'].published).toBe(true)
+      expect(userReducer(state, publishStudyAction('study-1', publish))).toEqual(state)
     })
-
-    it('should set published to false (unpublish)', () => {
-      const state = {
-        ...initialState,
-        bible: {
-          ...initialState.bible,
-          studies: {
-            'study-1': createStudy('study-1', { published: true }),
-          },
-        },
-      } as UserState
-      const newState = userReducer(state, publishStudyAction('study-1', false))
-      expect(newState.bible.studies['study-1'].published).toBe(false)
-    })
-
-    it('should update modified_at when publishing', () => {
-      const oldModifiedAt = Date.now() - 10000
-      const state = {
-        ...initialState,
-        bible: {
-          ...initialState.bible,
-          studies: {
-            'study-1': createStudy('study-1', { modified_at: oldModifiedAt }),
-          },
-        },
-      } as UserState
-      const beforePublish = Date.now()
-      const newState = userReducer(state, publishStudyAction('study-1', true))
-      expect(newState.bible.studies['study-1'].modified_at).toBeGreaterThanOrEqual(beforePublish)
+    it('ignores an unknown study without throwing', () => {
+      expect(userReducer(initialState, publishStudyAction('missing', true))).toEqual(initialState)
     })
   })
 

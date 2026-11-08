@@ -1263,7 +1263,7 @@ const LoadedBibleContent = ({
       <DispatchProvider dispatch={dispatch}>
         <Container
           ref={containerRef}
-          rtl={isHebreu}
+          rtl={isHebreu || version === 'SVD'}
           settings={settings}
           isParallelVerse={
             isParallelVerse && (!keepControlsVisible || parallelDisplayMode === 'horizontal')

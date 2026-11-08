@@ -363,13 +363,13 @@ describe('resolvePassageMediaLibrary', () => {
 describe('getPassageMediaEmbedUrl', () => {
   it('creates an inline HTTPS wrapper URL', () => {
     expect(getPassageMediaEmbedUrl('abcDEF_1234')).toBe(
-      'https://cyberjudah.io/embed/youtube.html?v=abcDEF_1234&appId=com.smontlouis.biblestrong'
+      'https://cyberjudah.io/embed/youtube.html?v=abcDEF_1234&appId=io.cyberjudah.app'
     )
   })
 
   it('URL-encodes the provider ID', () => {
     expect(getPassageMediaEmbedUrl('video/id')).toBe(
-      'https://cyberjudah.io/embed/youtube.html?v=video%2Fid&appId=com.smontlouis.biblestrong'
+      'https://cyberjudah.io/embed/youtube.html?v=video%2Fid&appId=io.cyberjudah.app'
     )
   })
 })

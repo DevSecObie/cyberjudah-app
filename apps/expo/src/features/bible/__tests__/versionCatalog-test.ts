@@ -106,7 +106,7 @@ describe('Bible version catalog metadata', () => {
       other: ['BHG', 'BHS', 'LXX', 'VUL', 'SBLGNT', 'TR1624', 'TR1894', 'DEL'],
     } as const
 
-    expect(Object.keys(versions)).toHaveLength(47)
+    expect(Object.keys(versions)).toHaveLength(55)
 
     for (const [language, ids] of Object.entries(expectedLanguages)) {
       expect(ids.map(id => versions[id].language)).toEqual(ids.map(() => language))

@@ -12,8 +12,8 @@ import {
 } from '../r2ArtifactDelivery'
 import mobileResourceCatalog from '@bible-strong/resource-catalog/catalog'
 
-const artifactKey = 'bibles/bible-lsg.json.zip'
-const artifactSha256 = mobileResourceCatalog.resources['bible:LSG'].archiveSha256
+const artifactKey = 'bibles/bible-kjv.json.zip'
+const artifactSha256 = mobileResourceCatalog.resources['bible:KJV'].archiveSha256
 
 const makeObject = ({
   body = 'archive',
@@ -624,11 +624,11 @@ describe('R2 artifact delivery', () => {
 })
 
 describe('Encrypted Offline-copy delivery', () => {
-  const encryptedFile = 'bibles/bible-lsg.json.encrypted.zip'
+  const encryptedFile = 'bibles/bible-kjv.json.encrypted.zip'
   const encryptedSha256 = 'b'.repeat(64)
   const resolveKey = createArtifactKeyResolver({
     resources: {
-      'bible:LSG': {
+      'bible:KJV': {
         file: artifactKey,
         archiveSha256: artifactSha256,
         encryptedArchive: { file: encryptedFile, sha256: encryptedSha256 },

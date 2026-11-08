@@ -1,3 +1,5 @@
+import { DYNAMIC_RESOURCE_API_ENABLED } from '~helpers/serviceConnections'
+import { hasMobileResourceCatalogEntry } from '~helpers/mobileResourceCatalog'
 import { createLayeredStrongLexiconAccess } from './layeredStrongLexiconAccess'
 import { createLocalStrongLexiconAccess } from './strongLexiconAccess'
 import { localCommentaryReading } from './commentaryReadingLocal'
@@ -129,11 +131,14 @@ export type ResourceAccessRegistry = {
   }
 }
 
-const resourceApiBaseUrl =
+const configuredResourceApiBaseUrl =
   getConfiguredResourceApiBaseUrl(
     Constants.expoConfig?.extra?.resourceApiUrl as string | undefined
   ) ??
   (__DEV__ ? getDevelopmentResourceApiBaseUrl(Platform.OS as 'ios' | 'android' | 'web') : undefined)
+const resourceApiBaseUrl: string | undefined = DYNAMIC_RESOURCE_API_ENABLED
+  ? configuredResourceApiBaseUrl
+  : undefined
 
 const configuredResourceArtifactBaseUrl = Constants.expoConfig?.extra?.resourceArtifactBaseUrl as
   | string
@@ -299,7 +304,11 @@ const strongLexiconAccess = createLayeredStrongLexiconAccess(
   detailedStrongLexiconAccess
 )
 const remotelyReadableStrongLexiconModules = new Set(
-  resourceApiBaseUrl ? ['core', 'resources', 'entities', 'simple-fr', 'simple-en'] : []
+  resourceApiBaseUrl
+    ? ['core', 'resources', 'entities', 'simple-fr', 'simple-en'].filter(id =>
+        hasMobileResourceCatalogEntry(`strong-lexicon:${id}`)
+      )
+    : []
 )
 const onlineBibleSearchAccess = resourceApiBaseUrl
   ? onlineSource(

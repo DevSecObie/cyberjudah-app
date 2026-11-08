@@ -80,6 +80,13 @@ const SUPPORTED_OSIS_BOOK_ENTRIES: readonly (readonly [string, number])[] = [
   ['3Macc', 75],
   ['4Macc', 76],
   ['PssSol', 77],
+  ['2Esd', 78],
+  ['GkEsth', 79],
+  ['EpJer', 80],
+  ['SgThree', 81],
+  ['Sus', 82],
+  ['Bel', 83],
+  ['PrMan', 84],
 ]
 
 const SUPPORTED_OSIS_BOOK_NUMBERS = new Map(SUPPORTED_OSIS_BOOK_ENTRIES)

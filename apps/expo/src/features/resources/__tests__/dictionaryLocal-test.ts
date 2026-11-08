@@ -1,3 +1,7 @@
+// Exercise historical installed dictionaries with the original resource fixture.
+jest.mock('@bible-strong/resource-catalog/catalog', () =>
+  require('../../../../test/jestUpstreamPackageCatalogFixture')
+)
 /* eslint-disable import/first */
 import {
   localDictionaryAccess,

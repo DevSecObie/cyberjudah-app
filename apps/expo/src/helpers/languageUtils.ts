@@ -10,7 +10,7 @@ import type { Locale } from 'date-fns'
 
 // Common Bible version codes used as defaults
 // Full VersionCode type is defined in src/state/tabs.ts
-type DefaultVersionCode = 'LSG' | 'KJV'
+type DefaultVersionCode = 'FMAR' | 'KJV'
 
 // Supported languages in the app
 // Add new languages here when expanding language support
@@ -38,7 +38,7 @@ export const DEFAULT_LANGUAGE: ActiveLanguage = 'en'
  * Maps language codes to their default Bible version
  */
 export const DEFAULT_BIBLE_VERSIONS: Record<ActiveLanguage, DefaultVersionCode> = {
-  fr: 'LSG',
+  fr: 'FMAR',
   en: 'KJV',
 }
 

@@ -987,7 +987,9 @@ describe('strongLexiconAccess', () => {
     [40, 'Mat'],
     [43, 'Jhn'],
     [66, 'Rev'],
-    [67, undefined],
+    [67, 'Tob'],
+    [74, '1Es'],
+    [84, 'Man'],
   ])('maps Bible book %s to its TIPNR code', (book, expected) => {
     expect(getTipnrBookCode(book)).toBe(expected)
   })
@@ -1118,7 +1120,7 @@ describe('strongLexiconAccess', () => {
 
   it('does not query chapter entities when the module or book is unavailable', async () => {
     await expect(localStrongLexiconAccess.loadChapterEntities(1, 1, 'fr')).resolves.toEqual([])
-    await expect(localStrongLexiconAccess.loadChapterEntities(67, 1, 'fr')).resolves.toEqual([])
+    await expect(localStrongLexiconAccess.loadChapterEntities(999, 1, 'fr')).resolves.toEqual([])
     expect(mockWithOptionalStrongLexiconDatabase).not.toHaveBeenCalled()
   })
 })

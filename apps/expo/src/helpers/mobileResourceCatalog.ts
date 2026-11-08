@@ -1,3 +1,4 @@
+import excludedResourceIds from '~assets/cyberjudah/excluded-upstream-resources.json'
 import {
   BUNDLED_MOBILE_RESOURCE_CATALOG as catalogJson,
   type MobileResourceCatalog,
@@ -17,8 +18,7 @@ export type {
 } from '@bible-strong/resource-catalog/catalog'
 
 export const MOBILE_RESOURCE_CATALOG_URL = 'https://api.cyberjudah.io/v1/offline-catalog'
-export const MOBILE_RESOURCE_ARTIFACT_BASE_URL =
-  'https://api.cyberjudah.io/v1/offline-artifacts/'
+export const MOBILE_RESOURCE_ARTIFACT_BASE_URL = 'https://api.cyberjudah.io/v1/offline-artifacts/'
 export const resourceArtifactUrl = (path: string): string =>
   new URL(path, MOBILE_RESOURCE_ARTIFACT_BASE_URL).toString()
 const MOBILE_RESOURCE_CATALOG_TIMEOUT_MS = 3_000
@@ -94,6 +94,9 @@ const isCatalogEntry = (value: unknown): value is MobileResourceCatalogEntry => 
         (entry.id === 'strong-lexicon:core' ||
           entry.id === 'strong-lexicon:simple-fr' ||
           entry.id === 'strong-lexicon:simple-en' ||
+          ((entry.id === 'strong-lexicon:entities' || entry.id === 'strong-lexicon:resources') &&
+            entry.resourceRevision.startsWith('cj-') &&
+            entry.coreRevision === undefined) ||
           (typeof entry.coreRevision === 'string' && entry.coreRevision.length > 0)))) &&
     hasValidTextDeclaration(entry) &&
     isPositiveByteCount(entry.installedBytes) &&
@@ -139,9 +142,16 @@ export const resolveMobileResourceCatalog = (value: unknown): MobileResourceCata
   }
   const bundledTimestamp = Date.parse(BUNDLED_MOBILE_RESOURCE_CATALOG.generatedAt)
   const candidateTimestamp = Date.parse(value.generatedAt)
-  return Number.isFinite(candidateTimestamp) && candidateTimestamp >= bundledTimestamp
+  if (!Number.isFinite(candidateTimestamp) || candidateTimestamp < bundledTimestamp) {
+    return BUNDLED_MOBILE_RESOURCE_CATALOG
+  }
+  const excluded = new Set<string>(excludedResourceIds)
+  const resources = Object.fromEntries(
+    Object.entries(value.resources).filter(([id]) => !excluded.has(id))
+  )
+  return Object.keys(resources).length === value.resourceCount
     ? value
-    : BUNDLED_MOBILE_RESOURCE_CATALOG
+    : { ...value, resources, resourceCount: Object.keys(resources).length }
 }
 
 let catalogRequest: Promise<MobileResourceCatalog> | undefined
@@ -199,6 +209,9 @@ export const loadMobileResourceCatalog = (
 
   return catalogRequest
 }
+
+export const hasMobileResourceCatalogEntry = (resourceId: string): boolean =>
+  Boolean(MOBILE_RESOURCE_CATALOG.resources[resourceId])
 
 export const getMobileResourceCatalogEntry = (resourceId: string): MobileResourceCatalogEntry => {
   const entry = MOBILE_RESOURCE_CATALOG.resources[resourceId]

@@ -2570,6 +2570,7 @@ __metadata:
     lottie-react-native: "npm:~7.3.8"
     lucide-react: "npm:^1.47.0"
     lunr-languages: "npm:^1.9.0"
+    marked: "npm:^17.0.6"
     metro: "patch:metro@npm%3A0.84.5#~/.yarn/patches/metro-npm-0.84.5-9aabe2ab0f.patch"
     metro-cache: "npm:0.84.5"
     motion: "npm:^13.0.0"
@@ -24716,7 +24717,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:^17.0.1":
+"marked@npm:^17.0.1, marked@npm:^17.0.6":
   version: 17.0.6
   resolution: "marked@npm:17.0.6"
   bin:

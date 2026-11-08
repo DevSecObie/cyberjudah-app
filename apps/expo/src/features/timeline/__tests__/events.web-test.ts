@@ -1,26 +1,11 @@
 import { getEvents } from '../events.web'
+import sections from '~assets/cyberjudah/timeline-sections.json'
 
-jest.mock('expo-asset', () => ({
-  Asset: {
-    loadAsync: async () => [{ uri: 'https://assets.example/timeline.txt', localUri: null }],
-  },
-}))
-jest.mock('~assets/timeline/events.txt', () => 1)
-
-describe('timeline browser asset', () => {
-  afterEach(() => jest.restoreAllMocks())
-
-  it('loads sections from the asset URL without a native local file', async () => {
-    const sections = [{ id: 1, events: [] }]
-    const fetcher = jest
-      .spyOn(globalThis, 'fetch')
-      .mockResolvedValue(new Response(JSON.stringify(sections), { status: 200 }))
+describe('owned timeline geometry', () => {
+  it('uses the supplied geometry without fetching the upstream timeline asset', async () => {
+    const fetcher = jest.spyOn(globalThis, 'fetch')
     await expect(getEvents()).resolves.toEqual(sections)
-    expect(fetcher).toHaveBeenCalledWith('https://assets.example/timeline.txt')
-  })
-
-  it('reports unavailable assets instead of treating an error response as sections', async () => {
-    jest.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('', { status: 404 }))
-    await expect(getEvents()).rejects.toThrow('TIMELINE_ASSET_HTTP_404')
+    expect(fetcher).not.toHaveBeenCalled()
+    fetcher.mockRestore()
   })
 })

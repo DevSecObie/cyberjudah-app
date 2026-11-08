@@ -10,17 +10,22 @@ import {
  */
 export const BHG_INTERLINEAR_IDENTITY = {
   applicationVersionId: 'BHG',
-  datasetId: 'STEP',
-  sourceVersion: 'TAHOT/TAGNT',
-  attribution: 'Données créées par STEPBible.org à partir des travaux de Tyndale House Cambridge',
-  license: 'CC BY 4.0',
-  sourceUrl: 'https://github.com/STEPBible/STEPBible-Data',
+  datasetId: 'CYBERJUDAH',
+  sourceVersion: 'WLC/TR1894',
+  attribution:
+    'Westminster Leningrad Codex and Scrivener’s 1894 Textus Receptus (public domain). Hebrew word tags: Open Scriptures Hebrew Bible Project (CC BY 4.0). Greek word tags: Maurice A. Robinson (public domain).',
+  license: 'Public domain; Hebrew word tags CC BY 4.0',
+  sourceUrl: 'https://github.com/openscriptures/morphhb',
 } as const
 
 export type InterlinearBiblePublicationLanguage = 'fr' | 'en'
 
-export const getInterlinearBiblePublicationLanguages =
-  (): InterlinearBiblePublicationLanguage[] => ['en', 'fr']
+export const getInterlinearBiblePublicationLanguages = (
+  catalog: MobileResourceCatalog = BUNDLED_MOBILE_RESOURCE_CATALOG
+): InterlinearBiblePublicationLanguage[] =>
+  (['en', 'fr'] as const).filter(language =>
+    Boolean(catalog.resources[`bible-interlinear:BHG:${language}`])
+  )
 
 export const INTERLINEAR_BIBLE_TEXT_CATALOG_ID = `bible:${BHG_INTERLINEAR_IDENTITY.applicationVersionId}`
 
@@ -78,7 +83,7 @@ export type InterlinearBibleCatalogArtifact = MobileResourceCatalogEntry & {
 
 export type InterlinearBibleCatalogPublication = typeof BHG_INTERLINEAR_IDENTITY & {
   text: InterlinearBibleCatalogArtifact
-  indexes: Record<InterlinearBiblePublicationLanguage, InterlinearBibleCatalogArtifact>
+  indexes: Partial<Record<InterlinearBiblePublicationLanguage, InterlinearBibleCatalogArtifact>>
 }
 
 const resolveArtifact = (
@@ -105,10 +110,14 @@ export const resolveInterlinearBiblePublication = (
 ): InterlinearBibleCatalogPublication => ({
   ...BHG_INTERLINEAR_IDENTITY,
   text: resolveArtifact(INTERLINEAR_BIBLE_TEXT_CATALOG_ID, catalog, fallbackCatalogs),
-  indexes: {
-    fr: resolveArtifact(getInterlinearBibleIndexCatalogId('fr'), catalog, fallbackCatalogs),
-    en: resolveArtifact(getInterlinearBibleIndexCatalogId('en'), catalog, fallbackCatalogs),
-  },
+  indexes: Object.fromEntries(
+    getInterlinearBiblePublicationLanguages(catalog)
+      .filter(language => catalog.resources[getInterlinearBibleIndexCatalogId(language)])
+      .map(language => [
+        language,
+        resolveArtifact(getInterlinearBibleIndexCatalogId(language), catalog, fallbackCatalogs),
+      ])
+  ),
 })
 
 /**

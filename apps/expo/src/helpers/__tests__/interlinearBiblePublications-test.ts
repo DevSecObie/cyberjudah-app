@@ -1,3 +1,8 @@
+// Test historical catalog compatibility with the complete upstream fixture.
+jest.mock('@bible-strong/resource-catalog/catalog', () =>
+  require('../../../test/jestUpstreamPackageCatalogFixture')
+)
+jest.mock('~assets/cyberjudah/excluded-upstream-resources.json', () => [])
 import {
   getInterlinearBiblePublication,
   getPublishedInterlinearTextIdentity,
@@ -57,7 +62,7 @@ describe('BHG interlinear publication', () => {
   it('reads the published Bible and indexes from the bundled catalog', () => {
     const publication = getInterlinearBiblePublication()
 
-    expect(publication).toMatchObject({ applicationVersionId: 'BHG', datasetId: 'STEP' })
+    expect(publication).toMatchObject({ applicationVersionId: 'BHG', datasetId: 'CYBERJUDAH' })
     expect(publication.text).toMatchObject({
       entry: bundled.resources['bible:BHG']!.entry,
       archiveSha256: bundled.resources['bible:BHG']!.archiveSha256,
@@ -102,7 +107,7 @@ describe('BHG interlinear publication', () => {
 
     // Same archives as the bundled catalog: their text is the one it declares.
     expect(publication.text.text).toEqual(bundledText)
-    expect(publication.indexes.fr.text).toEqual(bundledText)
+    expect(publication.indexes.fr!.text).toEqual(bundledText)
   })
 
   it('knows no text for an archive no catalog it holds describes', async () => {
@@ -112,7 +117,7 @@ describe('BHG interlinear publication', () => {
 
     expect(publication.text.archiveSha256).toBe('a'.repeat(64))
     expect(publication.text.text).toBeUndefined()
-    expect(publication.indexes.fr.text).toBeUndefined()
+    expect(publication.indexes.fr!.text).toBeUndefined()
   })
 
   it('names the text of an installed archive from the catalogs it holds', async () => {
