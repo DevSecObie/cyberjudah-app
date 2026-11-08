@@ -128,11 +128,14 @@ OSIS_BOOKS = (
 OSIS_APOCRYPHA = {
     '1Esd': 67, '2Esd': 68, 'Tob': 69, 'Jdt': 70, 'AddEsth': 71, 'Wis': 72, 'Sir': 73, 'Bar': 74,
     'EpJer': 75, 'PrAzar': 76, 'Sus': 77, 'Bel': 78, 'PrMan': 79, '1Macc': 80, '2Macc': 81,
+    'EsthGr': 71,
 }
+# Books with an upstream canonical id but no CyberJudah source id (books-desc.ts numbering).
+OSIS_CANONICAL_ONLY = {'3Macc': 75, '4Macc': 76}
 # Only these OSIS elements may appear. Titles (the module's section headings) and notes are not
 # verse text and are left out with their content; every other element is unwrapped.
 SWORD_DROPPED = re.compile(r'<(title|note)\b[^>]*>.*?</\1>', re.S)
-SWORD_ALLOWED = {'transChange', 'div', 'chapter', 'lg', 'l', 'q', 'w', 'seg'}
+SWORD_ALLOWED = {'transChange', 'div', 'chapter', 'lg', 'l', 'q', 'w', 'seg', 'divineName'}
 REMOVED = '\x00'
 
 
@@ -174,13 +177,16 @@ def read_sword_module(archive_path, module, testaments=('ot', 'nt'), drop_varian
     books = [b for t in testaments for b in structure.get(t, [])]
     numbers = {name: n for n, name in enumerate(OSIS_BOOKS, 1)} | OSIS_APOCRYPHA
     required = set((OSIS_BOOKS[:39] if 'ot' in testaments else []) + (OSIS_BOOKS[39:] if 'nt' in testaments else []))
-    unknown = [b.osis_name for b in books if b.osis_name not in numbers]
     missing = sorted(required - {b.osis_name for b in books})
-    if unknown or missing:
-        raise SystemExit(f'{module}: unknown books {unknown}, missing books {missing}')
-    verses, count, skipped = {}, 0, []
+    if missing:
+        raise SystemExit(f'{module}: missing books {missing}')
+    verses, count, skipped, empty_books = {}, 0, [], []
     for book in books:
-        book_key = str(canonical_book_id(numbers[book.osis_name]))
+        if book.osis_name in numbers:
+            book_key = str(canonical_book_id(numbers[book.osis_name]))
+        else:
+            book_key = str(OSIS_CANONICAL_ONLY.get(book.osis_name, f'?{book.osis_name}'))
+        book_skipped, book_count = [], 0
         for chapter in range(1, book.num_chapters + 1):
             for verse in range(1, book.chapter_lengths[chapter - 1] + 1):
                 where = f'{module} {book.osis_name} {chapter}:{verse}'
@@ -188,13 +194,21 @@ def read_sword_module(archive_path, module, testaments=('ot', 'nt'), drop_varian
                 text = osis_verse_text(raw, where, drop_variant)
                 if text == '':
                     # A slot of the versification that the module leaves without text.
-                    skipped.append(f'{book.osis_name} {chapter}:{verse}')
+                    book_skipped.append(f'{book.osis_name} {chapter}:{verse}')
                     continue
+                if book_key.startswith('?'):
+                    raise SystemExit(f'{where}: book without a canonical id has text')
                 verses.setdefault(book_key, {}).setdefault(str(chapter), {})[str(verse)] = {
                     'text': text, 'startTags': [], 'layout': [], 'notes': [], 'headings': []}
                 count += 1
-    if skipped:
-        print(json.dumps({'module': module, 'emptySlotsLeftOut': skipped}, ensure_ascii=False))
+                book_count += 1
+        if book_count == 0:
+            empty_books.append(book.osis_name)  # a book of the versification the module doesn't carry
+        else:
+            skipped += book_skipped
+    if skipped or empty_books:
+        print(json.dumps({'module': module, 'emptyBooksLeftOut': empty_books, 'emptySlotsLeftOut': skipped},
+                         ensure_ascii=False))
     return verses, count
 
 
@@ -230,6 +244,8 @@ def build(bible, cache):
     with zipfile.ZipFile(buffer, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as z:
         info = zipfile.ZipInfo(bible['entry'], ZIP_DATE)
         info.compress_type = zipfile.ZIP_DEFLATED
+        info.create_system = 3
+        info.external_attr = 0o100644 << 16  # a regular file, as the app's zip validation requires
         z.writestr(info, content)
     archive_bytes = buffer.getvalue()
     target = OUTPUT / bible['file']
