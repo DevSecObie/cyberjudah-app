@@ -1,3 +1,4 @@
+import { TIMELINE_PICTURES_ENABLED } from '~helpers/serviceConnections'
 import { Image } from 'expo-image'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
@@ -52,7 +53,7 @@ const Media = ({
           ))}
         </Box>
       )}
-      {!!images?.length && (
+      {TIMELINE_PICTURES_ENABLED && !!images?.length && (
         <Box className="overflow-hidden border-continuous py-[20px] bg-[rgb(18,45,66)]">
           <Paragraph className="mb-[20px] px-[20px] text-[white]" fontFamily="title">
             {t('Images')}

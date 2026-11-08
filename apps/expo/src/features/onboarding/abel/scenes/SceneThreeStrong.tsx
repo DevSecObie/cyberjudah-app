@@ -1,11 +1,8 @@
 import { twMerge } from '~common/ui/classNames'
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme, useTheme } from '~themes/ThemeProvider'
-import { Feather } from '@expo/vector-icons'
-import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from 'expo-audio'
 import type { TFunction } from 'i18next'
-import { useState } from 'react'
-import { ActivityIndicator, Pressable } from 'react-native'
+import { Pressable } from 'react-native'
 import Carousel, { Pagination, type TAnimationStyle } from 'react-native-reanimated-carousel'
 import { Extrapolation, interpolate, type SharedValue } from 'react-native-reanimated'
 import Box, { HStack, VStack } from '~common/ui/Box'
@@ -42,9 +39,6 @@ const STRONG_DEFINITIONS: readonly StrongDefinition[] = [
   },
 ] as const
 
-const strongAudioUrl = (code: StrongDefinition['code']) =>
-  `https://content.swncdn.com/biblestudytools/audio/lexicons/hebrew-mp3/${code}h.mp3`
-
 type StrongDefinitionCardProps = {
   definition: StrongDefinition
   metrics: OnboardingStageMetrics
@@ -60,26 +54,8 @@ const StrongDefinitionCard = ({
 }: StrongDefinitionCardProps) => {
   const stylingTheme = useStylingTheme()
 
-  const theme = useTheme()
   const s = metrics.s
   const isAction = definition.code === '1892'
-  const player = useAudioPlayer(null)
-  const audioStatus = useAudioPlayerStatus(player)
-  const [hasRequestedAudio, setHasRequestedAudio] = useState(false)
-
-  const playAudio = () => {
-    setHasRequestedAudio(true)
-    ;(async () => {
-      try {
-        await setAudioModeAsync({ playsInSilentMode: true })
-        player.replace(strongAudioUrl(definition.code))
-        player.play()
-      } catch {
-        setHasRequestedAudio(false)
-      }
-    })()
-  }
-
   return (
     <Box
       className="border-continuous overflow-visible flex-[1] bg-reverse"
@@ -100,34 +76,6 @@ const StrongDefinitionCard = ({
             {t('onboarding.abel.sceneThree.strongLabel')}
           </Text>
         </Box>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t('onboarding.abel.sceneThree.listen')}
-          onPress={playAudio}
-          style={({ pressed }) => ({
-            overflow: 'visible',
-            transform: [{ scale: pressed ? 0.92 : 1 }],
-          })}
-        >
-          <Box
-            className="border-continuous overflow-visible bg-reverse items-center justify-center"
-            style={[
-              { borderRadius: s(24), ...(s(48) ? { width: s(48), height: s(48) } : {}) },
-              { boxShadow: '0 5px 14px rgba(89,131,240,0.16)' },
-            ]}
-          >
-            {hasRequestedAudio && audioStatus.isBuffering ? (
-              <ActivityIndicator size="small" color={theme.colors.primary} />
-            ) : (
-              <Feather
-                name="volume-2"
-                size={s(23)}
-                color={theme.colors.primary}
-                style={{ opacity: audioStatus.playing ? 0.48 : 1 }}
-              />
-            )}
-          </Box>
-        </Pressable>
       </HStack>
 
       <VStack

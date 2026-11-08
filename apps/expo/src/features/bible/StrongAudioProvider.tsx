@@ -1,3 +1,4 @@
+import { AUDIO_PLAYBACK_ENABLED } from '~helpers/serviceConnections'
 import {
   setAudioModeAsync,
   useAudioPlayer,
@@ -32,6 +33,13 @@ const getActiveStatus = (status: ExpoAudioStatus): StrongAudioState => {
 }
 
 export const StrongAudioProvider = ({ children }: { children: React.ReactNode }) => {
+  if (!AUDIO_PLAYBACK_ENABLED) {
+    return (
+      <StrongAudioContext.Provider value={{ getStatus: () => 'Idle', play: () => undefined }}>
+        {children}
+      </StrongAudioContext.Provider>
+    )
+  }
   if (Platform.OS === 'android') {
     return <AndroidStrongAudioProvider>{children}</AndroidStrongAudioProvider>
   }

@@ -60,18 +60,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     appleTeamId: process.env.CYBERJUDAH_APPLE_TEAM_ID ?? 'M8DUMWBXLH',
     buildNumber: '316',
     googleServicesFile:
-      process.env.IOS_GOOGLE_SERVICES_FILE ?? './firebase/cyberjudah-production/GoogleService-Info.plist',
+      process.env.IOS_GOOGLE_SERVICES_FILE ??
+      './firebase/cyberjudah-production/GoogleService-Info.plist',
     userInterfaceStyle: 'automatic',
     supportsTablet: true,
     infoPlist: {
       UIBackgroundModes: ['audio'],
-      NSAppTransportSecurity: {
-        NSExceptionDomains: {
-          'timeline.biblehistory.com': {
-            NSExceptionAllowsInsecureHTTPLoads: true,
-          },
-        },
-      },
       ITSAppUsesNonExemptEncryption: false,
       CFBundleAllowMixedLocalizations: true,
       CFBundleLocalizations: ['en', 'fr'],

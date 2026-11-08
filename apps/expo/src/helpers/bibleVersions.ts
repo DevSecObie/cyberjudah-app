@@ -1,7 +1,5 @@
 import { getLanguage } from '~i18n'
 import { getIfLocalResourceNeedsDownload } from '~features/resources/resourceAvailability'
-import { audioDefault, audioV2 } from './topBibleAudio'
-import { zeroFill } from './zeroFill'
 import type { BibleCanonId } from './bibleBookCatalog'
 import type { StrongBibleDatasetId } from './strongBiblePublications'
 import { createOfflineCopyId } from './offlineCopyId'
@@ -34,75 +32,6 @@ export const getIfVersionNeedsDownload = async (versionId: string) => {
   return getIfLocalResourceNeedsDownload({ kind: 'bible', versionId })
 }
 
-const bibleStudyToolsBookMapping = [
-  'ge',
-  'ex',
-  'le',
-  'nu',
-  'de',
-  'jos',
-  'jud',
-  'ru',
-  '1sa',
-  '2sa',
-  '1ki',
-  '2ki',
-  '1ch',
-  '2ch',
-  'ezr',
-  'ne',
-  'es',
-  'job',
-  'ps',
-  'pr',
-  'ec',
-  'so',
-  'isa',
-  'jer',
-  'la',
-  'eze',
-  'da',
-  'ho',
-  'joe',
-  'am',
-  'ob',
-  'jon',
-  'mic',
-  'na',
-  'hab',
-  'zen',
-  'hag',
-  'zec',
-  'mal',
-  'mt',
-  'mr',
-  'lu',
-  'joh',
-  'ac',
-  'ro',
-  '1co',
-  '2co',
-  'ga',
-  'eph',
-  'php',
-  'col',
-  '1th',
-  '2th',
-  '1ti',
-  '2ti',
-  'tit',
-  'phm',
-  'heb',
-  'jas',
-  '1pe',
-  '2pe',
-  '1jo',
-  '2jo',
-  '3jo',
-  'jude',
-  're',
-]
-
 export interface Version {
   id: string
   name: string
@@ -122,34 +51,6 @@ export interface Version {
   hidden?: boolean
 }
 
-const getLsgAudioUrl = (bookNum: number, chapterNum: number) => {
-  const audioBaseUrl = (() => {
-    if (audioV2.includes(bookNum.toString())) {
-      return 'https://s.topchretien.com/media/topbible/bible_v2/'
-    }
-
-    if (audioDefault.includes(bookNum.toString())) {
-      return 'https://s.topchretien.com/media/topbible/bible/'
-    }
-
-    return 'https://s.topchretien.com/media/topbible/bible_say/'
-  })()
-
-  return `${audioBaseUrl}${zeroFill(bookNum, 2)}_${zeroFill(chapterNum, 2)}.mp3`
-}
-
-const getBibleStudyToolsAudioUrl = (version: string, bookNum: number, chapterNum: number) => {
-  return `https://content.swncdn.com/biblestudytools/audio/${version}-mp3/${bookNum
-    .toString()
-    .padStart(2, '0')}_${
-    bibleStudyToolsBookMapping[bookNum - 1]
-  }_${chapterNum.toString().padStart(3, '0')}.mp3`
-}
-
-const getWordPocketKjvAudioUrl = (bookNum: number, chapterNum: number) => {
-  return `https://www.wordpocket.org/bibles/app/audio/1/${bookNum}/${chapterNum}.mp3`
-}
-
 export const versions: Record<string, Version> = {
   LSG: {
     id: 'LSG',
@@ -160,8 +61,6 @@ export const versions: Record<string, Version> = {
     readingProfile: 'word-for-word',
     hasRedWords: true,
     hasPericope: true,
-    hasAudio: true,
-    getAudioUrl: getLsgAudioUrl,
     strongDatasetId: 'LSG',
   },
   NBS: {
@@ -274,13 +173,7 @@ export const versions: Record<string, Version> = {
     readingProfile: 'thought-for-thought',
     hasRedWords: true,
     hasPericope: true,
-    hasAudio: true,
-    getAudioUrl: (bookNum: number, chapterNum: number) => {
-      return `https://www.bible.audio/media/sem/${
-        bookNum > 39 ? 'nt' : 'at'
-      }/${bookNum.toString().padStart(2, '0')}_${chapterNum.toString().padStart(3, '0')}.mp3`
     },
-  },
   FMAR: {
     id: 'FMAR',
     name: 'Martin 1744',
@@ -348,8 +241,6 @@ export const versions: Record<string, Version> = {
     readingProfile: 'word-for-word',
     hasRedWords: true,
     hasPericope: true,
-    hasAudio: true,
-    getAudioUrl: getWordPocketKjvAudioUrl,
     strongDatasetId: 'KJV',
   },
   BSB: {
@@ -438,11 +329,7 @@ export const versions: Record<string, Version> = {
     readingProfile: 'word-for-word',
     hasRedWords: true,
     hasPericope: true,
-    hasAudio: true,
-    getAudioUrl: (bookNum: number, chapterNum: number) => {
-      return getBibleStudyToolsAudioUrl('esv', bookNum, chapterNum)
     },
-  },
   NIV: {
     id: 'NIV',
     name: 'New International Version',
@@ -452,16 +339,7 @@ export const versions: Record<string, Version> = {
     readingProfile: 'balanced',
     hasRedWords: true,
     hasPericope: true,
-    hasAudio: true,
-    getAudioUrl: (bookNum: number, chapterNum: number) => {
-      return `https://www.bible.audio/media/niv/${bookNum > 39 ? 'nt' : 'at'}/${(bookNum > 39
-        ? bookNum - 39
-        : bookNum
-      )
-        .toString()
-        .padStart(2, '0')}_${chapterNum.toString().padStart(3, '0')}.mp3`
     },
-  },
   BCC1923: {
     id: 'BCC1923',
     name: 'Bible catholique Crampon 1923',
@@ -589,11 +467,7 @@ export const versions: Record<string, Version> = {
     readingProfile: 'thought-for-thought',
     hasRedWords: true,
     hasPericope: true,
-    hasAudio: true,
-    getAudioUrl: (bookNum: number, chapterNum: number) => {
-      return getBibleStudyToolsAudioUrl('nlt', bookNum, chapterNum)
     },
-  },
   AMP: {
     id: 'AMP',
     name: 'Amplified Bible',

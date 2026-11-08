@@ -1,3 +1,4 @@
+import { TIMELINE_PICTURES_ENABLED } from '~helpers/serviceConnections'
 import { resolveThemeColor, resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import React from 'react'
@@ -70,10 +71,12 @@ const SectionImage = ({
             overflow: 'visible',
           }}
         >
-          <Image
-            style={{ width, height: width, borderRadius: 10 }}
-            source={getTimelinePeriodImageSource(image)}
-          />
+          {TIMELINE_PICTURES_ENABLED && (
+            <Image
+              style={{ width, height: width, borderRadius: 10 }}
+              source={getTimelinePeriodImageSource(image)}
+            />
+          )}
         </Box>
         <Box
           className="overflow-hidden border-continuous mt-[50px] w-[50px] h-[10px] rounded-[10px]"

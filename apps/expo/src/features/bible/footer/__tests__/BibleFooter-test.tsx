@@ -31,7 +31,7 @@ describe('BibleFooter', () => {
     ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true
   })
 
-  it('renders on a standalone full-chapter screen outside the primary Bible tab', () => {
+  it('hides recorded audio and local TTS controls on a standalone chapter', () => {
     const bibleAtom = atom({ id: 'standalone-bible', data: {} } as BibleTab)
     const chapterVerses = [
       { Livre: 49, Chapitre: 2, Verset: 1, Texte: 'Vous étiez morts.' },
@@ -54,8 +54,6 @@ describe('BibleFooter', () => {
       )
     })
 
-    expect(
-      renderer!.root.find(node => String(node.type) === 'AudioTTSFooter').props.chapterVerses
-    ).toBe(chapterVerses)
+    expect(renderer!.toJSON()).toBeNull()
   })
 })

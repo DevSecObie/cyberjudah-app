@@ -5,7 +5,7 @@ import { TimelineSection, TimelineEvent } from './types'
 export const events: TimelineSection[] = [
   {
     id: '1',
-    image: 'http://timeline.biblehistory.com/css/img/period_1.jpg',
+    image: '',
     description:
       "De la création d'Adam et Eve, au meurtre d'Abel par Caïn, et à l'histoire de l'humanité avant le déluge.",
     startYear: -4100,
@@ -19,8 +19,7 @@ export const events: TimelineSection[] = [
       {
         id: 1016,
         title: 'Adam',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas2581_8-8-2013%209-50-05%20AM.jpg',
+        image: '',
         slug: 'adam',
         start: -3954,
         end: -3024,
@@ -31,8 +30,7 @@ export const events: TimelineSection[] = [
         id: 662,
         title: 'Caïn',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-Cain_8-5-2013%203-56-06%20PM.jpg',
+        image: '',
         slug: 'cain',
         start: -3900,
         end: -3200,
@@ -42,8 +40,7 @@ export const events: TimelineSection[] = [
       {
         id: 663,
         title: 'Abel',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas4883_8-7-2013%203-59-55%20PM.jpg',
+        image: '',
         slug: 'abel',
         start: -3897,
         end: -3825,
@@ -54,8 +51,7 @@ export const events: TimelineSection[] = [
       {
         id: 664,
         title: 'La marque de Caïn',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas1582_8-8-2013%209-54-54%20AM.jpg',
+        image: '',
         slug: 'cain-marked',
         start: -3825,
         end: -3825,
@@ -66,7 +62,7 @@ export const events: TimelineSection[] = [
       {
         id: 665,
         title: 'Seth',
-        image: 'http://timeline.biblehistory.com/media/images/t/seth_8-5-2013%205-05-51%20PM.jpg',
+        image: '',
         slug: 'seth',
         start: -3824,
         end: -2912,
@@ -76,8 +72,7 @@ export const events: TimelineSection[] = [
       {
         id: 666,
         title: 'Hénoc',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-%20Enos_8-5-2013%205-22-39%20PM.jpg',
+        image: '',
         slug: 'enos',
         start: -3719,
         end: -2814,
@@ -87,8 +82,7 @@ export const events: TimelineSection[] = [
       {
         id: 667,
         title: 'Kénan',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Goodsalt-%20cainan_8-5-2013%205-15-02%20PM.jpg',
+        image: '',
         slug: 'cainan',
         start: -3629,
         end: -2719,
@@ -98,8 +92,7 @@ export const events: TimelineSection[] = [
       {
         id: 668,
         title: 'Mahalaleel',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-%20mahalaleel_8-5-2013%205-20-30%20PM.jpg',
+        image: '',
         slug: 'mahalaleel',
         start: -3559,
         end: -2664,
@@ -109,8 +102,7 @@ export const events: TimelineSection[] = [
       {
         id: 669,
         title: 'Jéred',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-%20Jared_8-5-2013%205-24-43%20PM.jpg',
+        image: '',
         slug: 'jared',
         start: -3494,
         end: -2532,
@@ -120,8 +112,7 @@ export const events: TimelineSection[] = [
       {
         id: 670,
         title: 'Hénoc',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/enoch_7-31-2013%2012-29-36%20PM.jpg',
+        image: '',
         slug: 'enoch',
         start: -3332,
         end: -2967,
@@ -131,8 +122,7 @@ export const events: TimelineSection[] = [
       {
         id: 671,
         title: 'Mathusalem',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/tissot-Building_the_Ark_7-31-2013%209-22-14%20AM.jpg',
+        image: '',
         slug: 'methuselah',
         start: -3267,
         end: -2298,
@@ -142,7 +132,7 @@ export const events: TimelineSection[] = [
       {
         id: 672,
         title: "Le ministère prophétique d'Hénoc",
-        image: 'http://timeline.biblehistory.com/media/images/t/Enoch_5-21-2013%209-53-09%20AM.jpg',
+        image: '',
         slug: 'enochs-prophetic-ministry',
         start: -3267,
         end: -2967,
@@ -153,8 +143,7 @@ export const events: TimelineSection[] = [
       {
         id: 673,
         title: 'Lémec',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Goodsalt-%20Lamech_8-5-2013%205-27-05%20PM.jpg',
+        image: '',
         slug: 'lamech',
         start: -3080,
         end: -2303,
@@ -165,7 +154,7 @@ export const events: TimelineSection[] = [
   },
   {
     id: '2',
-    image: 'http://timeline.biblehistory.com/css/img/period_2.jpg',
+    image: '',
     description: 'Du ministère de Noé et du déluge mondial à Cush, Nimrod et la tour de Babel.',
     startYear: -2900,
     endYear: -1950,
@@ -178,8 +167,7 @@ export const events: TimelineSection[] = [
       {
         id: 674,
         title: 'Noé',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-pppas0233_8-7-2013%203-06-32%20PM.jpg',
+        image: '',
         slug: 'noah',
         start: -2898,
         end: -1948,
@@ -189,8 +177,7 @@ export const events: TimelineSection[] = [
       {
         id: 675,
         title: 'La prédication de Noé',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-pppas0232_8-7-2013%2012-53-32%20PM.jpg',
+        image: '',
         slug: 'noahs-preaching',
         start: -2418,
         end: -2298,
@@ -201,8 +188,7 @@ export const events: TimelineSection[] = [
         id: 676,
         title: 'Japhet',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/noah_and_helpers_build_ark_3_7-22-2013%202-36-48%20PM.jpg',
+        image: '',
         slug: 'japheth',
         start: -2398,
         end: -1798,
@@ -213,8 +199,7 @@ export const events: TimelineSection[] = [
         id: 677,
         title: 'Cham',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Noah%20Sacrifice_5-20-2013%205-44-48%20PM.jpg',
+        image: '',
         slug: 'ham',
         start: -2343,
         end: -1743,
@@ -224,8 +209,7 @@ export const events: TimelineSection[] = [
       {
         id: 678,
         title: 'Sem',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Noah%20Sacrifice_5-20-2013%205-43-25%20PM.jpg',
+        image: '',
         slug: 'shem',
         start: -2396,
         end: -1796,
@@ -235,8 +219,7 @@ export const events: TimelineSection[] = [
       {
         id: 613,
         title: 'Le Déluge',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-flood_8-5-2013%203-57-56%20PM.jpg',
+        image: '',
         slug: 'flood',
         start: -2298,
         end: -2297,
@@ -288,8 +271,7 @@ export const events: TimelineSection[] = [
         id: 619,
         title: 'Nimrod',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/iStock_000015554530Small-nimrod_7-31-2013%2011-47-16%20AM.jpg',
+        image: '',
         slug: 'nimrod',
         start: -2268,
         end: -1868,
@@ -339,8 +321,7 @@ export const events: TimelineSection[] = [
       {
         id: 622,
         title: 'Tour de Babel, division de la Terre',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Cleve-van_construction-tower-babel_8-7-2013%2010-25-44%20AM.jpg',
+        image: '',
         slug: 'tower-of-babel-division-of-earth',
         start: -2197,
         end: -2197,
@@ -362,7 +343,7 @@ export const events: TimelineSection[] = [
         id: 623,
         title: 'Job',
         approx: true,
-        image: 'http://timeline.biblehistory.com/media/images/t/Job1_8-7-2013%2010-50-16%20AM.jpg',
+        image: '',
         slug: 'job',
         start: -2185,
         end: -1945,
@@ -422,8 +403,7 @@ export const events: TimelineSection[] = [
       {
         id: 666,
         title: 'Hénoc',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-%20Enos_8-5-2013%205-22-39%20PM.jpg',
+        image: '',
         slug: 'enos',
         start: -3719,
         end: -2814,
@@ -433,8 +413,7 @@ export const events: TimelineSection[] = [
       {
         id: 667,
         title: 'Kénan',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Goodsalt-%20cainan_8-5-2013%205-15-02%20PM.jpg',
+        image: '',
         slug: 'cainan',
         start: -3629,
         end: -2719,
@@ -444,8 +423,7 @@ export const events: TimelineSection[] = [
       {
         id: 668,
         title: 'Mahalaleel',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-%20mahalaleel_8-5-2013%205-20-30%20PM.jpg',
+        image: '',
         slug: 'mahalaleel',
         start: -3559,
         end: -2664,
@@ -455,8 +433,7 @@ export const events: TimelineSection[] = [
       {
         id: 669,
         title: 'Jéred',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-%20Jared_8-5-2013%205-24-43%20PM.jpg',
+        image: '',
         slug: 'jared',
         start: -3494,
         end: -2532,
@@ -466,8 +443,7 @@ export const events: TimelineSection[] = [
       {
         id: 671,
         title: 'Mathusalem',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/tissot-Building_the_Ark_7-31-2013%209-22-14%20AM.jpg',
+        image: '',
         slug: 'methuselah',
         start: -3267,
         end: -2298,
@@ -477,8 +453,7 @@ export const events: TimelineSection[] = [
       {
         id: 673,
         title: 'Lémec',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Goodsalt-%20Lamech_8-5-2013%205-27-05%20PM.jpg',
+        image: '',
         slug: 'lamech',
         start: -3080,
         end: -2303,
@@ -489,7 +464,7 @@ export const events: TimelineSection[] = [
   },
   {
     id: '3',
-    image: 'http://timeline.biblehistory.com/css/img/period_3.jpg',
+    image: '',
     description:
       "De l'appel d'Abraham, à Sodome et Gomorrhe, à l'ascension des 12 tribus juives en passant par Isaac et Jacob.",
     startYear: -1950,
@@ -503,8 +478,7 @@ export const events: TimelineSection[] = [
       {
         id: 640,
         title: 'Abraham',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Sarah_Abraham_8-8-2013%2010-08-24%20AM.jpg',
+        image: '',
         slug: 'abraham',
         start: -1950,
         end: -1771,
@@ -515,8 +489,7 @@ export const events: TimelineSection[] = [
         id: 641,
         title: 'Sara',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas5769_8-7-2013%201-18-26%20PM.jpg',
+        image: '',
         slug: 'sarah',
         start: -1936,
         end: -1809,
@@ -527,8 +500,7 @@ export const events: TimelineSection[] = [
         id: 642,
         title: 'Lot',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-pppas0304_8-7-2013%201-20-30%20PM.jpg',
+        image: '',
         slug: 'lot',
         start: -1925,
         end: -1825,
@@ -649,7 +621,7 @@ export const events: TimelineSection[] = [
         id: 611,
         title: 'Ismael',
         approx: true,
-        image: 'http://timeline.biblehistory.com/media/images/t/Navez_Agar_et_Ismael.jpg',
+        image: '',
         slug: 'ishmael',
         start: -1860,
         end: -1723,
@@ -669,8 +641,7 @@ export const events: TimelineSection[] = [
       {
         id: 612,
         title: 'Isaac',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-stdas0144_8-8-2013%2010-37-09%20AM.jpg',
+        image: '',
         slug: 'isaac',
         start: -1851,
         end: -1671,
@@ -740,8 +711,7 @@ export const events: TimelineSection[] = [
       {
         id: 1015,
         title: 'Jacob',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-Jacob_8-5-2013%204-05-57%20PM.jpg',
+        image: '',
         slug: 'jacob',
         start: -1791,
         end: -1644,
@@ -751,8 +721,7 @@ export const events: TimelineSection[] = [
       {
         id: 602,
         title: 'Esau',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas0680_8-7-2013%201-46-50%20PM.jpg',
+        image: '',
         slug: 'esau',
         start: -1791,
         end: -1655,
@@ -763,8 +732,7 @@ export const events: TimelineSection[] = [
       {
         id: 681,
         title: "Ésaü vend son droit d'aînesse à Jacob",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas2699_8-13-2013%202-38-44%20PM.jpg',
+        image: '',
         slug: 'esau-sells-birthright-to-jacob',
         start: -1760,
         end: -1760,
@@ -775,8 +743,7 @@ export const events: TimelineSection[] = [
       {
         id: 682,
         title: 'La famine dans le pays',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-stdas0759_8-5-2013%204-42-14%20PM.jpg',
+        image: '',
         slug: 'famine-in-the-land-isaac',
         start: -1753,
         end: -1753,
@@ -997,8 +964,7 @@ export const events: TimelineSection[] = [
       {
         id: 1017,
         title: 'Joseph',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas0659_8-7-2013%203-16-58%20PM.jpg',
+        image: '',
         slug: 'joseph',
         start: -1700,
         end: -1590,
@@ -1128,8 +1094,7 @@ export const events: TimelineSection[] = [
       {
         id: 605,
         title: 'Joseph interprète le rêve du pharaon et se libère',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas2865_8-6-2013%2011-12-06%20AM.jpg',
+        image: '',
         slug: 'joseph-freed-pharaohs-dream-7-years-of-plenty',
         start: -1670,
         end: -1670,
@@ -1190,8 +1155,7 @@ export const events: TimelineSection[] = [
       {
         id: 606,
         title: 'Jacob et sa famille viennent en Égypte',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/735px-Rembrandt_-_Jacob_Blessing_the_Children_of_Joseph_-_WGA19117_8-8-2013%2010-44-05%20AM.jpg',
+        image: '',
         slug: 'jacob-and-family-come-to-egypt',
         start: -1661,
         end: -1661,
@@ -1202,8 +1166,7 @@ export const events: TimelineSection[] = [
       {
         id: 674,
         title: 'Noé',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-pppas0233_8-7-2013%203-06-32%20PM.jpg',
+        image: '',
         slug: 'noah',
         start: -2898,
         end: -1948,
@@ -1214,8 +1177,7 @@ export const events: TimelineSection[] = [
         id: 676,
         title: 'Japhet',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/noah_and_helpers_build_ark_3_7-22-2013%202-36-48%20PM.jpg',
+        image: '',
         slug: 'japheth',
         start: -2398,
         end: -1798,
@@ -1226,8 +1188,7 @@ export const events: TimelineSection[] = [
         id: 677,
         title: 'Cham',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Noah%20Sacrifice_5-20-2013%205-44-48%20PM.jpg',
+        image: '',
         slug: 'ham',
         start: -2343,
         end: -1743,
@@ -1237,8 +1198,7 @@ export const events: TimelineSection[] = [
       {
         id: 678,
         title: 'Sem',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Noah%20Sacrifice_5-20-2013%205-43-25%20PM.jpg',
+        image: '',
         slug: 'shem',
         start: -2396,
         end: -1796,
@@ -1269,8 +1229,7 @@ export const events: TimelineSection[] = [
         id: 619,
         title: 'Nimrod',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/iStock_000015554530Small-nimrod_7-31-2013%2011-47-16%20AM.jpg',
+        image: '',
         slug: 'nimrod',
         start: -2268,
         end: -1868,
@@ -1301,7 +1260,7 @@ export const events: TimelineSection[] = [
         id: 623,
         title: 'Job',
         approx: true,
-        image: 'http://timeline.biblehistory.com/media/images/t/Job1_8-7-2013%2010-50-16%20AM.jpg',
+        image: '',
         slug: 'job',
         start: -2185,
         end: -1945,
@@ -1352,7 +1311,7 @@ export const events: TimelineSection[] = [
   },
   {
     id: '4',
-    image: 'http://timeline.biblehistory.com/css/img/period_4.jpg',
+    image: '',
     description:
       "De la vente de Joseph en esclavage, à sa montée en puissance en Egypte, en passant par Moïse et l'Exode.",
     startYear: -1650,
@@ -1427,8 +1386,7 @@ export const events: TimelineSection[] = [
         id: 740,
         title: 'Myriam',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Miriam_5-7-2013%2010-25-30%20AM.jpg',
+        image: '',
         slug: 'miriam',
         start: -1536,
         end: -1410,
@@ -1438,8 +1396,7 @@ export const events: TimelineSection[] = [
       {
         id: 1018,
         title: 'Aaron',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Aaron%20w%20golden%20calf%2019-144_7-22-2013%202-57-17%20PM.jpg',
+        image: '',
         slug: 'aaron',
         start: -1529,
         end: -1406,
@@ -1449,8 +1406,7 @@ export const events: TimelineSection[] = [
       {
         id: 1014,
         title: 'Moïse',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-pppas0220_8-7-2013%201-52-29%20PM.jpg',
+        image: '',
         slug: 'moses',
         start: -1526,
         end: -1406,
@@ -1470,8 +1426,7 @@ export const events: TimelineSection[] = [
       {
         id: 727,
         title: "Moïse commence l'entraînement militaire",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas5055_8-6-2013%2012-58-58%20PM.jpg',
+        image: '',
         slug: 'moses-begins-military-training',
         start: -1513,
         end: -1513,
@@ -1493,8 +1448,7 @@ export const events: TimelineSection[] = [
         id: 730,
         title: 'Caleb',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/432px-The-report-of-the-spies-and-remonstrance-of-Caleb-001_8-6-2013%201-27-38%20PM.jpg',
+        image: '',
         slug: 'caleb',
         start: -1484,
         end: -1384,
@@ -1504,8 +1458,7 @@ export const events: TimelineSection[] = [
       {
         id: 732,
         title: 'Josué',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-Joshua_8-5-2013%204-00-11%20PM.jpg',
+        image: '',
         slug: 'joshua',
         start: -1468,
         end: -1358,
@@ -1516,8 +1469,7 @@ export const events: TimelineSection[] = [
         id: 742,
         title: 'Othniel',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Othoniel_Ben_Kenaz_8-6-2013%201-20-17%20PM.jpg',
+        image: '',
         slug: 'othniel',
         start: -1425,
         end: -1316,
@@ -1547,8 +1499,7 @@ export const events: TimelineSection[] = [
       {
         id: 735,
         title: "L'exode et la traversée de la mer Rouge",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-RedSea_8-5-2013%204-01-53%20PM.jpg',
+        image: '',
         slug: 'exodus-and-the-red-sea-crossing',
         start: -1446,
         end: -1446,
@@ -1569,8 +1520,7 @@ export const events: TimelineSection[] = [
       {
         id: 1015,
         title: 'Jacob',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-Jacob_8-5-2013%204-05-57%20PM.jpg',
+        image: '',
         slug: 'jacob',
         start: -1791,
         end: -1644,
@@ -1690,8 +1640,7 @@ export const events: TimelineSection[] = [
       {
         id: 1017,
         title: 'Joseph',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas0659_8-7-2013%203-16-58%20PM.jpg',
+        image: '',
         slug: 'joseph',
         start: -1700,
         end: -1590,
@@ -1732,7 +1681,7 @@ export const events: TimelineSection[] = [
   },
   {
     id: '5',
-    image: 'http://timeline.biblehistory.com/css/img/period_5.jpg',
+    image: '',
     description:
       "De Moïse et les dix commandements à l'entrée de Josué et à l'expansion juive en Terre promise.",
     startYear: -1450,
@@ -1746,8 +1695,7 @@ export const events: TimelineSection[] = [
       {
         id: 738,
         title: '12 espions entrent en Canaan',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-stdas0100_8-7-2013%202-09-00%20PM.jpg',
+        image: '',
         slug: '12-spies-enter-canaan',
         start: -1444,
         end: -1444,
@@ -1778,8 +1726,7 @@ export const events: TimelineSection[] = [
       {
         id: 743,
         title: 'Balak convoque Balaam',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Balaam_5-7-2013%2010-03-25%20AM.jpg',
+        image: '',
         slug: 'balak-summons-balaam',
         start: -1408,
         end: -1408,
@@ -1790,8 +1737,7 @@ export const events: TimelineSection[] = [
       {
         id: 745,
         title: 'Balaam maudit Israël',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-pppas0292_8-6-2013%202-12-02%20PM.jpg',
+        image: '',
         slug: 'balaam-curses-israel',
         start: -1408,
         end: -1408,
@@ -1802,8 +1748,7 @@ export const events: TimelineSection[] = [
       {
         id: 747,
         title: 'Israël entre en Canaan',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-CrossingJordan_8-5-2013%204-04-01%20PM.jpg',
+        image: '',
         slug: 'israel-enters-canaan',
         start: -1406,
         end: -1406,
@@ -1834,8 +1779,7 @@ export const events: TimelineSection[] = [
       {
         id: 754,
         title: 'Boaz',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas0067_8-13-2013%203-13-51%20PM.jpg',
+        image: '',
         slug: 'boaz',
         start: -1273,
         end: -1193,
@@ -1866,8 +1810,7 @@ export const events: TimelineSection[] = [
       {
         id: 764,
         title: 'Ruth et Naomi viennent à Bethléem',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-stdas0718_8-6-2013%203-00-22%20PM.jpg',
+        image: '',
         slug: 'ruth-and-naomi-come-to-bethlehem',
         start: -1230,
         end: -1230,
@@ -1879,7 +1822,7 @@ export const events: TimelineSection[] = [
         id: 755,
         title: 'Ehud',
         approx: true,
-        image: 'http://timeline.biblehistory.com/media/images/t/Ehud_5-6-2013%205-07-09%20PM.jpg',
+        image: '',
         slug: 'ehud',
         start: -1318,
         end: -1217,
@@ -1899,8 +1842,7 @@ export const events: TimelineSection[] = [
       {
         id: 756,
         title: 'Ehud abat le roi Eglon',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Speculum_Darmstadt_2505_55r_cropped_8-6-2013%203-28-49%20PM.jpg',
+        image: '',
         slug: '40-years-peace-ends-moabite-oppression-begins',
         start: -1297,
         end: -1297,
@@ -1912,8 +1854,7 @@ export const events: TimelineSection[] = [
         id: 762,
         title: 'Gédeon',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/507px-Gideon_Squeezed_the_Fleece_001_8-6-2013%203-34-47%20PM.jpg',
+        image: '',
         slug: 'gideon',
         start: -1252,
         end: -1152,
@@ -1924,8 +1865,7 @@ export const events: TimelineSection[] = [
         id: 768,
         title: 'Eli',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas5083_8-13-2013%203-28-45%20PM.jpg',
+        image: '',
         slug: 'eli',
         start: -1197,
         end: -1099,
@@ -1935,8 +1875,7 @@ export const events: TimelineSection[] = [
       {
         id: 770,
         title: 'Sichem détruit',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-pppas0498_8-6-2013%204-29-31%20PM.jpg',
+        image: '',
         slug: 'shechem-destroyed',
         start: -1171,
         end: -1171,
@@ -1948,8 +1887,7 @@ export const events: TimelineSection[] = [
         id: 772,
         title: 'Samuel',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-Samuel_8-5-2013%204-06-07%20PM.jpg',
+        image: '',
         slug: 'samuel',
         start: -1129,
         end: -1017,
@@ -1959,8 +1897,7 @@ export const events: TimelineSection[] = [
       {
         id: 775,
         title: "L'appel prophétique de Samuel",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-pppas0257_8-13-2013%203-55-25%20PM.jpg',
+        image: '',
         slug: 'prophetic-call-of-samuel',
         start: -1143,
         end: -1143,
@@ -1971,8 +1908,7 @@ export const events: TimelineSection[] = [
       {
         id: 780,
         title: 'Samuel Juge Israël',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas1474_8-6-2013%203-59-48%20PM.jpg',
+        image: '',
         slug: 'samuel-judges-israel',
         start: -1143,
         end: -1055,
@@ -1983,8 +1919,7 @@ export const events: TimelineSection[] = [
       {
         id: 777,
         title: "Les philistins capturent l'arche",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-pcmas0005_8-6-2013%204-06-34%20PM.jpg',
+        image: '',
         slug: 'philistines-capture-ark',
         start: -1142,
         end: -1142,
@@ -2006,8 +1941,7 @@ export const events: TimelineSection[] = [
         id: 774,
         title: 'Samson',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Tissot_Samson_Slays_a_Thousand_Men_8-8-2013%2011-59-12%20AM.jpg',
+        image: '',
         slug: 'samson',
         start: -1119,
         end: -1079,
@@ -2017,8 +1951,7 @@ export const events: TimelineSection[] = [
       {
         id: 773,
         title: "L'oppression philistine",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas3460_8-6-2013%204-51-17%20PM.jpg',
+        image: '',
         slug: 'philistine-oppression-begins',
         start: -1115,
         end: -1075,
@@ -2049,8 +1982,7 @@ export const events: TimelineSection[] = [
         id: 740,
         title: 'Myriam',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Miriam_5-7-2013%2010-25-30%20AM.jpg',
+        image: '',
         slug: 'miriam',
         start: -1536,
         end: -1410,
@@ -2060,8 +1992,7 @@ export const events: TimelineSection[] = [
       {
         id: 1018,
         title: 'Aaron',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Aaron%20w%20golden%20calf%2019-144_7-22-2013%202-57-17%20PM.jpg',
+        image: '',
         slug: 'aaron',
         start: -1529,
         end: -1406,
@@ -2071,8 +2002,7 @@ export const events: TimelineSection[] = [
       {
         id: 1014,
         title: 'Moïse',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-pppas0220_8-7-2013%201-52-29%20PM.jpg',
+        image: '',
         slug: 'moses',
         start: -1526,
         end: -1406,
@@ -2093,8 +2023,7 @@ export const events: TimelineSection[] = [
         id: 730,
         title: 'Caleb',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/432px-The-report-of-the-spies-and-remonstrance-of-Caleb-001_8-6-2013%201-27-38%20PM.jpg',
+        image: '',
         slug: 'caleb',
         start: -1484,
         end: -1384,
@@ -2104,8 +2033,7 @@ export const events: TimelineSection[] = [
       {
         id: 732,
         title: 'Josué',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-Joshua_8-5-2013%204-00-11%20PM.jpg',
+        image: '',
         slug: 'joshua',
         start: -1468,
         end: -1358,
@@ -2116,8 +2044,7 @@ export const events: TimelineSection[] = [
         id: 742,
         title: 'Othniel',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Othoniel_Ben_Kenaz_8-6-2013%201-20-17%20PM.jpg',
+        image: '',
         slug: 'othniel',
         start: -1425,
         end: -1316,
@@ -2147,8 +2074,7 @@ export const events: TimelineSection[] = [
       {
         id: 735,
         title: "L'exode et la traversée de la mer Rouge",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-RedSea_8-5-2013%204-01-53%20PM.jpg',
+        image: '',
         slug: 'exodus-and-the-red-sea-crossing',
         start: -1446,
         end: -1446,
@@ -2170,7 +2096,7 @@ export const events: TimelineSection[] = [
   },
   {
     id: '6',
-    image: 'http://timeline.biblehistory.com/css/img/period_6.jpg',
+    image: '',
     description:
       'Du roi Saül au prophète Samuel et au jeune roi David et sa dynastie royale en passant par Salomon.',
     startYear: -1100,
@@ -2185,8 +2111,7 @@ export const events: TimelineSection[] = [
         id: 781,
         title: 'Saül',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/james-tissot-saul-meets-with-samuel-1900_7-30-2013%203-57-41%20PM.jpg',
+        image: '',
         slug: 'saul',
         start: -1082,
         end: -1010,
@@ -2197,8 +2122,7 @@ export const events: TimelineSection[] = [
         id: 783,
         title: 'Jonathan',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas0406_8-6-2013%204-56-49%20PM.jpg',
+        image: '',
         slug: 'jonathan',
         start: -1062,
         end: -1010,
@@ -2208,8 +2132,7 @@ export const events: TimelineSection[] = [
       {
         id: 784,
         title: 'Ishbosheth',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/ishbosheth_8-6-2013%205-16-18%20PM.jpg',
+        image: '',
         slug: 'ishbosheth',
         start: -1050,
         end: -1010,
@@ -2220,8 +2143,7 @@ export const events: TimelineSection[] = [
       {
         id: 787,
         title: "Attaque de Jonathan et de son porteur d'armes",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/429px-Jonathan-defying-the-outposts-of-the-Philistines-001_8-6-2013%205-28-28%20PM.jpg',
+        image: '',
         slug: 'jonathan-and-his-armorbearer-attack-philistines',
         start: -1042,
         end: -1042,
@@ -2232,8 +2154,7 @@ export const events: TimelineSection[] = [
       {
         id: 788,
         title: 'David',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/DavidStones%201141-10_7-24-2013%2012-08-23%20PM.jpg',
+        image: '',
         slug: 'david',
         start: -1040,
         end: -970,
@@ -2243,8 +2164,7 @@ export const events: TimelineSection[] = [
       {
         id: 789,
         title: 'David, un garçon de berger',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-stdas0448_8-6-2013%205-24-40%20PM.jpg',
+        image: '',
         slug: 'david-a-shepherd-boy',
         start: -1029,
         end: -1029,
@@ -2265,8 +2185,7 @@ export const events: TimelineSection[] = [
       {
         id: 791,
         title: 'David oint par Samuel',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas0756_8-13-2013%204-08-56%20PM.jpg',
+        image: '',
         slug: 'david-anointed-by-samuel',
         start: -1029,
         end: -1029,
@@ -2447,8 +2366,7 @@ export const events: TimelineSection[] = [
       {
         id: 818,
         title: 'Raid philistin à Gilboa, Saul consulte une sorcière',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/saul-and-the-witch-of-endor-1777_7-30-2013%203-19-19%20PM.jpg',
+        image: '',
         slug: 'philistine-raid-at-gilboa-saul-consults-witch',
         start: -1010,
         end: -1010,
@@ -2469,8 +2387,7 @@ export const events: TimelineSection[] = [
       {
         id: 802,
         title: 'Bathsheba',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/bathsheba-receiving-david-s-letter_8-5-2013%203-48-46%20PM.jpg',
+        image: '',
         slug: 'bathsheba',
         start: -1009,
         end: -937,
@@ -2482,8 +2399,7 @@ export const events: TimelineSection[] = [
         id: 821,
         title: 'Absalom',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-Absalom_8-5-2013%204-42-42%20PM.jpg',
+        image: '',
         slug: 'absalom',
         start: -1009,
         end: -978,
@@ -2503,8 +2419,7 @@ export const events: TimelineSection[] = [
       {
         id: 823,
         title: 'David conquiert Jérusalem des Jébusiens',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas2122_8-5-2013%204-49-03%20PM.jpg',
+        image: '',
         slug: 'david-conquers-jerusalem-from-jebusites',
         start: -1003,
         end: -1003,
@@ -2525,8 +2440,7 @@ export const events: TimelineSection[] = [
       {
         id: 827,
         title: 'David présente ses plans pour le temple',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/David%20and%20Ark%20of%20the%20Covenant_5-1-2013%2012-17-06%20PM.jpg',
+        image: '',
         slug: 'david-lays-plans-for-the-temple',
         start: -997,
         end: -997,
@@ -2537,8 +2451,7 @@ export const events: TimelineSection[] = [
       {
         id: 828,
         title: 'David fait preuve de gentillesse envers Mephibosheth',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-DavidMephibosheth_8-5-2013%205-34-41%20PM.jpg',
+        image: '',
         slug: 'david-shows-kindness-to-mephibosheth',
         start: -997,
         end: -997,
@@ -2549,8 +2462,7 @@ export const events: TimelineSection[] = [
       {
         id: 833,
         title: "L'adultère de David avec Bethsabée",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-jcgas0037_8-5-2013%205-49-36%20PM.jpg',
+        image: '',
         slug: 'davids-adultery-with-bathsheba',
         start: -992,
         end: -992,
@@ -2592,8 +2504,7 @@ export const events: TimelineSection[] = [
         id: 838,
         title: 'Solomon',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-lwjas0181_8-8-2013%2012-16-00%20PM.jpg',
+        image: '',
         slug: 'solomon',
         start: -989,
         end: -931,
@@ -2623,8 +2534,7 @@ export const events: TimelineSection[] = [
       {
         id: 843,
         title: 'Absalom revient de Geshur à Jérusalem',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas0690_8-22-2013%202-40-45%20PM.jpg',
+        image: '',
         slug: 'absalom-returns-to-jerusalem-from-geshur',
         start: -984,
         end: -984,
@@ -2666,8 +2576,7 @@ export const events: TimelineSection[] = [
         id: 850,
         title: 'Rehoboam',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-stdas0014_8-22-2013%202-52-06%20PM.jpg',
+        image: '',
         slug: 'rehoboam',
         start: -972,
         end: -913,
@@ -2687,8 +2596,7 @@ export const events: TimelineSection[] = [
       {
         id: 852,
         title: 'Hiram offre des compétences et des ressources à Salomon',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas1633_8-6-2013%209-15-29%20AM.jpg',
+        image: '',
         slug: 'hiram-offers-skill-and-resources-to-solomon',
         start: -969,
         end: -969,
@@ -2729,8 +2637,7 @@ export const events: TimelineSection[] = [
       {
         id: 862,
         title: 'Le Seigneur parle à Salomon pour la deuxième fois',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-lwjas0332_8-6-2013%209-42-23%20AM.jpg',
+        image: '',
         slug: 'lord-speaks-to-solomon-2nd-time',
         start: -959,
         end: -959,
@@ -2802,7 +2709,7 @@ export const events: TimelineSection[] = [
         id: 872,
         title: 'Nadab',
         approx: true,
-        image: 'http://timeline.biblehistory.com/media/images/t/Nadab_of_Israel.jpg',
+        image: '',
         slug: 'nadab',
         start: -933,
         end: -909,
@@ -2823,8 +2730,7 @@ export const events: TimelineSection[] = [
         id: 768,
         title: 'Eli',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas5083_8-13-2013%203-28-45%20PM.jpg',
+        image: '',
         slug: 'eli',
         start: -1197,
         end: -1099,
@@ -2835,8 +2741,7 @@ export const events: TimelineSection[] = [
         id: 772,
         title: 'Samuel',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-Samuel_8-5-2013%204-06-07%20PM.jpg',
+        image: '',
         slug: 'samuel',
         start: -1129,
         end: -1017,
@@ -2846,8 +2751,7 @@ export const events: TimelineSection[] = [
       {
         id: 780,
         title: 'Samuel Juge Israël',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas1474_8-6-2013%203-59-48%20PM.jpg',
+        image: '',
         slug: 'samuel-judges-israel',
         start: -1143,
         end: -1055,
@@ -2869,8 +2773,7 @@ export const events: TimelineSection[] = [
         id: 774,
         title: 'Samson',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Tissot_Samson_Slays_a_Thousand_Men_8-8-2013%2011-59-12%20AM.jpg',
+        image: '',
         slug: 'samson',
         start: -1119,
         end: -1079,
@@ -2880,8 +2783,7 @@ export const events: TimelineSection[] = [
       {
         id: 773,
         title: "L'oppression philistine",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas3460_8-6-2013%204-51-17%20PM.jpg',
+        image: '',
         slug: 'philistine-oppression-begins',
         start: -1115,
         end: -1075,
@@ -2892,7 +2794,7 @@ export const events: TimelineSection[] = [
   },
   {
     id: '7',
-    image: 'http://timeline.biblehistory.com/css/img/period_7.jpg',
+    image: '',
     description:
       "Des conflits internes qui ont divisé la nation d'Israël aux prophètes qui ont averti de l'exil à venir.",
     startYear: -930,
@@ -2947,8 +2849,7 @@ export const events: TimelineSection[] = [
         id: 890,
         title: 'Ahab',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Elijah_4-17-2013%204-20-32%20PM.jpg',
+        image: '',
         slug: 'ahab',
         start: -918,
         end: -853,
@@ -3009,8 +2910,7 @@ export const events: TimelineSection[] = [
         id: 889,
         title: 'Elijah',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Elijah%20taken%20up%201005-63_7-22-2013%203-12-23%20PM.JPG',
+        image: '',
         slug: 'elijah',
         start: -904,
         end: -850,
@@ -3071,7 +2971,7 @@ export const events: TimelineSection[] = [
         id: 899,
         title: 'Elisha',
         approx: true,
-        image: 'http://timeline.biblehistory.com/media/images/t/ElishaRaisingShunammitesSon.jpg',
+        image: '',
         slug: 'elisha',
         start: -885,
         end: -798,
@@ -3131,8 +3031,7 @@ export const events: TimelineSection[] = [
       {
         id: 912,
         title: 'Obadiah cache les prophètes de Dieu',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Obadiah_hides_prophets_8-26-2013%205-48-34%20PM.jpg',
+        image: '',
         slug: 'obadiah-hides-the-prophets-of-god',
         start: -870,
         end: -870,
@@ -3173,8 +3072,7 @@ export const events: TimelineSection[] = [
       {
         id: 918,
         title: "Fin de 3 ans et demi sans pluie, Elijah court à l'Horeb",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/_GoodSalt-prcas2859_8-26-2013%206-09-22%20PM.jpg',
+        image: '',
         slug: 'end-3-12-years-of-no-rain-elijah-runs-to-horeb',
         start: -866,
         end: -866,
@@ -3205,8 +3103,7 @@ export const events: TimelineSection[] = [
       {
         id: 922,
         title: "Le vignoble d'Ahab et Naboth",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/456px-Jezebel_has_Naboth_killed_8-27-2013%209-42-38%20AM.jpg',
+        image: '',
         slug: 'ahab-and-naboths-vineyard',
         start: -855,
         end: -855,
@@ -3297,8 +3194,7 @@ export const events: TimelineSection[] = [
       {
         id: 931,
         title: "Elisha et l'huile de la veuve",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-lwjas0179_8-6-2013%202-49-26%20PM.jpg',
+        image: '',
         slug: 'elisha-and-the-widows-oil',
         start: -849,
         end: -849,
@@ -3349,8 +3245,7 @@ export const events: TimelineSection[] = [
       {
         id: 941,
         title: 'Elisha et le miracle de la tête de hache flottante',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-pppas0209_8-6-2013%203-10-18%20PM.jpg',
+        image: '',
         slug: 'elisha-and-miracle-of-the-floating-ax-head',
         start: -846,
         end: -846,
@@ -3361,8 +3256,7 @@ export const events: TimelineSection[] = [
       {
         id: 942,
         title: 'Elisha contrecarre les embuscades syriennes',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-stdas0556_8-6-2013%203-12-36%20PM.jpg',
+        image: '',
         slug: 'elisha-thwarts-syrian-ambushes',
         start: -845,
         end: -845,
@@ -3394,8 +3288,7 @@ export const events: TimelineSection[] = [
         id: 946,
         title: 'Joash (ou Jehoash)',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/_GoodSalt-stdas0028_8-27-2013%2012-10-43%20PM.jpg',
+        image: '',
         slug: 'joash-or-jehoash',
         start: -842,
         end: -796,
@@ -3425,8 +3318,7 @@ export const events: TimelineSection[] = [
       {
         id: 944,
         title: "La terre d'une femme shunamite restaurée",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/_GoodSalt-prcas0990_8-27-2013%2012-26-23%20PM.jpg',
+        image: '',
         slug: 'shunammite-womans-land-restored',
         start: -832,
         end: -832,
@@ -3437,8 +3329,7 @@ export const events: TimelineSection[] = [
       {
         id: 938,
         title: 'Naaman guérie, Gehazi Leprous',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/_GoodSalt-prcas1640_8-27-2013%2012-29-08%20PM.jpg',
+        image: '',
         slug: 'naaman-healed-gehazi-leprous',
         start: -830,
         end: -830,
@@ -3460,8 +3351,7 @@ export const events: TimelineSection[] = [
         id: 952,
         title: 'Jehoash',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Golden%20Calf_4-3-2013%205-18-17%20PM.jpg',
+        image: '',
         slug: 'jehoash',
         start: -825,
         end: -782,
@@ -3472,8 +3362,7 @@ export const events: TimelineSection[] = [
         id: 960,
         title: 'Jonah',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Jonah_7-31-2013%2011-11-16%20AM.jpg',
+        image: '',
         slug: 'jonah',
         start: -823,
         end: -720,
@@ -3494,8 +3383,7 @@ export const events: TimelineSection[] = [
         id: 958,
         title: 'Jéroboam II',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-Jeroboam_8-1-2013%205-29-02%20PM.jpg',
+        image: '',
         slug: 'jeroboam-ii',
         start: -820,
         end: -753,
@@ -3506,8 +3394,7 @@ export const events: TimelineSection[] = [
         id: 957,
         title: 'Uzziah',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Rembrandt_Harmensz_van_Rijn_032.jpg',
+        image: '',
         slug: 'uzziah',
         start: -808,
         end: -739,
@@ -3527,8 +3414,7 @@ export const events: TimelineSection[] = [
       {
         id: 955,
         title: 'Jonas à Ninive',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas2580_8-6-2013%203-27-53%20PM.jpg',
+        image: '',
         slug: 'jonah-to-ninevah',
         start: -790,
         end: -790,
@@ -3540,8 +3426,7 @@ export const events: TimelineSection[] = [
         id: 962,
         title: 'Ouziah Azariah, le temps de la prospérité',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/_GoodSalt-stdas0031_8-27-2013%201-27-15%20PM.jpg',
+        image: '',
         slug: 'uzziah-azariah-prosperous-time',
         start: -790,
         end: -770,
@@ -3562,8 +3447,7 @@ export const events: TimelineSection[] = [
         id: 969,
         title: 'Zacharie',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Zechariah_of_Israel_8-27-2013%202-08-27%20PM.png',
+        image: '',
         slug: 'zechariah',
         start: -776,
         end: -752,
@@ -3614,8 +3498,7 @@ export const events: TimelineSection[] = [
         id: 981,
         title: 'Isaiah',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Isaiah_7-31-2013%2011-16-12%20AM.jpg',
+        image: '',
         slug: 'isaiah',
         start: -766,
         end: -686,
@@ -3635,8 +3518,7 @@ export const events: TimelineSection[] = [
       {
         id: 980,
         title: 'Grand tremblement de terre',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/_GoodSalt-prcas3399_8-27-2013%202-13-06%20PM.jpg',
+        image: '',
         slug: 'great-earthquake',
         start: -757,
         end: -757,
@@ -3668,8 +3550,7 @@ export const events: TimelineSection[] = [
         id: 989,
         title: 'Ezéchias',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/_GoodSalt-prcas5185_8-27-2013%202-25-13%20PM.jpg',
+        image: '',
         slug: 'hezekiah',
         start: -741,
         end: -686,
@@ -3680,7 +3561,7 @@ export const events: TimelineSection[] = [
         id: 992,
         title: 'Sennacherib',
         approx: true,
-        image: 'http://timeline.biblehistory.com/media/images/t/Sennacherib.jpg',
+        image: '',
         slug: 'sennacherib',
         start: -735,
         end: -681,
@@ -3761,8 +3642,7 @@ export const events: TimelineSection[] = [
         id: 422,
         title: 'Hilkiah',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/_GoodSalt-prcas3129_8-27-2013%202-51-48%20PM.jpg',
+        image: '',
         slug: 'hilkiah',
         start: -720,
         end: -610,
@@ -3792,8 +3672,7 @@ export const events: TimelineSection[] = [
       {
         id: 1013,
         title: "L'invasion des philistins",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas1040_8-7-2013%203-36-57%20PM.jpg',
+        image: '',
         slug: 'invasion-of-philistines',
         start: -710,
         end: -710,
@@ -3805,8 +3684,7 @@ export const events: TimelineSection[] = [
         id: 1009,
         title: 'Manasseh',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/_GoodSalt-stdas0040_8-27-2013%202-57-15%20PM.jpg',
+        image: '',
         slug: 'manasseh-king-of-judah',
         start: -709,
         end: -642,
@@ -3886,8 +3764,7 @@ export const events: TimelineSection[] = [
       {
         id: 416,
         title: 'La deuxième invasion de Jérusalem par Sennachérib',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Sennacherib_4-2-2013%203-52-27%20PM.jpg',
+        image: '',
         slug: 'sennacheribs-2nd-invasion-of-jerusalem',
         start: -689,
         end: -689,
@@ -3899,7 +3776,7 @@ export const events: TimelineSection[] = [
         id: 417,
         title: 'Nahum',
         approx: true,
-        image: 'http://timeline.biblehistory.com/media/images/t/Nahum-prophet.jpg',
+        image: '',
         slug: 'nahum',
         start: -683,
         end: -610,
@@ -3909,8 +3786,7 @@ export const events: TimelineSection[] = [
       {
         id: 420,
         title: 'Reconstruction de Babylone',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/BabylonRebuilding_7-31-2013%204-39-19%20PM.jpg',
+        image: '',
         slug: 'babylon-rebuilding',
         start: -681,
         end: -676,
@@ -3982,8 +3858,7 @@ export const events: TimelineSection[] = [
         id: 433,
         title: 'Josiah',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Josiah_7-31-2013%204-38-17%20PM.jpg',
+        image: '',
         slug: 'josiah',
         start: -649,
         end: -609,
@@ -4014,8 +3889,7 @@ export const events: TimelineSection[] = [
         id: 435,
         title: 'Jeremiah',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Jeremiah_4-2-2013%202-17-43%20PM.jpg',
+        image: '',
         slug: 'jeremiah',
         start: -643,
         end: -570,
@@ -4045,8 +3919,7 @@ export const events: TimelineSection[] = [
       {
         id: 447,
         title: 'Josiah se consacre à Dieu',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/_GoodSalt-prcas3303_8-27-2013%203-56-08%20PM.jpg',
+        image: '',
         slug: 'josiah-consecrates-himself-to-god',
         start: -633,
         end: -633,
@@ -4058,8 +3931,7 @@ export const events: TimelineSection[] = [
         id: 445,
         title: 'Nébuchanedsar II',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-nebuchadnezzar_8-6-2013%2011-02-33%20AM.jpg',
+        image: '',
         slug: 'nebuchadnezzar-ii',
         start: -632,
         end: -562,
@@ -4070,8 +3942,7 @@ export const events: TimelineSection[] = [
         id: 446,
         title: 'Jehoahaz',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-Jehoahaz_8-6-2013%2011-06-04%20AM.jpg',
+        image: '',
         slug: 'jehoahaz-son-of-josiah',
         start: -632,
         end: -609,
@@ -4082,8 +3953,7 @@ export const events: TimelineSection[] = [
         id: 451,
         title: 'Ezekiel',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-ValleyOfDryBones_8-5-2013%204-24-11%20PM.jpg',
+        image: '',
         slug: 'ezekiel',
         start: -622,
         end: -571,
@@ -4094,8 +3964,7 @@ export const events: TimelineSection[] = [
         id: 452,
         title: 'Josiah trouve la loi et garde la Pâque',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/_GoodSalt-prcas1523_8-27-2013%204-22-30%20PM.jpg',
+        image: '',
         slug: 'josiah-finds-law-keeps-passover',
         start: -622,
         end: -622,
@@ -4106,8 +3975,7 @@ export const events: TimelineSection[] = [
         id: 455,
         title: 'Daniel',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Daniellion_7-31-2013%204-10-48%20PM.jpg',
+        image: '',
         slug: 'daniel',
         start: -622,
         end: -530,
@@ -4118,8 +3986,7 @@ export const events: TimelineSection[] = [
         id: 850,
         title: 'Rehoboam',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-stdas0014_8-22-2013%202-52-06%20PM.jpg',
+        image: '',
         slug: 'rehoboam',
         start: -972,
         end: -913,
@@ -4150,7 +4017,7 @@ export const events: TimelineSection[] = [
         id: 872,
         title: 'Nadab',
         approx: true,
-        image: 'http://timeline.biblehistory.com/media/images/t/Nadab_of_Israel.jpg',
+        image: '',
         slug: 'nadab',
         start: -933,
         end: -909,
@@ -4171,7 +4038,7 @@ export const events: TimelineSection[] = [
   },
   {
     id: '8',
-    image: 'http://timeline.biblehistory.com/css/img/period_8.jpg',
+    image: '',
     description:
       "De la chute d'Israël à l'exil à Babylone et aux grands prophètes déclarant le Messie à venir.",
     startYear: -620,
@@ -4326,8 +4193,7 @@ export const events: TimelineSection[] = [
         id: 487,
         title: 'Belshazzar',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-belshazzar_8-6-2013%202-18-47%20PM.jpg',
+        image: '',
         slug: 'belshazzar',
         start: -580,
         end: -539,
@@ -4458,8 +4324,7 @@ export const events: TimelineSection[] = [
         id: 608,
         title: 'Jérusalem reconstruite',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Zerubabbel_3-21-2013%2010-15-56%20AM.jpg',
+        image: '',
         slug: 'jerusalem-rebuilt',
         start: -536,
         end: -444,
@@ -4480,8 +4345,7 @@ export const events: TimelineSection[] = [
         id: 518,
         title: 'Xerxès I',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-stdas0429_8-28-2013%2012-02-30%20PM.jpg',
+        image: '',
         slug: 'xerxes-i',
         start: -519,
         end: -465,
@@ -4492,8 +4356,7 @@ export const events: TimelineSection[] = [
         id: 523,
         title: 'Esther',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas1525_8-28-2013%2012-42-28%20PM.jpg',
+        image: '',
         slug: 'esther',
         start: -491,
         end: -401,
@@ -4504,8 +4367,7 @@ export const events: TimelineSection[] = [
         id: 530,
         title: 'Artaxerxes I',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas0699_8-28-2013%2012-48-10%20PM.jpg',
+        image: '',
         slug: 'artaxerxes-i',
         start: -490,
         end: -423,
@@ -4556,8 +4418,7 @@ export const events: TimelineSection[] = [
         id: 535,
         title: 'Nehemiah',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-Nehemiah_8-1-2013%205-36-17%20PM.jpg',
+        image: '',
         slug: 'nehemiah',
         start: -473,
         end: -403,
@@ -4597,8 +4458,7 @@ export const events: TimelineSection[] = [
       {
         id: 1283,
         title: 'Prophétie du 2300e jour',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Ark_Commandments_2-27-2013-2-58-25-PM_7-18-2013%2011-01-41%20AM.jpg',
+        image: '',
         slug: 'sanctuary-cleansed-2300-day-prophecy',
         start: -457,
         end: 1844,
@@ -4609,8 +4469,7 @@ export const events: TimelineSection[] = [
       {
         id: 1386,
         title: 'La prophétie des soixante-dix semaines',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/70_weeks_Prophecy_sm_2-26-2013%2011-30-56%20AM.jpg',
+        image: '',
         slug: 'the-seventyweeks-prophecy',
         start: -457,
         end: 34,
@@ -4641,8 +4500,7 @@ export const events: TimelineSection[] = [
         id: 543,
         title: 'Artaxerxès II',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/800px-Persepolis_Artaxerxes_II_tomb_8-28-2013%201-31-08%20PM.jpg',
+        image: '',
         slug: 'artaxerxes-ii',
         start: -445,
         end: -359,
@@ -4723,7 +4581,7 @@ export const events: TimelineSection[] = [
         id: 550,
         title: 'Artaxerxes III',
         approx: true,
-        image: 'http://timeline.biblehistory.com/media/images/t/Persepolis_Artaxerxes_III_tomb.jpg',
+        image: '',
         slug: 'artaxerxes-iii',
         start: -400,
         end: -338,
@@ -4764,8 +4622,7 @@ export const events: TimelineSection[] = [
         id: 553,
         title: 'Alexandre le Grand',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Aleksander-d-store_8-8-2013%201-08-59%20PM.jpg',
+        image: '',
         slug: 'alexander-the-great',
         start: -356,
         end: -323,
@@ -4916,8 +4773,7 @@ export const events: TimelineSection[] = [
         id: 1394,
         title: 'Les prophéties de Daniel sur Babylone',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Statue_Babylon_8-22-2013%2012-11-00%20PM.jpg',
+        image: '',
         slug: 'daniels-babylon-prophecies',
         start: -605,
         end: -539,
@@ -4928,8 +4784,7 @@ export const events: TimelineSection[] = [
         id: 1397,
         title: 'Les prophéties médo-perses de Daniel',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Statue_Persia_8-22-2013%2012-26-38%20PM.jpg',
+        image: '',
         slug: 'daniels-medopersia-prophecies',
         start: -539,
         end: -331,
@@ -4940,8 +4795,7 @@ export const events: TimelineSection[] = [
         id: 1398,
         title: 'Les prophéties de Daniel sur la Grèce',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Statue_Greece_8-22-2013%202-30-21%20PM.jpg',
+        image: '',
         slug: 'daniels-greece-prophecies',
         start: -323,
         end: -168,
@@ -4951,8 +4805,7 @@ export const events: TimelineSection[] = [
       {
         id: 1399,
         title: 'Les prophéties de Daniel pour la Rome',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Statue_Rome_8-22-2013%203-26-36%20PM.jpg',
+        image: '',
         slug: 'daniels-rome-prophecies',
         start: -168,
         end: 476,
@@ -4974,8 +4827,7 @@ export const events: TimelineSection[] = [
         id: 422,
         title: 'Hilkiah',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/_GoodSalt-prcas3129_8-27-2013%202-51-48%20PM.jpg',
+        image: '',
         slug: 'hilkiah',
         start: -720,
         end: -610,
@@ -5006,7 +4858,7 @@ export const events: TimelineSection[] = [
         id: 417,
         title: 'Nahum',
         approx: true,
-        image: 'http://timeline.biblehistory.com/media/images/t/Nahum-prophet.jpg',
+        image: '',
         slug: 'nahum',
         start: -683,
         end: -610,
@@ -5037,8 +4889,7 @@ export const events: TimelineSection[] = [
         id: 433,
         title: 'Josiah',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Josiah_7-31-2013%204-38-17%20PM.jpg',
+        image: '',
         slug: 'josiah',
         start: -649,
         end: -609,
@@ -5059,8 +4910,7 @@ export const events: TimelineSection[] = [
         id: 435,
         title: 'Jeremiah',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Jeremiah_4-2-2013%202-17-43%20PM.jpg',
+        image: '',
         slug: 'jeremiah',
         start: -643,
         end: -570,
@@ -5091,8 +4941,7 @@ export const events: TimelineSection[] = [
         id: 445,
         title: 'Nébuchanedsar II',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-nebuchadnezzar_8-6-2013%2011-02-33%20AM.jpg',
+        image: '',
         slug: 'nebuchadnezzar-ii',
         start: -632,
         end: -562,
@@ -5103,8 +4952,7 @@ export const events: TimelineSection[] = [
         id: 446,
         title: 'Jehoahaz',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-Jehoahaz_8-6-2013%2011-06-04%20AM.jpg',
+        image: '',
         slug: 'jehoahaz-son-of-josiah',
         start: -632,
         end: -609,
@@ -5115,8 +4963,7 @@ export const events: TimelineSection[] = [
         id: 451,
         title: 'Ezekiel',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-ValleyOfDryBones_8-5-2013%204-24-11%20PM.jpg',
+        image: '',
         slug: 'ezekiel',
         start: -622,
         end: -571,
@@ -5127,8 +4974,7 @@ export const events: TimelineSection[] = [
         id: 455,
         title: 'Daniel',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Daniellion_7-31-2013%204-10-48%20PM.jpg',
+        image: '',
         slug: 'daniel',
         start: -622,
         end: -530,
@@ -5139,7 +4985,7 @@ export const events: TimelineSection[] = [
   },
   {
     id: '9',
-    image: 'http://timeline.biblehistory.com/css/img/period_9.jpg',
+    image: '',
     description:
       "Depuis la naissance du Messie promis, Jésus le Christ, jusqu'à son ministère, sa mort et sa résurrection.",
     startYear: -100,
@@ -5153,8 +4999,7 @@ export const events: TimelineSection[] = [
       {
         id: 580,
         title: 'Jules César',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Portrait_of_Julius_Caesar_color_8-8-2013%201-46-35%20PM.jpg',
+        image: '',
         slug: 'julius-caesar',
         start: -100,
         end: -44,
@@ -5165,7 +5010,7 @@ export const events: TimelineSection[] = [
         id: 581,
         title: 'Simeon',
         approx: true,
-        image: 'http://timeline.biblehistory.com/media/images/t/Yegorov-Simeon_the_Righteous.jpg',
+        image: '',
         slug: 'simeon-of-the-temple',
         start: -90,
         end: 3,
@@ -5175,8 +5020,7 @@ export const events: TimelineSection[] = [
       {
         id: 582,
         title: 'Anna',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas4188_8-6-2013%203-54-10%20PM.jpg',
+        image: '',
         slug: 'anna',
         start: -89,
         end: 7,
@@ -5198,8 +5042,7 @@ export const events: TimelineSection[] = [
         id: 584,
         title: 'Hérode le Grand',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/HerodtheGreat2_3-20-2013%204-49-58%20PM.jpg',
+        image: '',
         slug: 'herod-the-great',
         start: -73,
         end: -4,
@@ -5230,8 +5073,7 @@ export const events: TimelineSection[] = [
         id: 598,
         title: 'Auguste César',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Augustus%20Caesar_3-20-2013%204-27-25%20PM.jpg',
+        image: '',
         slug: 'augustus-caesar',
         start: -63,
         end: 14,
@@ -5252,8 +5094,7 @@ export const events: TimelineSection[] = [
         id: 591,
         title: 'Joseph',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-pppas0119_8-28-2013%202-33-30%20PM.jpg',
+        image: '',
         slug: 'joseph-husband-of-mary',
         start: -30,
         end: 20,
@@ -5274,8 +5115,7 @@ export const events: TimelineSection[] = [
         id: 595,
         title: 'Hérode Antipas',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Brooklyn_Museum_Herod_James_Tissot_-_overall.jpg',
+        image: '',
         slug: 'herod-antipas',
         start: -20,
         end: 50,
@@ -5286,8 +5126,7 @@ export const events: TimelineSection[] = [
         id: 679,
         title: 'Jésus',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-Jesus_8-1-2013%205-43-23%20PM.jpg',
+        image: '',
         slug: 'jesus',
         start: -4,
         end: 31,
@@ -5327,8 +5166,7 @@ export const events: TimelineSection[] = [
       {
         id: 1029,
         title: 'Le ministère de Jean-Baptiste',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas0793_8-28-2013%202-48-58%20PM.jpg',
+        image: '',
         slug: 'john-the-baptists-ministry',
         start: 25,
         end: 27,
@@ -5349,8 +5187,7 @@ export const events: TimelineSection[] = [
       {
         id: 1028,
         title: 'Le premier ministère du Christ',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas2553_8-6-2013%204-34-53%20PM.jpg',
+        image: '',
         slug: 'christs-early-ministry',
         start: 27,
         end: 28,
@@ -5661,8 +5498,7 @@ export const events: TimelineSection[] = [
       {
         id: 1200,
         title: 'Lapidation de Stephen',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/StStephen_GiacomoCavedone_2-28-2013%202-06-41%20PM.jpg',
+        image: '',
         slug: 'stoning-of-stephen',
         start: 34,
         end: 34,
@@ -5673,8 +5509,7 @@ export const events: TimelineSection[] = [
       {
         id: 1293,
         title: 'Prophéties de la fin des temps',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/91726832_11_sm_2-27-2013%2011-45-33%20AM.jpg',
+        image: '',
         slug: 'prophecies-of-the-end-of-time',
         start: 34,
         end: 2020,
@@ -5685,8 +5520,7 @@ export const events: TimelineSection[] = [
       {
         id: 1237,
         title: "Église d'Ephèse, âge de l'Église apostolique",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/149144388_2-28-2013%209-06-13%20AM.jpg',
+        image: '',
         slug: 'church-of-ephesus-apostolic-church-age',
         start: 31,
         end: 100,
@@ -5737,8 +5571,7 @@ export const events: TimelineSection[] = [
       {
         id: 1283,
         title: 'Prophétie du 2300e jour',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Ark_Commandments_2-27-2013-2-58-25-PM_7-18-2013%2011-01-41%20AM.jpg',
+        image: '',
         slug: 'sanctuary-cleansed-2300-day-prophecy',
         start: -457,
         end: 1844,
@@ -5749,8 +5582,7 @@ export const events: TimelineSection[] = [
       {
         id: 1386,
         title: 'La prophétie des soixante-dix semaines',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/70_weeks_Prophecy_sm_2-26-2013%2011-30-56%20AM.jpg',
+        image: '',
         slug: 'the-seventyweeks-prophecy',
         start: -457,
         end: 34,
@@ -5800,8 +5632,7 @@ export const events: TimelineSection[] = [
       {
         id: 1399,
         title: 'Les prophéties de Daniel pour la Rome',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Statue_Rome_8-22-2013%203-26-36%20PM.jpg',
+        image: '',
         slug: 'daniels-rome-prophecies',
         start: -168,
         end: 476,
@@ -5813,7 +5644,7 @@ export const events: TimelineSection[] = [
   },
   {
     id: '10',
-    image: 'http://timeline.biblehistory.com/css/img/period_10.jpg',
+    image: '',
     description:
       "Du martyre d'Étienne à la persécution et à l'ascension de l'Église par Paul et les apôtres.",
     startYear: 35,
@@ -5827,8 +5658,7 @@ export const events: TimelineSection[] = [
       {
         id: 1201,
         title: 'Conversion de Paul',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas3972_8-7-2013%2010-14-58%20AM.jpg',
+        image: '',
         slug: 'conversion-of-paul',
         start: 35,
         end: 35,
@@ -5839,8 +5669,7 @@ export const events: TimelineSection[] = [
       {
         id: 1202,
         title: 'Paul à Damas et en Arabie',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Ananias_restores_sight_of_Saint_Paul_8-1-2013%208-51-07%20AM.jpg',
+        image: '',
         slug: 'paul-in-damascus-and-arabia',
         start: 35,
         end: 38,
@@ -5851,8 +5680,7 @@ export const events: TimelineSection[] = [
       {
         id: 1203,
         title: "L'évasion de Paul de Damas",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Paul_being_let_down_in_a_basket_8-1-2013%208-55-33%20AM.jpg',
+        image: '',
         slug: 'pauls-escape-from-damascus',
         start: 38,
         end: 38,
@@ -6123,8 +5951,7 @@ export const events: TimelineSection[] = [
       {
         id: 1287,
         title: 'Sept trompettes',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/7%20Angels_Z_sm_2-27-2013%201-31-57%20PM.jpg',
+        image: '',
         slug: 'seven-trumpets',
         start: 70,
         end: 2020,
@@ -6175,8 +6002,7 @@ export const events: TimelineSection[] = [
       {
         id: 1299,
         title: 'Règne romain de Constantin le Grand',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-lwjas0188_8-7-2013%209-42-50%20AM.jpg',
+        image: '',
         slug: 'roman-reign-of-constantine-the-great',
         start: 306,
         end: 337,
@@ -6187,8 +6013,7 @@ export const events: TimelineSection[] = [
       {
         id: 1300,
         title: 'Constantin se convertit au christianisme',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-pppas0006_8-7-2013%209-43-49%20AM.jpg',
+        image: '',
         slug: 'constantine-converts-to-christianity',
         start: 312,
         end: 312,
@@ -6199,8 +6024,7 @@ export const events: TimelineSection[] = [
       {
         id: 1301,
         title: 'Édit de Milan (Édit de Tolérance)',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas2439_8-7-2013%209-46-04%20AM.jpg',
+        image: '',
         slug: 'edict-of-milan-edict-of-toleration',
         start: 313,
         end: 313,
@@ -6212,8 +6036,7 @@ export const events: TimelineSection[] = [
         id: 1238,
         title: 'Église de Smyrne, âge du martyre',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/BambergApocalypseFolio004vJohnWritesToEphesusAndSmyrna_8-8-2013%203-43-29%20PM.JPG',
+        image: '',
         slug: 'church-of-smyrna-age-of-martyrdom',
         start: 100,
         end: 313,
@@ -6223,8 +6046,7 @@ export const events: TimelineSection[] = [
       {
         id: 1239,
         title: 'Église de Pergame, âge de la popularité',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/800px-Drawing_of_ancient_Pergamon_8-8-2013%203-51-21%20PM.jpg',
+        image: '',
         slug: 'church-of-pergamos-age-of-popularity',
         start: 313,
         end: 538,
@@ -6236,8 +6058,7 @@ export const events: TimelineSection[] = [
         id: 595,
         title: 'Hérode Antipas',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Brooklyn_Museum_Herod_James_Tissot_-_overall.jpg',
+        image: '',
         slug: 'herod-antipas',
         start: -20,
         end: 50,
@@ -6277,8 +6098,7 @@ export const events: TimelineSection[] = [
       {
         id: 1293,
         title: 'Prophéties de la fin des temps',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/91726832_11_sm_2-27-2013%2011-45-33%20AM.jpg',
+        image: '',
         slug: 'prophecies-of-the-end-of-time',
         start: 34,
         end: 2020,
@@ -6289,8 +6109,7 @@ export const events: TimelineSection[] = [
       {
         id: 1237,
         title: "Église d'Ephèse, âge de l'Église apostolique",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/149144388_2-28-2013%209-06-13%20AM.jpg',
+        image: '',
         slug: 'church-of-ephesus-apostolic-church-age',
         start: 31,
         end: 100,
@@ -6302,7 +6121,7 @@ export const events: TimelineSection[] = [
   },
   {
     id: '11',
-    image: 'http://timeline.biblehistory.com/css/img/period_11.jpg',
+    image: '',
     description:
       "De la légalisation du christianisme sous Constantin à la persécution de l'âge des ténèbres..",
     startYear: 350,
@@ -6316,8 +6135,7 @@ export const events: TimelineSection[] = [
       {
         id: 1289,
         title: 'Prophéties des 1290 et 1335 jours',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/iStock_000017993646Small_2-27-2013%201-04-14%20PM.jpg',
+        image: '',
         slug: '1290-and-1335-day-prophecies',
         start: 508,
         end: 1798,
@@ -6328,8 +6146,7 @@ export const events: TimelineSection[] = [
       {
         id: 1288,
         title: 'Prophétie des 1260 jours',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Rev%2012%20Woman-Dragon_2_2-27-2013%201-25-11%20PM.jpg',
+        image: '',
         slug: '1260-day-prophecy',
         start: 538,
         end: 1798,
@@ -6340,8 +6157,7 @@ export const events: TimelineSection[] = [
       {
         id: 1291,
         title: "Les deux bêtes de l'Apocalypse 13",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-rev13_8-1-2013%205-34-26%20PM.jpg',
+        image: '',
         slug: 'the-two-beasts-of-revelation-13',
         start: 538,
         end: 1798,
@@ -6372,8 +6188,7 @@ export const events: TimelineSection[] = [
       {
         id: 1305,
         title: 'John Wycliffe',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas1203_8-13-2013%201-50-17%20PM.jpg',
+        image: '',
         slug: 'john-wycliffe',
         start: 1328,
         end: 1384,
@@ -6384,8 +6199,7 @@ export const events: TimelineSection[] = [
       {
         id: 1306,
         title: 'Jan Hus (John Huss)',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas2470_8-13-2013%201-52-01%20PM.jpg',
+        image: '',
         slug: 'jan-hus-john-huss',
         start: 1372,
         end: 1415,
@@ -6416,8 +6230,7 @@ export const events: TimelineSection[] = [
       {
         id: 1312,
         title: 'Les Lollards',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas0722_8-28-2013%203-11-16%20PM.jpg',
+        image: '',
         slug: 'the-lollards',
         start: 1381,
         end: 1532,
@@ -6518,8 +6331,7 @@ export const events: TimelineSection[] = [
       {
         id: 1323,
         title: 'Martin Luther',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Martin_Luther_by_Cranach-restoration_8-5-2013%209-13-05%20AM.jpg',
+        image: '',
         slug: 'martin-luther',
         start: 1483,
         end: 1546,
@@ -6530,8 +6342,7 @@ export const events: TimelineSection[] = [
         id: 1324,
         title: 'Ulrich Zwingli',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Ulrich-Zwingli-1_8-5-2013%209-17-55%20AM.jpg',
+        image: '',
         slug: 'ulrich-zwingli',
         start: 1484,
         end: 1531,
@@ -6571,8 +6382,7 @@ export const events: TimelineSection[] = [
       {
         id: 1331,
         title: 'William Tyndale',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/494px-William_Tyndale_8-5-2013%209-25-02%20AM.jpg',
+        image: '',
         slug: 'william-tyndale',
         start: 1492,
         end: 1536,
@@ -6632,8 +6442,7 @@ export const events: TimelineSection[] = [
       {
         id: 1334,
         title: 'John Calvin',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/John%20Calvin%20small_2-26-2013%204-55-26%20PM.jpg',
+        image: '',
         slug: 'john-calvin',
         start: 1509,
         end: 1564,
@@ -6663,8 +6472,7 @@ export const events: TimelineSection[] = [
       {
         id: 1337,
         title: 'John Knox',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/92833011_2-26-2013%204-12-16%20PM.jpg',
+        image: '',
         slug: 'john-knox',
         start: 1513,
         end: 1572,
@@ -6694,8 +6502,7 @@ export const events: TimelineSection[] = [
       {
         id: 1240,
         title: "Église de Thyatire, âge de l'adversité",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/The_angels_standing_guard_to_the_seven_churches_of_Asia_2-27-2013%205-53-05%20PM.jpg',
+        image: '',
         slug: 'church-of-thyatira-age-of-adversity',
         start: 538,
         end: 1798,
@@ -6716,8 +6523,7 @@ export const events: TimelineSection[] = [
       {
         id: 1400,
         title: "Les prophéties de Daniel sur l'Europe divisée",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Statue_Feet_8-26-2013%205-37-28%20PM.jpg',
+        image: '',
         slug: 'daniels-divided-europe-prophecies',
         start: 476,
         end: 2020,
@@ -6728,8 +6534,7 @@ export const events: TimelineSection[] = [
       {
         id: 1287,
         title: 'Sept trompettes',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/7%20Angels_Z_sm_2-27-2013%201-31-57%20PM.jpg',
+        image: '',
         slug: 'seven-trumpets',
         start: 70,
         end: 2020,
@@ -6740,8 +6545,7 @@ export const events: TimelineSection[] = [
       {
         id: 1239,
         title: 'Église de Pergame, âge de la popularité',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/800px-Drawing_of_ancient_Pergamon_8-8-2013%203-51-21%20PM.jpg',
+        image: '',
         slug: 'church-of-pergamos-age-of-popularity',
         start: 313,
         end: 538,
@@ -6753,7 +6557,7 @@ export const events: TimelineSection[] = [
   },
   {
     id: '12',
-    image: 'http://timeline.biblehistory.com/css/img/period_12.jpg',
+    image: '',
     description:
       "Des grands réformateurs, tels que Luther et Wycliffe, à l'expansion du mouvement protestant.",
     startYear: 1520,
@@ -6917,8 +6721,7 @@ export const events: TimelineSection[] = [
       {
         id: 1358,
         title: 'Publication de la première Bible complète en anglais',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Tyndale_Bible_-_Gospel_of_John_2-26-2013%202-52-00%20PM.jpg',
+        image: '',
         slug: 'first-full-english-bible-published',
         start: 1535,
         end: 1535,
@@ -7029,8 +6832,7 @@ export const events: TimelineSection[] = [
       {
         id: 1369,
         title: 'La contre-réforme catholique',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/774px-Westfaelischer_Friede_in_Muenster_Gerard_Terborch_1648_8-5-2013%2010-41-37%20AM.jpg',
+        image: '',
         slug: 'the-catholic-counterreformation',
         start: 1545,
         end: 1648,
@@ -7081,8 +6883,7 @@ export const events: TimelineSection[] = [
       {
         id: 1375,
         title: 'Jacobus Arminius',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/James_Arminius_2_2-26-2013%2012-18-25%20PM.jpg',
+        image: '',
         slug: 'jacobus-arminius',
         start: 1560,
         end: 1609,
@@ -7193,8 +6994,7 @@ export const events: TimelineSection[] = [
       {
         id: 1245,
         title: "La bête s'élève de la terre",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-beasts_8-5-2013%2011-11-37%20AM.jpg',
+        image: '',
         slug: 'beast-rises-from-the-earth',
         start: 1776,
         end: 1789,
@@ -7205,8 +7005,7 @@ export const events: TimelineSection[] = [
       {
         id: 1242,
         title: 'Église de Philadelphie, le Grand Siècle des Lumières',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas2121_8-13-2013%202-05-30%20PM.jpg',
+        image: '',
         slug: 'church-of-philadelphia-great-enlightenment-age',
         start: 1755,
         end: 1844,
@@ -7216,8 +7015,7 @@ export const events: TimelineSection[] = [
       {
         id: 1289,
         title: 'Prophéties des 1290 et 1335 jours',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/iStock_000017993646Small_2-27-2013%201-04-14%20PM.jpg',
+        image: '',
         slug: '1290-and-1335-day-prophecies',
         start: 508,
         end: 1798,
@@ -7228,8 +7026,7 @@ export const events: TimelineSection[] = [
       {
         id: 1288,
         title: 'Prophétie des 1260 jours',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Rev%2012%20Woman-Dragon_2_2-27-2013%201-25-11%20PM.jpg',
+        image: '',
         slug: '1260-day-prophecy',
         start: 538,
         end: 1798,
@@ -7240,8 +7037,7 @@ export const events: TimelineSection[] = [
       {
         id: 1291,
         title: "Les deux bêtes de l'Apocalypse 13",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-rev13_8-1-2013%205-34-26%20PM.jpg',
+        image: '',
         slug: 'the-two-beasts-of-revelation-13',
         start: 538,
         end: 1798,
@@ -7252,8 +7048,7 @@ export const events: TimelineSection[] = [
       {
         id: 1312,
         title: 'Les Lollards',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas0722_8-28-2013%203-11-16%20PM.jpg',
+        image: '',
         slug: 'the-lollards',
         start: 1381,
         end: 1532,
@@ -7314,8 +7109,7 @@ export const events: TimelineSection[] = [
       {
         id: 1323,
         title: 'Martin Luther',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Martin_Luther_by_Cranach-restoration_8-5-2013%209-13-05%20AM.jpg',
+        image: '',
         slug: 'martin-luther',
         start: 1483,
         end: 1546,
@@ -7326,8 +7120,7 @@ export const events: TimelineSection[] = [
         id: 1324,
         title: 'Ulrich Zwingli',
         approx: true,
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Ulrich-Zwingli-1_8-5-2013%209-17-55%20AM.jpg',
+        image: '',
         slug: 'ulrich-zwingli',
         start: 1484,
         end: 1531,
@@ -7367,8 +7160,7 @@ export const events: TimelineSection[] = [
       {
         id: 1331,
         title: 'William Tyndale',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/494px-William_Tyndale_8-5-2013%209-25-02%20AM.jpg',
+        image: '',
         slug: 'william-tyndale',
         start: 1492,
         end: 1536,
@@ -7428,8 +7220,7 @@ export const events: TimelineSection[] = [
       {
         id: 1334,
         title: 'John Calvin',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/John%20Calvin%20small_2-26-2013%204-55-26%20PM.jpg',
+        image: '',
         slug: 'john-calvin',
         start: 1509,
         end: 1564,
@@ -7439,8 +7230,7 @@ export const events: TimelineSection[] = [
       {
         id: 1337,
         title: 'John Knox',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/92833011_2-26-2013%204-12-16%20PM.jpg',
+        image: '',
         slug: 'john-knox',
         start: 1513,
         end: 1572,
@@ -7450,8 +7240,7 @@ export const events: TimelineSection[] = [
       {
         id: 1240,
         title: "Église de Thyatire, âge de l'adversité",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/The_angels_standing_guard_to_the_seven_churches_of_Asia_2-27-2013%205-53-05%20PM.jpg',
+        image: '',
         slug: 'church-of-thyatira-age-of-adversity',
         start: 538,
         end: 1798,
@@ -7472,8 +7261,7 @@ export const events: TimelineSection[] = [
       {
         id: 1400,
         title: "Les prophéties de Daniel sur l'Europe divisée",
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Statue_Feet_8-26-2013%205-37-28%20PM.jpg',
+        image: '',
         slug: 'daniels-divided-europe-prophecies',
         start: 476,
         end: 2020,
@@ -7484,8 +7272,7 @@ export const events: TimelineSection[] = [
       {
         id: 1244,
         title: 'La blessure mortelle',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Berthier_2-27-2013%205-16-26%20PM.jpg',
+        image: '',
         slug: 'deadly-wound-healed',
         start: 1798,
         end: 1929,
@@ -7496,7 +7283,7 @@ export const events: TimelineSection[] = [
   },
   {
     id: '13',
-    image: 'http://timeline.biblehistory.com/css/img/period_13.jpg',
+    image: '',
     description:
       "De la montée de l'Antéchrist, la marque de la bête, au retour du Christ et à la restauration du paradis.",
     startYear: 1840,
@@ -7510,8 +7297,7 @@ export const events: TimelineSection[] = [
       {
         id: 1243,
         title: 'Église de Laodicée, âge du jugement',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Hunt_Light_of_the_World_2-27-2013%205-37-22%20PM.jpg',
+        image: '',
         slug: 'church-of-laodicea-age-of-judgment',
         start: 1844,
         end: 1844,
@@ -7522,8 +7308,7 @@ export const events: TimelineSection[] = [
       {
         id: 1246,
         title: 'Proclamation des messages des trois anges',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-lwjas0564_8-7-2013%202-09-59%20PM.jpg',
+        image: '',
         slug: 'three-angels-messages-proclaimed-to-all-the-earth',
         start: 1844,
         end: 2020,
@@ -7534,8 +7319,7 @@ export const events: TimelineSection[] = [
       {
         id: 1244,
         title: 'La blessure mortelle',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/Berthier_2-27-2013%205-16-26%20PM.jpg',
+        image: '',
         slug: 'deadly-wound-healed',
         start: 1798,
         end: 1929,
@@ -7595,8 +7379,7 @@ export const events: TimelineSection[] = [
       {
         id: 1255,
         title: 'Le retour du Christ',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-SecondComing_8-5-2013%2011-56-22%20AM.jpg',
+        image: '',
         slug: 'return-of-christ',
         start: 2020,
         end: 2020,
@@ -7617,8 +7400,7 @@ export const events: TimelineSection[] = [
       {
         id: 1257,
         title: 'Emprisonnement de Satan sur Terre / Jugement des saints du Ciel',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-millennium-1_8-5-2013%2012-13-14%20PM.jpg',
+        image: '',
         slug: 'imprisonment-of-satan-on-earth-judgment-by-saints-in-heaven',
         start: 2020,
         end: 3020,
@@ -7678,8 +7460,7 @@ export const events: TimelineSection[] = [
       {
         id: 1258,
         title: 'La nouvelle Jérusalem descend du Ciel à la Terre',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-smcas0179_8-5-2013%201-08-12%20PM.jpg',
+        image: '',
         slug: 'new-jerusalem-descends-from-heaven-to-earth',
         start: 3020,
         end: 3020,
@@ -7690,8 +7471,7 @@ export const events: TimelineSection[] = [
       {
         id: 1259,
         title: 'Les méchants sont ressuscités sous forme corporelle',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/wicked-resurrected_8-5-2013%201-21-14%20PM.jpg',
+        image: '',
         slug: 'wicked-are-resurrected-in-bodily-form',
         start: 3020,
         end: 3020,
@@ -7702,8 +7482,7 @@ export const events: TimelineSection[] = [
       {
         id: 1260,
         title: 'Les méchants sont détruits à jamais',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-jcgas0071_8-5-2013%201-29-52%20PM.jpg',
+        image: '',
         slug: 'wicked-are-destroyed-forever',
         start: 3020,
         end: 3020,
@@ -7714,8 +7493,7 @@ export const events: TimelineSection[] = [
       {
         id: 1261,
         title: 'Paradis restauré',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-pppas0114_8-7-2013%201-56-42%20PM.jpg',
+        image: '',
         slug: 'paradise-restored',
         start: 3020,
         end: 3020,
@@ -7756,8 +7534,7 @@ export const events: TimelineSection[] = [
       {
         id: 1242,
         title: 'Église de Philadelphie, le Grand Siècle des Lumières',
-        image:
-          'http://timeline.biblehistory.com/media/images/t/GoodSalt-prcas2121_8-13-2013%202-05-30%20PM.jpg',
+        image: '',
         slug: 'church-of-philadelphia-great-enlightenment-age',
         start: 1755,
         end: 1844,

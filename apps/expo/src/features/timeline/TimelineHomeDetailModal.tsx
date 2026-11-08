@@ -34,11 +34,8 @@ const TimelineHomeDetailModal = ({ modalRef, inline = false }: Props) => {
         <Box className="overflow-hidden border-continuous mt-[20px] p-[20px]">
           <Paragraph>
             <Trans>
-              Traduction de la Chronologie biblique{' '}
-              <InlineLink href="http://timeline.biblehistory.com/home">
-                "The Bible Timeline"
-              </InlineLink>
-              , avec l'autorisation d'
+              Traduction de la Chronologie biblique &quot;The Bible Timeline&quot; , avec
+              l'autorisation d'
               <InlineLink href="https://www.bibleuniverse.com/study-tools/storacles/c/3/l/french">
                 Amazing Facts
               </InlineLink>

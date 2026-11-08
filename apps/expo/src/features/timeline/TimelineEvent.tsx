@@ -1,3 +1,4 @@
+import { TIMELINE_PICTURES_ENABLED } from '~helpers/serviceConnections'
 import { twMerge } from '~common/ui/classNames'
 import React from 'react'
 import Animated, {
@@ -156,12 +157,14 @@ const TimelineEvent = ({
         className="overflow-hidden border-continuous ml-auto rounded-tr-[10px] rounded-br-[10px]"
         style={{ width: imageSize }}
       >
-        <Image
-          style={{ width: imageSize, height: '100%' }}
-          source={{
-            uri: image,
-          }}
-        />
+        {TIMELINE_PICTURES_ENABLED && (
+          <Image
+            style={{ width: imageSize, height: '100%' }}
+            source={{
+              uri: image,
+            }}
+          />
+        )}
       </Box>
     </LinkBox>
   )

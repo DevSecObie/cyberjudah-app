@@ -1,3 +1,4 @@
+import { SEARCH_TELEMETRY_ENABLED } from '~helpers/serviceConnections'
 import type {
   SearchAnalyticsEventName,
   SearchAnalyticsInputKind,
@@ -53,7 +54,7 @@ export const createHttpSearchAnalyticsAccess = ({
   timeoutMs?: number
 }): SearchAnalyticsAccess => ({
   record: async event => {
-    if (!(await isOnline())) return
+    if (!SEARCH_TELEMETRY_ENABLED || !(await isOnline())) return
 
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), timeoutMs)

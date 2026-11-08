@@ -1,3 +1,4 @@
+import { AUDIO_PLAYBACK_ENABLED } from '~helpers/serviceConnections'
 import React from 'react'
 
 import { useAtomValue } from 'jotai/react'
@@ -26,7 +27,7 @@ type BibleFooterProps = {
   isInTab?: boolean
 }
 
-const BibleFooter = ({
+const AvailableBibleFooter = ({
   bibleAtom,
   chapterVerses,
   book,
@@ -115,5 +116,8 @@ const BibleFooter = ({
 
   return null
 }
+
+const BibleFooter = (props: BibleFooterProps) =>
+  AUDIO_PLAYBACK_ENABLED ? <AvailableBibleFooter {...props} /> : null
 
 export default BibleFooter

@@ -21,7 +21,7 @@ const event = {
 }
 
 describe('search analytics HTTP access', () => {
-  it('posts a search event to the protected resource API', async () => {
+  it('does not transmit queries or tapped results, even while online', async () => {
     const fetcher = jest.fn(async () => new Response('{}', { status: 202 }))
     const access = createHttpSearchAnalyticsAccess({
       baseUrl: 'https://api.cyberjudah.io/',
@@ -31,13 +31,15 @@ describe('search analytics HTTP access', () => {
 
     await access.record({ ...event, sources: [...event.sources] })
 
-    expect(fetcher).toHaveBeenCalledWith(
-      'https://api.cyberjudah.io/v1/search-events',
-      expect.objectContaining({
-        method: 'POST',
-        body: JSON.stringify(event),
-      })
-    )
+    await access.record({
+      ...event,
+      event: 'result_opened',
+      sources: [...event.sources],
+      clickedResultType: 'passage',
+      clickedResultKey: '1-1-1',
+      clickedRank: 1,
+    })
+    expect(fetcher).not.toHaveBeenCalled()
   })
 
   it('does not queue an event while offline', async () => {
