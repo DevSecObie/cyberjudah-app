@@ -1,0 +1,98 @@
+{
+  "resources": {
+    "dictionary-directory": {
+      "id": "dictionary-directory",
+      "url": "https://api.cyberjudah.io/offline/dictionaries/dictionary-directory.sqlite.zip?sha256=30e348b11b9d10f58aefce626869dcedf387760a3b877d38ebfcb4077426c8ca",
+      "file": "dictionaries/dictionary-directory.sqlite.zip",
+      "entry": "dictionary-directory.sqlite",
+      "entries": {
+        "canonical": {
+          "entry": "dictionary-directory.sqlite",
+          "sha256": "fd4d8678452525b875a04aeff5c432b8a0ff5e5220294bbbd1cd16826617e42a",
+          "bytes": 12005376
+        }
+      },
+      "archiveSha256": "30e348b11b9d10f58aefce626869dcedf387760a3b877d38ebfcb4077426c8ca",
+      "archiveBytes": 3998260,
+      "contentSha256": "fd4d8678452525b875a04aeff5c432b8a0ff5e5220294bbbd1cd16826617e42a",
+      "contentBytes": 12005376,
+      "resourceRevision": "dictionary-directory-baf06dbc0ce380dbfddc",
+      "installedBytes": 12005376,
+      "peakInstallationBytes": 18404182,
+      "strategy": "archive-extract",
+      "works": [
+        "SMITH",
+        "ISBE",
+        "UNFOLDINGWORD_TW",
+        "JEWISH_ENCYCLOPEDIA"
+      ],
+      "entryCount": 29281
+    },
+    "database:SMITH:en": {
+      "id": "database:SMITH:en",
+      "url": "https://api.cyberjudah.io/offline/dictionaries/dictionary-smith-en.sqlite.zip?sha256=04e06688b737b672543a65e4edf04b395c3fa4b1a936442462019a9142088357",
+      "file": "dictionaries/dictionary-smith-en.sqlite.zip",
+      "entry": "dictionnaire.sqlite",
+      "entries": {
+        "canonical": {
+          "entry": "dictionnaire.sqlite",
+          "sha256": "fe12a56cc697957d1a2b52f7b79ea5485cb2e65602614a646cffb6ab7942173a",
+          "bytes": 11509760
+        }
+      },
+      "archiveSha256": "04e06688b737b672543a65e4edf04b395c3fa4b1a936442462019a9142088357",
+      "archiveBytes": 3014112,
+      "contentSha256": "fe12a56cc697957d1a2b52f7b79ea5485cb2e65602614a646cffb6ab7942173a",
+      "contentBytes": 11509760,
+      "resourceRevision": "dictionary-smith-en-4702f2d7b75e3d9fe3b7",
+      "installedBytes": 11509760,
+      "peakInstallationBytes": 16702453,
+      "strategy": "archive-extract",
+      "entryCount": 4561
+    },
+    "database:ISBE:en": {
+      "id": "database:ISBE:en",
+      "url": "https://api.cyberjudah.io/offline/dictionaries/dictionary-isbe-en.sqlite.zip?sha256=dab651afc295ad43c0bbd8e3c0f2c4426c44ad9fedcd0bc70f7b5cfe2031d5f0",
+      "file": "dictionaries/dictionary-isbe-en.sqlite.zip",
+      "entry": "dictionnaire.sqlite",
+      "entries": {
+        "canonical": {
+          "entry": "dictionnaire.sqlite",
+          "sha256": "8c79dd5d6a43e5970a3ce50325bdbeae0b2fd1a6d8c7b08e122c7f7c6ddf44c9",
+          "bytes": 70422528
+        }
+      },
+      "archiveSha256": "dab651afc295ad43c0bbd8e3c0f2c4426c44ad9fedcd0bc70f7b5cfe2031d5f0",
+      "archiveBytes": 18312794,
+      "contentSha256": "8c79dd5d6a43e5970a3ce50325bdbeae0b2fd1a6d8c7b08e122c7f7c6ddf44c9",
+      "contentBytes": 70422528,
+      "resourceRevision": "dictionary-isbe-en-12a1d4f20c1d7a55c6c8",
+      "installedBytes": 70422528,
+      "peakInstallationBytes": 102045621,
+      "strategy": "archive-extract",
+      "entryCount": 9380
+    },
+    "database:UNFOLDINGWORD_TW:en": {
+      "id": "database:UNFOLDINGWORD_TW:en",
+      "url": "https://api.cyberjudah.io/offline/dictionaries/dictionary-unfoldingword-translation-words-en.sqlite.zip?sha256=42ae66c4d5b3940eae9cc4398f98c7cadecfec330d14688036dbd4d817fca230",
+      "file": "dictionaries/dictionary-unfoldingword-translation-words-en.sqlite.zip",
+      "entry": "dictionnaire.sqlite",
+      "entries": {
+        "canonical": {
+          "entry": "dictionnaire.sqlite",
+          "sha256": "438621ea7332fddd88953fe3da2139fedbc3a172a8ba55ee1d8b2043476b15ec",
+          "bytes": 5451776
+        }
+      },
+      "archiveSha256": "42ae66c4d5b3940eae9cc4398f98c7cadecfec330d14688036dbd4d817fca230",
+      "archiveBytes": 1112376,
+      "contentSha256": "438621ea7332fddd88953fe3da2139fedbc3a172a8ba55ee1d8b2043476b15ec",
+      "contentBytes": 5451776,
+      "resourceRevision": "dictionary-unfoldingword-translation-words-en-8a252493a8538cd0fa48",
+      "installedBytes": 5451776,
+      "peakInstallationBytes": 7548775,
+      "strategy": "archive-extract",
+      "entryCount": 949
+    }
+  }
+}

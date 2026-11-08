@@ -1,0 +1,115 @@
+{
+  "note": "Dictionaries rebuilt from public-domain or freely licensed sources with upstream's own acquisition and normalization scripts (apps/resource-studio/workflows/dictionaries). sqlitePath and correspondenceSeedsPath are relative to the --sources directory given to scripts/build-free-dictionaries.mjs. Same shape as apps/resource-studio/config/resource-publications/dictionary.json. directoryOnly lists our own dictionaries that the directory indexes as published (file read from public/offline, never changed); their ids and terms come from apps/expo/src/features/resources/dictionaryAccess.ts.",
+  "publications": [
+    {
+      "work": "smith",
+      "resourceId": "SMITH",
+      "language": "en",
+      "file": "dictionaries/dictionary-smith-en.sqlite.zip",
+      "acquire": {
+        "script": "acquire-smith.mjs",
+        "outputDir": "smith",
+        "mod2imp": true
+      },
+      "title": "Smith’s Bible Dictionary",
+      "abbreviation": "Smith",
+      "authors": [
+        "William Smith",
+        "F. N. Peloubet",
+        "M. A. Peloubet"
+      ],
+      "description": "Historical Bible dictionary covering people, places, institutions and customs.",
+      "edition": "CrossWire module Smith 1.3, based on the 1884 Peloubet revision",
+      "source": "CrossWire SWORD module Smith 1.3",
+      "sourceVersion": "crosswire-smith-1.3-2001-12-15",
+      "sqlitePath": "smith/smith.sqlite",
+      "rights": {
+        "holder": "Domaine public",
+        "termsReference": "https://www.crosswire.org/ftpmirror/pub/sword/packages/rawzip/Smith.zip — module metadata declares DistributionLicense=Public Domain.",
+        "attribution": "William Smith; revised by F. N. Peloubet and M. A. Peloubet; CrossWire SWORD module Smith 1.3",
+        "online": true,
+        "offline": true
+      },
+      "deliveryCapabilities": {
+        "onlineAccess": true,
+        "offlineDownload": true
+      }
+    },
+    {
+      "work": "isbe",
+      "resourceId": "ISBE",
+      "language": "en",
+      "file": "dictionaries/dictionary-isbe-en.sqlite.zip",
+      "acquire": {
+        "script": "acquire-isbe.mjs",
+        "outputDir": "isbe",
+        "mod2imp": true
+      },
+      "title": "International Standard Bible Encyclopedia",
+      "abbreviation": "ISBE 1915",
+      "authors": [
+        "James Orr and contributors"
+      ],
+      "description": "Extensive historical Bible encyclopedia covering people, places, texts, languages, history and theology.",
+      "edition": "CrossWire module ISBE 2.2; historical scholarship originally published in 1915",
+      "source": "CrossWire SWORD module ISBE 2.2",
+      "sourceVersion": "crosswire-isbe-2.2-2009-09-07",
+      "sqlitePath": "isbe/isbe.sqlite",
+      "rights": {
+        "holder": "Domaine public",
+        "termsReference": "https://www.crosswire.org/ftpmirror/pub/sword/packages/rawzip/ISBE.zip — module metadata declares DistributionLicense=Public Domain.",
+        "attribution": "International Standard Bible Encyclopedia — James Orr, general editor and contributors; CrossWire SWORD module ISBE 2.2",
+        "online": true,
+        "offline": true
+      },
+      "deliveryCapabilities": {
+        "onlineAccess": true,
+        "offlineDownload": true
+      }
+    },
+    {
+      "work": "unfoldingword-translation-words",
+      "resourceId": "UNFOLDINGWORD_TW",
+      "language": "en",
+      "file": "dictionaries/dictionary-unfoldingword-translation-words-en.sqlite.zip",
+      "acquire": {
+        "script": "acquire-unfoldingword-tw.mjs",
+        "outputDir": "unfoldingword-translation-words",
+        "mod2imp": false
+      },
+      "title": "Translation Words",
+      "abbreviation": "Translation Words",
+      "authors": [
+        "Door43 World Missions Community",
+        "unfoldingWord contributors"
+      ],
+      "description": "A modern Bible translation lexicon with concise definitions, translation suggestions, related concepts and biblical examples.",
+      "edition": "unfoldingWord Translation Words release v90, converted to the dictionary schema",
+      "source": "unfoldingWord en_tw release v90",
+      "sourceVersion": "unfoldingword-en-tw-v90-2026-08-14",
+      "sqlitePath": "unfoldingword-translation-words/unfoldingword-translation-words.sqlite",
+      "correspondenceSeedsPath": "unfoldingword-translation-words/correspondence-seeds.json",
+      "rights": {
+        "holder": "CC BY-SA 4.0",
+        "termsReference": "https://git.door43.org/unfoldingWord/en_tw/src/tag/v90/LICENSE.md",
+        "attribution": "The original work by unfoldingWord is available from https://www.unfoldingword.org/utw. Converted from Markdown to the dictionary schema with Bible references normalized; this adaptation is shared under CC BY-SA 4.0.",
+        "online": true,
+        "offline": true
+      },
+      "deliveryCapabilities": {
+        "onlineAccess": true,
+        "offlineDownload": true
+      }
+    }
+  ],
+  "directoryOnly": [
+    {
+      "work": "jewish-encyclopedia",
+      "resourceId": "JEWISH_ENCYCLOPEDIA",
+      "language": "en",
+      "file": "dictionaries/dictionary-jewish-encyclopedia-en.sqlite.zip",
+      "title": "The Jewish Encyclopedia (1901–1906)",
+      "abbreviation": "Jewish Encyclopedia"
+    }
+  ]
+}
