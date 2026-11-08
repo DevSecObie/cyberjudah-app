@@ -128,7 +128,9 @@
     "strong-lexicon:simple-en",
     "strong-lexicon:resources",
     "strong-lexicon:entities",
-    "database:JEWISH_ENCYCLOPEDIA:en"
+    "database:JEWISH_ENCYCLOPEDIA:en",
+    "database:TIMELINE:en",
+    "database:TIMELINE:fr"
   ],
   "archivePins": {
     "bible:FMAR": {
@@ -180,11 +182,11 @@
       "bytes": 853648
     },
     "database:TIMELINE:en": {
-      "sha256": "b2fdfe01f8a6db7be9dba589ce9e402e3a8621b5969d05ebcbc2007c830231cf",
+      "sha256": "089ea36f7a9e37176055aa8b79230e908c281facd36111d55e0d6e458e940e8a",
       "bytes": 527700
     },
     "database:TIMELINE:fr": {
-      "sha256": "b2fdfe01f8a6db7be9dba589ce9e402e3a8621b5969d05ebcbc2007c830231cf",
+      "sha256": "089ea36f7a9e37176055aa8b79230e908c281facd36111d55e0d6e458e940e8a",
       "bytes": 527700
     },
     "database:JEWISH_ENCYCLOPEDIA:en": {
@@ -192,22 +194,37 @@
       "bytes": 22612534
     }
   },
-  "heldResources": [
+  "heldResources": [],
+  "archiveCorrections": [
     {
       "resourceId": "database:TIMELINE:en",
-      "reason": "ZIP member mode0600; producer must set regular-file100644 with identical inner SHA256",
-      "approvedOriginalArchive": {
+      "previousArchive": {
         "sha256": "b2fdfe01f8a6db7be9dba589ce9e402e3a8621b5969d05ebcbc2007c830231cf",
         "bytes": 527700
-      }
+      },
+      "correctedArchive": {
+        "sha256": "089ea36f7a9e37176055aa8b79230e908c281facd36111d55e0d6e458e940e8a",
+        "bytes": 527700
+      },
+      "unchangedContentSha256": "638ddeb827f11f1297c3e6aa4c3e77397bf7b6792c730d42c2d4886988580e4e",
+      "unchangedContentBytes": 1661080,
+      "memberMode": "100644",
+      "approvalEvidence": "Coordinator t1r 2026-11-07: timeline regular-file flag correction approved with identical inner content"
     },
     {
       "resourceId": "database:TIMELINE:fr",
-      "reason": "ZIP member mode0600; producer must set regular-file100644 with identical inner SHA256",
-      "approvedOriginalArchive": {
+      "previousArchive": {
         "sha256": "b2fdfe01f8a6db7be9dba589ce9e402e3a8621b5969d05ebcbc2007c830231cf",
         "bytes": 527700
-      }
+      },
+      "correctedArchive": {
+        "sha256": "089ea36f7a9e37176055aa8b79230e908c281facd36111d55e0d6e458e940e8a",
+        "bytes": 527700
+      },
+      "unchangedContentSha256": "638ddeb827f11f1297c3e6aa4c3e77397bf7b6792c730d42c2d4886988580e4e",
+      "unchangedContentBytes": 1661080,
+      "memberMode": "100644",
+      "approvalEvidence": "Coordinator t1r 2026-11-07: timeline regular-file flag correction approved with identical inner content"
     }
   ]
 }
