@@ -35,7 +35,13 @@ EBIBLE_VPL_BOOKS = (
     'ISA JER LAM EZE DAN HOS JOE AMO OBA JON MIC NAH HAB ZEP HAG ZEC MAL MAT MAR LUK JOH ACT '
     'ROM 1CO 2CO GAL EPH PHI COL 1TH 2TH 1TI 2TI TIT PHM HEB JAM 1PE 2PE 1JO 2JO 3JO JUD REV'
 ).split()
-VPL_LINE = re.compile(r'^([1-3A-Z]{3}) (\d+):(\d+)(?: (.*))?$')
+# eBible.org VPL codes of the Apocrypha / deuterocanonical books, by CyberJudah source book id
+# (src/assets/cyberjudah/books.json); the shared book map turns them into canonical ids.
+EBIBLE_VPL_APOCRYPHA = {
+    '1ES': 67, '4ES': 68, 'TOB': 69, 'JDT': 70, 'ESG': 71, 'WIS': 72, 'SIR': 73, 'BAR': 74,
+    'LJE': 75, 'PRA': 76, 'SUS': 77, 'BEL': 78, 'PRM': 79, '1MA': 80, '2MA': 81,
+}
+VPL_LINE = re.compile(r'^([1-4A-Z]{3}) (\d+):(\d+)(?: (.*))?$')
 
 
 def sha256(data):
@@ -91,6 +97,7 @@ def read_ebible_vpl(archive, member):
     verses = {}
     count = 0
     book_ids = {code: canonical_book_id(n) for n, code in enumerate(EBIBLE_VPL_BOOKS, 1)}
+    book_ids.update({code: canonical_book_id(n) for code, n in EBIBLE_VPL_APOCRYPHA.items()})
     for number, line in enumerate(text.split('\n'), 1):
         if line == '':
             continue
@@ -117,44 +124,67 @@ OSIS_BOOKS = (
     'Luke John Acts Rom 1Cor 2Cor Gal Eph Phil Col 1Thess 2Thess 1Tim 2Tim Titus Phlm Heb Jas 1Pet '
     '2Pet 1John 2John 3John Jude Rev'
 ).split()
+# OSIS names of the deuterocanonical books a module may carry, by CyberJudah source book id.
+OSIS_APOCRYPHA = {
+    '1Esd': 67, '2Esd': 68, 'Tob': 69, 'Jdt': 70, 'AddEsth': 71, 'Wis': 72, 'Sir': 73, 'Bar': 74,
+    'EpJer': 75, 'PrAzar': 76, 'Sus': 77, 'Bel': 78, 'PrMan': 79, '1Macc': 80, '2Macc': 81,
+}
 # Only these OSIS elements may appear. Titles (the module's section headings) and notes are not
 # verse text and are left out with their content; every other element is unwrapped.
 SWORD_DROPPED = re.compile(r'<(title|note)\b[^>]*>.*?</\1>', re.S)
-SWORD_ALLOWED = {'title', 'note', 'transChange', 'div', 'chapter', 'lg', 'l'}
+SWORD_ALLOWED = {'transChange', 'div', 'chapter', 'lg', 'l', 'q', 'w', 'seg'}
 REMOVED = '\x00'
 
 
-def osis_verse_text(raw, where):
-    for tag in re.findall(r'<\s*/?\s*([A-Za-z]+)', raw):
+def osis_verse_text(raw, where, drop_variant=None):
+    if REMOVED in raw:
+        raise SystemExit(f'{where}: unexpected control character')
+    if drop_variant:
+        # A module printing two editions keeps the other edition's reading and drops this one.
+        raw = re.sub(r'<seg\b(?=[^>]*\btype="x-variant")(?=[^>]*\bsubType="%s")[^>]*>.*?</seg>' % drop_variant,
+                     REMOVED, raw, flags=re.S)
+    elif 'x-variant' in raw:
+        raise SystemExit(f'{where}: variant readings need a source dropVariant')
+    kept = SWORD_DROPPED.sub(REMOVED, raw)
+    for tag in re.findall(r'<\s*/?\s*([A-Za-z]+)', kept):
         if tag not in SWORD_ALLOWED:
             raise SystemExit(f'{where}: unsupported OSIS element <{tag}>')
-    if '&' in raw or REMOVED in raw:
-        raise SystemExit(f'{where}: unexpected entity or control character')
-    text = re.sub(r'<[^>]*>', REMOVED, SWORD_DROPPED.sub(REMOVED, raw))
+    if re.search(r'&(?!(?:lt|gt|amp|quot|apos);)', kept):
+        raise SystemExit(f'{where}: unexpected entity')
+    # A <q> carrying a marker would print that marker; only marker-less quotations are unwrapped.
+    if re.search(r'<q\b[^>]*\bmarker=', kept):
+        raise SystemExit(f'{where}: quotation with a marker')
+    text = re.sub(r'<[^>]*>', REMOVED, kept)
     # Whitespace that only surrounded removed markup becomes one space (none at the ends);
     # whitespace inside the text itself is kept as published.
     text = re.sub(r'[ \t\n]*\x00[ \t\n\x00]*', lambda m: ' ' if m.group(0).strip(REMOVED) else '', text)
+    # The five XML entities are decoded, as any XML reader would.
+    for entity, char in (('&lt;', '<'), ('&gt;', '>'), ('&quot;', '"'), ('&apos;', "'"), ('&amp;', '&')):
+        text = text.replace(entity, char)
     return text.strip()
 
 
-def read_sword_module(archive_path, module):
+def read_sword_module(archive_path, module, testaments=('ot', 'nt'), drop_variant=None):
     from pysword.modules import SwordModules  # pip install pysword==0.2.8
 
     modules = SwordModules(str(archive_path))
     modules.parse_modules()
     bible = modules.get_bible_from_module(module)
     structure = bible.get_structure().get_books()
-    books = structure.get('ot', []) + structure.get('nt', [])
-    if [b.osis_name for b in books] != OSIS_BOOKS:
-        raise SystemExit(f'{module}: books are not the 66-book canon')
+    books = [b for t in testaments for b in structure.get(t, [])]
+    numbers = {name: n for n, name in enumerate(OSIS_BOOKS, 1)} | OSIS_APOCRYPHA
+    required = set(OSIS_BOOKS[39:] if testaments == ('nt',) else OSIS_BOOKS)
+    unknown = [b.osis_name for b in books if b.osis_name not in numbers]
+    if unknown or not required <= {b.osis_name for b in books}:
+        raise SystemExit(f'{module}: unsupported book list {unknown}')
     verses, count, skipped = {}, 0, []
-    for number, book in enumerate(books, 1):
-        book_key = str(canonical_book_id(number))
+    for book in books:
+        book_key = str(canonical_book_id(numbers[book.osis_name]))
         for chapter in range(1, book.num_chapters + 1):
             for verse in range(1, book.chapter_lengths[chapter - 1] + 1):
                 where = f'{module} {book.osis_name} {chapter}:{verse}'
                 raw = bible.get(books=[book.osis_name], chapters=[chapter], verses=[verse], clean=False)
-                text = osis_verse_text(raw, where)
+                text = osis_verse_text(raw, where, drop_variant)
                 if text == '':
                     # A slot of the versification that the module leaves without text.
                     skipped.append(f'{book.osis_name} {chapter}:{verse}')
@@ -173,7 +203,9 @@ def build(bible, cache):
     if source['kind'] == 'ebible-vpl':
         verses, count = read_ebible_vpl(archive, source['member'])
     elif source['kind'] == 'sword-module':
-        verses, count = read_sword_module(cache / Path(source['url']).name, source['module'])
+        verses, count = read_sword_module(cache / Path(source['url']).name, source['module'],
+                                          tuple(source.get('testaments', ('ot', 'nt'))),
+                                          source.get('dropVariant'))
     else:
         raise SystemExit(f"{bible['id']}: unsupported source kind {source['kind']}")
     text_sha256 = hash_verses(verses)
@@ -225,7 +257,8 @@ def main():
     parser.add_argument('ids', nargs='*')
     args = parser.parse_args()
     bibles = json.loads(SOURCES.read_text())['bibles']
-    selected = [b for b in bibles if not args.ids or b['id'] in args.ids]
+    # An excluded Bible is built only when named.
+    selected = [b for b in bibles if b['id'] in args.ids or (not args.ids and 'excluded' not in b)]
     entries = json.loads(ENTRIES.read_text()) if ENTRIES.exists() else {}
     for bible in selected:
         entry = build(bible, Path(args.cache))

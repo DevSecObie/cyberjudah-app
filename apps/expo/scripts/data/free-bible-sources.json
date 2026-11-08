@@ -21,7 +21,8 @@
       },
       "licence": "Public domain",
       "licenceStatement": "Cette Bible est dans le domaine public. Il n'est pas protégé par copyright. This Bible is in the Public Domain. It is not copyrighted.",
-      "credit": "Louis Segond 1910, domaine public. Texte : eBible.org (fraLSG)."
+      "credit": "Louis Segond 1910, domaine public. Texte : eBible.org (fraLSG).",
+      "excluded": "Excluded 2026-11-07 by the owner rule: only Bibles translated from the KJV source texts (Textus Receptus NT, Masoretic OT) or from the KJV. Kept here so the build can be reproduced; no catalog entry."
     },
     {
       "id": "FMAR",
@@ -41,7 +42,8 @@
       },
       "licence": "Public domain",
       "licenceStatement": "DistributionLicense=Public Domain (CrossWire module configuration).",
-      "credit": "La Sainte Bible, version David Martin 1744, domaine public. Texte : module SWORD FreBDM1744 (CrossWire Bible Society)."
+      "credit": "La Sainte Bible, version David Martin 1744, domaine public. Texte : module SWORD FreBDM1744 (CrossWire Bible Society).",
+      "sourceText": "Textus Receptus: 'Cette Bible est basée sur le Textus Receptus' (CrossWire FreBDM1744 module About, https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=FreBDM1744)."
     },
     {
       "id": "ASV",
@@ -61,7 +63,8 @@
       },
       "licence": "Public domain",
       "licenceStatement": "Public Domain. This public domain Bible translation is brought to you courtesy of eBible.org.",
-      "credit": "American Standard Version (1901), public domain. Text: eBible.org (eng-asv)."
+      "credit": "American Standard Version (1901), public domain. Text: eBible.org (eng-asv).",
+      "excluded": "Excluded 2026-11-07 by the owner rule: only Bibles translated from the KJV source texts (Textus Receptus NT, Masoretic OT) or from the KJV. Kept here so the build can be reproduced; no catalog entry."
     },
     {
       "id": "DARBY",
@@ -81,7 +84,8 @@
       },
       "licence": "Public domain",
       "licenceStatement": "Public Domain.",
-      "credit": "The Holy Scriptures, a New Translation from the Original Languages by J. N. Darby, public domain. Text: eBible.org (engDBY)."
+      "credit": "The Holy Scriptures, a New Translation from the Original Languages by J. N. Darby, public domain. Text: eBible.org (engDBY).",
+      "excluded": "Excluded 2026-11-07 by the owner rule: only Bibles translated from the KJV source texts (Textus Receptus NT, Masoretic OT) or from the KJV. Kept here so the build can be reproduced; no catalog entry."
     },
     {
       "id": "WEB1833",
@@ -101,7 +105,8 @@
       },
       "licence": "Public domain",
       "licenceStatement": "Public Domain.",
-      "credit": "The Holy Bible, in the Common Version, with Amendments of the language by Noah Webster, LL.D. (1833), public domain. Text: eBible.org (engwebster)."
+      "credit": "The Holy Bible, in the Common Version, with Amendments of the language by Noah Webster, LL.D. (1833), public domain. Text: eBible.org (engwebster).",
+      "sourceText": "A revision of the King James Version: title 'The Holy Bible, Containing the Old and New Testaments, in the Common Version, with Amendments of the language by Noah Webster, LL.D.' (https://ebible.org/find/details.php?id=engwebster)."
     },
     {
       "id": "BSB",
@@ -121,7 +126,78 @@
       },
       "licence": "Public domain (dedicated by BSB Publishing, 2023-04-30)",
       "licenceStatement": "The Berean Bible and Majority Bible texts are officially placed into the public domain as of April 30, 2023. Licensing is not required for any use. (https://berean.bible/licensing.htm)",
-      "credit": "Berean Standard Bible, public domain (BSB Publishing, LLC; berean.bible). Text: eBible.org (engbsb)."
+      "credit": "Berean Standard Bible, public domain (BSB Publishing, LLC; berean.bible). Text: eBible.org (engbsb).",
+      "excluded": "Excluded 2026-11-07 by the owner rule: only Bibles translated from the KJV source texts (Textus Receptus NT, Masoretic OT) or from the KJV. Kept here so the build can be reproduced; no catalog entry."
+    },
+    {
+      "id": "KJVA",
+      "catalogId": "bible:KJVA",
+      "file": "bibles/bible-kjva.json.zip",
+      "entry": "bible-kjva.json",
+      "title": "King James Version with Apocrypha (1769 text)",
+      "language": "en",
+      "source": {
+        "kind": "ebible-vpl",
+        "publisher": "eBible.org",
+        "page": "https://ebible.org/find/details.php?id=eng-kjv",
+        "url": "https://eBible.org/Scriptures/eng-kjv_vpl.zip",
+        "member": "eng-kjv_vpl.txt",
+        "edition": "eBible.org eng-kjv, VPL text dated 2026-11-03",
+        "sha256": "592359206616cdd3ff1cbb229d9d01695dabb4b9603a8bcf15d659cb14b21575"
+      },
+      "licence": "Public domain",
+      "licenceStatement": "Public Domain outside the United Kingdom; in the UK the right to print or import printed copies is held under Crown letters patent (Cambridge University Press, Oxford University Press, Collins). Text courtesy of the CrossWire Bible Society and eBible.org.",
+      "credit": "King James Version (1769 standard text) with Apocrypha, public domain (Crown patent applies to printing in the UK). Text: CrossWire Bible Society and eBible.org (eng-kjv).",
+      "sourceText": "The King James Version itself, 1769 standardized text with the Apocrypha (https://ebible.org/find/details.php?id=eng-kjv)."
+    },
+    {
+      "id": "TR1624",
+      "catalogId": "bible:TR1624",
+      "file": "bibles/bible-TR1624.json.zip",
+      "entry": "bible-TR1624.json",
+      "title": "Elzevir Textus Receptus (1624)",
+      "language": "grc",
+      "source": {
+        "kind": "sword-module",
+        "publisher": "CrossWire Bible Society",
+        "page": "https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=Elzevir",
+        "url": "https://www.crosswire.org/ftpmirror/pub/sword/packages/rawzip/Elzevir.zip",
+        "module": "Elzevir",
+        "testaments": [
+          "nt"
+        ],
+        "edition": "SWORD module Elzevir version 1.3.1 (February 3, 2013 edition of the text), KJV versification, New Testament only",
+        "sha256": "a82ce78ca247bd55a8941301ef61c02826e03e5a7cb1fa13d69f9f89f08272ac"
+      },
+      "licence": "CC BY-NC-SA 4.0",
+      "licenceStatement": "DistributionLicense=Creative Commons: BY-NC-SA 4.0 (CrossWire module configuration). Attribution, non-commercial use, share-alike. TextSource: https://sites.google.com/a/wmail.fi/greeknt/home/greeknt",
+      "credit": "Elzevir Textus Receptus (1624), edited by Abraham and Bonaventure Elzevir; transcription by Maurice Robinson. CC BY-NC-SA 4.0. Text: CrossWire Bible Society (Elzevir module).",
+      "sourceText": "Textus Receptus, Elzevir 1624: '1624 Elzevir TR, edited by Abraham and Bonaventure Elzevir' (CrossWire Elzevir module About)."
+    },
+    {
+      "id": "TR1894",
+      "catalogId": "bible:TR1894",
+      "file": "bibles/bible-TR1894.json.zip",
+      "entry": "bible-TR1894.json",
+      "title": "Textus Receptus (Scrivener 1894)",
+      "language": "grc",
+      "source": {
+        "kind": "sword-module",
+        "publisher": "CrossWire Bible Society",
+        "page": "https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=TR",
+        "url": "https://www.crosswire.org/ftpmirror/pub/sword/packages/rawzip/TR.zip",
+        "module": "TR",
+        "testaments": [
+          "nt"
+        ],
+        "edition": "SWORD module TR version 3.2 (2023-10-28), KJV versification, New Testament only. The module prints Stephanus 1550 as its base with Scrivener 1894 variants (seg x-variant x-1 / x-2); the Scrivener 1894 readings (x-2) are kept and the 1550 readings (x-1) dropped, e.g. Matt 2:11 ειδον (1894, KJV 'saw') over ευρον (1550).",
+        "sha256": "242e6bc6e2bcd13fd7087776facde97b6fdb6b300739aaf92204dd4ff48f3cec",
+        "dropVariant": "x-1"
+      },
+      "licence": "CC BY-NC-SA 4.0",
+      "licenceStatement": "DistributionLicense=Creative Commons: BY-NC-SA 4.0 (CrossWire module configuration). Attribution, non-commercial use, share-alike. TextSource: https://sites.google.com/a/wmail.fi/greeknt/home/greeknt",
+      "credit": "Textus Receptus, Scrivener 1894 readings of the CrossWire TR module (base Stephens 1550 with Scrivener 1894 variants). CC BY-NC-SA 4.0. Text: CrossWire Bible Society (TR module).",
+      "sourceText": "Textus Receptus: 'base text is Stephens 1550, with variants of Scrivener 1894' (CrossWire TR module About, https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=TR)."
     }
   ]
 }
