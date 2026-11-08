@@ -112,6 +112,72 @@
         "credit": "The Jewish Encyclopedia (1901-1906), Isidore Singer, editor; Funk and Wagnalls Company; CyberJudah scans"
       },
       "approvalEvidence": "Coordinator t1r 2026-11-07: re-hosting of owner's already-published content; full input-commit binding is a tracked follow-up (owned-archive-provenance-2026-11-07)"
+    },
+    {
+      "resourceId": "dictionary-directory",
+      "sourcePath": "apps/expo/public/offline/dictionaries/dictionary-directory.sqlite.zip",
+      "rights": {
+        "licence": "Source-specific claims retained: Domaine public; CC BY-SA 4.0",
+        "source": "https://github.com/DevSecObie/cyberjudah-app/blob/194a68c20b9ea4adbc11bbe673d2afce1e64c6da/apps/expo/scripts/data/free-dictionaries.json",
+        "credit": "William Smith; revised by F. N. Peloubet and M. A. Peloubet; CrossWire SWORD module Smith 1.3\nInternational Standard Bible Encyclopedia — James Orr, general editor and contributors; CrossWire SWORD module ISBE 2.2\nThe original work by unfoldingWord is available from https://www.unfoldingword.org/utw. Converted from Markdown to the dictionary schema with Bible references normalized; this adaptation is shared under CC BY-SA 4.0.\nThe Jewish Encyclopedia (1901-1906), Isidore Singer, editor; Funk and Wagnalls Company; CyberJudah scans",
+        "componentRights": {
+          "database:SMITH:en": {
+            "licence": "Domaine public",
+            "source": "https://www.crosswire.org/ftpmirror/pub/sword/packages/rawzip/Smith.zip",
+            "credit": "William Smith; revised by F. N. Peloubet and M. A. Peloubet; CrossWire SWORD module Smith 1.3"
+          },
+          "database:ISBE:en": {
+            "licence": "Domaine public",
+            "source": "https://www.crosswire.org/ftpmirror/pub/sword/packages/rawzip/ISBE.zip",
+            "credit": "International Standard Bible Encyclopedia — James Orr, general editor and contributors; CrossWire SWORD module ISBE 2.2"
+          },
+          "database:UNFOLDINGWORD_TW:en": {
+            "licence": "CC BY-SA 4.0",
+            "source": "https://git.door43.org/unfoldingWord/en_tw/src/tag/v90/LICENSE.md",
+            "credit": "The original work by unfoldingWord is available from https://www.unfoldingword.org/utw. Converted from Markdown to the dictionary schema with Bible references normalized; this adaptation is shared under CC BY-SA 4.0."
+          },
+          "database:JEWISH_ENCYCLOPEDIA:en": {
+            "licence": "Public domain (existing source-book metadata claim)",
+            "source": "https://github.com/DevSecObie/cyberjudah/blob/717ad8a8bb84a9358609fe7938f8127f32fcd8f2/data/library/jewish-encyclopedia/book.json",
+            "credit": "The Jewish Encyclopedia (1901-1906), Isidore Singer, editor; Funk and Wagnalls Company; CyberJudah scans"
+          }
+        }
+      },
+      "approvalEvidence": "Coordinator t1r 2026-11-07: four-dictionary rollout cleared at reviewed origin 194a68c20b9ea4adbc11bbe673d2afce1e64c6da",
+      "recordCommit": "194a68c20b9ea4adbc11bbe673d2afce1e64c6da"
+    },
+    {
+      "resourceId": "database:SMITH:en",
+      "sourcePath": "apps/expo/public/offline/dictionaries/dictionary-smith-en.sqlite.zip",
+      "rights": {
+        "licence": "Domaine public",
+        "source": "https://www.crosswire.org/ftpmirror/pub/sword/packages/rawzip/Smith.zip",
+        "credit": "William Smith; revised by F. N. Peloubet and M. A. Peloubet; CrossWire SWORD module Smith 1.3"
+      },
+      "approvalEvidence": "Coordinator t1r 2026-11-07: four-dictionary rollout cleared at reviewed origin 194a68c20b9ea4adbc11bbe673d2afce1e64c6da",
+      "recordCommit": "194a68c20b9ea4adbc11bbe673d2afce1e64c6da"
+    },
+    {
+      "resourceId": "database:ISBE:en",
+      "sourcePath": "apps/expo/public/offline/dictionaries/dictionary-isbe-en.sqlite.zip",
+      "rights": {
+        "licence": "Domaine public",
+        "source": "https://www.crosswire.org/ftpmirror/pub/sword/packages/rawzip/ISBE.zip",
+        "credit": "International Standard Bible Encyclopedia — James Orr, general editor and contributors; CrossWire SWORD module ISBE 2.2"
+      },
+      "approvalEvidence": "Coordinator t1r 2026-11-07: four-dictionary rollout cleared at reviewed origin 194a68c20b9ea4adbc11bbe673d2afce1e64c6da",
+      "recordCommit": "194a68c20b9ea4adbc11bbe673d2afce1e64c6da"
+    },
+    {
+      "resourceId": "database:UNFOLDINGWORD_TW:en",
+      "sourcePath": "apps/expo/public/offline/dictionaries/dictionary-unfoldingword-translation-words-en.sqlite.zip",
+      "rights": {
+        "licence": "CC BY-SA 4.0",
+        "source": "https://git.door43.org/unfoldingWord/en_tw/src/tag/v90/LICENSE.md",
+        "credit": "The original work by unfoldingWord is available from https://www.unfoldingword.org/utw. Converted from Markdown to the dictionary schema with Bible references normalized; this adaptation is shared under CC BY-SA 4.0."
+      },
+      "approvalEvidence": "Coordinator t1r 2026-11-07: four-dictionary rollout cleared at reviewed origin 194a68c20b9ea4adbc11bbe673d2afce1e64c6da",
+      "recordCommit": "194a68c20b9ea4adbc11bbe673d2afce1e64c6da"
     }
   ],
   "cdn": [],
@@ -137,7 +203,11 @@
     "bible:BLIVRETR",
     "bible:SVD",
     "bible:DUTSVVA",
-    "bible:FINBIBLIA"
+    "bible:FINBIBLIA",
+    "dictionary-directory",
+    "database:SMITH:en",
+    "database:ISBE:en",
+    "database:UNFOLDINGWORD_TW:en"
   ],
   "archivePins": {
     "bible:FMAR": {
@@ -227,6 +297,22 @@
     "bible:FINBIBLIA": {
       "sha256": "98eeb5a23db8ec7f590b0919d6ff4a32ae3195247cfd09f1289966d623de6281",
       "bytes": 1672068
+    },
+    "dictionary-directory": {
+      "sha256": "d28e60966cf3a4d66f09f662afbff80368f6b2b578ccb357b74652bececaeb2b",
+      "bytes": 4060846
+    },
+    "database:SMITH:en": {
+      "sha256": "6e19cfd37963dd4425b2c850f46ae4e44ec25b985280ae3d5e11a2d4eab4a209",
+      "bytes": 3023350
+    },
+    "database:ISBE:en": {
+      "sha256": "b92328990eb5cd3a0fdbab2b672e2a27b15e12e5af58d75dfb86840f98349e09",
+      "bytes": 18386627
+    },
+    "database:UNFOLDINGWORD_TW:en": {
+      "sha256": "a567080caa343964c28f015978ad45718bbba57e33ef0aa94a1b41e3b87b5231",
+      "bytes": 1113441
     }
   },
   "heldResources": [],
