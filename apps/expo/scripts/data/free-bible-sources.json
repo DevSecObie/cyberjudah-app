@@ -1,0 +1,87 @@
+{
+  "format": "cyberjudah-free-bible-sources",
+  "schemaVersion": 1,
+  "note": "Bibles rebuilt from public-domain sources in Bible Strong's canonical-bible format. Each text is transcribed exactly from the source file named here; nothing is edited. Pinned sha256 values are of the downloaded archive; a changed archive fails the build until it is reviewed and re-pinned.",
+  "bibles": [
+    {
+      "id": "LSG",
+      "catalogId": "bible:LSG",
+      "file": "bibles/bible-lsg.json.zip",
+      "entry": "bible-lsg.json",
+      "title": "Louis Segond 1910",
+      "language": "fr",
+      "source": {
+        "kind": "ebible-vpl",
+        "publisher": "eBible.org",
+        "page": "https://ebible.org/find/details.php?id=fraLSG",
+        "url": "https://eBible.org/Scriptures/fraLSG_vpl.zip",
+        "member": "fraLSG_vpl.txt",
+        "edition": "eBible.org fraLSG, VPL text dated 2026-10-30",
+        "sha256": "fcdeac5aa1ebf857835a41bfa11f8fe5685c31ea602418a2998d4c870488f54b"
+      },
+      "licence": "Public domain",
+      "licenceStatement": "Cette Bible est dans le domaine public. Il n'est pas protégé par copyright. This Bible is in the Public Domain. It is not copyrighted.",
+      "credit": "Louis Segond 1910, domaine public. Texte : eBible.org (fraLSG)."
+    },
+    {
+      "id": "ASV",
+      "catalogId": "bible:ASV",
+      "file": "bibles/bible-asv.json.zip",
+      "entry": "bible-asv.json",
+      "title": "American Standard Version (1901)",
+      "language": "en",
+      "source": {
+        "kind": "ebible-vpl",
+        "publisher": "eBible.org",
+        "page": "https://ebible.org/find/details.php?id=eng-asv",
+        "url": "https://eBible.org/Scriptures/eng-asv_vpl.zip",
+        "member": "eng-asv_vpl.txt",
+        "edition": "eBible.org eng-asv, VPL text dated 2026-10-30",
+        "sha256": "6c41b8020cba9cf7041689f2356c55859e28023405537388be08bad93df2b050"
+      },
+      "licence": "Public domain",
+      "licenceStatement": "Public Domain. This public domain Bible translation is brought to you courtesy of eBible.org.",
+      "credit": "American Standard Version (1901), public domain. Text: eBible.org (eng-asv)."
+    },
+    {
+      "id": "DARBY",
+      "catalogId": "bible:DARBY",
+      "file": "bibles/bible-darby.json.zip",
+      "entry": "bible-darby.json",
+      "title": "Darby Translation (English)",
+      "language": "en",
+      "source": {
+        "kind": "ebible-vpl",
+        "publisher": "eBible.org",
+        "page": "https://ebible.org/find/details.php?id=engDBY",
+        "url": "https://eBible.org/Scriptures/engDBY_vpl.zip",
+        "member": "engDBY_vpl.txt",
+        "edition": "eBible.org engDBY, VPL text dated 2019-11-15",
+        "sha256": "7eb1df2a434f5bbd831591aa96c08e94b900b1458fda74ccf1d1739d5af73619"
+      },
+      "licence": "Public domain",
+      "licenceStatement": "Public Domain.",
+      "credit": "The Holy Scriptures, a New Translation from the Original Languages by J. N. Darby, public domain. Text: eBible.org (engDBY)."
+    },
+    {
+      "id": "BSB",
+      "catalogId": "bible:BSB",
+      "file": "bibles/bible-bsb.json.zip",
+      "entry": "bible-bsb.json",
+      "title": "Berean Standard Bible",
+      "language": "en",
+      "source": {
+        "kind": "ebible-vpl",
+        "publisher": "eBible.org",
+        "page": "https://ebible.org/find/details.php?id=engbsb",
+        "url": "https://eBible.org/Scriptures/engbsb_vpl.zip",
+        "member": "engbsb_vpl.txt",
+        "edition": "eBible.org engbsb, VPL text dated 2026-10-30",
+        "sha256": "72ecd9e0131e82737b76e1f2d706c85771d6054b6350673f80f49c839133f45e"
+      },
+      "licence": "Public domain (dedicated by BSB Publishing, 2023-04-30)",
+      "licenceStatement": "The Berean Bible and Majority Bible texts are officially placed into the public domain as of April 30, 2023. Licensing is not required for any use. (https://berean.bible/licensing.htm)",
+      "credit": "Berean Standard Bible, public domain (BSB Publishing, LLC; berean.bible). Text: eBible.org (engbsb)."
+    }
+  ]
+}

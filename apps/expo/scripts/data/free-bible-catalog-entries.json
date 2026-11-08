@@ -1,0 +1,90 @@
+{
+  "bible:ASV": {
+    "id": "bible:ASV",
+    "file": "bibles/bible-asv.json.zip",
+    "entry": "bible-asv.json",
+    "entries": {
+      "canonical": {
+        "entry": "bible-asv.json",
+        "sha256": "c77910b03ec84864a7214632a8f0f394f60e42722372a4fd1a8e713ab77b0577",
+        "bytes": 6273670
+      }
+    },
+    "archiveSha256": "5e0240cefddb9648121c6a07b519d2ed44013662399e4facb8cedecd87d09f1e",
+    "archiveBytes": 1396592,
+    "contentSha256": "c77910b03ec84864a7214632a8f0f394f60e42722372a4fd1a8e713ab77b0577",
+    "contentBytes": 6273670,
+    "installedBytes": 12547340,
+    "peakInstallationBytes": 20217602,
+    "strategy": "sqlite-import",
+    "textRevision": "asv-2c5dfdb707698016e8cd",
+    "textSha256": "2c5dfdb707698016e8cd3e3952b52209983ff787b8ff08bfdb33ce19e51044d6",
+    "verseCount": 31102
+  },
+  "bible:BSB": {
+    "id": "bible:BSB",
+    "file": "bibles/bible-bsb.json.zip",
+    "entry": "bible-bsb.json",
+    "entries": {
+      "canonical": {
+        "entry": "bible-bsb.json",
+        "sha256": "f102de6fde3fdbad64a4d53c3cc97270f332b2a8fc8b8f1cecb9384bdb6572ec",
+        "bytes": 5996257
+      }
+    },
+    "archiveSha256": "58122af9983df97d43d2ff063e1606a0846f3d7dcb42c164f3d7aa93f5063d73",
+    "archiveBytes": 1389752,
+    "contentSha256": "f102de6fde3fdbad64a4d53c3cc97270f332b2a8fc8b8f1cecb9384bdb6572ec",
+    "contentBytes": 5996257,
+    "installedBytes": 11992514,
+    "peakInstallationBytes": 19378523,
+    "strategy": "sqlite-import",
+    "textRevision": "bsb-a3b37baf73b348d6bc52",
+    "textSha256": "a3b37baf73b348d6bc52bfa4a008aedb30a50a2c0ee8bb5516a7471b7df9f695",
+    "verseCount": 31086
+  },
+  "bible:DARBY": {
+    "id": "bible:DARBY",
+    "file": "bibles/bible-darby.json.zip",
+    "entry": "bible-darby.json",
+    "entries": {
+      "canonical": {
+        "entry": "bible-darby.json",
+        "sha256": "d5564fbf0baceaf9bd0d979177b7ee5291f66b8d3e5d51cb237d9f50feb35ba5",
+        "bytes": 6222396
+      }
+    },
+    "archiveSha256": "77fcb9ca6850c18d84284a7d92414cacfaa374d9c86baea61239673779e155cc",
+    "archiveBytes": 1393554,
+    "contentSha256": "d5564fbf0baceaf9bd0d979177b7ee5291f66b8d3e5d51cb237d9f50feb35ba5",
+    "contentBytes": 6222396,
+    "installedBytes": 12444792,
+    "peakInstallationBytes": 20060742,
+    "strategy": "sqlite-import",
+    "textRevision": "darby-d64cc5438cd9a643ae60",
+    "textSha256": "d64cc5438cd9a643ae603d017e3799fb39c2c8cd852dc662ac645d0e0a381586",
+    "verseCount": 31099
+  },
+  "bible:LSG": {
+    "id": "bible:LSG",
+    "file": "bibles/bible-lsg.json.zip",
+    "entry": "bible-lsg.json",
+    "entries": {
+      "canonical": {
+        "entry": "bible-lsg.json",
+        "sha256": "10fdfee89a3370896c6d862442dedba0ab3a02ab48a28f1293f7f46621c9582d",
+        "bytes": 6432125
+      }
+    },
+    "archiveSha256": "e5748e91eed54155009da42b3147880747d83f1970c137509a9ba7cf38210101",
+    "archiveBytes": 1478658,
+    "contentSha256": "10fdfee89a3370896c6d862442dedba0ab3a02ab48a28f1293f7f46621c9582d",
+    "contentBytes": 6432125,
+    "installedBytes": 12864250,
+    "peakInstallationBytes": 20775033,
+    "strategy": "sqlite-import",
+    "textRevision": "lsg-95c864cbad26af841b2b",
+    "textSha256": "95c864cbad26af841b2b519887df0e4814503ef35d8d7a51825789937c78a015",
+    "verseCount": 31170
+  }
+}
