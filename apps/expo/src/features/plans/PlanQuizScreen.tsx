@@ -15,7 +15,7 @@ import Container from '~common/ui/Container'
 import { FeatherIcon } from '~common/ui/Icon'
 import ScrollView from '~common/ui/ScrollView'
 import Text from '~common/ui/Text'
-import AskGlassBackdrop from '~features/study-assistant/AskGlassBackdrop'
+import GlassBackdrop from '~common/ui/GlassBackdrop'
 import { goBackOrHome } from '~navigation/goBackOrHome'
 import { markEntitySliceAsRead } from '~redux/modules/plan'
 import { useDefaultBibleVersion } from '~state/useDefaultBibleVersion'
@@ -361,7 +361,7 @@ const PlanQuizScreen = () => {
                 }}
               >
                 <Box className="rounded-[32px] px-[22px] pt-[30px] pb-[24px] gap-[18px] items-center overflow-hidden">
-                  <AskGlassBackdrop radius={32} />
+                  <GlassBackdrop radius={32} />
                   <Box className="flex-row gap-[10px]">
                     {TILES.map((tile, at) => (
                       <Animated.View
@@ -486,7 +486,7 @@ const PlanQuizScreen = () => {
                   }}
                 >
                   <Box className="rounded-[28px] p-[22px] gap-[14px] overflow-hidden">
-                    <AskGlassBackdrop radius={28} />
+                    <GlassBackdrop radius={28} />
                     <Box className="flex-row items-center gap-[8px]">
                       <Box
                         className="flex-row items-center gap-[5px] rounded-full px-[10px] py-[5px]"
@@ -576,7 +576,7 @@ const PlanQuizScreen = () => {
                               borderBottomColor: color,
                             }}
                           >
-                            <AskGlassBackdrop radius={22} />
+                            <GlassBackdrop radius={22} />
                             <Box
                               className="w-[32px] h-[32px] rounded-full items-center justify-center"
                               style={{ backgroundColor: color }}

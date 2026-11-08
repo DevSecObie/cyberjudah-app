@@ -264,6 +264,9 @@ export function buildDownloadCatalogSections(
   })
 
   return sections
+    .filter(
+      section => process.env.EXPO_PUBLIC_RESOURCE_PROFILE !== 'cyberjudah' || section.key !== 'fr'
+    )
     .filter(section => section.subsections.length > 0)
     .map(section => ({
       ...section,

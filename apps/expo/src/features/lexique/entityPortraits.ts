@@ -2,7 +2,7 @@
 import Color from 'color'
 
 /** The portraits of biblical entities on the public media host (ADR-0089). */
-export const ENTITY_PORTRAIT_BASE_URL = 'https://media.bible-strong.app/entity-images'
+export const ENTITY_PORTRAIT_BASE_URL = 'https://media.cyberjudah.io/entity-images'
 export const ENTITY_PORTRAIT_CATALOG_URL = `${ENTITY_PORTRAIT_BASE_URL}/catalog.json`
 
 /** 256 pixels fill every avatar; 768 an enlarged portrait or a card; 1254 the whole painting. */

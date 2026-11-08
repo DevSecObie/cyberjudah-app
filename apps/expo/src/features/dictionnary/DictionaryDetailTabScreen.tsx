@@ -1,7 +1,5 @@
-import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
 import { openInApp } from '~common/inAppBrowser'
 import { titleFontStyle } from '~themes/styleValues'
-import { dictionaryContext } from '~features/study-assistant/resourceContext'
 import HorizontalControlScrollView from '~common/HorizontalControlScrollView'
 import { goBackOrHome } from '~navigation/goBackOrHome'
 import { twMerge } from '~common/ui/classNames'
@@ -170,16 +168,6 @@ const DictionnaryDetailScreen = ({
       }
     }
   }, [dictionnaireItem, dictionaryResourceLanguage, onEntryResolved, work])
-  useAssistantResourceContext(
-    isInTab ? `tab:${dictionaryTab.id}` : 'panel',
-    dictionaryContext({
-      word,
-      work,
-      dictionaryTitle: resolvedDictionaryTitle,
-      entryId,
-      language: dictionaryResourceLanguage,
-    })
-  )
   const correspondenceQuery = useQuery({
     queryKey: [
       'dictionary-correspondence',

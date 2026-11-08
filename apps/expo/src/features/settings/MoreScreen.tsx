@@ -35,7 +35,6 @@ import { nukeApp } from '~helpers/nukeApp'
 import { toast } from '~helpers/toast'
 import useLanguage from '~helpers/useLanguage'
 import useLogin from '~helpers/useLogin'
-import { assistantAccessible } from '~features/study-assistant/assistantConfig'
 import { changelogModalAtom } from '~state/app'
 import type { Theme as AppTheme } from '~themes'
 import { useTheme } from '~themes/ThemeProvider'
@@ -199,17 +198,6 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
         </ListSection>
 
         <ListSection title={t('settings.resources')}>
-          {assistantAccessible(user?.id) && (
-            <ListRow
-              onPress={() => {
-                closeMenu()
-                router.push('/study-assistant')
-              }}
-              icon={<FeatherIcon name="message-circle" size={18} color="primary" />}
-              iconTint="primary"
-              label={t(isCyberJudah ? 'assistant.cyberjudah.title' : 'assistant.title')}
-            />
-          )}
           <ListRow
             route="History"
             icon={<FeatherIcon name="clock" size={18} color="grey" />}

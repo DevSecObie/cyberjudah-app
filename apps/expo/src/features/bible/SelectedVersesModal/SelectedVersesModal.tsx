@@ -65,7 +65,6 @@ const SelectedVersesModal = ({
     onOpenReferences,
     onOpenNave,
     sendVerseData,
-    askAboutVerses,
   } = useVerseActions({
     selectedVerses,
     version,
@@ -79,81 +78,9 @@ const SelectedVersesModal = ({
   // The selection sheet holds it (see BibleSelectionSheet)
   return (
     <>
-      <SheetView style={{ flex: 0, paddingTop: 10, paddingBottom: Platform.OS === 'web' ? 12 : 0 }}>
-        {typeof isSelectionMode === 'string' && isSelectionMode.includes('verse') ? (
-          <HStack
-            className="overflow-hidden border-continuous gap-[10px] w-[100%] items-center justify-center pt-[10px]"
-            style={{ paddingBottom: BOTTOM_INSET }}
-          >
-            <Text className="font-semibold text-[18px] text-center">{selectedVersesTitle}</Text>
-            <TouchableIcon
-              accessibilityLabel={t('Continuer')}
-              name="arrow-right"
-              size={20}
-              onPress={sendVerseData}
-              noFlex
-            />
-          </HStack>
-        ) : typeof isSelectionMode === 'string' && isSelectionMode.includes('strong') ? (
-          <></>
-        ) : (
-          <SelectionGroupsPager
-            activeTabIndex={activeTabIndex}
-            setActiveTabIndex={setActiveTabIndex}
-            header={
-              <ColorCirclesBar
-                selectedVerseHighlightColor={selectedVerseHighlightColor}
-                addHighlight={addHighlight}
-                removeHighlight={removeHighlight}
-                onClose={close}
-              />
-            }
-            groups={[
-              width => (
-                <AnnotateTab
-                  version={version}
-                  selectedVerses={selectedVerses}
-                  screenWidth={width}
-                  onCreateNoteClick={onCreateNoteClick}
-                  addTag={addTag}
-                  onCreateLinkClick={onCreateLinkClick}
-                  onCreateStudyRelationClick={onCreateStudyRelationClick}
-                  onAddBookmark={onAddBookmark}
-                  onAddToStudy={onAddToStudy}
-                  onSelectStudy={onSelectStudy}
-                  reference={selectedVersesTitle}
-                  moreThanOneVerseSelected={moreThanOneVerseSelected}
-                  activeStates={activeStates}
-                />
-              ),
-              width => (
-                <StudyTab
-                  screenWidth={width}
-                  onPinVerses={onPinVerses}
-                  hasFocus={activeStates.hasFocus}
-                  showStrongDetail={showStrongDetail}
-                  showDictionaryDetail={showDictionaryDetail}
-                  onOpenNave={onOpenNave}
-                  onOpenReferences={onOpenReferences}
-                  openCommentariesScreen={openCommentariesScreen}
-                  compareVerses={compareVerses}
-                  askAboutVerses={askAboutVerses}
-                  moreThanOneVerseSelected={moreThanOneVerseSelected}
-                />
-              ),
-              width => (
-                <ShareTab
-                  screenWidth={width}
-                  copyToClipboard={copyToClipboard}
-                  shareVerse={shareVerse}
-                  exportPassage={onExportPassage}
-                  selectAllVerses={selectAllVerses}
-                />
-              ),
-            ]}
-          />
-        )}
-      </SheetView>
+      <SheetView
+        style={{ flex: 0, paddingTop: 10, paddingBottom: Platform.OS === 'web' ? 12 : 0 }}
+      ></SheetView>
     </>
   )
 }

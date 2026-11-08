@@ -1,7 +1,5 @@
 import { StudyRowsCard } from '~common/ui/StudySection'
 import CommentarySectionRow, { formatCommentarySectionRange } from './CommentarySectionRow'
-import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
-import { commentaryContext } from '~features/study-assistant/resourceContext'
 import CommentIcon from '~common/CommentIcon'
 import { useQuery } from '@tanstack/react-query'
 import { useAtomValue } from 'jotai/react'
@@ -59,7 +57,6 @@ const CommentaryChapterScreen = ({
   const localParams = useLocalSearchParams<CommentaryScreenRouteParams>()
   const params = routeParams ?? localParams
   const parsed = parseCommentaryResourceParams(params)
-  useAssistantResourceContext('panel', commentaryContext(params))
   useRecordHistory(getCommentaryResourceHistoryEntry(parsed, undefined, undefined))
   const parsedFocusVerse = Number(params.focusVerse)
   const focusVerse =

@@ -31,7 +31,7 @@ export const initializeResourceAppCheck = (): Promise<AppCheck> => {
   appCheckInitialization = Promise.resolve(
     initializeAppCheck(firebaseApp, {
       provider: new ReCaptchaEnterpriseProvider(siteKey),
-      // Tokens are acquired on demand for Offline copies and the assistant only (ADR-0065).
+      // Tokens are acquired on demand for Offline copies only (ADR-0065).
       // Background refresh would spend an attestation per TTL on every running app.
       isTokenAutoRefreshEnabled: false,
     })

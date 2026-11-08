@@ -1,5 +1,3 @@
-import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
-import { bibleContext } from '~features/study-assistant/resourceContext'
 import { produce } from 'immer'
 import React, { useEffect, useMemo } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
@@ -50,7 +48,6 @@ const BibleTabScreen = ({
   routeNavigation,
 }: BibleTabScreenProps) => {
   const [bible, setBible] = useAtom(bibleAtom)
-  useAssistantResourceContext(isInTab ? `tab:${bible.id}` : 'panel', bibleContext(bible))
   const selectedVersion = bible.data.selectedVersion
   const strongMode = bible.data.strongMode
   const interlinearMode = bible.data.interlinearMode

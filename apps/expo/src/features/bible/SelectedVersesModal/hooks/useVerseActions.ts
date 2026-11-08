@@ -12,7 +12,6 @@ import type { VersionCode } from '../../../../state/tabs'
 import { useAtomValue } from 'jotai/react'
 import { useResourceAccess } from '~features/resources/resourceAccess'
 import { loadBibleVerseTexts } from '~features/resources/resourceQueries'
-import { askReading } from '~features/study-assistant/askReading'
 
 interface UseVerseActionsParams {
   selectedVerses: VerseIds
@@ -81,13 +80,6 @@ const useVerseActions = ({
     onChangeResourceType('nave')
   }
 
-  // Ask CyberJudah about the selected verses: Ask starts from their precepts and classes.
-  const askAboutVerses = () => {
-    const reading = askReading(Object.keys(selectedVerses))
-    router.push({ pathname: '/study-assistant', params: reading ? { reading } : {} })
-    onClose()
-  }
-
   const sendVerseData = async () => {
     const { title, content } = await getVersesContent({
       verses: selectedVerses,
@@ -125,7 +117,6 @@ const useVerseActions = ({
     onOpenReferences,
     onOpenNave,
     sendVerseData,
-    askAboutVerses,
   }
 }
 

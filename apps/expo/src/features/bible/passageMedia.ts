@@ -124,10 +124,10 @@ export const formatPassageMediaDuration = (durationSeconds: number): string => {
 
 // CyberJudah serves its own copy of the player page (public/embed/youtube.html) from its server.
 const PASSAGE_MEDIA_PLAYER_URL = usesCyberJudahEditorial()
-  ? `${(
-      process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL ||
-      'https://cyberjudah-telegram-staging.oisrae1.workers.dev'
-    ).replace(/\/+$/, '')}/embed/youtube.html`
+  ? `${(process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL || 'https://cyberjudah.io').replace(
+      /\/+$/,
+      ''
+    )}/embed/youtube.html`
   : 'https://bible-strong.app/embed/youtube.html'
 const PASSAGE_MEDIA_APP_ID = usesCyberJudahEditorial()
   ? 'io.cyberjudah.app'

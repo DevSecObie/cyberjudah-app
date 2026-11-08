@@ -29,6 +29,7 @@ export const getChapterShareUrl = (
   chapter: number,
   version: string
 ): string | undefined => {
+  if (usesCyberJudahEditorial()) return undefined
   const bookSlug = book ? getSupportedOsisBookId(book)?.toLowerCase() : undefined
   if (!bookSlug || !chapter || !onlineVersions.has(version)) return undefined
   return `${PUBLIC_SITE_URL}/bible/${version

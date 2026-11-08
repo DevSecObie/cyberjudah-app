@@ -99,7 +99,6 @@ const PlanTabScreen = ({ planAtom }: Props) => {
     if (hasOpenMeditation)
       return (
         <MeditationReader
-          assistantScope={`tab:${planTab.id}`}
           collectionId={plan.id}
           readingId={planTab.data.readingSliceId}
           date={planTab.data.meditationDate}
@@ -117,7 +116,6 @@ const PlanTabScreen = ({ planAtom }: Props) => {
       )
     return (
       <MeditationCollectionScreen
-        assistantScope={`tab:${planTab.id}`}
         collectionId={plan.id}
         hasBackButton={false}
         onReadingSlicePress={slice =>
@@ -136,7 +134,6 @@ const PlanTabScreen = ({ planAtom }: Props) => {
 
   return (
     <PlanScreen
-      assistantScope={`tab:${planTab.id}`}
       planId={plan.id}
       hasBackButton={false}
       readingSliceId={planTab.data.readingSliceId}

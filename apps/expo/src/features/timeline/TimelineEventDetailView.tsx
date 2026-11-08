@@ -25,7 +25,6 @@ import { calculateLabel } from './constants'
 import { useRecordHistory } from '~features/history/useRecordHistory'
 interface Props {
   languageOverride?: 'fr' | 'en'
-  assistantScope?: string
   event?: TimelineEvent | (EventDetailsProps & { sectionIndex?: number })
   onOpenEvent: (event: TimelineEvent) => void
   canGoBack?: boolean
@@ -49,7 +48,6 @@ const getMenuItemImage = (icon: string): MenuAction['image'] => {
 
 const TimelineEventDetailContent = ({
   languageOverride,
-  assistantScope,
   event,
   onOpenEvent,
   canGoBack,
@@ -144,7 +142,6 @@ const TimelineEventDetailContent = ({
         >
           <EventDetailsContent
             languageOverride={languageOverride}
-            assistantScope={assistantScope}
             {...event}
             onOpenEvent={onOpenEvent}
           />

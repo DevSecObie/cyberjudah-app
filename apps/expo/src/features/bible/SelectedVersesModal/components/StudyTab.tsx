@@ -15,7 +15,6 @@ interface StudyTabProps {
   onOpenReferences: () => void
   openCommentariesScreen: () => void
   compareVerses: () => void
-  askAboutVerses?: () => void
   moreThanOneVerseSelected: boolean
 }
 
@@ -29,7 +28,6 @@ const StudyTab = ({
   onOpenReferences,
   openCommentariesScreen,
   compareVerses,
-  askAboutVerses,
   moreThanOneVerseSelected,
 }: StudyTabProps) => {
   const { t } = useTranslation()
@@ -91,13 +89,6 @@ const StudyTab = ({
         onPress={compareVerses}
         shortcut={formatShortcut('compare')}
       />
-      {askAboutVerses && (
-        <ActionItem
-          name="message-circle"
-          label={t('askChat.askAboutVerses', { defaultValue: 'Ask' })}
-          onPress={askAboutVerses}
-        />
-      )}
     </ActionsLayout>
   )
 }

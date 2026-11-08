@@ -5,9 +5,9 @@ import { accessibilityHidden, foregroundStyle, glassEffect } from '@expo/ui/swif
 import Box from '~common/ui/Box'
 import { useTheme } from '~themes/ThemeProvider'
 import useCurrentThemeSelector from '~helpers/useCurrentThemeSelector'
-import type { AskGlassBackdropProps } from './AskGlassBackdrop'
+import type { GlassBackdropProps } from './GlassBackdrop'
 
-export default function AskGlassBackdrop({ radius = 24 }: AskGlassBackdropProps) {
+export default function GlassBackdrop({ radius = 24 }: GlassBackdropProps) {
   const { colors } = useTheme()
   const { colorScheme } = useCurrentThemeSelector()
   // Remain opaque until the accessibility preference is known.

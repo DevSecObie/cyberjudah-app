@@ -19,10 +19,9 @@ export type {
 
 const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
 const catalogJson = isCyberJudah ? cyberJudahCatalog : upstreamCatalogJson
-// The bundled catalog names the staging archives; a build serves them from its own CyberJudah server.
+// The bundled catalog and default server both use CyberJudah production archives.
 const cyberJudahOrigin = (
-  process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL ||
-  'https://cyberjudah-telegram-staging.oisrae1.workers.dev'
+  process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL || 'https://cyberjudah.io'
 ).replace(/\/+$/, '')
 export const MOBILE_RESOURCE_CATALOG_URL = isCyberJudah
   ? `${cyberJudahOrigin}/offline/catalog.json`
@@ -154,9 +153,14 @@ export const resolveMobileResourceCatalog = (value: unknown): MobileResourceCata
   }
   const bundledTimestamp = Date.parse(BUNDLED_MOBILE_RESOURCE_CATALOG.generatedAt)
   const candidateTimestamp = Date.parse(value.generatedAt)
-  return Number.isFinite(candidateTimestamp) && candidateTimestamp >= bundledTimestamp
-    ? value
-    : BUNDLED_MOBILE_RESOURCE_CATALOG
+  if (!Number.isFinite(candidateTimestamp) || candidateTimestamp < bundledTimestamp)
+    return BUNDLED_MOBILE_RESOURCE_CATALOG
+  if (isCyberJudah && value.resources['database:NAVE:fr']) {
+    const resources = { ...value.resources }
+    delete resources['database:NAVE:fr']
+    return { ...value, resources, resourceCount: Object.keys(resources).length }
+  }
+  return value
 }
 
 let catalogRequest: Promise<MobileResourceCatalog> | undefined

@@ -60,15 +60,10 @@
   },
   "dependencies": {
     "@alloc/moti": "patch:@alloc/moti@npm%3A54.0.0-beta.8#~/.yarn/patches/@alloc-moti-npm-54.0.0-beta.8-80d4851b65.patch",
-    "@assistant-ui/react": "^0.15.21",
-    "@assistant-ui/react-native": "0.1.43",
-    "@assistant-ui/react-streamdown": "0.3.16",
     "@babel/plugin-transform-class-properties": "^7.25.9",
     "@babel/plugin-transform-private-methods": "^7.25.9",
     "@babel/plugin-transform-private-property-in-object": "^7.25.9",
     "@babel/preset-env": "^7.26.9",
-    "@bible-strong/ai-contract": "workspace:*",
-    "@bible-strong/avatar-react": "0.1.0",
     "@bible-strong/bible-reference-parser": "workspace:*",
     "@bible-strong/biblical-map": "workspace:*",
     "@bible-strong/resource-catalog": "workspace:*",
@@ -148,7 +143,6 @@
     "expo-print": "~58.0.6",
     "expo-router": "~58.0.23",
     "expo-sharing": "~58.0.19",
-    "expo-speech": "~58.0.3",
     "expo-splash-screen": "~58.0.10",
     "expo-sqlite": "~58.0.13",
     "expo-store-review": "~58.0.2",
@@ -192,8 +186,6 @@
     "react-native-keyboard-controller": "1.22.7",
     "react-native-mmkv": "4.3.2",
     "react-native-nitro-modules": "^0.37.1",
-    "react-native-purchases": "10.16.0",
-    "react-native-purchases-ui": "10.16.0",
     "react-native-reanimated": "4.7.0",
     "react-native-reanimated-carousel": "^5.2.0",
     "react-native-reanimated-dnd": "patch:react-native-reanimated-dnd@npm%3A2.0.0#~/.yarn/patches/react-native-reanimated-dnd-npm-2.0.0-b5a7ddfd0c.patch",
@@ -282,9 +274,9 @@
     ],
     "testPathIgnorePatterns": [],
     "moduleNameMapper": {
-      "^@sentry/react-native$": "<rootDir>/test/jestSentryMock.js",
       "/modules/bible-strong-archive$": "<rootDir>/test/jestBibleStrongArchiveMock.js",
-      "^expo/virtual/env$": "<rootDir>/test/jestExpoEnvMock.js"
+      "^expo/virtual/env$": "<rootDir>/test/jestExpoEnvMock.js",
+      "^@sentry/react-native$": "<rootDir>/test/jestSentryMock.js"
     },
     "transformIgnorePatterns": [
       "/node_modules/(?!@bible-strong/bible-reference-parser/|marked/)"

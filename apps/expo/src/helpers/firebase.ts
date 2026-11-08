@@ -73,7 +73,7 @@ export {
   waitForPendingWrites,
 }
 
-export const CDN_URL = 'https://assets.bible-strong.app/'
+export const CDN_URL = 'https://assets.cyberjudah.io/'
 export const cdnUrl = (path: string) => `${CDN_URL}${path}`
 
 // French database URLs

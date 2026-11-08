@@ -23,6 +23,7 @@ export interface BasicFooterProps {
   onPlay: () => void
   isPlaying: boolean
   isDisabled?: boolean
+  isAudioDisabled?: boolean
   isLoading?: boolean
   hasError: boolean
   onPrevChapter?: () => void
@@ -35,6 +36,7 @@ const BasicFooter = ({
   onPlay,
   isPlaying,
   isDisabled,
+  isAudioDisabled,
   isLoading,
   hasError,
   onPrevChapter,
@@ -90,7 +92,7 @@ const BasicFooter = ({
       <PlayableButtons
         onPlay={onPlay}
         isPlaying={isPlaying}
-        isDisabled={isDisabled}
+        isDisabled={isDisabled || isAudioDisabled}
         isLoading={isLoading}
         hasError={hasError}
         type={type}

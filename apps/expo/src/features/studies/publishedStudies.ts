@@ -6,10 +6,7 @@ import type { Study } from '~redux/modules/user'
 import { studyMarkdown } from './studyMarkdown'
 
 export const cyberJudahServer = () =>
-  (
-    process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL ||
-    'https://cyberjudah-telegram-staging.oisrae1.workers.dev'
-  ).replace(/\/+$/, '')
+  (process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL || 'https://cyberjudah.io').replace(/\/+$/, '')
 
 export const publishedStudyUrl = (id: string) =>
   `${cyberJudahServer()}/app/published/${encodeURIComponent(id)}`

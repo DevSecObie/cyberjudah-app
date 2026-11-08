@@ -1,6 +1,4 @@
 import { useLocalSearchParams } from 'expo-router'
-import { entityContext } from '~features/study-assistant/referenceContext'
-import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
 import { useQuery } from '@tanstack/react-query'
 import { staticResourceQueryOptions } from '~helpers/queryOptions'
 import { useTranslation } from 'react-i18next'
@@ -43,7 +41,6 @@ const StrongEntityRouteScreen = ({ context, entityKey, isFormSheet = false }: Pr
     networkMode: 'always',
     ...staticResourceQueryOptions,
   })
-  useAssistantResourceContext('panel', entityContext(entityQuery.data, language))
   const availability = availabilityQuery.data ?? {
     status: 'missing' as const,
     moduleId: 'entities' as const,

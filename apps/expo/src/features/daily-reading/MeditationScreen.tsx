@@ -1,5 +1,3 @@
-import { editorialContext } from '~features/study-assistant/editorialContext'
-import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
 import { useRef, useState } from 'react'
 import { Image } from 'expo-image'
 import { useFireStorage } from '~features/plans/plan.hooks'
@@ -25,7 +23,6 @@ import { resolveMeditationReading } from './resolveMeditationReading'
 import { useRecordHistory } from '~features/history/useRecordHistory'
 
 interface MeditationReaderProps {
-  assistantScope?: string
   collectionId: string
   readingId?: string
   date?: string
@@ -35,7 +32,6 @@ interface MeditationReaderProps {
 }
 
 export const MeditationReader = ({
-  assistantScope = 'panel',
   collectionId,
   readingId,
   date: requestedDate,
@@ -53,7 +49,6 @@ export const MeditationReader = ({
   const wide = isWeb && availableWidth >= 860
   const cover = useFireStorage(collection?.image)
   const reading = resolved?.reading
-  useAssistantResourceContext(assistantScope, editorialContext(collection, reading))
   const readingTitle = reading && getMeditationTitle(reading)
   useRecordHistory(
     collection && reading && readingTitle

@@ -21,7 +21,7 @@ it('allows only the exact published CyberJudah archives and their hashes', () =>
     expect(isCyberJudahPublicArchive(entry.url, '0'.repeat(64))).toBe(false)
     expect(
       isCyberJudahPublicArchive(
-        entry.url.replace('cyberjudah-telegram-staging.oisrae1.workers.dev', 'example.com'),
+        entry.url.replace(new URL(entry.url).origin, 'https://example.com'),
         entry.archiveSha256
       )
     ).toBe(false)
@@ -36,7 +36,7 @@ it('accepts hash-pinned additions from the validated live catalog, never arbitra
     ...catalog.resources['bible:KJV'],
     id: 'bible:TEST',
     file: 'TEST.json.zip',
-    url: 'https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/TEST.json.zip',
+    url: 'https://cyberjudah.io/offline/TEST.json.zip',
     archiveSha256: 'a'.repeat(64),
   }
   const live = {
@@ -102,7 +102,11 @@ it('downloads from the configured CyberJudah server and exempts only that copy',
           'https://cyberjudah.io'
         )
         expect(isPublic(production, entry.archiveSha256)).toBe(true)
-        expect(isPublic(entry.url, entry.archiveSha256)).toBe(false)
+        const staging = entry.url.replace(
+          'https://cyberjudah.io',
+          'https://cyberjudah-telegram-staging.oisrae1.workers.dev'
+        )
+        expect(isPublic(staging, entry.archiveSha256)).toBe(false)
       }
     })
   } finally {

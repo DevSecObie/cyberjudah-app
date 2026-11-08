@@ -26,7 +26,7 @@ export const initializeResourceAppCheck = async (): Promise<AppCheck> => {
   })
   appCheckInstance = initializeAppCheck(getApp(), {
     provider,
-    // Tokens are acquired on demand for Offline copies and the assistant only (ADR-0065).
+    // Tokens are acquired on demand for Offline copies only (ADR-0065).
     // Background refresh would spend an attestation per TTL on every running app.
     isTokenAutoRefreshEnabled: false,
   })

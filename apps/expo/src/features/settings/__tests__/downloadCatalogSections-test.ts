@@ -53,6 +53,7 @@ describe('native Downloads with the published resource catalog', () => {
         const sections = buildDownloadCatalogSections(lang, (key: string) => key, [
           publishedDictionary,
         ])
+        expect(sections.some((section: { key: string }) => section.key === 'fr')).toBe(false)
         const ids = sections.flatMap((section: { data: { id: string }[] }) =>
           section.data.map(item => item.id)
         )
@@ -64,7 +65,12 @@ describe('native Downloads with the published resource catalog', () => {
           ),
           'bible-strong:KJV',
         ]
-        expect(catalogIds.sort()).toEqual(Object.keys(MOBILE_RESOURCE_CATALOG.resources).sort())
+        expect(catalogIds.sort()).toEqual(
+          Object.keys(MOBILE_RESOURCE_CATALOG.resources)
+            .filter(id => id !== 'database:TIMELINE:fr')
+            .sort()
+        )
+        expect(ids).not.toContain('database:TIMELINE:fr')
         expect(ids).toContain('dictionary:jewish-encyclopedia:JEWISH_ENCYCLOPEDIA:en')
         expect(ids).toContain('bible:KJV')
         expect(ids).not.toContain('bible-strong:KJV')

@@ -75,28 +75,6 @@ const AudioContainer = ({ children, onReduce, audioMode, onChangeMode }: AudioCo
       ]}
     >
       <HStack className="overflow-hidden border-continuous flex-row absolute top-[8px] right-[20px] z-[10] gap-[3px]">
-        {!!onChangeMode && (
-          <>
-            <Chip
-              isActive={audioMode === 'url'}
-              onPress={() => onChangeMode('url')}
-              accessibilityRole="radio"
-              accessibilityLabel={t('accessibility.audioSource', { source: 'Audio' })}
-              accessibilityState={{ checked: audioMode === 'url' }}
-            >
-              Audio
-            </Chip>
-            <Chip
-              isActive={audioMode === 'tts'}
-              onPress={() => onChangeMode('tts')}
-              accessibilityRole="radio"
-              accessibilityLabel={t('accessibility.audioSource', { source: 'TTS' })}
-              accessibilityState={{ checked: audioMode === 'tts' }}
-            >
-              TTS
-            </Chip>
-          </>
-        )}
         {!usesCyberJudahEditorial() && (
           <Chip
             onPress={() => openInApp('https://click.audibible.app/5nmN/stephane30')}

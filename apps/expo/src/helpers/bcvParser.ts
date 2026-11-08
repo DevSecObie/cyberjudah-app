@@ -198,7 +198,6 @@ export const parseInlineBibleReferences = (
 
 /**
  * References written in either supported language, the current one winning where both match.
- * The study assistant answers in the language of the question, not always in the app's.
  */
 export const parseInlineBibleReferencesInAnyLanguage = (text: string): InlineBibleReference[] => {
   const current: BcvLanguage = getLanguage()

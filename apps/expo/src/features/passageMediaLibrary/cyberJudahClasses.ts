@@ -9,10 +9,10 @@ import type { PublishedNote } from '~features/notesExport/notePdf'
 const DATA_ORIGIN = 'https://data.cyberjudah.io'
 // The classroom channel's newest uploads and its live stream, read on CyberJudah's server as the
 // Telegram app reads them.
-const API_ORIGIN = (
-  process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL ||
-  'https://cyberjudah-telegram-staging.oisrae1.workers.dev'
-).replace(/\/+$/, '')
+const API_ORIGIN = (process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL || 'https://cyberjudah.io').replace(
+  /\/+$/,
+  ''
+)
 const CACHE_KEY = 'cyberjudah.classLibrary.v2'
 // A neutral dark placeholder while a thumbnail loads.
 const PLACEHOLDER_BLURHASH = 'L03+Gm%M00t7_3ofWBWB00of~qWB'

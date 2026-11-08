@@ -1,6 +1,4 @@
-import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
 import { openInApp } from '~common/inAppBrowser'
-import { commentaryContext } from '~features/study-assistant/resourceContext'
 import { useQuery } from '@tanstack/react-query'
 import { staticResourceQueryOptions } from '~helpers/queryOptions'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -84,14 +82,6 @@ const CommentaryEntryScreen = ({
     retry: false,
     ...staticResourceQueryOptions,
   })
-
-  useAssistantResourceContext(
-    'panel',
-    commentaryContext(
-      params,
-      query.data?.sections.find(item => item.id === params.sectionId)
-    )
-  )
   useRecordHistory(
     params.sectionId
       ? getCommentaryResourceHistoryEntry(

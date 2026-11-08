@@ -1,3 +1,4 @@
+jest.mock('../BasicFooter', () => 'BasicFooter')
 import React from 'react'
 import { act, create } from 'react-test-renderer'
 import { atom } from 'jotai/vanilla'
@@ -7,6 +8,12 @@ import BibleFooter from '../BibleFooter'
 
 jest.mock('~helpers/bibleVersions', () => ({
   getVersions: () => ({ LSG: { hasAudio: false } }),
+  getBibleVersionCanonId: () => 'protestant-66',
+}))
+jest.mock('~helpers/bibleCoverage', () => ({
+  resolveBibleCoverageCanonId: () => 'protestant-66',
+  getNextAvailableChapterLocation: () => ({ book: 49, chapter: 3 }),
+  getPreviousAvailableChapterLocation: () => ({ book: 49, chapter: 1 }),
 }))
 
 jest.mock('~state/tabs', () => ({
@@ -18,12 +25,10 @@ jest.mock('../atom', () => {
   return { playingBibleTabIdAtom: createAtom(undefined) }
 })
 
-jest.mock('../AudioTTSFooter', () => {
+jest.mock('../AudioUrlFooter', () => {
   const ReactModule = jest.requireActual<typeof React>('react')
-  return (props: Record<string, unknown>) => ReactModule.createElement('AudioTTSFooter', props)
+  return (props: Record<string, unknown>) => ReactModule.createElement('AudioUrlFooter', props)
 })
-
-jest.mock('../AudioUrlFooter', () => () => null)
 jest.mock('../BackToAudioFooter', () => () => null)
 
 describe('BibleFooter', () => {
@@ -54,8 +59,14 @@ describe('BibleFooter', () => {
       )
     })
 
-    expect(
-      renderer!.root.find(node => String(node.type) === 'AudioTTSFooter').props.chapterVerses
-    ).toBe(chapterVerses)
+    expect(renderer!.root.find(node => String(node.type) === 'BasicFooter').props.hasError).toBe(
+      true
+    )
+    const footer = renderer!.root.find(node => String(node.type) === 'BasicFooter')
+    expect(footer.props.isDisabled).not.toBe(true)
+    expect(footer.props.isAudioDisabled).toBe(true)
+    expect(footer.props.onPrevChapter).toEqual(expect.any(Function))
+    expect(footer.props.onNextChapter).toEqual(expect.any(Function))
+    expect(renderer!.root.findAll(node => String(node.type) === 'AudioUrlFooter')).toHaveLength(0)
   })
 })

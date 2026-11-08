@@ -13,8 +13,6 @@ import FormSheetScreen from '~common/ui/FormSheetScreen'
 import { FeatherIcon } from '~common/ui/Icon'
 import ScrollView from '~common/ui/ScrollView'
 import { useReadingContent } from '~features/daily-reading/useDailyMeditation'
-import { editorialContext } from '~features/study-assistant/editorialContext'
-import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
 import { goBackOrHome } from '~navigation/goBackOrHome'
 import { useCanGoBackInStack } from '~navigation/useCanGoBackInStack'
 import { usePublishedNote } from '~features/publishedNotes/PublishedNoteScreen'
@@ -53,7 +51,6 @@ const PlanEntityScreen = ({ isFormSheet = false }: PlanEntityScreenProps) => {
   const slice = reading?.slices.find(
     (item, index) => getEntitySliceKey(reading.id, item, index) === entitySliceId
   )
-  useAssistantResourceContext('panel', editorialContext(plan, reading))
   const dayStep = usePlanDayStep(slice ? { planId, readingSliceId, entitySliceId } : undefined)
   const goBack = () => goBackOrHome(router)
   // A day's study note counts as read once it has loaded and been scrolled to its end (or fits).

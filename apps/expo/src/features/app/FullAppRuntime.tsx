@@ -1,5 +1,4 @@
 import ReadingReminders from '~features/daily-reading/ReadingReminders'
-import AssistantLauncher from '~features/study-assistant/AssistantLauncher'
 import WorkspaceLayout from '~features/app-switcher/WorkspaceLayout'
 import { SheetProvider } from '~common/sheet'
 import { trackAnalyticsScreen } from '~helpers/analytics'
@@ -209,8 +208,7 @@ const FullAppRuntime = ({ theme }: FullAppRuntimeProps) => {
                     </WorkspaceLayout>
                     <DockedClassPlayer />
                     <InAppBrowserHost />
-                    {/* Bible Strong's own assistant stays off; CyberJudah has Ask. */}
-                    {!usesCyberJudahEditorial() && <AssistantLauncher />}
+
                     <ThemedToaster />
                     <AutomaticUpdates />
                     <DeferredModals />

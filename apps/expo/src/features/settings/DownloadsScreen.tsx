@@ -1,3 +1,4 @@
+import { isAppLanguageEnabled } from '~helpers/languageUtils'
 import { useConfirmDialog } from '~common/ConfirmDialog/useConfirmDialog'
 import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
@@ -553,7 +554,9 @@ const DownloadsScreen = () => {
     { value: 'notDownloaded' as const, label: t('downloads.filter.notDownloaded') },
   ]
   const languageOptions = [
-    { value: 'fr' as const, label: t('versionCatalog.language.fr') },
+    ...(isAppLanguageEnabled('fr')
+      ? [{ value: 'fr' as const, label: t('versionCatalog.language.fr') }]
+      : []),
     { value: 'en' as const, label: t('versionCatalog.language.en') },
     { value: 'other' as const, label: t('downloads.language.original') },
   ]

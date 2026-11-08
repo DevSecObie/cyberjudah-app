@@ -1,3 +1,4 @@
+import { isOwnedAudioUrl } from '~helpers/releaseCapabilities'
 import {
   setAudioModeAsync,
   useAudioPlayer,
@@ -57,6 +58,7 @@ const ExpoStrongAudioProvider = ({ children }: { children: React.ReactNode }) =>
   }, [activeId, status.currentTime, status.duration, status.playing])
 
   const play = ({ id, url }: PlayStrongAudioParams) => {
+    if (!isOwnedAudioUrl(url)) return
     if (activeId === id && status.playing) return
 
     setActiveId(id)
@@ -123,6 +125,7 @@ const AndroidStrongAudioProvider = ({ children }: { children: React.ReactNode })
   })
 
   const play = ({ id, url }: PlayStrongAudioParams) => {
+    if (!isOwnedAudioUrl(url)) return
     if (activeIdRef.current === id) return
 
     const requestId = ++requestIdRef.current

@@ -16,7 +16,9 @@
       "android": {
         "image": "latest"
       },
-      "ios": { "simulator": true }
+      "ios": {
+        "simulator": true
+      }
     },
     "cyberjudah-preview": {
       "channel": "preview",
@@ -42,7 +44,8 @@
         "IOS_GOOGLE_SERVICES_FILE": "./firebase/cyberjudah/GoogleService-Info.plist",
         "EXPO_PUBLIC_ASK_PURCHASES_ENABLED": "false",
         "CYBERJUDAH_APPLE_TEAM_ID": "M8DUMWBXLH",
-        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true",
+        "EXPO_PUBLIC_SENTRY_DSN": "https://6b38f234c06d48da9e4f48a40db77cda@errors.cyberjudah.io/2"
       }
     },
     "production": {
@@ -68,7 +71,8 @@
         "ANDROID_GOOGLE_SERVICES_FILE": "./firebase/cyberjudah/google-services.json",
         "IOS_GOOGLE_SERVICES_FILE": "./firebase/cyberjudah-production/GoogleService-Info.plist",
         "EXPO_PUBLIC_ASK_PURCHASES_ENABLED": "false",
-        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true",
+        "EXPO_PUBLIC_SENTRY_DSN": "https://6b38f234c06d48da9e4f48a40db77cda@errors.cyberjudah.io/2"
       }
     },
     "production-apk": {

@@ -11,7 +11,6 @@ import { useOpenInNewTab } from '~features/app-switcher/utils/useOpenInNewTab'
 import type { TabItem } from '~state/tabs'
 import { useRouter } from 'expo-router'
 import { FeatherIcon } from '~common/ui/Icon'
-import { assistantAccessible } from '~features/study-assistant/assistantConfig'
 import useLogin from '~helpers/useLogin'
 import { HomeGrid, useHomeLayout } from './homeLayout'
 
@@ -113,7 +112,6 @@ const CYBERJUDAH_SHORTCUTS: {
   icon: React.ComponentProps<typeof FeatherIcon>['name']
   pathname: string
 }[] = [
-  { key: 'ask', label: 'Ask', icon: 'message-circle', pathname: '/study-assistant' },
   { key: 'classes', label: 'Classes', icon: 'play-circle', pathname: '/(library)/passage-media' },
   { key: 'cases', label: 'Case Studies', icon: 'briefcase', pathname: '/(library)/case-studies' },
   { key: 'precepts', label: 'Precepts', icon: 'layers', pathname: '/(library)/precepts' },
@@ -140,10 +138,7 @@ export const CyberJudahExploreSection = () => {
   const { content, wide } = useHomeLayout()
   const router = useRouter()
   const { user } = useLogin()
-  // Ask needs an account, as in the menu.
-  const items = CYBERJUDAH_SHORTCUTS.filter(
-    item => item.key !== 'ask' || assistantAccessible(user?.id)
-  )
+  const items = CYBERJUDAH_SHORTCUTS
   const tiles = items.map(item => (
     <TouchableBox
       key={item.key}

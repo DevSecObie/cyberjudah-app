@@ -1,7 +1,5 @@
 import { StudyRowsCard } from '~common/ui/StudySection'
 import CommentarySectionRow, { formatCommentarySectionRange } from './CommentarySectionRow'
-import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
-import { commentaryContext } from '~features/study-assistant/resourceContext'
 import CommentIcon from '~common/CommentIcon'
 import { useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
@@ -118,7 +116,6 @@ const CommentaryResourceTabScreen = ({
   const titleSection = tab.data.sectionId
     ? query.data?.sections.find(candidate => candidate.id === tab.data.sectionId)
     : undefined
-  useAssistantResourceContext(`tab:${tab.id}`, commentaryContext(tab.data, titleSection))
   useRecordHistory(getCommentaryResourceHistoryEntry(parsed, tab.data.sectionId, titleSection))
   const titleBookLabel = parsed ? getCommentaryBookLabel(parsed.book) : undefined
   const desiredTabTitle =

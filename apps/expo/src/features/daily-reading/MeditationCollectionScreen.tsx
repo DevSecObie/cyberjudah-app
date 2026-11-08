@@ -1,5 +1,3 @@
-import { editorialContext } from '~features/study-assistant/editorialContext'
-import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
 import { useRef } from 'react'
 import { Redirect, useLocalSearchParams } from 'expo-router'
 import { useTranslation } from 'react-i18next'
@@ -19,7 +17,6 @@ import Menu from '~features/plans/PlanScreen/Menu'
 import { useReadingContent } from './useDailyMeditation'
 
 interface Props {
-  assistantScope?: string
   collectionId?: string
   hasBackButton?: boolean
   onReadingSlicePress?: (
@@ -32,7 +29,6 @@ interface Props {
   ) => void
 }
 export default function MeditationCollectionScreen({
-  assistantScope = 'panel',
   collectionId: requestedId,
   hasBackButton = true,
   onReadingSlicePress,
@@ -42,7 +38,6 @@ export default function MeditationCollectionScreen({
   const { t } = useTranslation()
   const { collection: content, isError, isOffline, retry } = useReadingContent(id)
   const collection = useComputedPlan(id)
-  useAssistantResourceContext(assistantScope, editorialContext(collection))
   const image = useFireStorage(collection?.image)
   const details = useRef<SheetRef>(null)
   const title = collection?.title ?? t('dailyReading.collection') ?? ''

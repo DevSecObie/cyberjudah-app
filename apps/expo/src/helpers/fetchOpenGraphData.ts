@@ -5,8 +5,7 @@ import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 const FUNCTION_URL = 'https://us-central1-bible-strong-app.cloudfunctions.net/fetchOpenGraph'
 /** CyberJudah's own server reads previews (its /api/og answers in the same shape), so no link goes to Bible Strong. */
 const CYBERJUDAH_OG_URL = `${(
-  process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL ||
-  'https://cyberjudah-telegram-staging.oisrae1.workers.dev'
+  process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL || 'https://cyberjudah.io'
 ).replace(/\/+$/, '')}/api/og`
 
 /**

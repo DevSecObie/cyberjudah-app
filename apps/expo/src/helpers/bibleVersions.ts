@@ -125,32 +125,14 @@ export interface Version {
   searchKeywords?: string[]
 }
 
-const getLsgAudioUrl = (bookNum: number, chapterNum: number) => {
-  const audioBaseUrl = (() => {
-    if (audioV2.includes(bookNum.toString())) {
-      return 'https://s.topchretien.com/media/topbible/bible_v2/'
-    }
-
-    if (audioDefault.includes(bookNum.toString())) {
-      return 'https://s.topchretien.com/media/topbible/bible/'
-    }
-
-    return 'https://s.topchretien.com/media/topbible/bible_say/'
-  })()
-
-  return `${audioBaseUrl}${zeroFill(bookNum, 2)}_${zeroFill(chapterNum, 2)}.mp3`
-}
+const getLsgAudioUrl = (_bookNum: number, _chapterNum: number) => ''
 
 const getBibleStudyToolsAudioUrl = (version: string, bookNum: number, chapterNum: number) => {
-  return `https://content.swncdn.com/biblestudytools/audio/${version}-mp3/${bookNum
-    .toString()
-    .padStart(2, '0')}_${
-    bibleStudyToolsBookMapping[bookNum - 1]
-  }_${chapterNum.toString().padStart(3, '0')}.mp3`
+  return ''
 }
 
-const getWordPocketKjvAudioUrl = (bookNum: number, chapterNum: number) => {
-  return `https://www.wordpocket.org/bibles/app/audio/1/${bookNum}/${chapterNum}.mp3`
+const getUnavailableKjvAudioUrl = (bookNum: number, chapterNum: number) => {
+  return ''
 }
 
 type ApocryphaRecording = { slug: string; reader: string; chapters: number[] }
@@ -159,10 +141,10 @@ const apocryphaRecordingBooks: Record<string, ApocryphaRecording | undefined> =
 
 /**
  * wordpocket only has the 66 books. The Apocrypha (books 67 to 81) plays CyberJudah's own
- * LibriVox recordings; a chapter with no recording yet has no URL, so the reader voice reads it.
+ * LibriVox recordings; a chapter with no recording yet has no audio URL.
  */
 const getCyberJudahKjvAudioUrl = (bookNum: number, chapterNum: number) => {
-  if (bookNum <= 66) return getWordPocketKjvAudioUrl(bookNum, chapterNum)
+  if (bookNum <= 66) return ''
   const recording = apocryphaRecordingBooks[bookNum]
   if (!recording?.chapters.includes(chapterNum)) return ''
   return `${apocryphaRecordings.origin}/recordings/${recording.reader}/${recording.slug}/${chapterNum}.m4a`
@@ -305,9 +287,7 @@ const upstreamVersions: Record<string, Version> = {
     hasPericope: true,
     hasAudio: true,
     getAudioUrl: (bookNum: number, chapterNum: number) => {
-      return `https://www.bible.audio/media/sem/${
-        bookNum > 39 ? 'nt' : 'at'
-      }/${bookNum.toString().padStart(2, '0')}_${chapterNum.toString().padStart(3, '0')}.mp3`
+      return ''
     },
   },
   FMAR: {
@@ -378,7 +358,7 @@ const upstreamVersions: Record<string, Version> = {
     hasRedWords: true,
     hasPericope: true,
     hasAudio: true,
-    getAudioUrl: getWordPocketKjvAudioUrl,
+    getAudioUrl: getUnavailableKjvAudioUrl,
     strongDatasetId: 'KJV',
   },
   BSB: {
@@ -483,12 +463,7 @@ const upstreamVersions: Record<string, Version> = {
     hasPericope: true,
     hasAudio: true,
     getAudioUrl: (bookNum: number, chapterNum: number) => {
-      return `https://www.bible.audio/media/niv/${bookNum > 39 ? 'nt' : 'at'}/${(bookNum > 39
-        ? bookNum - 39
-        : bookNum
-      )
-        .toString()
-        .padStart(2, '0')}_${chapterNum.toString().padStart(3, '0')}.mp3`
+      return ''
     },
   },
   BCC1923: {

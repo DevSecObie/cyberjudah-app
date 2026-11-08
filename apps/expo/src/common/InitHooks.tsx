@@ -1,6 +1,6 @@
+import { TEXT_TO_SPEECH_ENABLED } from '~helpers/releaseCapabilities'
 import * as Icon from '@expo/vector-icons'
 import * as Font from 'expo-font'
-import * as Speech from 'expo-speech'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AppState, AppStateStatus, Platform } from 'react-native'
@@ -37,13 +37,6 @@ export type InitHooksProps = Record<string, never>
 const handleAppStateChange = async (nextAppState: AppStateStatus) => {
   if (nextAppState.match(/inactive|background/)) {
     console.log('[Common] App mode - background!')
-
-    if (!(await Speech.isSpeakingAsync()) && Platform.OS === 'android') {
-      try {
-        // TODO Replace this library : @voximplant/react-native-foreground-service
-        // await VIForegroundService.getInstance().stopService()
-      } catch {}
-    }
   }
 }
 

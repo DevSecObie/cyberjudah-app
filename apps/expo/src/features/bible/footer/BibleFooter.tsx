@@ -1,3 +1,11 @@
+import { getBibleVersionCanonId, getVersions } from '~helpers/bibleVersions'
+import {
+  resolveBibleCoverageCanonId,
+  getNextAvailableChapterLocation,
+  getPreviousAvailableChapterLocation,
+} from '~helpers/bibleCoverage'
+import { canGoToNextPlanChapter, canGoToPreviousPlanChapter } from '../planPassage'
+import BasicFooter from './BasicFooter'
 import React from 'react'
 
 import { useAtomValue } from 'jotai/react'
@@ -5,10 +13,8 @@ import { PrimitiveAtom } from 'jotai/vanilla'
 import type { Verse } from '~common/types'
 import { Book } from '~assets/bible_versions/books-desc'
 import type { BibleVersionCoverage } from '~helpers/biblesDb'
-import { getVersions, Version } from '~helpers/bibleVersions'
 import { BibleTab, useIsCurrentTab, VersionCode } from '~state/tabs'
 import { playingBibleTabIdAtom } from './atom'
-import AudioTTSFooter from './AudioTTSFooter'
 import AudioUrlFooter from './AudioUrlFooter'
 import BackToAudioFooter from './BackToAudioFooter'
 
@@ -40,21 +46,6 @@ const BibleFooter = ({
   isInTab = true,
 }: BibleFooterProps) => {
   const bibleTab = useAtomValue(bibleAtom)
-  const bibleVersion = getVersions()[version] as Version
-  // Some chapters have no recording (most of the Apocrypha); those are read by the reader voice.
-  const canSwitch = Boolean(
-    bibleVersion?.hasAudio && bibleVersion.getAudioUrl?.(book.Numero, chapter)
-  )
-  const [audioPreference, setAudioPreference] = React.useState<{
-    version: VersionCode
-    mode: 'url' | 'tts'
-  }>()
-  const audioMode = !canSwitch
-    ? 'tts'
-    : audioPreference?.version === version
-      ? audioPreference.mode
-      : 'url'
-  const setAudioMode = (mode: 'url' | 'tts') => setAudioPreference({ version, mode })
   const playingBibleTabId = useAtomValue(playingBibleTabIdAtom)
   // Use stable tab.id instead of atom.toString()
   const isTabPlaying = playingBibleTabId === bibleTab.id
@@ -81,45 +72,44 @@ const BibleFooter = ({
     )
   }
 
-  if (audioMode === 'url') {
+  if (!getVersions()[version]?.getAudioUrl?.(book.Numero, chapter)) {
+    const canonId = resolveBibleCoverageCanonId(coverage, getBibleVersionCanonId(version))
+    const location = { book: book.Numero, chapter }
+    const hasPreviousChapter =
+      canGoToPreviousPlanChapter(bibleTab.data.planPassage, location) &&
+      !!getPreviousAvailableChapterLocation(book, chapter, coverage, canonId)
+    const hasNextChapter =
+      canGoToNextPlanChapter(bibleTab.data.planPassage, location) &&
+      !!getNextAvailableChapterLocation(book, chapter, coverage, canonId)
     return (
-      <AudioUrlFooter
+      <BasicFooter
         isParallel={Boolean(bibleTab.data.parallelVersions?.length)}
-        book={book}
-        chapter={chapter}
-        goToNextChapter={goToNextChapter}
-        goToPrevChapter={goToPrevChapter}
-        goToChapter={goToChapter}
-        disabled={disabled}
-        version={version}
-        coverage={coverage}
-        planPassage={bibleTab.data.planPassage}
-        onChangeMode={canSwitch ? setAudioMode : undefined}
-        bibleAtom={bibleAtom}
+        onPlay={() => undefined}
+        isPlaying={false}
+        isDisabled={disabled}
+        isAudioDisabled
+        hasError
+        onPrevChapter={hasPreviousChapter ? goToPrevChapter : undefined}
+        onNextChapter={hasNextChapter ? goToNextChapter : undefined}
       />
     )
   }
 
-  if (audioMode === 'tts') {
-    return (
-      <AudioTTSFooter
-        isParallel={Boolean(bibleTab.data.parallelVersions?.length)}
-        book={book}
-        chapter={chapter}
-        chapterVerses={chapterVerses}
-        goToNextChapter={goToNextChapter}
-        goToPrevChapter={goToPrevChapter}
-        disabled={disabled}
-        version={version}
-        coverage={coverage}
-        planPassage={bibleTab.data.planPassage}
-        onChangeMode={canSwitch ? setAudioMode : undefined}
-        bibleAtom={bibleAtom}
-      />
-    )
-  }
-
-  return null
+  return (
+    <AudioUrlFooter
+      isParallel={Boolean(bibleTab.data.parallelVersions?.length)}
+      book={book}
+      chapter={chapter}
+      goToNextChapter={goToNextChapter}
+      goToPrevChapter={goToPrevChapter}
+      goToChapter={goToChapter}
+      disabled={disabled}
+      version={version}
+      coverage={coverage}
+      planPassage={bibleTab.data.planPassage}
+      bibleAtom={bibleAtom}
+    />
+  )
 }
 
 export default BibleFooter

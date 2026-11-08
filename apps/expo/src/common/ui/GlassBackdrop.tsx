@@ -1,10 +1,10 @@
 import { StyleSheet } from 'react-native'
 import Box from '~common/ui/Box'
 
-export type AskGlassBackdropProps = { radius?: number }
+export type GlassBackdropProps = { radius?: number }
 
 /** The existing Bible Strong surface on platforms without Apple's glass material. */
-export default function AskGlassBackdrop({ radius = 24 }: AskGlassBackdropProps) {
+export default function GlassBackdrop({ radius = 24 }: GlassBackdropProps) {
   return (
     <Box
       pointerEvents="none"

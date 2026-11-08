@@ -4,8 +4,7 @@
 const DATA_ORIGIN = 'https://data.cyberjudah.io'
 /** CyberJudah's server: it hands out each public-domain book's PDF on a signed link. */
 export const API_ORIGIN = (
-  process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL ||
-  'https://cyberjudah-telegram-staging.oisrae1.workers.dev'
+  process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL || 'https://cyberjudah.io'
 ).replace(/\/+$/, '')
 
 const SLUG = /^[a-z0-9][a-z0-9-]*$/i

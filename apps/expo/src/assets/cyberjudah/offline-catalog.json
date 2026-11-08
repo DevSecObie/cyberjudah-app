@@ -2,11 +2,11 @@
   "format": "bible-strong-mobile-resource-catalog",
   "schemaVersion": 1,
   "generatedAt": "2026-10-30T03:32:29.671Z",
-  "resourceCount": 10,
+  "resourceCount": 11,
   "resources": {
     "bible:KJV": {
       "id": "bible:KJV",
-      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/KJV.json.zip?sha256=0566578f90b306edd10ef3caf589a6d96db737c8876edb441c0d33ef3637fbc5",
+      "url": "https://cyberjudah.io/offline/KJV.json.zip?sha256=0566578f90b306edd10ef3caf589a6d96db737c8876edb441c0d33ef3637fbc5",
       "file": "KJV.json.zip",
       "entry": "KJV.json",
       "entries": {
@@ -28,7 +28,7 @@
     },
     "bible-strong:KJV": {
       "id": "bible-strong:KJV",
-      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/bible-kjv-strong.sqlite.zip?sha256=7a4be2628408f2d7b1e72a3f78eeb4586fe24f3fb644d94ec5c360b144c61aa2",
+      "url": "https://cyberjudah.io/offline/bible-kjv-strong.sqlite.zip?sha256=7a4be2628408f2d7b1e72a3f78eeb4586fe24f3fb644d94ec5c360b144c61aa2",
       "file": "bible-kjv-strong.sqlite.zip",
       "entry": "bible-kjv-strong.sqlite",
       "entries": {
@@ -52,7 +52,7 @@
       "id": "database:TIMELINE:en",
       "file": "cyberjudah-timeline-en.json.zip",
       "entry": "bible-timeline-events.json",
-      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/cyberjudah-timeline-en.json.zip?sha256=b2fdfe01f8a6db7be9dba589ce9e402e3a8621b5969d05ebcbc2007c830231cf",
+      "url": "https://cyberjudah.io/offline/cyberjudah-timeline-en.json.zip?sha256=b2fdfe01f8a6db7be9dba589ce9e402e3a8621b5969d05ebcbc2007c830231cf",
       "entries": {
         "canonical": {
           "entry": "bible-timeline-events.json",
@@ -73,7 +73,7 @@
       "id": "database:TIMELINE:fr",
       "file": "cyberjudah-timeline-en.json.zip",
       "entry": "bible-timeline-events.json",
-      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/cyberjudah-timeline-en.json.zip?sha256=b2fdfe01f8a6db7be9dba589ce9e402e3a8621b5969d05ebcbc2007c830231cf",
+      "url": "https://cyberjudah.io/offline/cyberjudah-timeline-en.json.zip?sha256=b2fdfe01f8a6db7be9dba589ce9e402e3a8621b5969d05ebcbc2007c830231cf",
       "entries": {
         "canonical": {
           "entry": "bible-timeline-events.json",
@@ -92,7 +92,7 @@
     },
     "strong-lexicon:entities": {
       "id": "strong-lexicon:entities",
-      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/bible_entities.cyberjudah.sqlite.zip?sha256=a5814fa69aa65d8ab59d069a3c416ee74e73917ef225b1e90407c69fc4787124",
+      "url": "https://cyberjudah.io/offline/bible_entities.cyberjudah.sqlite.zip?sha256=a5814fa69aa65d8ab59d069a3c416ee74e73917ef225b1e90407c69fc4787124",
       "file": "bible_entities.cyberjudah.sqlite.zip",
       "entry": "bible_entities.cyberjudah.sqlite",
       "entries": {
@@ -113,7 +113,7 @@
     },
     "database:JEWISH_ENCYCLOPEDIA:en": {
       "id": "database:JEWISH_ENCYCLOPEDIA:en",
-      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/dictionaries/dictionary-jewish-encyclopedia-en.sqlite.zip?sha256=0c0e7c5be1211a9ae60321452625d2dc7ce8a035730884323300c0b92bca37ab",
+      "url": "https://cyberjudah.io/offline/dictionaries/dictionary-jewish-encyclopedia-en.sqlite.zip?sha256=0c0e7c5be1211a9ae60321452625d2dc7ce8a035730884323300c0b92bca37ab",
       "file": "dictionaries/dictionary-jewish-encyclopedia-en.sqlite.zip",
       "entry": "dictionnaire.sqlite",
       "entries": {
@@ -134,7 +134,7 @@
     },
     "strong-lexicon:simple-en": {
       "id": "strong-lexicon:simple-en",
-      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/databases/strong_lexicon.simple-en.sqlite.zip?sha256=459c5ddab56ed876d0ac41c62f588c0fa810fec7bf767ce8207bac2b75a4ebc4",
+      "url": "https://cyberjudah.io/offline/databases/strong_lexicon.simple-en.sqlite.zip?sha256=459c5ddab56ed876d0ac41c62f588c0fa810fec7bf767ce8207bac2b75a4ebc4",
       "file": "databases/strong_lexicon.simple-en.sqlite.zip",
       "entry": "strong_lexicon.simple-en.sqlite",
       "entries": {
@@ -155,7 +155,7 @@
     },
     "bible:BHG": {
       "id": "bible:BHG",
-      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/BHG.json.zip?sha256=ab91f7c23a3e91732823ab2abf36205fcd3b90567f45f61d37f0acd19d5515bd",
+      "url": "https://cyberjudah.io/offline/BHG.json.zip?sha256=ab91f7c23a3e91732823ab2abf36205fcd3b90567f45f61d37f0acd19d5515bd",
       "file": "BHG.json.zip",
       "entry": "BHG.json",
       "entries": {
@@ -177,7 +177,7 @@
     },
     "bible-interlinear:BHG:en": {
       "id": "bible-interlinear:BHG:en",
-      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/databases/bible-bhg-interlinear-en.sqlite.zip?sha256=c6f5c2eec37cbc721cbe9cf461173d88ed63c57ad5b7773b953cb4cec1e68e38",
+      "url": "https://cyberjudah.io/offline/databases/bible-bhg-interlinear-en.sqlite.zip?sha256=c6f5c2eec37cbc721cbe9cf461173d88ed63c57ad5b7773b953cb4cec1e68e38",
       "file": "databases/bible-bhg-interlinear-en.sqlite.zip",
       "entry": "bible-bhg-interlinear-en.sqlite",
       "entries": {
@@ -199,7 +199,7 @@
     },
     "strong-lexicon:resources": {
       "id": "strong-lexicon:resources",
-      "url": "https://cyberjudah-telegram-staging.oisrae1.workers.dev/offline/databases/strong_lexicon.resources.sqlite.zip?sha256=9f40acb68b3035a1e0315c8b09770d65e462eb2d86d24b60c7268e6486c50957",
+      "url": "https://cyberjudah.io/offline/databases/strong_lexicon.resources.sqlite.zip?sha256=9f40acb68b3035a1e0315c8b09770d65e462eb2d86d24b60c7268e6486c50957",
       "file": "databases/strong_lexicon.resources.sqlite.zip",
       "entry": "strong_lexicon.resources.sqlite",
       "entries": {
@@ -217,6 +217,27 @@
       "peakInstallationBytes": 8416906,
       "strategy": "archive-extract",
       "resourceRevision": "cj-strong-lexicon-resources-62d693464d0f06c08deb7897"
+    },
+    "database:NAVE:en": {
+      "id": "database:NAVE:en",
+      "url": "https://cyberjudah.io/offline/databases/en/nave.sqlite.zip?sha256=3e76be5791d33d23b21fb40f334d4e2b28c968d69e19ea41d6c0f32fed824766",
+      "file": "databases/en/nave.sqlite.zip",
+      "entry": "nave.sqlite",
+      "entries": {
+        "canonical": {
+          "entry": "nave.sqlite",
+          "sha256": "473c70d6cd86ae4da8db99a2957aa6234d6d46b06d8ae1857b0ff7a2b0c6bf9d",
+          "bytes": 7402496
+        }
+      },
+      "archiveSha256": "3e76be5791d33d23b21fb40f334d4e2b28c968d69e19ea41d6c0f32fed824766",
+      "archiveBytes": 2010816,
+      "contentSha256": "473c70d6cd86ae4da8db99a2957aa6234d6d46b06d8ae1857b0ff7a2b0c6bf9d",
+      "contentBytes": 7402496,
+      "resourceRevision": "nave-en-a3ca283196d0eb084276",
+      "installedBytes": 7402496,
+      "peakInstallationBytes": 16815808,
+      "strategy": "archive-extract"
     }
   }
 }

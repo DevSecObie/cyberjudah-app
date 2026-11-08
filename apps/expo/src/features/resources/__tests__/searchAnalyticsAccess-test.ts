@@ -21,7 +21,7 @@ const event = {
 }
 
 describe('search analytics HTTP access', () => {
-  it('posts a search event to the protected resource API', async () => {
+  it('does not send a search event in the release', async () => {
     const fetcher = jest.fn(async () => new Response('{}', { status: 202 }))
     const access = createHttpSearchAnalyticsAccess({
       baseUrl: 'https://api.bible-strong.app/',
@@ -31,13 +31,7 @@ describe('search analytics HTTP access', () => {
 
     await access.record({ ...event, sources: [...event.sources] })
 
-    expect(fetcher).toHaveBeenCalledWith(
-      'https://api.bible-strong.app/v1/search-events',
-      expect.objectContaining({
-        method: 'POST',
-        body: JSON.stringify(event),
-      })
-    )
+    expect(fetcher).not.toHaveBeenCalled()
   })
 
   it('does not queue an event while offline', async () => {

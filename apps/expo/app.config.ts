@@ -4,10 +4,10 @@ const isCyberJudah = process.env.EXPO_PUBLIC_RESOURCE_PROFILE === 'cyberjudah'
 // CyberJudah's first public release has its own version, independent of Bible Strong.
 const APP_VERSION = isCyberJudah ? '1.0.0' : '28.0.1'
 // Native changes require a separate runtime even when the App Store version stays the same.
-// CyberJudah native revision 1 includes Expo Print; older test builds remain on runtime 28.3.
+// Native revision 2 removes billing and speech SDKs; old JS updates are incompatible.
 const [majorVersion, minorVersion] = APP_VERSION.split('.')
 const RUNTIME_VERSION = isCyberJudah
-  ? `${majorVersion}.${minorVersion}.1`
+  ? `${majorVersion}.${minorVersion}.2`
   : `${majorVersion}.${minorVersion}`
 // The owner's live-editing dev app ("CyberJudah Preview"), installed next to TestFlight builds.
 const isCyberJudahPreview = process.env.BUNDLE_IDENTIFIER === 'io.cyberjudah.app.preview'
@@ -103,7 +103,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       process.env.BUNDLE_IDENTIFIER ??
       (isCyberJudah ? 'io.cyberjudah.app.dev' : 'com.smontlouis.biblestrong.dev'),
     appleTeamId: isCyberJudah ? process.env.CYBERJUDAH_APPLE_TEAM_ID : undefined,
-    buildNumber: isCyberJudah ? '315' : '301',
+    buildNumber: isCyberJudah ? '317' : '301',
     googleServicesFile:
       process.env.IOS_GOOGLE_SERVICES_FILE ??
       (isCyberJudah
@@ -141,7 +141,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     favicon: './assets/images/icon-2.png',
   },
   plugins: [
-    ...(isCyberJudah ? ['./plugins/withCyberJudahBilling.js'] : []),
     'expo-sharing',
     'expo-router',
     'expo-asset',
@@ -150,10 +149,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-audio',
       {
-        // App Review asks each permission to say what it is for.
-        microphonePermission: isCyberJudah
-          ? 'CyberJudah uses the microphone only while you hold the mic in Ask, to write down the question you speak.'
-          : 'Allow $(PRODUCT_NAME) to access your microphone',
+        microphonePermission: false,
+        recordAudioAndroid: false,
       },
     ],
     // CocoaPods, not SPM: RNFirebase 26 rejects SPM with our static frameworks linkage.

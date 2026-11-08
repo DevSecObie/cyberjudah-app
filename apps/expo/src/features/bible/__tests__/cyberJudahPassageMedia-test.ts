@@ -22,7 +22,7 @@ it('lists only CyberJudah classes and never the original video catalog', () => {
       expect(media.getPassageMediaForBook(1, 'en')).toEqual([])
       expect(media.getPassageMediaById('book-genesis', 'en')).toBeNull()
       expect(media.getPassageMediaEmbedUrl('abcDEF_1234')).toBe(
-        'https://cyberjudah-telegram-staging.oisrae1.workers.dev/embed/youtube.html?v=abcDEF_1234&appId=io.cyberjudah.app'
+        'https://cyberjudah.io/embed/youtube.html?v=abcDEF_1234&appId=io.cyberjudah.app'
       )
     })
   } finally {

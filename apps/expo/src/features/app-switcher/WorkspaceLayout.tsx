@@ -215,7 +215,6 @@ export default function WorkspaceLayout({ children }: { children: ReactNode }) {
             {isWide && (
               <Box
                 testID="workspace-reader-motion"
-                dataSet={Platform.OS === 'web' ? { assistantSurface: 'reader' } : undefined}
                 className="absolute inset-0"
                 style={{
                   display: showsReader ? 'flex' : 'none',
@@ -233,11 +232,6 @@ export default function WorkspaceLayout({ children }: { children: ReactNode }) {
             )}
             <Box
               testID={panel.showsStudy ? 'workspace-panel-slot' : undefined}
-              dataSet={
-                Platform.OS === 'web'
-                  ? { assistantSurface: panel.showsStudy ? 'panel' : 'reader' }
-                  : undefined
-              }
               className="flex-1 overflow-hidden"
               style={{
                 display: isWide && isWorkspace ? 'none' : 'flex',

@@ -1,5 +1,3 @@
-import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
-import { commentaryCollectionContext } from '~features/study-assistant/resourceContext'
 import CommentIcon from '~common/CommentIcon'
 import { pageContentStyle } from '~common/ui/PageContent'
 import { useQuery } from '@tanstack/react-query'
@@ -132,10 +130,6 @@ const CommentariesTabScreen = ({
     retry,
   } = useComments(verse)
   const { isInTab } = useTabContext()
-  useAssistantResourceContext(
-    isInTab ? `tab:${commentaryTab.id}` : 'panel',
-    commentaryCollectionContext(verse, selectedResourceIds)
-  )
   const currentVerseNumber = Number(verse.split('-')[2])
   const commentaryAvailability = buildCommentaryVerseAvailability({
     selectedProjectionIds: selectedResourceIds,

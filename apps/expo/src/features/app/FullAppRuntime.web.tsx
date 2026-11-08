@@ -24,8 +24,6 @@ import { createFormSheetOptions } from '~navigation/formSheetOptions'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import type { Theme } from '~themes/index'
 import { PlaybackService } from '../../../playbackService'
-
-import AssistantLauncher from '~features/study-assistant/AssistantLauncher.web'
 import WorkspaceAnalytics from '~features/app-switcher/WorkspaceAnalytics.web'
 import ReferencePreviewHost from '~features/bibleReferencePreview/ReferencePreviewHost'
 import ChangelogModal from '~common/Changelog'
@@ -113,8 +111,7 @@ const FullAppRuntime = ({ theme }: { theme: Theme }) => {
               <ConfirmDialogHost />
               <ThemedToaster />
               <WorkspaceAnalytics />
-              {/* Bible Strong's own assistant stays off; CyberJudah has Ask (as on the phone). */}
-              {!usesCyberJudahEditorial() && <AssistantLauncher />}
+
               <DockedClassPlayer />
               <ChangelogModal />
               <UnifiedTagsModal />

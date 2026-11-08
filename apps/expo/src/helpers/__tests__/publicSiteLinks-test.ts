@@ -1,3 +1,5 @@
+jest.mock('../editorialProfile', () => ({ usesCyberJudahEditorial: jest.fn(() => false) }))
+import { usesCyberJudahEditorial } from '../editorialProfile'
 import { getChapterShareUrl, getStrongShareUrl, getVersesShareUrl } from '../publicSiteLinks'
 
 describe('public site links', () => {
@@ -41,4 +43,11 @@ describe('public site links', () => {
     )
     expect(getStrongShareUrl('G26', 'greek', 'en')).toBe('https://bible-strong.app/strong/en/g0026')
   })
+})
+
+it('does not share upstream chapter or verse links in CyberJudah', () => {
+  jest.mocked(usesCyberJudahEditorial).mockReturnValue(true)
+  expect(getChapterShareUrl(43, 3, 'KJV')).toBeUndefined()
+  expect(getVersesShareUrl(['43-3-16'], 'KJV')).toBeUndefined()
+  jest.mocked(usesCyberJudahEditorial).mockReturnValue(false)
 })

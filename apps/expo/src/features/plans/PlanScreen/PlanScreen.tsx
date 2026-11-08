@@ -1,5 +1,3 @@
-import { editorialContext } from '~features/study-assistant/editorialContext'
-import { useAssistantResourceContext } from '~features/study-assistant/useAssistantResourceContext'
 import { getLegacyPlanRouteId } from '../planTabState'
 import { useReadingContent } from '~features/daily-reading/useDailyMeditation'
 import { useTranslation } from 'react-i18next'
@@ -22,7 +20,6 @@ import Menu from './Menu'
 import SuccessModal from './SuccessModal'
 
 interface Props {
-  assistantScope?: string
   planId?: string
   hasBackButton?: boolean
   /** The day to show first; links to a day of the plan land here. */
@@ -31,7 +28,6 @@ interface Props {
 }
 
 const PlanScreen = ({
-  assistantScope = 'panel',
   planId: planIdFromProps,
   hasBackButton = true,
   readingSliceId,
@@ -50,7 +46,6 @@ const PlanScreen = ({
   const { t } = useTranslation()
   const { isError, retry } = useReadingContent(id)
   const plan = useComputedPlan(id)
-  useAssistantResourceContext(assistantScope, editorialContext(plan))
   useRecordHistory(
     plan ? { type: 'plan', planId: id, title: plan.title, subtitle: plan.subTitle } : null
   )

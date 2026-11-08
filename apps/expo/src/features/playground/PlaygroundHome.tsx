@@ -124,42 +124,6 @@ const PlaygroundHome = ({
           </VStack>
 
           <PlaygroundPreferences selectedTheme={selectedTheme} onSelectTheme={onSelectTheme} />
-
-          <VStack className="overflow-hidden border-continuous gap-[12px]">
-            <Text className="text-dark-grey text-[11px] font-bold uppercase">
-              {t('playground.experiences')}
-            </Text>
-            {Platform.OS === 'web' && (
-              <PlaygroundLink
-                eyebrow="Assistant IA"
-                title="Catalogue des widgets IA"
-                description="Explorer les composants, leurs descriptions et leurs interactions, sans appel à l’IA."
-                icon="grid"
-                onPress={() => router.push('/ai-widgets')}
-              />
-            )}
-            <PlaygroundLink
-              eyebrow="Performance mobile"
-              title="HTML : Native / Expo DOM"
-              description="Comparer les mêmes textes, leurs temps d’affichage et les pauses JavaScript."
-              icon="activity"
-              onPress={onOpenHTMLBenchmark}
-            />
-            <PlaygroundLink
-              eyebrow={t('playground.abelEyebrow')}
-              title={t('playground.abelTitle')}
-              description={t('playground.abelDescription')}
-              icon="compass"
-              onPress={onOpenAbelOnboarding}
-            />
-            <PlaygroundLink
-              eyebrow={t('playground.resourcesEyebrow')}
-              title={t('playground.resourcesTitle')}
-              description={t('playground.resourcesDescription')}
-              icon="archive"
-              onPress={onOpenOfflineSetup}
-            />
-          </VStack>
         </VStack>
       </ScrollView>
     </Box>

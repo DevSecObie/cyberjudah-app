@@ -39,7 +39,7 @@ const failLoading = (
 
 describe('getChapterEntityAvatar', () => {
   it('falls back to the placeholder when the portrait cannot be loaded', () => {
-    const portrait = 'https://media.bible-strong.app/entity-images/bethlehem/w256.webp'
+    const portrait = 'https://media.cyberjudah.io/entity-images/bethlehem/w256.webp'
     const { onError } = getChapterEntityAvatar(entity, { [entity.uniqueName]: portrait })
     const image = createImage(portrait)
 
@@ -60,7 +60,7 @@ describe('getChapterEntityAvatar', () => {
   })
 
   it('tries the placeholder only once after a failing portrait', () => {
-    const portrait = 'https://media.bible-strong.app/entity-images/bethlehem/w256.webp'
+    const portrait = 'https://media.cyberjudah.io/entity-images/bethlehem/w256.webp'
     const { onError } = getChapterEntityAvatar(entity, { [entity.uniqueName]: portrait })
     const image = createImage(portrait)
 

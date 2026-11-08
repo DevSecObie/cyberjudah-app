@@ -61,12 +61,12 @@ describe('CyberJudah teachings in the reader', () => {
       expect(getInlineCommentaryResources([], BISHOPS, false)).toEqual([])
     }))
 
-  it('keeps the recorded KJV audio', () =>
+  it('does not request outside KJV recordings', () =>
     withCyberJudah(() => {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { versions } = require('~helpers/bibleVersions')
       expect(versions.KJV.hasAudio).toBe(true)
-      expect(versions.KJV.getAudioUrl(1, 1)).toMatch(/^https:\/\//)
+      expect(versions.KJV.getAudioUrl(1, 1)).toBe('')
     }))
 
   it('plays our own recordings in the Apocrypha, and nothing where there is none', () =>

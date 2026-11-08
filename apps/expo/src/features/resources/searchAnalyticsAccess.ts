@@ -41,35 +41,9 @@ export const noOpSearchAnalyticsAccess: SearchAnalyticsAccess = {
   record: async () => undefined,
 }
 
-export const createHttpSearchAnalyticsAccess = ({
-  baseUrl,
-  fetcher = fetch,
-  isOnline,
-  timeoutMs = 3_000,
-}: {
+export const createHttpSearchAnalyticsAccess = (_options: {
   baseUrl: string
   fetcher?: typeof fetch
   isOnline: () => Promise<boolean>
   timeoutMs?: number
-}): SearchAnalyticsAccess => ({
-  record: async event => {
-    if (!(await isOnline())) return
-
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), timeoutMs)
-    try {
-      const response = await fetcher(`${baseUrl.replace(/\/+$/u, '')}/v1/search-events`, {
-        method: 'POST',
-        headers: {
-          accept: 'application/json',
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify(event),
-        signal: controller.signal,
-      })
-      if (!response.ok) throw new Error(`SEARCH_ANALYTICS_HTTP_${response.status}`)
-    } finally {
-      clearTimeout(timeout)
-    }
-  },
-})
+}): SearchAnalyticsAccess => noOpSearchAnalyticsAccess

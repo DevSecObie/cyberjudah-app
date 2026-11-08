@@ -4,10 +4,10 @@ import { getCurrentAuthUser } from '~helpers/firebaseAuthRuntime'
 // server, the same search the site and the Telegram app read. The transcripts are too big to keep
 // on a phone; each result is a passage as it was said, with the second it was said at.
 
-const ORIGIN = (
-  process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL ||
-  'https://cyberjudah-telegram-staging.oisrae1.workers.dev'
-).replace(/\/+$/, '')
+const ORIGIN = (process.env.EXPO_PUBLIC_CYBERJUDAH_API_URL || 'https://cyberjudah.io').replace(
+  /\/+$/,
+  ''
+)
 
 export type SaidInClassHit = {
   title: string

@@ -14,7 +14,7 @@ import {
 describe('entity portraits', () => {
   it('addresses a portrait by its unique name and hash', () => {
     expect(getEntityPortraitUri("King's_Highway@Num.20.17-", '0123456789ab')).toBe(
-      "https://media.bible-strong.app/entity-images/King's_Highway%40Num.20.17-/0123456789ab/w256.webp"
+      "https://media.cyberjudah.io/entity-images/King's_Highway%40Num.20.17-/0123456789ab/w256.webp"
     )
     expect(getEntityPortraitUri('Paul@Act.7.58-2Pe', 'abcdef', 'w768')).toMatch(
       /\/abcdef\/w768\.webp$/
