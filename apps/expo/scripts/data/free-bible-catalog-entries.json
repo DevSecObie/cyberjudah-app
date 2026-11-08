@@ -21,6 +21,50 @@
     "textSha256": "31ede4f1d1e135d3df01206d4ba6e05908a2846c2182efb9a2ee0e7b8a9bb95c",
     "verseCount": 31102
   },
+  "bible:DUTSVVA": {
+    "id": "bible:DUTSVVA",
+    "file": "bibles/bible-dutsvva.json.zip",
+    "entry": "bible-dutsvva.json",
+    "entries": {
+      "canonical": {
+        "entry": "bible-dutsvva.json",
+        "sha256": "5237f3cfd2760ed6a5f7b053382c0620744a48536ac758e257f3b968bd2781c7",
+        "bytes": 7695068
+      }
+    },
+    "archiveSha256": "bff774ed249b0f6c092eb7526ce7007be1a73487a037d1086f12ba53af6dd5f3",
+    "archiveBytes": 1786623,
+    "contentSha256": "5237f3cfd2760ed6a5f7b053382c0620744a48536ac758e257f3b968bd2781c7",
+    "contentBytes": 7695068,
+    "installedBytes": 15390136,
+    "peakInstallationBytes": 24871827,
+    "strategy": "sqlite-import",
+    "textRevision": "dutsvva-9698e4f94b3f6f5ff351",
+    "textSha256": "9698e4f94b3f6f5ff351ed73753ab44fc9d2522385a466e7525462410771bc57",
+    "verseCount": 36939
+  },
+  "bible:FINBIBLIA": {
+    "id": "bible:FINBIBLIA",
+    "file": "bibles/bible-finbiblia.json.zip",
+    "entry": "bible-finbiblia.json",
+    "entries": {
+      "canonical": {
+        "entry": "bible-finbiblia.json",
+        "sha256": "c0ca52f3e64bbdebd683282cf7acb128556e135a9dcca64f6d9587f0767136b9",
+        "bytes": 7271145
+      }
+    },
+    "archiveSha256": "98eeb5a23db8ec7f590b0919d6ff4a32ae3195247cfd09f1289966d623de6281",
+    "archiveBytes": 1672068,
+    "contentSha256": "c0ca52f3e64bbdebd683282cf7acb128556e135a9dcca64f6d9587f0767136b9",
+    "contentBytes": 7271145,
+    "installedBytes": 14542290,
+    "peakInstallationBytes": 23485503,
+    "strategy": "sqlite-import",
+    "textRevision": "finbiblia-0d9a4624471c5147baff",
+    "textSha256": "0d9a4624471c5147baff8340b2aa3b2c2a1e9ff471c892f7f4b99311c06f31e5",
+    "verseCount": 35445
+  },
   "bible:FMAR": {
     "id": "bible:FMAR",
     "file": "bibles/bible-fmar.json.zip",

@@ -158,8 +158,9 @@ def osis_verse_text(raw, where, drop_variant=None):
     # unwrapped. Paragraph milestones are layout and are dropped with their marker (e.g. a pilcrow).
     if re.search(r'<q\b[^>]*\bmarker="[^"]', kept):
         raise SystemExit(f'{where}: quotation with a marker')
-    if re.search(r'<milestone\b(?![^>]*\btype="x-p")', kept):
-        raise SystemExit(f'{where}: milestone that is not a paragraph mark')
+    # Alternative verse-number milestones (x-usfm-va) are numbering notes, not text, and are dropped.
+    if re.search(r'<milestone\b(?![^>]*\btype="(?:x-p|x-usfm-va)")', kept):
+        raise SystemExit(f'{where}: milestone that is not a paragraph or verse-number mark')
     text = re.sub(r'<[^>]*>', REMOVED, kept)
     # Whitespace that only surrounded removed markup becomes one space (none at the ends);
     # whitespace inside the text itself is kept as published.

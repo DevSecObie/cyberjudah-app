@@ -282,6 +282,50 @@
       "licenceStatement": "DistributionLicense=Creative Commons: BY-NC-ND 4.0; copyright contact Marjan Šavli and Barbara Hojkar Šavli (CrossWire module configuration).",
       "credit": "Sveto pismo Kralja Jakoba (SloKJV), Marjan Šavli in Barbara Hojkar Šavli, CC BY-NC-ND 4.0. Besedilo: CrossWire Bible Society (SloKJV), https://github.com/msavli/SloKJV.",
       "sourceText": "Translated from the KJV: 'Slovenian translation of Holy Bible King James Version (1769)' (https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=SloKJV)."
+    },
+    {
+      "id": "DUTSVVA",
+      "catalogId": "bible:DUTSVVA",
+      "file": "bibles/bible-dutsvva.json.zip",
+      "entry": "bible-dutsvva.json",
+      "title": "Statenvertaling (1637) met de apocriefe boeken",
+      "language": "nl",
+      "source": {
+        "kind": "sword-module",
+        "publisher": "CrossWire Bible Society",
+        "page": "https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=DutSVVA",
+        "url": "https://www.crosswire.org/ftpmirror/pub/sword/packages/rawzip/DutSVVA.zip",
+        "module": "DutSVVA",
+        "edition": "SWORD module DutSVVA version 1.0, NRSVA versification; text source https://github.com/Isidore-Guild/statenvertaling",
+        "sha256": "930ad36f04feff867196aba29590588167e4588937cc9d583949e5af9911150e"
+      },
+      "licence": "Public domain",
+      "licenceStatement": "DistributionLicense=Public Domain (CrossWire module configuration).",
+      "credit": "Statenvertaling (1637), met de apocriefe boeken, publiek domein. Tekst: CrossWire Bible Society (DutSVVA), naar github.com/Isidore-Guild/statenvertaling.",
+      "sourceText": "Textus Receptus per Wikipedia only: 'een vertaling van de Textus Receptus' (https://nl.wikipedia.org/wiki/Statenvertaling, uncited there). No primary source found.",
+      "approvedBy": "Owner decision 2026-11-07 (relayed by the coordinator): build on the Wikipedia statement; no primary source found."
+    },
+    {
+      "id": "FINBIBLIA",
+      "catalogId": "bible:FINBIBLIA",
+      "file": "bibles/bible-finbiblia.json.zip",
+      "entry": "bible-finbiblia.json",
+      "title": "Biblia 1776",
+      "language": "fi",
+      "source": {
+        "kind": "sword-module",
+        "publisher": "CrossWire Bible Society",
+        "page": "https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=FinBiblia",
+        "url": "https://www.crosswire.org/ftpmirror/pub/sword/packages/rawzip/FinBiblia.zip",
+        "module": "FinBiblia",
+        "edition": "SWORD module FinBiblia version 2.1, NRSVA versification; text source https://www.finbible.fi/head/bibl.htm",
+        "sha256": "d0ffb25568548226ca17809063d93228dcd424e6f899c92be7d7b10b1d9674d5"
+      },
+      "licence": "Public domain",
+      "licenceStatement": "DistributionLicense=Public Domain; 'In public domain.' (CrossWire module configuration).",
+      "credit": "Biblia (1776), Suomen kirkkoraamattu, public domain. Text: CrossWire Bible Society (FinBiblia), SWORD version by Tero Favorin.",
+      "sourceText": "Textus Receptus per Wikipedia only: 'it, unlike the newer translations, is based on the Textus Receptus' (https://en.wikipedia.org/wiki/Bible_translations_into_Finnish). No primary source found.",
+      "approvedBy": "Owner decision 2026-11-07 (relayed by the coordinator): build on the Wikipedia statement; no primary source found."
     }
   ]
 }
