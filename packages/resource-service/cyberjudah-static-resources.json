@@ -178,11 +178,22 @@
       },
       "approvalEvidence": "Coordinator t1r 2026-11-07: four-dictionary rollout cleared at reviewed origin 194a68c20b9ea4adbc11bbe673d2afce1e64c6da",
       "recordCommit": "194a68c20b9ea4adbc11bbe673d2afce1e64c6da"
+    },
+    {
+      "resourceId": "database:NAVE:en",
+      "sourcePath": "apps/expo/public/offline/databases/en/nave.sqlite.zip",
+      "rights": {
+        "licence": null,
+        "ownerAuthorisation": "Coordinator t1r 2026-11-07: owner-approved English Nave file from c85b95a7c, verified Nov5 and rechecked, final catalog 9ecd9c393150264bde0b9937fc750b629524224a",
+        "source": "https://github.com/DevSecObie/cyberjudah-app/blob/c85b95a7c/apps/expo/public/offline/databases/en/nave.sqlite.zip",
+        "credit": "Nave's Topical Bible (English); owner-approved release file"
+      },
+      "approvalEvidence": "Coordinator t1r 2026-11-07: owner-approved English Nave file from c85b95a7c, verified Nov5 and rechecked, final catalog 9ecd9c393150264bde0b9937fc750b629524224a",
+      "recordCommit": "9ecd9c393150264bde0b9937fc750b629524224a"
     }
   ],
   "cdn": [],
   "approvedResourceIds": [
-    "bible:FMAR",
     "bible:TR1624",
     "bible:TR1894",
     "database:cyberjudah:en",
@@ -196,18 +207,12 @@
     "strong-lexicon:entities",
     "database:JEWISH_ENCYCLOPEDIA:en",
     "database:TIMELINE:en",
-    "database:TIMELINE:fr",
     "bible:KJVA",
-    "bible:THAIKJV",
-    "bible:SLOKJV",
-    "bible:BLIVRETR",
-    "bible:SVD",
-    "bible:DUTSVVA",
-    "bible:FINBIBLIA",
     "dictionary-directory",
     "database:SMITH:en",
     "database:ISBE:en",
-    "database:UNFOLDINGWORD_TW:en"
+    "database:UNFOLDINGWORD_TW:en",
+    "database:NAVE:en"
   ],
   "archivePins": {
     "bible:FMAR": {
@@ -313,6 +318,10 @@
     "database:UNFOLDINGWORD_TW:en": {
       "sha256": "a567080caa343964c28f015978ad45718bbba57e33ef0aa94a1b41e3b87b5231",
       "bytes": 1113441
+    },
+    "database:NAVE:en": {
+      "sha256": "3e76be5791d33d23b21fb40f334d4e2b28c968d69e19ea41d6c0f32fed824766",
+      "bytes": 2010816
     }
   },
   "heldResources": [],
@@ -361,6 +370,107 @@
       ],
       "recordCommit": "4d5044987",
       "approvalEvidence": "Coordinator t1r 2026-11-07: seven-Bible static rollout approved; four dictionary records held for reviewed origin commit f863eafb6"
+    },
+    {
+      "resourceIds": [
+        "bible:TR1624",
+        "bible:TR1894",
+        "database:cyberjudah:en",
+        "bible:WEB1833",
+        "bible:KJV",
+        "bible-strong:KJV",
+        "bible:BHG",
+        "bible-interlinear:BHG:en",
+        "strong-lexicon:simple-en",
+        "strong-lexicon:resources",
+        "strong-lexicon:entities",
+        "database:JEWISH_ENCYCLOPEDIA:en",
+        "database:TIMELINE:en",
+        "bible:KJVA",
+        "dictionary-directory",
+        "database:SMITH:en",
+        "database:ISBE:en",
+        "database:UNFOLDINGWORD_TW:en",
+        "database:NAVE:en"
+      ],
+      "removedFromServing": [
+        "bible:THAIKJV",
+        "bible:SLOKJV",
+        "bible:BLIVRETR",
+        "bible:SVD",
+        "bible:DUTSVVA",
+        "bible:FINBIBLIA",
+        "bible:FMAR",
+        "database:TIMELINE:fr"
+      ],
+      "recordCommit": "9ecd9c393150264bde0b9937fc750b629524224a",
+      "approvalEvidence": "Coordinator t1r owner decision2026-11-07:19-entry English-only catalog; preserve all source files and records in Git"
+    }
+  ],
+  "inactiveResources": [
+    {
+      "resourceId": "bible:THAIKJV",
+      "archivePin": {
+        "sha256": "2c37b58640b4da899ddec476f17a5b243ae555a23206999175cef76bf5d28b29",
+        "bytes": 2109661
+      },
+      "reason": "Coordinator t1r owner decision2026-11-07: English-only serving; archive and record retained"
+    },
+    {
+      "resourceId": "bible:SLOKJV",
+      "archivePin": {
+        "sha256": "126efdac34db1f9a6873fd4c94ba86502b97a79038111a16690657e6e739c8c8",
+        "bytes": 1473371
+      },
+      "reason": "Coordinator t1r owner decision2026-11-07: English-only serving; archive and record retained"
+    },
+    {
+      "resourceId": "bible:BLIVRETR",
+      "archivePin": {
+        "sha256": "246583247b6725a9ec761efd16dc9878de6493bb3e3b5b9ae133832ea20909b8",
+        "bytes": 1412015
+      },
+      "reason": "Coordinator t1r owner decision2026-11-07: English-only serving; archive and record retained"
+    },
+    {
+      "resourceId": "bible:SVD",
+      "archivePin": {
+        "sha256": "476d5f4093291d1d5bea19f21c21b381417e55f46c37a52ca8a2f0c2de48eaf5",
+        "bytes": 1693847
+      },
+      "reason": "Coordinator t1r owner decision2026-11-07: English-only serving; archive and record retained"
+    },
+    {
+      "resourceId": "bible:DUTSVVA",
+      "archivePin": {
+        "sha256": "bff774ed249b0f6c092eb7526ce7007be1a73487a037d1086f12ba53af6dd5f3",
+        "bytes": 1786623
+      },
+      "reason": "Coordinator t1r owner decision2026-11-07: English-only serving; archive and record retained"
+    },
+    {
+      "resourceId": "bible:FINBIBLIA",
+      "archivePin": {
+        "sha256": "98eeb5a23db8ec7f590b0919d6ff4a32ae3195247cfd09f1289966d623de6281",
+        "bytes": 1672068
+      },
+      "reason": "Coordinator t1r owner decision2026-11-07: English-only serving; archive and record retained"
+    },
+    {
+      "resourceId": "bible:FMAR",
+      "archivePin": {
+        "sha256": "fe8b199d8f4df58f4fda81bab3b12c2bfe176069cf50decd8fd9735fea10f9d9",
+        "bytes": 1549200
+      },
+      "reason": "Coordinator t1r owner decision2026-11-07: English-only serving; archive and record retained"
+    },
+    {
+      "resourceId": "database:TIMELINE:fr",
+      "archivePin": {
+        "sha256": "089ea36f7a9e37176055aa8b79230e908c281facd36111d55e0d6e458e940e8a",
+        "bytes": 527700
+      },
+      "reason": "Coordinator t1r owner decision2026-11-07: English-only serving; archive and record retained"
     }
   ]
 }
