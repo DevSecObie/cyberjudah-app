@@ -5,9 +5,17 @@ import { atom } from 'jotai/vanilla'
 
 import type { BibleTab } from '~state/tabs'
 import BibleFooter from '../BibleFooter'
+import { useKjvRecordingsCatalog } from '~helpers/useKjvRecordingsCatalog'
+
+jest.mock('~helpers/useKjvRecordingsCatalog', () => ({ useKjvRecordingsCatalog: jest.fn() }))
 
 jest.mock('~helpers/bibleVersions', () => ({
-  getVersions: () => ({ LSG: { hasAudio: false } }),
+  getVersions: () => ({
+    LSG: { hasAudio: false },
+    KJV: {
+      getAudioUrl: jest.requireActual('../../../../helpers/recordingsCatalog').getRecordingAudioUrl,
+    },
+  }),
   getBibleVersionCanonId: () => 'protestant-66',
 }))
 jest.mock('~helpers/bibleCoverage', () => ({
@@ -68,5 +76,56 @@ describe('BibleFooter', () => {
     expect(footer.props.onPrevChapter).toEqual(expect.any(Function))
     expect(footer.props.onNextChapter).toEqual(expect.any(Function))
     expect(renderer!.root.findAll(node => String(node.type) === 'AudioUrlFooter')).toHaveLength(0)
+  })
+
+  it('changes Genesis 1 from unavailable to the player when the catalog arrives; Leviticus 1 stays unavailable', () => {
+    const bibleAtom = atom({ id: 'kjv-bible', data: {} } as BibleTab)
+    const footer = (book: number) => (
+      <BibleFooter
+        bibleAtom={bibleAtom}
+        book={{ Numero: book, Nom: 'Genesis', Chapitres: 50 }}
+        chapter={1}
+        goToPrevChapter={jest.fn()}
+        goToNextChapter={jest.fn()}
+        goToChapter={jest.fn()}
+        version="KJV"
+        isInTab={false}
+      />
+    )
+    let renderer: ReturnType<typeof create>
+    act(() => {
+      renderer = create(footer(1))
+    })
+    expect(
+      renderer!.root.find(node => String(node.type) === 'BasicFooter').props.isAudioDisabled
+    ).toBe(true)
+    const catalog = {
+      chapters: [
+        {
+          slug: 'genesis',
+          chapter: 1,
+          audio: 'recordings/michael-armenta/genesis/1.m4a',
+          sha256: 'a'.repeat(64),
+        },
+      ],
+    }
+    jest.mocked(useKjvRecordingsCatalog).mockReturnValue(catalog)
+    act(() => {
+      renderer!.update(footer(1))
+    })
+    expect(renderer!.root.findAll(node => String(node.type) === 'BasicFooter')).toHaveLength(0)
+    expect(
+      renderer!.root.find(node => String(node.type) === 'AudioUrlFooter').props.recordingsCatalog
+    ).toEqual(catalog)
+    act(() => {
+      renderer!.update(footer(3))
+    })
+    expect(renderer!.root.find(node => String(node.type) === 'BasicFooter').props.hasError).toBe(
+      true
+    )
+    act(() => {
+      renderer!.unmount()
+    })
+    jest.mocked(useKjvRecordingsCatalog).mockReset()
   })
 })

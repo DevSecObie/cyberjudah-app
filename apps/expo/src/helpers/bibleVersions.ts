@@ -5,7 +5,7 @@ import { zeroFill } from './zeroFill'
 import type { BibleCanonId } from './bibleBookCatalog'
 import type { StrongBibleDatasetId } from './strongBiblePublications'
 import { createOfflineCopyId } from './offlineCopyId'
-import apocryphaRecordings from '~assets/cyberjudah/apocrypha-recordings.json'
+import { getRecordingAudioUrl, type RecordingsCatalog } from './recordingsCatalog'
 
 export type BibleVersificationId =
   | 'bible-strong-default'
@@ -116,7 +116,7 @@ export interface Version {
   hasAudio?: boolean
   hasRedWords?: boolean
   hasPericope?: boolean
-  getAudioUrl?: (bookNum: number, chapterNum: number) => string
+  getAudioUrl?: (bookNum: number, chapterNum: number, catalog?: RecordingsCatalog | null) => string
   canonId?: BibleCanonId
   versificationId?: BibleVersificationId
   strongDatasetId?: StrongBibleDatasetId
@@ -135,20 +135,7 @@ const getUnavailableKjvAudioUrl = (bookNum: number, chapterNum: number) => {
   return ''
 }
 
-type ApocryphaRecording = { slug: string; reader: string; chapters: number[] }
-const apocryphaRecordingBooks: Record<string, ApocryphaRecording | undefined> =
-  apocryphaRecordings.books
-
-/**
- * wordpocket only has the 66 books. The Apocrypha (books 67 to 81) plays CyberJudah's own
- * LibriVox recordings; a chapter with no recording yet has no audio URL.
- */
-const getCyberJudahKjvAudioUrl = (bookNum: number, chapterNum: number) => {
-  if (bookNum <= 66) return ''
-  const recording = apocryphaRecordingBooks[bookNum]
-  if (!recording?.chapters.includes(chapterNum)) return ''
-  return `${apocryphaRecordings.origin}/recordings/${recording.reader}/${recording.slug}/${chapterNum}.m4a`
-}
+const getCyberJudahKjvAudioUrl = getRecordingAudioUrl
 
 const upstreamVersions: Record<string, Version> = {
   LSG: {

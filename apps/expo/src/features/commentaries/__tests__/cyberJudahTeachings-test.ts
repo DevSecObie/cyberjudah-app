@@ -73,8 +73,8 @@ describe('CyberJudah teachings in the reader', () => {
     withCyberJudah(() => {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { versions } = require('~helpers/bibleVersions')
-      expect(versions.KJV.getAudioUrl(80, 1)).toBe(
-        'https://cyberjudah.io/api/audio/recordings/ancientchristian/1-maccabees/1.m4a'
+      expect(versions.KJV.getAudioUrl(80, 1)).toMatch(
+        /^https:\/\/cyberjudah\.io\/api\/audio\/recordings\/ancientchristian\/1-maccabees\/1\.m4a\?v=[a-f0-9]{64}$/
       )
       expect(versions.KJV.getAudioUrl(69, 5)).toBe('')
       expect(versions.KJV.getAudioUrl(73, 1)).toBe('')

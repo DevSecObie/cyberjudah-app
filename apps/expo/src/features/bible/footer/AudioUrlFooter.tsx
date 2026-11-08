@@ -25,6 +25,7 @@ import type { BibleVersionCoverage } from '~helpers/biblesDb'
 import { appLogger } from '~helpers/agentObservability'
 import { ensureTrackPlayerSetup } from '~features/audio/trackPlayerSetup'
 import { BiblePlanPassage, BibleTab, VersionCode } from '../../../state/tabs'
+import type { RecordingsCatalog } from '~helpers/recordingsCatalog'
 import { canGoToNextPlanChapter, canGoToPreviousPlanChapter } from '../planPassage'
 import AudioBar from './AudioBar'
 import AudioContainer from './AudioContainer'
@@ -36,6 +37,7 @@ import ChapterButton from './ChapterButton'
 import PlayButton from './PlayButton'
 import { audioSleepMinutesAtom, audioSleepTimeAtom, playingBibleTabIdAtom } from './atom'
 type UseLoadSoundProps = {
+  recordingsCatalog?: RecordingsCatalog
   audioUrl?: string
   canPlayAudio?: boolean
   goToNextChapter: () => void
@@ -61,14 +63,15 @@ const getBookTracks = (
   version: string,
   book: Book,
   t: (key: string) => string,
-  coverage?: BibleVersionCoverage
+  coverage?: BibleVersionCoverage,
+  recordingsCatalog?: RecordingsCatalog
 ) => {
   try {
     const bibleVersion = getVersions()[version] as Version
     const tracks = getAvailableChapters(book, coverage).map(chapter => ({
       book,
       chapter,
-      url: bibleVersion?.getAudioUrl?.(book.Numero, chapter) || '',
+      url: bibleVersion?.getAudioUrl?.(book.Numero, chapter, recordingsCatalog) || '',
       title: `${t(book.Nom)} ${chapter} ${version}`,
       artist: bibleVersion?.name,
       artwork: require('~assets/images/icon.png'),
@@ -93,6 +96,7 @@ const useLoadSound = ({
   goToChapter,
   bibleAtom,
   coverage,
+  recordingsCatalog,
 }: UseLoadSoundProps) => {
   const { t } = useTranslation()
   const bibleTab = useAtomValue(bibleAtom)
@@ -171,7 +175,8 @@ const useLoadSound = ({
   }
 
   // Only generate tracks for the current book (not all 1189 chapters)
-  const tracks = getBookTracks(version, book, t, coverage)
+  const tracks = getBookTracks(version, book, t, coverage, recordingsCatalog)
+  const trackUrls = tracks.map(track => track.url).join('|')
   // The effects below load and skip with the tracks and chapter of the render that ran them.
   const getChapterTracks = useEffectEvent(() => ({ tracks, chapter }))
 
@@ -232,7 +237,7 @@ const useLoadSound = ({
     return () => {
       cancelled = true
     }
-  }, [version, book.Numero])
+  }, [version, book.Numero, trackUrls])
 
   // Skip to track on chapter change
   useEffect(() => {
@@ -276,6 +281,7 @@ const useLoadSound = ({
 }
 
 type AudioUrlFooterProps = {
+  recordingsCatalog?: RecordingsCatalog
   isParallel?: boolean
   book: Book
   chapter: number
@@ -303,6 +309,7 @@ const AudioUrlFooter = ({
   bibleAtom,
   coverage,
   planPassage,
+  recordingsCatalog,
 }: AudioUrlFooterProps) => {
   const { t } = useTranslation()
   const canonId = resolveBibleCoverageCanonId(coverage, getBibleVersionCanonId(version))
@@ -334,6 +341,7 @@ const AudioUrlFooter = ({
     goToChapter,
     bibleAtom,
     coverage,
+    recordingsCatalog,
   })
 
   const progress = useProgress(200)

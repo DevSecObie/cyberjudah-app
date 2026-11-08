@@ -7,6 +7,7 @@ import {
 import { canGoToNextPlanChapter, canGoToPreviousPlanChapter } from '../planPassage'
 import BasicFooter from './BasicFooter'
 import React from 'react'
+import { useKjvRecordingsCatalog } from '~helpers/useKjvRecordingsCatalog'
 
 import { useAtomValue } from 'jotai/react'
 import { PrimitiveAtom } from 'jotai/vanilla'
@@ -51,6 +52,9 @@ const BibleFooter = ({
   const isTabPlaying = playingBibleTabId === bibleTab.id
   const getIsCurrentTab = useIsCurrentTab()
   const isCurrentTab = getIsCurrentTab(bibleAtom)
+  const recordingsCatalog = useKjvRecordingsCatalog(
+    version === 'KJV' && (!isInTab || isCurrentTab || isTabPlaying)
+  )
 
   if (isInTab && !isCurrentTab && !isTabPlaying) {
     return null
@@ -72,7 +76,7 @@ const BibleFooter = ({
     )
   }
 
-  if (!getVersions()[version]?.getAudioUrl?.(book.Numero, chapter)) {
+  if (!getVersions()[version]?.getAudioUrl?.(book.Numero, chapter, recordingsCatalog)) {
     const canonId = resolveBibleCoverageCanonId(coverage, getBibleVersionCanonId(version))
     const location = { book: book.Numero, chapter }
     const hasPreviousChapter =
@@ -108,6 +112,7 @@ const BibleFooter = ({
       coverage={coverage}
       planPassage={bibleTab.data.planPassage}
       bibleAtom={bibleAtom}
+      recordingsCatalog={recordingsCatalog}
     />
   )
 }
