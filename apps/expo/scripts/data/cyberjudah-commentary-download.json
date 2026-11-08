@@ -1,21 +1,21 @@
 {
   "id": "database:cyberjudah:en",
-  "url": "https://api.cyberjudah.io/v1/offline-artifacts/commentaries/commentary-cyberjudah-en.sqlite.zip?sha256=9efb84b16a7f2ca863a4b22c3ac577449ef91a36a7d7f041a9d857a147cdb78e",
+  "url": "https://api.cyberjudah.io/v1/offline-artifacts/commentaries/commentary-cyberjudah-en.sqlite.zip?sha256=240416f02b0cc77db0913bde230e16630f43d36e3357450d6323719a4dd42a26",
   "file": "commentaries/commentary-cyberjudah-en.sqlite.zip",
   "entry": "commentary-cyberjudah-en.sqlite",
   "entries": {
     "canonical": {
       "entry": "commentary-cyberjudah-en.sqlite",
-      "sha256": "f73bbe560e874bd039706602d96b63d73c0912484c82afacb72d67ee647e35cb",
+      "sha256": "44ac3f18de746e915cec004264f747b50fec7d33c60a7a7792cc620b0a2e461c",
       "bytes": 45436928
     }
   },
-  "archiveSha256": "9efb84b16a7f2ca863a4b22c3ac577449ef91a36a7d7f041a9d857a147cdb78e",
-  "archiveBytes": 10815928,
-  "contentSha256": "f73bbe560e874bd039706602d96b63d73c0912484c82afacb72d67ee647e35cb",
+  "archiveSha256": "240416f02b0cc77db0913bde230e16630f43d36e3357450d6323719a4dd42a26",
+  "archiveBytes": 10815799,
+  "contentSha256": "44ac3f18de746e915cec004264f747b50fec7d33c60a7a7792cc620b0a2e461c",
   "contentBytes": 45436928,
-  "resourceRevision": "cyberjudah-en-69ffac2e2e1e87e96c93",
+  "resourceRevision": "cyberjudah-en-d0c6866063a83d92d3d0",
   "installedBytes": 45436928,
-  "peakInstallationBytes": 64690785,
+  "peakInstallationBytes": 64690637,
   "strategy": "archive-extract"
 }

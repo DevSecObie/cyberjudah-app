@@ -22,6 +22,7 @@ test('uses the shared approved book adapter without reassigning upstream Bible i
   assert.equal(canonicalBookId(67, mapping), 74)
   assert.equal(canonicalBookId(69, mapping), 67)
   assert.equal(canonicalBookId(71, mapping), 79)
+  assert.equal(canonicalBookId(79, mapping), 84)
   assert.throws(() => canonicalBookId(999, mapping))
 })
 
