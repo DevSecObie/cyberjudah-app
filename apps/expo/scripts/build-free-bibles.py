@@ -135,7 +135,7 @@ OSIS_CANONICAL_ONLY = {'3Macc': 75, '4Macc': 76}
 # Only these OSIS elements may appear. Titles (the module's section headings) and notes are not
 # verse text and are left out with their content; every other element is unwrapped.
 SWORD_DROPPED = re.compile(r'<(title|note)\b[^>]*>.*?</\1>', re.S)
-SWORD_ALLOWED = {'transChange', 'div', 'chapter', 'lg', 'l', 'q', 'w', 'seg', 'divineName'}
+SWORD_ALLOWED = {'transChange', 'div', 'chapter', 'lg', 'l', 'q', 'w', 'seg', 'divineName', 'inscription', 'milestone'}
 REMOVED = '\x00'
 
 
@@ -154,9 +154,12 @@ def osis_verse_text(raw, where, drop_variant=None):
             raise SystemExit(f'{where}: unsupported OSIS element <{tag}>')
     if re.search(r'&(?!(?:lt|gt|amp|quot|apos);)', kept):
         raise SystemExit(f'{where}: unexpected entity')
-    # A <q> carrying a marker would print that marker; only marker-less quotations are unwrapped.
-    if re.search(r'<q\b[^>]*\bmarker=', kept):
+    # A <q> with a non-empty marker would print that marker; only marker-less quotations are
+    # unwrapped. Paragraph milestones are layout and are dropped with their marker (e.g. a pilcrow).
+    if re.search(r'<q\b[^>]*\bmarker="[^"]', kept):
         raise SystemExit(f'{where}: quotation with a marker')
+    if re.search(r'<milestone\b(?![^>]*\btype="x-p")', kept):
+        raise SystemExit(f'{where}: milestone that is not a paragraph mark')
     text = re.sub(r'<[^>]*>', REMOVED, kept)
     # Whitespace that only surrounded removed markup becomes one space (none at the ends);
     # whitespace inside the text itself is kept as published.

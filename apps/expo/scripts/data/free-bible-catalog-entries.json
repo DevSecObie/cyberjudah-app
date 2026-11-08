@@ -1,4 +1,26 @@
 {
+  "bible:BLIVRETR": {
+    "id": "bible:BLIVRETR",
+    "file": "bibles/bible-blivretr.json.zip",
+    "entry": "bible-blivretr.json",
+    "entries": {
+      "canonical": {
+        "entry": "bible-blivretr.json",
+        "sha256": "6edf199b971eab4b77e15460e9fa49183bdc8c53ba40b3f9e9e9d66e8b43982d",
+        "bytes": 6018084
+      }
+    },
+    "archiveSha256": "246583247b6725a9ec761efd16dc9878de6493bb3e3b5b9ae133832ea20909b8",
+    "archiveBytes": 1412015,
+    "contentSha256": "6edf199b971eab4b77e15460e9fa49183bdc8c53ba40b3f9e9e9d66e8b43982d",
+    "contentBytes": 6018084,
+    "installedBytes": 12036168,
+    "peakInstallationBytes": 19466267,
+    "strategy": "sqlite-import",
+    "textRevision": "blivretr-31ede4f1d1e135d3df01",
+    "textSha256": "31ede4f1d1e135d3df01206d4ba6e05908a2846c2182efb9a2ee0e7b8a9bb95c",
+    "verseCount": 31102
+  },
   "bible:FMAR": {
     "id": "bible:FMAR",
     "file": "bibles/bible-fmar.json.zip",
@@ -42,6 +64,72 @@
     "textRevision": "kjva-44d5bd450df14db7ffc8",
     "textSha256": "44d5bd450df14db7ffc81c6f5588d75dc40824f64e8a9eb3c60e0d52fc5d170c",
     "verseCount": 36822
+  },
+  "bible:SLOKJV": {
+    "id": "bible:SLOKJV",
+    "file": "bibles/bible-slokjv.json.zip",
+    "entry": "bible-slokjv.json",
+    "entries": {
+      "canonical": {
+        "entry": "bible-slokjv.json",
+        "sha256": "c760c2b61cc7ff0a483f2ef18a2d153775b30594a98428cf15c36ab858c5a3fa",
+        "bytes": 6021379
+      }
+    },
+    "archiveSha256": "126efdac34db1f9a6873fd4c94ba86502b97a79038111a16690657e6e739c8c8",
+    "archiveBytes": 1473371,
+    "contentSha256": "c760c2b61cc7ff0a483f2ef18a2d153775b30594a98428cf15c36ab858c5a3fa",
+    "contentBytes": 6021379,
+    "installedBytes": 12042758,
+    "peakInstallationBytes": 19537508,
+    "strategy": "sqlite-import",
+    "textRevision": "slokjv-d03e6c8a56e57bbeb86e",
+    "textSha256": "d03e6c8a56e57bbeb86ebb1badcd176cf6c7d353d92222faa171b88d7dd8bbde",
+    "verseCount": 31102
+  },
+  "bible:SVD": {
+    "id": "bible:SVD",
+    "file": "bibles/bible-svd.json.zip",
+    "entry": "bible-svd.json",
+    "entries": {
+      "canonical": {
+        "entry": "bible-svd.json",
+        "sha256": "54528f5c19801ca03a36f79851704019ee656e35432de119e4e591ab00d65d17",
+        "bytes": 9564130
+      }
+    },
+    "archiveSha256": "476d5f4093291d1d5bea19f21c21b381417e55f46c37a52ca8a2f0c2de48eaf5",
+    "archiveBytes": 1693847,
+    "contentSha256": "54528f5c19801ca03a36f79851704019ee656e35432de119e4e591ab00d65d17",
+    "contentBytes": 9564130,
+    "installedBytes": 19128260,
+    "peakInstallationBytes": 30386237,
+    "strategy": "sqlite-import",
+    "textRevision": "svd-f08af8ed2e9c8f97e1a2",
+    "textSha256": "f08af8ed2e9c8f97e1a252bd9fe65185472ea487bfec8650bcd80086c1f50073",
+    "verseCount": 31104
+  },
+  "bible:THAIKJV": {
+    "id": "bible:THAIKJV",
+    "file": "bibles/bible-thaikjv.json.zip",
+    "entry": "bible-thaikjv.json",
+    "entries": {
+      "canonical": {
+        "entry": "bible-thaikjv.json",
+        "sha256": "571c6cd310b41ae910f632ab4fd9350afd21247afb8edb2827763eea5e355cc2",
+        "bytes": 13915903
+      }
+    },
+    "archiveSha256": "2c37b58640b4da899ddec476f17a5b243ae555a23206999175cef76bf5d28b29",
+    "archiveBytes": 2109661,
+    "contentSha256": "571c6cd310b41ae910f632ab4fd9350afd21247afb8edb2827763eea5e355cc2",
+    "contentBytes": 13915903,
+    "installedBytes": 27831806,
+    "peakInstallationBytes": 43857370,
+    "strategy": "sqlite-import",
+    "textRevision": "thaikjv-d595771b56797b8c0dfe",
+    "textSha256": "d595771b56797b8c0dfe7733d696225e569e9fc6d48784abc20bb19fd8642a5a",
+    "verseCount": 31102
   },
   "bible:TR1624": {
     "id": "bible:TR1624",

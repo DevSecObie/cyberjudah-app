@@ -198,6 +198,90 @@
       "licenceStatement": "DistributionLicense=Creative Commons: BY-NC-SA 4.0 (CrossWire module configuration). Attribution, non-commercial use, share-alike. TextSource: https://sites.google.com/a/wmail.fi/greeknt/home/greeknt",
       "credit": "Textus Receptus, Scrivener 1894 readings of the CrossWire TR module (base Stephens 1550 with Scrivener 1894 variants). CC BY-NC-SA 4.0. Text: CrossWire Bible Society (TR module).",
       "sourceText": "Textus Receptus: 'base text is Stephens 1550, with variants of Scrivener 1894' (CrossWire TR module About, https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=TR)."
+    },
+    {
+      "id": "THAIKJV",
+      "catalogId": "bible:THAIKJV",
+      "file": "bibles/bible-thaikjv.json.zip",
+      "entry": "bible-thaikjv.json",
+      "title": "Thai King James Version",
+      "language": "th",
+      "source": {
+        "kind": "ebible-vpl",
+        "publisher": "eBible.org",
+        "page": "https://ebible.org/find/details.php?id=thaKJV",
+        "url": "https://eBible.org/Scriptures/thaKJV_vpl.zip",
+        "member": "thaKJV_vpl.txt",
+        "edition": "eBible.org thaKJV, VPL text dated 2026-10-30",
+        "sha256": "c64eaaafbc4c9f6b7260ac97b720d673c32dc3ae9b591227eb237b869425ac7c"
+      },
+      "licence": "CC BY-NC-ND 4.0",
+      "licenceStatement": "copyright © 2003 Philip Pope. Creative Commons Attribution-Noncommercial-No Derivatives 4.0: include the copyright and source information; do not sell for a profit; do not change any of the words or punctuation. (https://ebible.org/thaKJV/copyright.htm)",
+      "credit": "พระคัมภีร์ภาษาไทยฉบับ KJV (Thai KJV), copyright © 2003 Philip Pope, CC BY-NC-ND 4.0. Text: eBible.org (thaKJV).",
+      "sourceText": "Translated from the KJV: 'The Holy Bible in Thai, translated from the English King James Version' (https://ebible.org/thaKJV/copyright.htm)."
+    },
+    {
+      "id": "BLIVRETR",
+      "catalogId": "bible:BLIVRETR",
+      "file": "bibles/bible-blivretr.json.zip",
+      "entry": "bible-blivretr.json",
+      "title": "Bíblia Livre, edição Textus Receptus",
+      "language": "pt",
+      "source": {
+        "kind": "ebible-vpl",
+        "publisher": "eBible.org",
+        "page": "https://ebible.org/find/details.php?id=porbr2018",
+        "url": "https://eBible.org/Scriptures/porbr2018_vpl.zip",
+        "member": "porbr2018_vpl.txt",
+        "edition": "eBible.org porbr2018, VPL text dated 2026-10-30",
+        "sha256": "3d9c4c8a36d33e16f92258f86ca3eef8c4df230055ec8fb9268594f9100fcda0"
+      },
+      "licence": "CC BY 4.0 BR",
+      "licenceStatement": "copyright © 2018 Diego Santos, Mario Sérgio, e Marco Teles. Creative Commons Atribuição 4.0 Brasil; credit required, with the version date. (https://ebible.org/porbr2018/copyright.htm)",
+      "credit": "Bíblia Livre (BLIVRE), Copyright © Diego Santos, Mario Sérgio, e Marco Teles, http://sites.google.com/site/biblialivre/ - fevereiro de 2018. Licença Creative Commons Atribuição 4.0 Brasil (http://creativecommons.org/licenses/by/4.0/br/). Texto: eBible.org (porbr2018).",
+      "sourceText": "Textus Receptus: 'updated from the 1819 translation by João Ferreira de Almeida, Textus Receptus edition' (https://ebible.org/porbr2018/copyright.htm). OT source not separately stated."
+    },
+    {
+      "id": "SVD",
+      "catalogId": "bible:SVD",
+      "file": "bibles/bible-svd.json.zip",
+      "entry": "bible-svd.json",
+      "title": "Smith–Van Dyck Arabic Bible",
+      "language": "ar",
+      "source": {
+        "kind": "ebible-vpl",
+        "publisher": "eBible.org",
+        "page": "https://ebible.org/find/details.php?id=arb-vd",
+        "url": "https://eBible.org/Scriptures/arb-vd_vpl.zip",
+        "member": "arb-vd_vpl.txt",
+        "edition": "eBible.org arb-vd, VPL text dated 2020-08-03",
+        "sha256": "070404da2e13e641b7550b50d7e777480b2cc2667e9669f2194d909ca04cd68a"
+      },
+      "licence": "Public domain",
+      "licenceStatement": "Public Domain. Translation by: Syrian Mission. Contributor: American Bible Society. (https://ebible.org/arb-vd/copyright.htm)",
+      "credit": "Smith–Van Dyck Arabic Bible (Syrian Mission, American Bible Society), public domain. Text: eBible.org (arb-vd).",
+      "sourceText": "NT revised to the Textus Receptus: 'the American Bible Society required a strict adherence to the Textus Receptus of Hahn's Greek Testament' (Joshua Yoder, 'The Greek Texts of Eli Smith and Cornelius Van Dyck', Cairo Journal of Theology 2015, https://journal.etsc.org/2015/joshua-yoder-the-greek-texts-of-eli-smith-and-cornelius-van-dyck/). OT Hebrew source not stated there."
+    },
+    {
+      "id": "SLOKJV",
+      "catalogId": "bible:SLOKJV",
+      "file": "bibles/bible-slokjv.json.zip",
+      "entry": "bible-slokjv.json",
+      "title": "Sveto pismo Kralja Jakoba (Slovenian KJV)",
+      "language": "sl",
+      "source": {
+        "kind": "sword-module",
+        "publisher": "CrossWire Bible Society",
+        "page": "https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=SloKJV",
+        "url": "https://www.crosswire.org/ftpmirror/pub/sword/packages/rawzip/SloKJV.zip",
+        "module": "SloKJV",
+        "edition": "SWORD module SloKJV version 24.0, KJV versification; text source https://github.com/msavli/SloKJV",
+        "sha256": "bbf6a8ade14f08bd5aac198a82ee9781f84f71fc57a6eeaa5e195d2112910fd7"
+      },
+      "licence": "CC BY-NC-ND 4.0",
+      "licenceStatement": "DistributionLicense=Creative Commons: BY-NC-ND 4.0; copyright contact Marjan Šavli and Barbara Hojkar Šavli (CrossWire module configuration).",
+      "credit": "Sveto pismo Kralja Jakoba (SloKJV), Marjan Šavli in Barbara Hojkar Šavli, CC BY-NC-ND 4.0. Besedilo: CrossWire Bible Society (SloKJV), https://github.com/msavli/SloKJV.",
+      "sourceText": "Translated from the KJV: 'Slovenian translation of Holy Bible King James Version (1769)' (https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=SloKJV)."
     }
   ]
 }
