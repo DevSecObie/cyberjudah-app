@@ -173,10 +173,11 @@ def read_sword_module(archive_path, module, testaments=('ot', 'nt'), drop_varian
     structure = bible.get_structure().get_books()
     books = [b for t in testaments for b in structure.get(t, [])]
     numbers = {name: n for n, name in enumerate(OSIS_BOOKS, 1)} | OSIS_APOCRYPHA
-    required = set(OSIS_BOOKS[39:] if testaments == ('nt',) else OSIS_BOOKS)
+    required = set((OSIS_BOOKS[:39] if 'ot' in testaments else []) + (OSIS_BOOKS[39:] if 'nt' in testaments else []))
     unknown = [b.osis_name for b in books if b.osis_name not in numbers]
-    if unknown or not required <= {b.osis_name for b in books}:
-        raise SystemExit(f'{module}: unsupported book list {unknown}')
+    missing = sorted(required - {b.osis_name for b in books})
+    if unknown or missing:
+        raise SystemExit(f'{module}: unknown books {unknown}, missing books {missing}')
     verses, count, skipped = {}, 0, []
     for book in books:
         book_key = str(canonical_book_id(numbers[book.osis_name]))
@@ -203,6 +204,7 @@ def build(bible, cache):
     if source['kind'] == 'ebible-vpl':
         verses, count = read_ebible_vpl(archive, source['member'])
     elif source['kind'] == 'sword-module':
+        # fetch() has checked the cached file's sha256; pysword reads that same file.
         verses, count = read_sword_module(cache / Path(source['url']).name, source['module'],
                                           tuple(source.get('testaments', ('ot', 'nt'))),
                                           source.get('dropVariant'))
@@ -258,7 +260,7 @@ def main():
     args = parser.parse_args()
     bibles = json.loads(SOURCES.read_text())['bibles']
     # An excluded Bible is built only when named.
-    selected = [b for b in bibles if b['id'] in args.ids or (not args.ids and 'excluded' not in b)]
+    selected = [b for b in bibles if b['id'] in args.ids or (not args.ids and not b.get('excluded'))]
     entries = json.loads(ENTRIES.read_text()) if ENTRIES.exists() else {}
     for bible in selected:
         entry = build(bible, Path(args.cache))
