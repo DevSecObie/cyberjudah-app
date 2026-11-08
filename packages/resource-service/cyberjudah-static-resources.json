@@ -130,7 +130,14 @@
     "strong-lexicon:entities",
     "database:JEWISH_ENCYCLOPEDIA:en",
     "database:TIMELINE:en",
-    "database:TIMELINE:fr"
+    "database:TIMELINE:fr",
+    "bible:KJVA",
+    "bible:THAIKJV",
+    "bible:SLOKJV",
+    "bible:BLIVRETR",
+    "bible:SVD",
+    "bible:DUTSVVA",
+    "bible:FINBIBLIA"
   ],
   "archivePins": {
     "bible:FMAR": {
@@ -192,6 +199,34 @@
     "database:JEWISH_ENCYCLOPEDIA:en": {
       "sha256": "0c0e7c5be1211a9ae60321452625d2dc7ce8a035730884323300c0b92bca37ab",
       "bytes": 22612534
+    },
+    "bible:KJVA": {
+      "sha256": "fa16c822b6f705754fffb2c558f0b1d57a5403488eb27397b78545477809e8dc",
+      "bytes": 1699224
+    },
+    "bible:THAIKJV": {
+      "sha256": "2c37b58640b4da899ddec476f17a5b243ae555a23206999175cef76bf5d28b29",
+      "bytes": 2109661
+    },
+    "bible:SLOKJV": {
+      "sha256": "126efdac34db1f9a6873fd4c94ba86502b97a79038111a16690657e6e739c8c8",
+      "bytes": 1473371
+    },
+    "bible:BLIVRETR": {
+      "sha256": "246583247b6725a9ec761efd16dc9878de6493bb3e3b5b9ae133832ea20909b8",
+      "bytes": 1412015
+    },
+    "bible:SVD": {
+      "sha256": "476d5f4093291d1d5bea19f21c21b381417e55f46c37a52ca8a2f0c2de48eaf5",
+      "bytes": 1693847
+    },
+    "bible:DUTSVVA": {
+      "sha256": "bff774ed249b0f6c092eb7526ce7007be1a73487a037d1086f12ba53af6dd5f3",
+      "bytes": 1786623
+    },
+    "bible:FINBIBLIA": {
+      "sha256": "98eeb5a23db8ec7f590b0919d6ff4a32ae3195247cfd09f1289966d623de6281",
+      "bytes": 1672068
     }
   },
   "heldResources": [],
@@ -225,6 +260,21 @@
       "unchangedContentBytes": 1661080,
       "memberMode": "100644",
       "approvalEvidence": "Coordinator t1r 2026-11-07: timeline regular-file flag correction approved with identical inner content"
+    }
+  ],
+  "rolloutApprovals": [
+    {
+      "resourceIds": [
+        "bible:KJVA",
+        "bible:THAIKJV",
+        "bible:SLOKJV",
+        "bible:BLIVRETR",
+        "bible:SVD",
+        "bible:DUTSVVA",
+        "bible:FINBIBLIA"
+      ],
+      "recordCommit": "4d5044987",
+      "approvalEvidence": "Coordinator t1r 2026-11-07: seven-Bible static rollout approved; four dictionary records held for reviewed origin commit f863eafb6"
     }
   ]
 }
