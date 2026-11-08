@@ -64,6 +64,26 @@
       "credit": "The Holy Scriptures, a New Translation from the Original Languages by J. N. Darby, public domain. Text: eBible.org (engDBY)."
     },
     {
+      "id": "WEB1833",
+      "catalogId": "bible:WEB1833",
+      "file": "bibles/bible-web1833.json.zip",
+      "entry": "bible-web1833.json",
+      "title": "Noah Webster Bible (1833)",
+      "language": "en",
+      "source": {
+        "kind": "ebible-vpl",
+        "publisher": "eBible.org",
+        "page": "https://ebible.org/find/details.php?id=engwebster",
+        "url": "https://eBible.org/Scriptures/engwebster_vpl.zip",
+        "member": "engwebster_vpl.txt",
+        "edition": "eBible.org engwebster, VPL text dated 2024-08-01",
+        "sha256": "402240da209b017c67a31b63773b42471ef7e2513aa76ef067f34af907537270"
+      },
+      "licence": "Public domain",
+      "licenceStatement": "Public Domain.",
+      "credit": "The Holy Bible, in the Common Version, with Amendments of the language by Noah Webster, LL.D. (1833), public domain. Text: eBible.org (engwebster)."
+    },
+    {
       "id": "BSB",
       "catalogId": "bible:BSB",
       "file": "bibles/bible-bsb.json.zip",

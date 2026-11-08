@@ -86,5 +86,27 @@
     "textRevision": "lsg-95c864cbad26af841b2b",
     "textSha256": "95c864cbad26af841b2b519887df0e4814503ef35d8d7a51825789937c78a015",
     "verseCount": 31170
+  },
+  "bible:WEB1833": {
+    "id": "bible:WEB1833",
+    "file": "bibles/bible-web1833.json.zip",
+    "entry": "bible-web1833.json",
+    "entries": {
+      "canonical": {
+        "entry": "bible-web1833.json",
+        "sha256": "f28dbb46a6d15daa945c5ce5d13a9c1b7e144719fd79bf77a0b712f190d202e1",
+        "bytes": 6270806
+      }
+    },
+    "archiveSha256": "c53acabc706734eb96fa8d80b687455f6594eba6c9caa2bafe39426f5ae6e140",
+    "archiveBytes": 1410901,
+    "contentSha256": "f28dbb46a6d15daa945c5ce5d13a9c1b7e144719fd79bf77a0b712f190d202e1",
+    "contentBytes": 6270806,
+    "installedBytes": 12541612,
+    "peakInstallationBytes": 20223319,
+    "strategy": "sqlite-import",
+    "textRevision": "web1833-fe372b2275718d7c1a2c",
+    "textSha256": "fe372b2275718d7c1a2cb08e8c655a7af981e58f0a2da34830c351a16934db86",
+    "verseCount": 31102
   }
 }
