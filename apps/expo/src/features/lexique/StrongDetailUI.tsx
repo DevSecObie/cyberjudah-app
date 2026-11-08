@@ -404,7 +404,7 @@ export const StrongEntitySummaryCard = ({
     >
       <HStack className="overflow-hidden border-continuous gap-[12px] items-center">
         <Image
-          source={getStrongEntityAvatarSource(entity.category, entity.type)}
+          source={getStrongEntityAvatarSource(entity.category, entity.type, entity.uniqueName)}
           style={{ width: presentation.avatarSize, height: presentation.avatarSize }}
           contentFit="contain"
         />

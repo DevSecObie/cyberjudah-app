@@ -1,4 +1,5 @@
 import { getStrongEntityAvatarKey } from './strongEntityPresentation'
+import { CYBERJUDAH_PORTRAITS } from './cyberJudahPortraits'
 
 export const ENTITY_AVATAR_IMAGES = {
   male: require('~assets/images/entity-avatars/male.png'),
@@ -14,5 +15,6 @@ export const ENTITY_AVATAR_IMAGES = {
   star: require('~assets/images/entity-avatars/star.png'),
 }
 
-export const getStrongEntityAvatarSource = (category: string, type: string) =>
+export const getStrongEntityAvatarSource = (category: string, type: string, uniqueName?: string) =>
+  (uniqueName && CYBERJUDAH_PORTRAITS[uniqueName]) ||
   ENTITY_AVATAR_IMAGES[getStrongEntityAvatarKey(category, type)]

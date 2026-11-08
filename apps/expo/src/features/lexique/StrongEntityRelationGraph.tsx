@@ -526,12 +526,14 @@ const getAvatarBorderStyle = (
 const EntityGraphNode = ({
   category,
   type,
+  uniqueName,
   center = false,
   avatarProgress,
   avatarRole,
 }: {
   category?: string
   type?: string
+  uniqueName?: string
   center?: boolean
   avatarProgress?: SharedValue<number>
   avatarRole?: AvatarRole
@@ -569,7 +571,7 @@ const EntityGraphNode = ({
       ]}
     >
       <Image
-        source={getStrongEntityAvatarSource(category ?? 'other', type ?? 'Other')}
+        source={getStrongEntityAvatarSource(category ?? 'other', type ?? 'Other', uniqueName)}
         style={{ width: center ? 76 : 54, height: center ? 76 : 54 }}
       />
     </AnimatedBox>
@@ -580,6 +582,7 @@ const GraphSatelliteContent = ({
   name,
   category,
   type,
+  uniqueName,
   label,
   relation,
   back,
@@ -592,6 +595,7 @@ const GraphSatelliteContent = ({
   name: string
   category?: string
   type?: string
+  uniqueName?: string
   label: string
   relation: string
   back: boolean
@@ -628,6 +632,7 @@ const GraphSatelliteContent = ({
         <EntityGraphNode
           category={category}
           type={type}
+          uniqueName={uniqueName}
           avatarProgress={avatarProgress}
           avatarRole={avatarRole}
         />
@@ -1072,6 +1077,7 @@ const GraphCenterNode = ({
             <EntityGraphNode
               category={entity.category}
               type={entity.type}
+              uniqueName={entity.uniqueName}
               center
               avatarProgress={exitRole ? exit?.progress : undefined}
               avatarRole={exitRole}
@@ -1155,6 +1161,7 @@ const GraphRelationNodeView = ({
           name={relation.targetName}
           category={relation.targetCategory}
           type={relation.targetType}
+          uniqueName={uniqueName}
           label={t(characterRelationLabelKey(relation), {
             defaultValue: relation.relation,
           })}
@@ -1215,6 +1222,7 @@ const GraphPreviousNode = ({
           name={entity.name}
           category={entity.category}
           type={entity.type}
+          uniqueName={entity.uniqueName}
           label={label}
           relation={relation?.relation ?? ''}
           back

@@ -31,7 +31,7 @@ const PassageMediaLibraryWidget = () => {
       >
         <Box className="border-continuous overflow-visible w-[48%] h-[100%] bg-light-grey rounded-tl-[20px] rounded-bl-[20px]">
           <Image
-            source={require('~assets/images/home/courses-videos.jpg')}
+            source={require('~assets/images/home/courses-videos.webp')}
             contentFit="cover"
             contentPosition="center"
             style={{
