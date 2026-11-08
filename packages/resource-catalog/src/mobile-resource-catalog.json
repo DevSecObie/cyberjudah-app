@@ -1797,7 +1797,7 @@
     },
     "database:ISBE:en": {
       "id": "database:ISBE:en",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-isbe-en.sqlite.zip?sha256=b92328990eb5cd3a0fdbab2b672e2a27b15e12e5af58d75dfb86840f98349e09",
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-isbe-en.sqlite.zip",
       "file": "dictionaries/dictionary-isbe-en.sqlite.zip",
       "entry": "dictionnaire.sqlite",
       "entries": {
@@ -1814,8 +1814,7 @@
       "resourceRevision": "dictionary-isbe-en-704cd50851ffb1a32540",
       "installedBytes": 70811648,
       "peakInstallationBytes": 102578017,
-      "strategy": "archive-extract",
-      "entryCount": 9380
+      "strategy": "archive-extract"
     },
     "database:LELIEVRE:fr": {
       "id": "database:LELIEVRE:fr",
@@ -1901,7 +1900,7 @@
     },
     "database:SMITH:en": {
       "id": "database:SMITH:en",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-smith-en.sqlite.zip?sha256=6e19cfd37963dd4425b2c850f46ae4e44ec25b985280ae3d5e11a2d4eab4a209",
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-smith-en.sqlite.zip",
       "file": "dictionaries/dictionary-smith-en.sqlite.zip",
       "entry": "dictionnaire.sqlite",
       "entries": {
@@ -1918,8 +1917,7 @@
       "resourceRevision": "dictionary-smith-en-9d44f52c019e178726ab",
       "installedBytes": 11567104,
       "peakInstallationBytes": 16779023,
-      "strategy": "archive-extract",
-      "entryCount": 4561
+      "strategy": "archive-extract"
     },
     "database:TIMELINE:en": {
       "id": "database:TIMELINE:en",
@@ -1977,7 +1975,7 @@
     },
     "database:UNFOLDINGWORD_TW:en": {
       "id": "database:UNFOLDINGWORD_TW:en",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-unfoldingword-translation-words-en.sqlite.zip?sha256=a567080caa343964c28f015978ad45718bbba57e33ef0aa94a1b41e3b87b5231",
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-unfoldingword-translation-words-en.sqlite.zip",
       "file": "dictionaries/dictionary-unfoldingword-translation-words-en.sqlite.zip",
       "entry": "dictionnaire.sqlite",
       "entries": {
@@ -1994,8 +1992,7 @@
       "resourceRevision": "dictionary-unfoldingword-translation-words-en-c2bf27f2c5330be28fed",
       "installedBytes": 5459968,
       "peakInstallationBytes": 7559421,
-      "strategy": "archive-extract",
-      "entryCount": 949
+      "strategy": "archive-extract"
     },
     "database:WESTPHAL:fr": {
       "id": "database:WESTPHAL:fr",
@@ -2027,7 +2024,7 @@
     },
     "dictionary-directory": {
       "id": "dictionary-directory",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-directory.sqlite.zip?sha256=b255d984d03cfde04ad46aa61be1907dd5a172feec681d8916898ec747cfc836",
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-directory.sqlite.zip",
       "file": "dictionaries/dictionary-directory.sqlite.zip",
       "entry": "dictionary-directory.sqlite",
       "entries": {
@@ -2044,14 +2041,7 @@
       "resourceRevision": "dictionary-directory-da1603d69750985f418e",
       "installedBytes": 14258176,
       "peakInstallationBytes": 21713162,
-      "strategy": "archive-extract",
-      "works": [
-        "SMITH",
-        "ISBE",
-        "UNFOLDINGWORD_TW",
-        "JEWISH_ENCYCLOPEDIA"
-      ],
-      "entryCount": 29281
+      "strategy": "archive-extract"
     },
     "strong-lexicon:core": {
       "id": "strong-lexicon:core",
