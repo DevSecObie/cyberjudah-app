@@ -11,8 +11,9 @@
 // The directory also lists the dictionaries in free-dictionaries.json "directoryOnly": our own
 // dictionaries. A copy of each goes through normalization with the others so that it joins the
 // correspondence groups (and the free dictionaries' cross-entry links), but the directory is then
-// rebuilt from the published file itself: its entries, verse anchors and passage anchors are the
-// published ones. Its published archive is never changed.
+// rebuilt from the published file itself: its entries and passage anchors are the published ones
+// (checked). Normalizing that copy also shapes the free dictionaries' generated cross-entry links,
+// as upstream's whole-library normalization does. Its published archive is never changed.
 //
 // Usage: node scripts/build-free-dictionaries.mjs --sources <dir> [--acquire --mod2imp <path>]
 //   --sources  folder holding each acquisition output (sqlitePath in free-dictionaries.json is
@@ -109,7 +110,13 @@ const validateDictionary = (db, work) => {
     if (!normalizeDictionaryWord(row.sanitized_word)) fail(`empty normalized word ${row.id}`)
     ids.add(row.id)
   }
+  // Upstream reads entries LEFT JOINed to their correspondence: one correspondence per entry.
+  if (db.prepare('SELECT entry_id FROM dictionary_correspondences GROUP BY entry_id HAVING count(*) > 1 LIMIT 1').get())
+    fail('entry with several correspondences')
+  const verseKeys = new Set()
   for (const row of db.prepare('SELECT id, ref FROM verses').all()) {
+    if (verseKeys.has(row.id)) fail(`duplicate verse key ${row.id}`)
+    verseKeys.add(row.id)
     if (!isDictionaryVerseKey(row.id)) fail(`bad verse key ${row.id}`)
     let refs
     try {
@@ -189,14 +196,34 @@ try {
   await writeFile(fr, JSON.stringify(unzipJson('bibles/bible-fmar.json.zip', 'bible-fmar.json')))
 
   // Our own dictionaries are normalized with the others (a copy), as upstream normalizes its whole
-  // library together, so they join the correspondences and the verse presences.
+  // library together, so they join the correspondence groups.
   const ownCopies = join(work, 'own')
   await mkdir(ownCopies)
-  for (const p of directoryOnly)
-    await writeFile(
-      join(ownCopies, `${p.work}.sqlite`),
-      execFileSync('unzip', ['-p', join(output, p.file), 'dictionnaire.sqlite'], { maxBuffer: 512 * 1024 * 1024 }),
-    )
+  for (const p of directoryOnly) {
+    const copy = join(ownCopies, `${p.work}.sqlite`)
+    await writeFile(copy, execFileSync('unzip', ['-p', join(output, p.file), 'dictionnaire.sqlite'], { maxBuffer: 512 * 1024 * 1024 }))
+    // The checks the directory relies on: a sound file with valid entries and passage anchors.
+    const db = new DatabaseSync(copy, { readOnly: true })
+    integrity(db)
+    const tables = new Set(db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all().map(row => row.name))
+    if (!tables.has('dictionnaire') || !tables.has('dictionary_passage_anchors')) throw new Error(`${p.work}: tables missing`)
+    const bad = db
+      .prepare(
+        `SELECT id FROM dictionnaire WHERE typeof(id) != 'integer' OR id <= 0 OR trim(coalesce(word, '')) = ''
+         OR trim(coalesce(sanitized_word, '')) = '' OR typeof(definition) != 'text' LIMIT 1`,
+      )
+      .get()
+    if (bad) throw new Error(`${p.work}: bad entry ${bad.id}`)
+    for (const row of db.prepare('SELECT verse_key, entry_id, evidence_kind, ordinal FROM dictionary_passage_anchors').all())
+      if (
+        !isDictionaryVerseKey(row.verse_key) ||
+        !['source-citation', 'verse-name', 'verse-phrase'].includes(row.evidence_kind) ||
+        !Number.isSafeInteger(row.ordinal) ||
+        row.ordinal < 0
+      )
+        throw new Error(`${p.work}: bad passage anchor ${row.verse_key}`)
+    db.close()
+  }
   const configPath = join(work, 'dictionary.json')
   const normalizationPublications = [
     ...publications.map(({ file, acquire, ...p }) => ({
@@ -349,15 +376,18 @@ try {
 
   await mkdir(join(output, 'dictionaries'), { recursive: true })
   // Copy everything next to its target first, then rename each into place, then write the catalog.
+  // On any failure, no .partial file is left behind; rerun the script to put archives and catalog
+  // back in step.
+  const catalogPath = join(app, 'scripts/data/free-dictionary-catalog-entries.json')
+  const partials = Object.values(entries).map(e => join(output, `${e.file}.partial`))
   try {
     for (const e of Object.values(entries)) await copyFile(join(staged, e.file), join(output, `${e.file}.partial`))
-  } catch (error) {
-    for (const e of Object.values(entries)) await rm(join(output, `${e.file}.partial`), { force: true })
-    throw error
+    await writeFile(`${catalogPath}.partial`, JSON.stringify({ resources: entries }, null, 2) + '\n')
+    for (const e of Object.values(entries)) await rename(join(output, `${e.file}.partial`), join(output, e.file))
+    await rename(`${catalogPath}.partial`, catalogPath)
+  } finally {
+    for (const partial of [...partials, `${catalogPath}.partial`]) await rm(partial, { force: true })
   }
-  for (const e of Object.values(entries)) await rename(join(output, `${e.file}.partial`), join(output, e.file))
-  const catalogPath = join(app, 'scripts/data/free-dictionary-catalog-entries.json')
-  await writeFile(catalogPath, JSON.stringify({ resources: entries }, null, 2) + '\n')
   for (const e of Object.values(entries))
     console.log(`${e.id} ${e.file} ${e.archiveBytes} bytes sha256 ${e.archiveSha256} ${e.resourceRevision}`)
 } finally {
