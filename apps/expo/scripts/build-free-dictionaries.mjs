@@ -1,6 +1,7 @@
 // Rebuild the kept dictionaries from public-domain or freely licensed sources, in Bible Strong's
 // own format, with Bible Strong's own acquisition and normalization scripts
-// (apps/resource-studio/workflows/dictionaries/scripts). Writes, beside the other offline files:
+// (apps/resource-studio/workflows/dictionaries/scripts). Writes the archives under public/offline
+// (served at /v1/offline-artifacts/<file>, the URL in each catalog entry):
 //   public/offline/dictionaries/dictionary-<work>-<language>.sqlite.zip   (entry dictionnaire.sqlite)
 //   public/offline/dictionaries/dictionary-directory.sqlite.zip           (entry dictionary-directory.sqlite)
 // and the catalog entries to scripts/data/free-dictionary-catalog-entries.json (t56 merges them).
@@ -8,8 +9,10 @@
 // library, build the directory (it keeps the verse-name and verse-phrase anchors), then drop those
 // anchors from each dictionary, write RESOURCE_METADATA and zip it.
 // The directory also lists the dictionaries in free-dictionaries.json "directoryOnly": our own
-// dictionaries. A copy of each goes through normalization with the others, so it joins the
-// correspondences and verse presences; its published archive is never changed.
+// dictionaries. A copy of each goes through normalization with the others so that it joins the
+// correspondence groups (and the free dictionaries' cross-entry links), but the directory is then
+// rebuilt from the published file itself: its entries, verse anchors and passage anchors are the
+// published ones. Its published archive is never changed.
 //
 // Usage: node scripts/build-free-dictionaries.mjs --sources <dir> [--acquire --mod2imp <path>]
 //   --sources  folder holding each acquisition output (sqlitePath in free-dictionaries.json is
@@ -210,22 +213,46 @@ try {
     [join(workflow, 'normalize-library.mjs'), '--config', configPath, '--output-root', normalized, '--lsg-bible', fr, '--kjv-bible', kjv],
     { stdio: 'inherit' },
   )
-  const directoryPath = join(normalized, 'dictionary-directory.sqlite')
+  // Put our own dictionaries back exactly as published, then build the directory from them and
+  // the normalized free dictionaries, with the correspondence groups computed above.
+  for (const p of directoryOnly) await copyFile(join(ownCopies, `${p.work}.sqlite`), join(normalized, `${p.work}.sqlite`))
+  const directoryPath = join(work, 'dictionary-directory.sqlite')
+  execFileSync(process.execPath, [
+    join(workflow, 'build-directory.mjs'),
+    '--config', configPath,
+    '--normalized-root', normalized,
+    '--correspondences', join(normalized, 'correspondences.json'),
+    '--output', directoryPath,
+  ])
 
-  // The directory must list our own dictionaries' entries exactly as they are published.
+  // The directory must list our own dictionaries exactly as they are published: entries with
+  // their normalized words, and every passage anchor.
+  const listed = new DatabaseSync(directoryPath, { readOnly: true })
   for (const p of directoryOnly) {
     const published = new DatabaseSync(join(ownCopies, `${p.work}.sqlite`), { readOnly: true })
-    const listed = new DatabaseSync(directoryPath, { readOnly: true })
-    const a = published.prepare('SELECT id, word FROM dictionnaire ORDER BY id').all()
-    const b = listed
-      .prepare(
-        'SELECT entry_id AS id, word FROM dictionary_entries WHERE work_key = (SELECT work_key FROM dictionary_works WHERE work = ?) ORDER BY entry_id',
-      )
-      .all(p.work)
+    const same = (a, b, what) => {
+      if (JSON.stringify(a) !== JSON.stringify(b)) throw new Error(`${p.work}: the directory's ${what} differ from the published file`)
+    }
+    const workKey = '(SELECT work_key FROM dictionary_works WHERE work = ?)'
+    same(
+      published.prepare('SELECT id, word, sanitized_word FROM dictionnaire ORDER BY id').all(),
+      listed.prepare(`SELECT entry_id AS id, word, normalized_word AS sanitized_word FROM dictionary_entries WHERE work_key = ${workKey} ORDER BY entry_id`).all(p.work),
+      'entries',
+    )
+    same(
+      published.prepare('SELECT verse_key, entry_id, evidence_kind, ordinal FROM dictionary_passage_anchors ORDER BY verse_key, entry_id, evidence_kind').all(),
+      listed
+        .prepare(
+          `SELECT anchor.verse_key, anchor.entry_id, evidence.evidence_kind, anchor.ordinal FROM dictionary_passage_anchors anchor
+           JOIN dictionary_anchor_evidence evidence USING (evidence_key) WHERE anchor.work_key = ${workKey}
+           ORDER BY anchor.verse_key, anchor.entry_id, evidence.evidence_kind`,
+        )
+        .all(p.work),
+      'passage anchors',
+    )
     published.close()
-    listed.close()
-    if (JSON.stringify(a) !== JSON.stringify(b)) throw new Error(`${p.work}: the directory's entries differ from the published file`)
   }
+  listed.close()
 
   // Build every archive in the work folder; publish only once all of them pass.
   const staged = join(work, 'staged')
@@ -322,7 +349,12 @@ try {
 
   await mkdir(join(output, 'dictionaries'), { recursive: true })
   // Copy everything next to its target first, then rename each into place, then write the catalog.
-  for (const e of Object.values(entries)) await copyFile(join(staged, e.file), join(output, `${e.file}.partial`))
+  try {
+    for (const e of Object.values(entries)) await copyFile(join(staged, e.file), join(output, `${e.file}.partial`))
+  } catch (error) {
+    for (const e of Object.values(entries)) await rm(join(output, `${e.file}.partial`), { force: true })
+    throw error
+  }
   for (const e of Object.values(entries)) await rename(join(output, `${e.file}.partial`), join(output, e.file))
   const catalogPath = join(app, 'scripts/data/free-dictionary-catalog-entries.json')
   await writeFile(catalogPath, JSON.stringify({ resources: entries }, null, 2) + '\n')

@@ -2,23 +2,23 @@
   "resources": {
     "dictionary-directory": {
       "id": "dictionary-directory",
-      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-directory.sqlite.zip?sha256=b255d984d03cfde04ad46aa61be1907dd5a172feec681d8916898ec747cfc836",
+      "url": "https://api.cyberjudah.io/v1/offline-artifacts/dictionaries/dictionary-directory.sqlite.zip?sha256=d28e60966cf3a4d66f09f662afbff80368f6b2b578ccb357b74652bececaeb2b",
       "file": "dictionaries/dictionary-directory.sqlite.zip",
       "entry": "dictionary-directory.sqlite",
       "entries": {
         "canonical": {
           "entry": "dictionary-directory.sqlite",
-          "sha256": "82066641d7c0f9973997a532a22f01e15e9248cc5b131a5062f5d462643658ae",
-          "bytes": 14258176
+          "sha256": "ee22797abfb49d0d1c6f2dfaf8fbd4c2836a4b6536cdbd6fa213f0f6a07fbf64",
+          "bytes": 12156928
         }
       },
-      "archiveSha256": "b255d984d03cfde04ad46aa61be1907dd5a172feec681d8916898ec747cfc836",
-      "archiveBytes": 4622834,
-      "contentSha256": "82066641d7c0f9973997a532a22f01e15e9248cc5b131a5062f5d462643658ae",
-      "contentBytes": 14258176,
-      "resourceRevision": "dictionary-directory-da1603d69750985f418e",
-      "installedBytes": 14258176,
-      "peakInstallationBytes": 21713162,
+      "archiveSha256": "d28e60966cf3a4d66f09f662afbff80368f6b2b578ccb357b74652bececaeb2b",
+      "archiveBytes": 4060846,
+      "contentSha256": "ee22797abfb49d0d1c6f2dfaf8fbd4c2836a4b6536cdbd6fa213f0f6a07fbf64",
+      "contentBytes": 12156928,
+      "resourceRevision": "dictionary-directory-62027210bd4f7672d173",
+      "installedBytes": 12156928,
+      "peakInstallationBytes": 18650441,
       "strategy": "archive-extract",
       "works": [
         "SMITH",

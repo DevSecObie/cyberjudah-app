@@ -1,5 +1,5 @@
 {
-  "note": "Dictionaries rebuilt from public-domain or freely licensed sources with upstream's own acquisition and normalization scripts (apps/resource-studio/workflows/dictionaries). sqlitePath and correspondenceSeedsPath are relative to the --sources directory given to scripts/build-free-dictionaries.mjs. Same shape as apps/resource-studio/config/resource-publications/dictionary.json. directoryOnly lists our own dictionaries that the directory indexes as published (file read from public/offline, never changed); their ids and terms come from apps/expo/src/features/resources/dictionaryAccess.ts.",
+  "note": "Dictionaries rebuilt from public-domain or freely licensed sources with upstream's own acquisition and normalization scripts (apps/resource-studio/workflows/dictionaries). sqlitePath and correspondenceSeedsPath are relative to the --sources directory given to scripts/build-free-dictionaries.mjs. Same shape as apps/resource-studio/config/resource-publications/dictionary.json. directoryOnly lists our own dictionaries: a copy is normalized with the free ones only to compute the correspondence groups; the directory lists their entries and anchors exactly as published (file read from public/offline, never changed); their ids and terms come from apps/expo/src/features/resources/dictionaryAccess.ts.",
   "publications": [
     {
       "work": "smith",
