@@ -20,7 +20,7 @@ jest.mock('../mobileResourceCatalog', () => ({
         id: 'bible:LSG',
         archiveSha256: 'a'.repeat(64),
         encryptedArchive: {
-          url: `https://api.bible-strong.app/v1/offline-archives/bibles/bible-lsg.json.encrypted.zip?sha256=${'e'.repeat(64)}`,
+          url: `https://api.cyberjudah.io/v1/offline-archives/bibles/bible-lsg.json.encrypted.zip?sha256=${'e'.repeat(64)}`,
           file: 'bibles/bible-lsg.json.encrypted.zip',
           sha256: 'e'.repeat(64),
           bytes: 10,
@@ -34,7 +34,7 @@ jest.mock('../mobileResourceCatalog', () => ({
 
 import { resolveOfflineArchiveSource, unzipOfflineArchive } from '../offlineArchiveSource'
 
-const plainUrl = 'https://api.bible-strong.app/v1/offline-artifacts/bibles/bible-lsg.json.zip'
+const plainUrl = 'https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-lsg.json.zip'
 
 describe('Offline-copy archive source', () => {
   beforeEach(() => {
@@ -46,7 +46,7 @@ describe('Offline-copy archive source', () => {
   it('prefers the encrypted copy when this binary holds its key version', () => {
     expect(resolveOfflineArchiveSource(plainUrl, plainSha256)).toEqual({
       kind: 'encrypted',
-      url: `https://api.bible-strong.app/v1/offline-archives/bibles/bible-lsg.json.encrypted.zip?sha256=${encryptedSha256}`,
+      url: `https://api.cyberjudah.io/v1/offline-archives/bibles/bible-lsg.json.encrypted.zip?sha256=${encryptedSha256}`,
       archiveSha256: encryptedSha256,
       plainArchiveSha256: plainSha256,
       resourceId: 'bible:LSG',

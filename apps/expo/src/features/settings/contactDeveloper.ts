@@ -1,4 +1,5 @@
-export const SUPPORT_EMAIL = 'stephane@lestudio316.com'
+// No owned mailbox is configured. Active contact actions open the owned issue tracker.
+export const SUPPORT_EMAIL = ''
 
 export type SupportDiagnostics = Record<string, string | number | boolean | null | undefined>
 

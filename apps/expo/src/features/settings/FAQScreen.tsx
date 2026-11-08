@@ -1,3 +1,4 @@
+import { SUPPORT_ISSUES_URL } from '~helpers/serviceConnections'
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { colorWithOpacity } from '~themes/colorValues'
@@ -25,7 +26,7 @@ const FAQScreen = () => {
       id: 'availability',
       question: t('faq.availabilityQuestion'),
       answer: t('faq.availabilityAnswer'),
-      link: { href: 'https://web.bible-strong.app/home', label: t('faq.openWeb') },
+      link: { href: 'https://cyberjudah.io/home', label: t('faq.openWeb') },
     },
     { id: 'free', question: t('faq.freeQuestion'), answer: t('faq.freeAnswer') },
     { id: 'account', question: t('faq.accountQuestion'), answer: t('faq.accountAnswer') },
@@ -50,7 +51,7 @@ const FAQScreen = () => {
       question: t('faq.bugNoticedQuestion'),
       answer: t('faq.bugNoticedAnswer'),
       link: {
-        href: 'https://github.com/smontlouis/bible-strong/issues',
+        href: 'https://github.com/DevSecObie/cyberjudah-app/issues',
         label: t('faq.openIssues'),
       },
     },
@@ -58,13 +59,13 @@ const FAQScreen = () => {
       id: 'idea',
       question: t('faq.ideaQuestion'),
       answer: t('faq.ideaAnswer'),
-      link: { href: 'mailto:stephane@lestudio316.com', label: t('faq.contact') },
+      link: { href: SUPPORT_ISSUES_URL, label: t('faq.contact') },
     },
     {
       id: 'support',
       question: t('faq.supportQuestion'),
       answer: t('faq.supportAnswer'),
-      link: { href: 'https://bible-strong.app/give', label: t('faq.donate') },
+      link: undefined,
     },
     { id: 'author', question: t('faq.authorQuestion'), answer: t('faq.authorAnswer') },
   ]
@@ -257,7 +258,7 @@ const FAQScreen = () => {
                     </Box>
                   </HStack>
                   <LinkBox
-                    href="mailto:stephane@lestudio316.com"
+                    href={SUPPORT_ISSUES_URL}
                     className="self-end flex-row items-center gap-[10px] border border-primary rounded-[10px] px-[16px] py-[12px]"
                     style={{ alignSelf: wide ? 'center' : 'flex-end' }}
                   >

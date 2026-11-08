@@ -24,7 +24,7 @@ describe('search analytics HTTP access', () => {
   it('posts a search event to the protected resource API', async () => {
     const fetcher = jest.fn(async () => new Response('{}', { status: 202 }))
     const access = createHttpSearchAnalyticsAccess({
-      baseUrl: 'https://api.bible-strong.app/',
+      baseUrl: 'https://api.cyberjudah.io/',
       fetcher,
       isOnline: async () => true,
     })
@@ -32,7 +32,7 @@ describe('search analytics HTTP access', () => {
     await access.record({ ...event, sources: [...event.sources] })
 
     expect(fetcher).toHaveBeenCalledWith(
-      'https://api.bible-strong.app/v1/search-events',
+      'https://api.cyberjudah.io/v1/search-events',
       expect.objectContaining({
         method: 'POST',
         body: JSON.stringify(event),
@@ -43,7 +43,7 @@ describe('search analytics HTTP access', () => {
   it('does not queue an event while offline', async () => {
     const fetcher = jest.fn()
     const access = createHttpSearchAnalyticsAccess({
-      baseUrl: 'https://api.bible-strong.app',
+      baseUrl: 'https://api.cyberjudah.io',
       fetcher,
       isOnline: async () => false,
     })

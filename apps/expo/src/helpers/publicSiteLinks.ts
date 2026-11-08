@@ -3,7 +3,7 @@ import { getSupportedOsisBookId } from '~helpers/osisReference'
 import { createStrongIdentity } from '~helpers/strongIdentities'
 
 /** The public site, where a shared resource can be read without the application (ADR-0068). */
-export const PUBLIC_SITE_URL = 'https://bible-strong.app'
+export const PUBLIC_SITE_URL = 'https://cyberjudah.io'
 
 const onlineVersions = new Set<string>(ONLINE_BIBLE_VERSION_IDS)
 

@@ -50,7 +50,7 @@ describe('resource publications', () => {
     store.write('database:DICTIONNAIRE:fr', {
       revision: 'a'.repeat(64),
       size: 12,
-      sourceUrl: 'https://api.bible-strong.app/v1/offline-artifacts/dictionary.zip',
+      sourceUrl: 'https://api.cyberjudah.io/v1/offline-artifacts/dictionary.zip',
       installedAt: 123,
       archiveSha256: 'a'.repeat(64),
     })

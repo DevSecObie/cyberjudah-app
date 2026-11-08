@@ -20,7 +20,7 @@ export default function remarkBibleLinks() {
             pieces.push({ type: 'text', value: child.value.slice(cursor, ref.start) })
           pieces.push({
             type: 'link',
-            url: `https://bible-strong.app/assistant-passage/${encodeURIComponent(ref.target.osis)}`,
+            url: `https://cyberjudah.io/assistant-passage/${encodeURIComponent(ref.target.osis)}`,
             children: [{ type: 'text', value: ref.text }],
           })
           cursor = ref.end

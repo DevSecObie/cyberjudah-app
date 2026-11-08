@@ -1,3 +1,4 @@
+import { AUDIBIBLE_REFERRAL_URL } from '~helpers/serviceConnections'
 import { twMerge } from '~common/ui/classNames'
 import React from 'react'
 import { Linking, TouchableOpacityProps } from 'react-native'
@@ -89,7 +90,8 @@ const AudioContainer = ({ children, onReduce, audioMode, onChangeMode }: AudioCo
           </>
         )}
         <Chip
-          onPress={() => Linking.openURL('https://click.audibible.app/5nmN/stephane30')}
+          disabled={!AUDIBIBLE_REFERRAL_URL}
+          onPress={() => { if (AUDIBIBLE_REFERRAL_URL) void Linking.openURL(AUDIBIBLE_REFERRAL_URL) }}
           accessibilityRole="link"
           accessibilityLabel={t('accessibility.openAudibible')}
         >

@@ -69,7 +69,9 @@ const RootLayout = () => {
     let active = true
     configureQueryManagers()
     Promise.all([
-      initializeResourceAppCheck(),
+      process.env.EXPO_PUBLIC_FIREBASE_APP_CHECK_SITE_KEY
+        ? initializeResourceAppCheck()
+        : Promise.resolve(),
       loadWebFonts().catch(error => appLogger.error('startup', 'fonts.failed', { error })),
     ])
       .then(() => setI18n())
@@ -78,7 +80,7 @@ const RootLayout = () => {
         if (active) setReady(true)
       })
     Sentry.init({
-      dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
+      dsn: '',
       sampleRate: 0.5,
     })
     return () => {

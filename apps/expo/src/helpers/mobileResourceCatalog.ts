@@ -16,9 +16,9 @@ export type {
   MobileResourceInstallationStrategy,
 } from '@bible-strong/resource-catalog/catalog'
 
-export const MOBILE_RESOURCE_CATALOG_URL = 'https://api.bible-strong.app/v1/offline-catalog'
+export const MOBILE_RESOURCE_CATALOG_URL = 'https://api.cyberjudah.io/v1/offline-catalog'
 export const MOBILE_RESOURCE_ARTIFACT_BASE_URL =
-  'https://api.bible-strong.app/v1/offline-artifacts/'
+  'https://api.cyberjudah.io/v1/offline-artifacts/'
 export const resourceArtifactUrl = (path: string): string =>
   new URL(path, MOBILE_RESOURCE_ARTIFACT_BASE_URL).toString()
 const MOBILE_RESOURCE_CATALOG_TIMEOUT_MS = 3_000

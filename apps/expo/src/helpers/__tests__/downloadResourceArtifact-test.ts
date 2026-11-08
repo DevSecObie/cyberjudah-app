@@ -68,13 +68,13 @@ describe('R2 resource artifact download', () => {
 
   const encryptedSource = {
     kind: 'encrypted',
-    url: `https://api.bible-strong.app/v1/offline-archives/bibles/bible-lsg.json.encrypted.zip?sha256=${'e'.repeat(64)}`,
+    url: `https://api.cyberjudah.io/v1/offline-archives/bibles/bible-lsg.json.encrypted.zip?sha256=${'e'.repeat(64)}`,
     archiveSha256: 'e'.repeat(64),
     plainArchiveSha256: 'a'.repeat(64),
     resourceId: 'bible:LSG',
     keyVersion: 1,
   }
-  const plainUrl = 'https://api.bible-strong.app/v1/offline-artifacts/bibles/bible-lsg.json.zip'
+  const plainUrl = 'https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-lsg.json.zip'
   const okResponse = { uri: '/tmp/lsg.zip', status: 200, headers: {}, mimeType: 'application/zip' }
 
   it('downloads the encrypted copy without requesting an App Check token', async () => {
@@ -137,17 +137,17 @@ describe('R2 resource artifact download', () => {
 
     await expect(
       downloadResourceArtifact({
-        url: 'https://api.bible-strong.app/v1/offline-artifacts/databases/dictionnaire.sqlite.zip',
+        url: 'https://api.cyberjudah.io/v1/offline-artifacts/databases/dictionnaire.sqlite.zip',
         archiveSha256,
         destinationPath: '/tmp/dictionary.zip',
       })
     ).resolves.toEqual({
       result: expect.objectContaining({ status: 200 }),
       sourceUrl:
-        'https://api.bible-strong.app/v1/offline-artifacts/databases/dictionnaire.sqlite.zip',
+        'https://api.cyberjudah.io/v1/offline-artifacts/databases/dictionnaire.sqlite.zip',
       archive: {
         kind: 'plain',
-        url: 'https://api.bible-strong.app/v1/offline-artifacts/databases/dictionnaire.sqlite.zip',
+        url: 'https://api.cyberjudah.io/v1/offline-artifacts/databases/dictionnaire.sqlite.zip',
         archiveSha256,
       },
       publication: {
@@ -187,7 +187,7 @@ describe('R2 resource artifact download', () => {
 
     await expect(
       downloadResourceArtifact({
-        url: 'https://api.bible-strong.app/v1/offline-artifacts/bibles/bible-lsg.json.zip',
+        url: 'https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-lsg.json.zip',
         archiveSha256: 'a'.repeat(64),
         destinationPath: '/tmp/resource.zip',
       })
@@ -242,7 +242,7 @@ describe('R2 resource artifact download', () => {
 
     await expect(
       downloadResourceArtifact({
-        url: 'https://api.bible-strong.app/v1/offline-artifacts/bibles/bible-lsg.json.zip',
+        url: 'https://api.cyberjudah.io/v1/offline-artifacts/bibles/bible-lsg.json.zip',
         archiveSha256: 'a'.repeat(64),
         destinationPath: '/tmp/resource.zip',
       })
@@ -271,7 +271,7 @@ describe('R2 resource artifact download', () => {
 
     await expect(
       downloadResourceArtifact({
-        url: 'https://api.bible-strong.app/v1/offline-artifacts/databases/nave.sqlite.zip',
+        url: 'https://api.cyberjudah.io/v1/offline-artifacts/databases/nave.sqlite.zip',
         archiveSha256: 'a'.repeat(64),
         destinationPath: '/tmp/nave.zip',
         timeoutMs: 5,
@@ -285,7 +285,7 @@ describe('R2 resource artifact download', () => {
 
     await expect(
       downloadResourceArtifact({
-        url: 'https://api.bible-strong.app/v1/offline-artifacts/databases/nave.sqlite.zip',
+        url: 'https://api.cyberjudah.io/v1/offline-artifacts/databases/nave.sqlite.zip',
         archiveSha256: 'a'.repeat(64),
         destinationPath: '/tmp/nave.zip',
         timeoutMs: 5,

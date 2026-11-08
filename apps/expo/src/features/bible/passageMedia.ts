@@ -106,8 +106,8 @@ export const formatPassageMediaDuration = (durationSeconds: number): string => {
   return `${minutes}:${String(seconds).padStart(2, '0')}`
 }
 
-const PASSAGE_MEDIA_PLAYER_URL = 'https://bible-strong.app/embed/youtube.html'
-const PASSAGE_MEDIA_APP_ID = 'com.smontlouis.biblestrong'
+const PASSAGE_MEDIA_PLAYER_URL = 'https://cyberjudah.io/embed/youtube.html'
+const PASSAGE_MEDIA_APP_ID = 'io.cyberjudah.app'
 
 export const getPassageMediaEmbedUrl = (providerId: string): string =>
   `${PASSAGE_MEDIA_PLAYER_URL}?v=${encodeURIComponent(providerId)}` +

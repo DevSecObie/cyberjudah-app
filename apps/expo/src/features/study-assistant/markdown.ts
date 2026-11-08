@@ -4,7 +4,7 @@ export const safeLink = (url: string) => {
   try {
     const parsed = new URL(url)
     if (
-      parsed.hostname === 'bible-strong.app' &&
+      parsed.hostname === 'cyberjudah.io' &&
       /^\/assistant-(source|passage)\//.test(parsed.pathname)
     )
       return undefined

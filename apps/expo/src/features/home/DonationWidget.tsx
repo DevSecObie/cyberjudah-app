@@ -1,3 +1,4 @@
+import { DONATION_URL } from '~helpers/serviceConnections'
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { twMerge } from '~common/ui/classNames'
@@ -32,7 +33,7 @@ const DonationWidget = () => {
     <Box className="overflow-hidden border-continuous bg-light-grey px-[20px] pt-[20px] pb-[20px]">
       <LinkBox
         className="p-[20px] h-[130px] relative rounded-[30px] bg-primary items-center justify-center overflow-visible"
-        href={`https://bible-strong.app/${lang === 'fr' ? 'fr/' : ''}give`}
+        href={DONATION_URL} disabled={!DONATION_URL}
         style={{
           shadowColor: 'rgb(89,131,240)',
           shadowOffset: { width: 0, height: 2 },

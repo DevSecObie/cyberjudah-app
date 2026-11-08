@@ -1,3 +1,5 @@
+import { AUDIBIBLE_REFERRAL_URL } from '~helpers/serviceConnections'
+import { DONATION_URL, SOCIAL_URL } from '~helpers/serviceConnections'
 import ResourceDiscovery from './ResourceDiscovery'
 import { Image, type ImageSource } from 'expo-image'
 import { useFonts } from 'expo-font'
@@ -238,7 +240,7 @@ export default function DesktopHome() {
                 <PlanHome compact />
               </Box>
               <LinkBox
-                href="https://click.audibible.app/5nmN/stephane30"
+                href={AUDIBIBLE_REFERRAL_URL} disabled={!AUDIBIBLE_REFERRAL_URL}
                 className="rounded-[20px] overflow-hidden p-[24px] min-h-[200px]"
                 style={{ backgroundColor: '#122B4B' }}
               >
@@ -265,14 +267,14 @@ export default function DesktopHome() {
             </div>
           </div>
           <HStack className="items-center flex-wrap gap-[24px] border-t border-border pt-[16px]">
-            <ResourceLink href={`https://bible-strong.app/${lang === 'fr' ? 'fr/' : ''}give`}>
+            <ResourceLink href={DONATION_URL} disabled={!DONATION_URL}>
               {t('home.desktop.support')}
             </ResourceLink>
             <ResourceLink route="FAQ">{t('FAQ')}</ResourceLink>
-            <ResourceLink href="https://www.facebook.com/fr.bible.strong">
+            <ResourceLink href={SOCIAL_URL} disabled={!SOCIAL_URL}>
               {t('Suivre')}
             </ResourceLink>
-            <ResourceLink href="https://bible-strong.app">
+            <ResourceLink href="https://cyberjudah.io">
               {t('home.desktop.downloadApp')}
             </ResourceLink>
           </HStack>

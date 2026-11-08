@@ -1,3 +1,4 @@
+import { STUDY_PUBLICATION_ENABLED, STUDY_PDF_EXPORT_URL } from '~helpers/serviceConnections'
 import { useQuery } from '@tanstack/react-query'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -23,14 +24,14 @@ interface Props {
 }
 
 const useStudyStatus = (study: Study) => {
-  const url = `https://bible-strong.app/studies/${study.id}`
+  const url = `https://cyberjudah.io/studies/${study.id}`
   const query = useQuery({
     queryKey: ['published-study-status', study.id],
     queryFn: async () => {
       const response = await fetch(url)
       return response.status
     },
-    enabled: study.published,
+    enabled: STUDY_PUBLICATION_ENABLED && study.published,
     ...remoteQueryOptions,
   })
   const status: Status = !study.published
@@ -46,7 +47,7 @@ const useStudyStatus = (study: Study) => {
   return { url, status, data: query.data }
 }
 
-const PublishStudyMenuItem = ({ study, onClosed }: Props) => {
+const AvailablePublishStudyMenuItem = ({ study, onClosed }: Props) => {
   const { status, data, url } = useStudyStatus(study)
   const [pdfStatus, setPDFStatus] = useState<Status>('Idle')
   const isConnected = useConnection()
@@ -70,7 +71,7 @@ const PublishStudyMenuItem = ({ study, onClosed }: Props) => {
 
   const exportPDF = async () => {
     try {
-      if (Platform.OS === 'web') return
+      if (Platform.OS === 'web' || !STUDY_PDF_EXPORT_URL) return
       const { default: RNFetchBlob } = await import('rn-fetch-blob')
       setPDFStatus('Pending')
       const file_name = slugify(study.title)
@@ -114,7 +115,7 @@ const PublishStudyMenuItem = ({ study, onClosed }: Props) => {
 
       const res = await RNFetchBlob.config(options!).fetch(
         'POST',
-        'https://us-central1-bible-strong-app.cloudfunctions.net/exportStudyPDF',
+        STUDY_PDF_EXPORT_URL,
         {
           'Content-Type': 'application/json',
         },
@@ -328,5 +329,8 @@ const PublishStudyMenuItem = ({ study, onClosed }: Props) => {
     </>
   )
 }
+
+const PublishStudyMenuItem = (props: Props) =>
+  STUDY_PUBLICATION_ENABLED ? <AvailablePublishStudyMenuItem {...props} /> : null
 
 export default PublishStudyMenuItem

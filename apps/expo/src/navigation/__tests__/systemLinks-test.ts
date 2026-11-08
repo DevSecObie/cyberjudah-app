@@ -1,6 +1,6 @@
 import { resolveSystemPath, sitePageUrl } from '../systemLinks'
 
-const site = (path: string) => `https://bible-strong.app${path}`
+const site = (path: string) => `https://cyberjudah.io${path}`
 const sitePage = (path: string) => `/site-page?path=${encodeURIComponent(path)}`
 
 describe('resolveSystemPath', () => {
@@ -39,8 +39,8 @@ describe('resolveSystemPath', () => {
   })
 
   it('opens the home of the site on the home of the application', () => {
-    expect(resolveSystemPath('https://bible-strong.app')).toBe('/')
-    expect(resolveSystemPath('https://bible-strong.app/')).toBe('/')
+    expect(resolveSystemPath('https://cyberjudah.io')).toBe('/')
+    expect(resolveSystemPath('https://cyberjudah.io/')).toBe('/')
   })
 
   it.each([
@@ -79,7 +79,7 @@ describe('resolveSystemPath', () => {
 
 describe('sitePageUrl', () => {
   it('names a page of the site and nothing else', () => {
-    expect(sitePageUrl('/studies/abc123')).toBe('https://bible-strong.app/studies/abc123')
+    expect(sitePageUrl('/studies/abc123')).toBe('https://cyberjudah.io/studies/abc123')
     expect(sitePageUrl('//example.com')).toBeUndefined()
     expect(sitePageUrl('https://example.com')).toBeUndefined()
     expect(sitePageUrl(undefined)).toBeUndefined()

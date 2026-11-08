@@ -1,3 +1,4 @@
+import { AUDIBIBLE_REFERRAL_URL } from '~helpers/serviceConnections'
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { twMerge } from '~common/ui/classNames'
@@ -30,7 +31,7 @@ const TryAudibibleWidget = () => {
     <Box className="overflow-hidden border-continuous bg-light-grey px-[20px] pb-[40px]">
       <LinkBox
         className="p-[20px] h-[100px] relative items-center bg-primary flex-row rounded-[20px] overflow-visible"
-        href={`https://click.audibible.app/5nmN/stephane30`}
+        href={AUDIBIBLE_REFERRAL_URL} disabled={!AUDIBIBLE_REFERRAL_URL}
         style={{
           shadowColor: 'rgb(89,131,240)',
           shadowOffset: { width: 0, height: 2 },

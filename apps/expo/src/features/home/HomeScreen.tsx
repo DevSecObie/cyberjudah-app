@@ -1,3 +1,4 @@
+import { DONATION_URL, SOCIAL_URL } from '~helpers/serviceConnections'
 import HorizontalControlScrollView from '~common/HorizontalControlScrollView'
 import { goBackOrHome } from '~navigation/goBackOrHome'
 import { useResponsiveWorkspace } from '~features/app-switcher/utils/useResponsiveWorkspace'
@@ -116,7 +117,7 @@ export const Home = ({ closeHome, inWorkspace = false }: HomeProps) => {
             {t('Aller plus loin')}
           </Text>
         </Box>
-        {!appleIsReviewing && <DonationWidget />}
+        {DONATION_URL && !appleIsReviewing && <DonationWidget />}
         <Box className="overflow-hidden border-continuous bg-light-grey">
           <Box
             className="overflow-hidden border-continuous bg-reverse flex-row px-[20px] pt-[20px]"
@@ -128,7 +129,8 @@ export const Home = ({ closeHome, inWorkspace = false }: HomeProps) => {
             <Box className="overflow-hidden border-continuous flex-[1]">
               <Button
                 color="#3b5998"
-                onPress={() => Linking.openURL('https://www.facebook.com/fr.bible.strong')}
+                onPress={() => { if (SOCIAL_URL) void Linking.openURL(SOCIAL_URL) }}
+                disabled={!SOCIAL_URL}
                 leftIcon={
                   <FeatherIcon
                     name="facebook"

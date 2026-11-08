@@ -85,7 +85,7 @@ const initSentry = () => {
   if (sentryInitialized) return
   sentryInitialized = true
   Sentry.init({
-    dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
+    dsn: '',
     // Error events are low-volume and operationally critical. Do not sample them,
     // especially during startup where a single failed migration can block the app.
     sampleRate: 1,

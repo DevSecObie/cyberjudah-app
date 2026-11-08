@@ -36,7 +36,7 @@ const mockRunShareAction = jest.fn()
 jest.mock('~common/ui/MenuView', () => ({ MenuView: 'MenuView' }), { virtual: true })
 jest.mock('../shareCommentary', () => ({
   getCommentaryShare: jest.fn(({ passage }: { passage: string }) => ({
-    url: 'https://bible-strong.app/commentary/fr/mhy-fr/gen/1',
+    url: 'https://cyberjudah.io/commentary/fr/mhy-fr/gen/1',
     title: passage,
     text: () => 'text',
   })),
@@ -160,7 +160,7 @@ it('does not load full content until opened, then reads the exact requested revi
   menu.props.onPressAction({ nativeEvent: { event: 'share-link' } })
   expect(mockRunShareAction).toHaveBeenCalledWith(
     'share-link',
-    expect.objectContaining({ url: 'https://bible-strong.app/commentary/fr/mhy-fr/gen/1' })
+    expect.objectContaining({ url: 'https://cyberjudah.io/commentary/fr/mhy-fr/gen/1' })
   )
 })
 

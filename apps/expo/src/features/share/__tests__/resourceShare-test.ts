@@ -29,7 +29,7 @@ beforeEach(() => jest.clearAllMocks())
 
 it('offers the link and the text of a resource that has a page', () => {
   expect(
-    resourceShareMenuActions(t, { url: 'https://bible-strong.app/x', text: () => 'x' }).map(
+    resourceShareMenuActions(t, { url: 'https://cyberjudah.io/x', text: () => 'x' }).map(
       action => action.id
     )
   ).toEqual([SHARE_LINK_ACTION, COPY_TEXT_ACTION])
@@ -43,8 +43,8 @@ it('offers the text alone when there is no page to link, and nothing without a r
 })
 
 it('shares the link alone, so that the receiving app draws the card of the page', async () => {
-  await shareResourceLink({ url: 'https://bible-strong.app/strong/fr/g26', title: 'G26' })
-  expect(Share.share).toHaveBeenCalledWith({ url: 'https://bible-strong.app/strong/fr/g26' })
+  await shareResourceLink({ url: 'https://cyberjudah.io/strong/fr/g26', title: 'G26' })
+  expect(Share.share).toHaveBeenCalledWith({ url: 'https://cyberjudah.io/strong/fr/g26' })
   expect(Clipboard.setString).not.toHaveBeenCalled()
 })
 
@@ -71,7 +71,7 @@ it('tells the reader when the text cannot be read', async () => {
 })
 
 it('runs its own menu entries and leaves the others to the menu', async () => {
-  const share = { url: 'https://bible-strong.app/x', text: () => 'x' }
+  const share = { url: 'https://cyberjudah.io/x', text: () => 'x' }
   expect(runResourceShareAction(SHARE_LINK_ACTION, share)).toBe(true)
   expect(runResourceShareAction(COPY_TEXT_ACTION, share)).toBe(true)
   expect(runResourceShareAction('open-tab', share)).toBe(false)

@@ -30,7 +30,7 @@ export default function AssistantMessageMarkdown({
       components={{
         img: () => null,
         a: ({ href, children }) => {
-          if (href?.startsWith('https://bible-strong.app/assistant-passage/')) {
+          if (href?.startsWith('https://cyberjudah.io/assistant-passage/')) {
             try {
               return (
                 <PassageLink
@@ -53,7 +53,7 @@ export default function AssistantMessageMarkdown({
               <span>{children}</span>
             )
           }
-          if (href?.startsWith('https://bible-strong.app/assistant-source/'))
+          if (href?.startsWith('https://cyberjudah.io/assistant-source/'))
             return <span>{children}</span>
           const url = href ? safeLink(href) : undefined
           return url ? (

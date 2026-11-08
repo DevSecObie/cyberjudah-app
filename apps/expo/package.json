@@ -1,6 +1,6 @@
 {
   "name": "@bible-strong/expo",
-  "version": "27.2.0",
+  "version": "1.0.0",
   "main": "expo-router/entry",
   "scripts": {
     "eas-build-pre-install": "corepack enable",
@@ -264,7 +264,8 @@
     "testPathIgnorePatterns": [],
     "moduleNameMapper": {
       "^@sentry/react-native$": "<rootDir>/test/jestSentryMock.js",
-      "/modules/bible-strong-archive$": "<rootDir>/test/jestBibleStrongArchiveMock.js"
+      "/modules/bible-strong-archive$": "<rootDir>/test/jestBibleStrongArchiveMock.js",
+      "^@bible-strong/resource-catalog/commentaries$": "<rootDir>/test/jestCommentaryCatalogMock.js"
     },
     "transformIgnorePatterns": [
       "/node_modules/(?!@bible-strong/bible-reference-parser/)"

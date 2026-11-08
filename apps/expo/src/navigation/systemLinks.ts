@@ -2,7 +2,7 @@
 // installed (ADR-0082). The site and the application do not have the same pages: this says
 // where each address of the site leads inside the application.
 
-const PUBLIC_SITE_HOST = 'bible-strong.app'
+const PUBLIC_SITE_HOST = 'cyberjudah.io'
 
 /** The screen showing a page of the site the application has no screen for. */
 export const SITE_PAGE_ROUTE = '/site-page'

@@ -12,6 +12,6 @@ describe('generated Markdown', () => {
     expect(safeLink('javascript:alert(1)')).toBeUndefined()
     expect(safeLink('file:///etc/passwd')).toBeUndefined()
     expect(safeLink('data:text/html,hello')).toBeUndefined()
-    expect(safeLink('https://bible-strong.app')).toBe('https://bible-strong.app/')
+    expect(safeLink('https://cyberjudah.io')).toBe('https://cyberjudah.io/')
   })
 })

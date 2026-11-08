@@ -153,7 +153,7 @@ const FireAuth = class {
 
     GoogleSignin.configure({
       scopes: ['profile', 'email', 'openid'],
-      webClientId: '204116128917-56eubi7hu2f0k3rnb6dn8q3sfv23588l.apps.googleusercontent.com',
+      webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
     })
 
     const authInstance = getAuth()

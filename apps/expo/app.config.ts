@@ -1,6 +1,6 @@
 import { ExpoConfig, ConfigContext } from 'expo/config'
 
-const APP_VERSION = '27.2.0'
+const APP_VERSION = '1.0.0'
 // Patch releases share a runtime and receive the same OTA updates. Any native change must
 // ship in a new major or minor version, which creates a new runtime.
 const [majorVersion, minorVersion] = APP_VERSION.split('.')
@@ -18,12 +18,12 @@ const PUBLIC_RESOURCE_PATHS = [
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: process.env.APP_NAME ?? 'dev - Bible Strong',
-  description: 'Bible strong for french people',
-  slug: 'bible-strong',
-  scheme: 'biblestrong',
+  name: process.env.APP_NAME ?? 'CyberJudah',
+  description: 'CyberJudah Bible reading and study',
+  slug: 'cyberjudah',
+  scheme: 'cyberjudah-staging',
   primaryColor: '#ffffff',
-  githubUrl: 'https://github.com/bulby97/bible-strong',
+  githubUrl: 'https://github.com/DevSecObie/cyberjudah-app',
   platforms: ['ios', 'android', 'web'],
   version: APP_VERSION,
   orientation: 'default',
@@ -31,10 +31,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   userInterfaceStyle: 'automatic',
 
   android: {
-    versionCode: 511,
-    package: 'com.smontlouis.biblestrong',
+    versionCode: 516,
+    package: 'io.cyberjudah.app',
     googleServicesFile:
-      process.env.ANDROID_GOOGLE_SERVICES_FILE ?? 'firebase/dev/google-services.json',
+      process.env.ANDROID_GOOGLE_SERVICES_FILE ?? 'firebase/cyberjudah/google-services.json',
     adaptiveIcon: {
       foregroundImage: './assets/images/foreground-image.png',
       backgroundImage: './assets/images/background-image.png',
@@ -48,7 +48,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         autoVerify: true,
         data: PUBLIC_RESOURCE_PATHS.map(pathPrefix => ({
           scheme: 'https',
-          host: 'bible-strong.app',
+          host: 'cyberjudah.io',
           pathPrefix,
         })),
         category: ['BROWSABLE', 'DEFAULT'],
@@ -56,10 +56,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
   },
   ios: {
-    bundleIdentifier: process.env.BUNDLE_IDENTIFIER ?? 'com.smontlouis.biblestrong.dev',
-    buildNumber: '297',
+    bundleIdentifier: process.env.BUNDLE_IDENTIFIER ?? 'io.cyberjudah.app',
+    appleTeamId: process.env.CYBERJUDAH_APPLE_TEAM_ID ?? 'M8DUMWBXLH',
+    buildNumber: '316',
     googleServicesFile:
-      process.env.IOS_GOOGLE_SERVICES_FILE ?? './firebase/dev/GoogleService-Info.plist',
+      process.env.IOS_GOOGLE_SERVICES_FILE ?? './firebase/cyberjudah-production/GoogleService-Info.plist',
     userInterfaceStyle: 'automatic',
     supportsTablet: true,
     infoPlist: {
@@ -82,7 +83,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       'com.apple.developer.devicecheck.appattest-environment': 'production',
     },
     // Deep linking: iOS Universal Links
-    associatedDomains: ['applinks:bible-strong.app'],
+    associatedDomains: ['applinks:cyberjudah.io'],
   },
   web: {
     bundler: 'metro',
@@ -140,13 +141,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         iCloudContainerEnvironment: 'Production',
       },
     ],
-    [
-      '@sentry/react-native/expo',
-      {
-        organization: 'sevn-apps',
-        project: 'bible-strong',
-      },
-    ],
     ['./plugins/gradleProperties.js'],
     [
       './plugins/withAndroidUsesFeature.js',
@@ -174,17 +168,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ['react-native-edge-to-edge'],
   ],
   extra: {
-    resourceApiUrl: process.env.EXPO_PUBLIC_RESOURCE_API_URL,
-    resourceArtifactBaseUrl: process.env.EXPO_PUBLIC_RESOURCE_ARTIFACT_BASE_URL,
+    resourceApiUrl: process.env.EXPO_PUBLIC_RESOURCE_API_URL ?? 'https://api.cyberjudah.io',
+    resourceArtifactBaseUrl:
+      process.env.EXPO_PUBLIC_RESOURCE_ARTIFACT_BASE_URL ??
+      'https://api.cyberjudah.io/v1/offline-artifacts/',
     eas: {
-      projectId: 'fdf72b90-346b-11e9-ad9a-255491359311',
-    },
-    ethern: {
-      projectId: 'ccb42b86-1286-4ca0-99bd-929b7ce418c1',
+      projectId: 'ee1c2f69-3a80-46c5-b67d-7f4a75def656',
     },
   },
   updates: {
-    url: 'https://u.expo.dev/fdf72b90-346b-11e9-ad9a-255491359311',
+    enabled: false,
     checkAutomatically: 'NEVER',
     requestHeaders: {
       'expo-channel-name': process.env.EAS_BUILD_CHANNEL,

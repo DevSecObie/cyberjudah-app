@@ -38,7 +38,7 @@ export default function ContactDeveloperSheet({
     setFallback(null)
     try {
       const email = buildSupportEmail(
-        `[Bible Strong] ${choice.label}`,
+        `[CyberJudah] ${choice.label}`,
         choice.body,
         t('contact.diagnostics'),
         getSupportDiagnostics(i18n.language)

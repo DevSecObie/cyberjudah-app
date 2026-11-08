@@ -14,7 +14,7 @@ const SitePageScreen = () => {
   const router = useRouter()
   const params = useLocalSearchParams<{ path?: string | string[] }>()
   const url = sitePageUrl(Array.isArray(params.path) ? params.path[0] : params.path)
-  const [title, setTitle] = useState('Bible Strong')
+  const [title, setTitle] = useState('CyberJudah')
 
   if (!url) return <Redirect href="/" />
 

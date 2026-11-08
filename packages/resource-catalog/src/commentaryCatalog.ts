@@ -1,3 +1,4 @@
+import { BUNDLED_MOBILE_RESOURCE_CATALOG } from './catalog'
 import { COMMENTARY_DESCRIPTIONS } from './commentaryDescriptions'
 
 export type CommentaryLanguage = 'fr' | 'en'
@@ -25,7 +26,7 @@ const commentary = (entry: CommentaryCatalogInput): CommentaryCatalogEntry => ({
   description: COMMENTARY_DESCRIPTIONS[entry.id as keyof typeof COMMENTARY_DESCRIPTIONS],
 })
 
-export const COMMENTARY_CATALOG = [
+export const BASE_COMMENTARY_CATALOG = [
   commentary({
     id: 'acbc',
     shortName: 'Clarke',
@@ -348,6 +349,12 @@ export const COMMENTARY_CATALOG = [
     rights: 'Ellen G. White Estate · tous droits réservés',
   }),
 ] as const satisfies readonly CommentaryCatalogEntry[]
+
+export const COMMENTARY_CATALOG = BASE_COMMENTARY_CATALOG.filter(entry =>
+  entry.languages.some(language =>
+    `database:${entry.publicationId}:${language}` in BUNDLED_MOBILE_RESOURCE_CATALOG.resources
+  )
+)
 
 export const COMMENTARY_CATALOG_BY_ID = new Map(COMMENTARY_CATALOG.map(entry => [entry.id, entry]))
 

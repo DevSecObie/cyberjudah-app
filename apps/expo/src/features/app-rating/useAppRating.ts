@@ -120,8 +120,8 @@ export function useAppRating() {
       // Fallback: open store page directly
       const storeUrl =
         Platform.OS === 'ios'
-          ? 'https://apps.apple.com/fr/app/bible-strong/id1454738221?mt=8'
-          : 'https://play.google.com/store/apps/details?id=com.smontlouis.biblestrong'
+          ? 'https://apps.apple.com/app/id6829785758'
+          : 'https://play.google.com/store/apps/details?id=io.cyberjudah.app'
 
       Linking.openURL(storeUrl)
     }

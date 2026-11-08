@@ -55,7 +55,7 @@ const driver: ReadingReminderDriver = {
   schedule: async reminder => {
     const channelId = await notifee.createChannel({
       id: READING_REMINDER_CHANNEL,
-      name: 'Bible Strong',
+      name: 'CyberJudah',
       importance: AndroidImportance.DEFAULT,
     })
     await notifee.createTriggerNotification(

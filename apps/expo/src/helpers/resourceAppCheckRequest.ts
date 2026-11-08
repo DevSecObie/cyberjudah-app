@@ -1,5 +1,5 @@
 export const FIREBASE_APP_CHECK_HEADER = 'X-Firebase-AppCheck'
-const RESOURCE_API_ORIGIN = 'https://api.bible-strong.app'
+const RESOURCE_API_ORIGIN = 'https://api.cyberjudah.io'
 const RESOURCE_API_PATH_PREFIX = '/v1/'
 const PUBLIC_RESOURCE_CATALOG_PATH = '/v1/offline-catalog'
 const RESOURCE_ARTIFACT_PATH_PREFIX = '/v1/offline-artifacts/'

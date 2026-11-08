@@ -323,7 +323,7 @@ const DownloadSuccessContent = ({
             { fontFamily: 'Literata Book' },
           ]}
         >
-          Bible Strong
+          CyberJudah
         </Text>
       </VStack>
     )

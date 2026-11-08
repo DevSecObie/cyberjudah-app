@@ -1,3 +1,4 @@
+import { PAYPAL_URL, TIPEEE_URL } from '~helpers/serviceConnections'
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme, useTheme as useAppTheme } from '~themes/ThemeProvider'
 import * as Icon from '@expo/vector-icons'
@@ -89,14 +90,14 @@ const LoginScreen = () => {
             Si vous souhaitez me soutenir, vous pouvez le faire de deux façons. Soit par{' '}
             <Paragraph
               className="text-primary font-bold"
-              onPress={() => Linking.openURL('https://fr.tipeee.com/smontlouis')}
+              onPress={() => { if (TIPEEE_URL) void Linking.openURL(TIPEEE_URL) }}
             >
               Tipeee,
             </Paragraph>{' '}
             ou par{' '}
             <Paragraph
               className="text-primary font-bold"
-              onPress={() => Linking.openURL('https://www.paypal.me/smontlouis')}
+              onPress={() => { if (PAYPAL_URL) void Linking.openURL(PAYPAL_URL) }}
             >
               Paypal
             </Paragraph>
@@ -118,11 +119,11 @@ const LoginScreen = () => {
           <Paragraph className="mb-[20px]" scaleLineHeight={-1}>
             Merci de m'avoir lu et bonne étude !
           </Paragraph>
-          <LinkItem href="https://fr.tipeee.com/smontlouis">
+          <LinkItem href={TIPEEE_URL} disabled={!TIPEEE_URL}>
             <Text className="font-bold text-[16px]">Lien Tipeee</Text>
             <StyledIcon name="arrow-right" size={25} />
           </LinkItem>
-          <LinkItem href="https://www.paypal.me/smontlouis">
+          <LinkItem href={PAYPAL_URL} disabled={!PAYPAL_URL}>
             <Text className="font-bold text-[16px]">Lien paypal</Text>
             <StyledIcon name="arrow-right" size={25} />
           </LinkItem>

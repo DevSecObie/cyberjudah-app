@@ -1,7 +1,7 @@
 import { Link, LinkType, OpenGraphData } from '~redux/modules/user'
 import { getCurrentAuthUser } from './firebaseAuthRuntime'
 
-const FUNCTION_URL = 'https://us-central1-bible-strong-app.cloudfunctions.net/fetchOpenGraph'
+const FUNCTION_URL = 'https://cyberjudah.io/api/og'
 
 /**
  * Détecte le type de lien à partir de l'URL

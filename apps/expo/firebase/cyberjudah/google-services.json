@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "979802439968",
+    "project_id": "cyberjudah-app",
+    "storage_bucket": "cyberjudah-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:979802439968:android:b612f73b49e4150c959745",
+        "android_client_info": {
+          "package_name": "io.cyberjudah.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "979802439968-9a7bjqbkbk1j367so9katebd1stpt17q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1RRfA5tlr8ZQe-rHvTCo1zD_f-s3Eupg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "979802439968-9a7bjqbkbk1j367so9katebd1stpt17q.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "979802439968-82ofhfnvlq6qn142ueen2v37k9cjh2ne.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.cyberjudah.app.dev"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

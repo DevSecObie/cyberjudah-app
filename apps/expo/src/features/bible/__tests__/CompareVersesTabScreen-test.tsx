@@ -157,7 +157,7 @@ describe('CompareVersesTabScreen', () => {
     act(() => menu.props.onPressAction({ nativeEvent: { event: 'share-link' } }))
 
     expect(mockShareResourceLink).toHaveBeenCalledWith({
-      url: 'https://bible-strong.app/bible/lsg/rom/2/2',
+      url: 'https://cyberjudah.io/bible/lsg/rom/2/2',
       title: 'Romains 2:2',
     })
   })

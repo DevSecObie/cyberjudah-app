@@ -38,8 +38,8 @@ it('links the page of the chapter, and keeps the text apart from the link', asyn
     sections: [{ content: '<p>Au commencement.</p>' }],
     location,
   })
-  expect(share.url).toBe('https://bible-strong.app/commentary/fr/mhy-fr/gen/1')
-  expect(await share.text()).not.toContain('bible-strong.app')
+  expect(share.url).toBe('https://cyberjudah.io/commentary/fr/mhy-fr/gen/1')
+  expect(await share.text()).not.toContain('cyberjudah.io')
 })
 
 it('has no link when the commentary has no page for that chapter', () => {

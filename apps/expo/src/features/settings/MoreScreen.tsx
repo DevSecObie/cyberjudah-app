@@ -1,4 +1,4 @@
-import ContactDeveloperSheet from './ContactDeveloperSheet'
+import { DONATION_URL, SOCIAL_URL, SUPPORT_ISSUES_URL } from '~helpers/serviceConnections'
 import { goBackOrHome } from '~navigation/goBackOrHome'
 import { resolveUniverseColors } from '~themes/universeColors'
 import { useResponsiveWorkspace } from '~features/app-switcher/utils/useResponsiveWorkspace'
@@ -66,9 +66,9 @@ export const LinkItem = (
 const shareMessage = () => {
   const appUrl =
     Platform.OS === 'ios'
-      ? 'https://apps.apple.com/fr/app/bible-strong/id1454738221?mt=8'
-      : 'https://play.google.com/store/apps/details?id=com.smontlouis.biblestrong'
-  return `Bible Strong App ${appUrl}`
+      ? 'https://apps.apple.com/app/id6829785758'
+      : 'https://play.google.com/store/apps/details?id=io.cyberjudah.app'
+  return `CyberJudah App ${appUrl}`
 }
 
 const Infos = memo(() => {
@@ -91,7 +91,6 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
   const { isLogged, user, logout } = useLogin()
   const theme = useTheme()
   const deleteAccountModalRef = useRef<SheetRef>(null)
-  const contactDeveloperRef = useRef<SheetRef>(null)
   const [isCheckingUpdate, setIsCheckingUpdate] = useState(false)
   const openChangelogModal = useSetAtom(changelogModalAtom)
   const { hasUpdates } = useAvailableUpdatesIndicator()
@@ -383,7 +382,7 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
             <Text className="flex-[1] text-[15px]">{t('Foire aux questions')}</Text>
             <FeatherIcon name="chevron-right" size={20} color="grey" />
           </CardLinkItem>
-          <CardLinkItem onPress={() => contactDeveloperRef.current?.present()} isLast>
+          <CardLinkItem href={SUPPORT_ISSUES_URL} isLast>
             <IconCircle bg="rgba(147, 51, 234, 0.1)">
               <FeatherIcon name="send" size={20} color="quint" />
             </IconCircle>
@@ -402,7 +401,7 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
               {t('settings.community')}
             </Text>
           </SectionCardHeader>
-          <CardLinkItem href="https://www.facebook.com/fr.bible.strong">
+          <CardLinkItem href={SOCIAL_URL} disabled={!SOCIAL_URL}>
             <IconCircle bg="rgba(59, 89, 152, 0.1)">
               <FeatherIcon name="facebook" size={20} color="primary" />
             </IconCircle>
@@ -412,8 +411,8 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
           <CardLinkItem
             href={
               Platform.OS === 'ios'
-                ? 'https://apps.apple.com/fr/app/bible-strong/id1454738221?mt=8'
-                : 'https://play.google.com/store/apps/details?id=com.smontlouis.biblestrong'
+                ? 'https://apps.apple.com/app/id6829785758'
+                : 'https://play.google.com/store/apps/details?id=io.cyberjudah.app'
             }
           >
             <IconCircle bg="rgba(251, 191, 36, 0.1)">
@@ -429,10 +428,10 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
             <Text className="flex-[1] text-[15px]">{t("Partager l'application")}</Text>
             <FeatherIcon name="chevron-right" size={20} color="grey" />
           </CardLinkItem>
-          {!appleIsReviewing && (
+          {DONATION_URL && !appleIsReviewing && (
             <CardLinkItem
               href={
-                lang === 'fr' ? 'https://bible-strong.app/fr/give' : 'https://bible-strong.app/give'
+                DONATION_URL
               }
             >
               <IconCircle bg="rgba(236, 72, 153, 0.1)">
@@ -442,7 +441,7 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
               <FeatherIcon name="chevron-right" size={20} color="grey" />
             </CardLinkItem>
           )}
-          <CardLinkItem href="https://github.com/smontlouis/bible-strong" isLast>
+          <CardLinkItem href="https://github.com/DevSecObie/cyberjudah-app" isLast>
             <IconCircle bg="rgba(107, 114, 128, 0.1)">
               <FeatherIcon name="github" size={20} color="grey" />
             </IconCircle>
@@ -455,9 +454,7 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
           <LinkItem
             style={{ paddingVertical: 10, paddingHorizontal: 0 }}
             href={
-              lang === 'fr'
-                ? 'https://bible-strong.app/politique-de-confidentialite'
-                : 'https://bible-strong.app/privacy-policy'
+              'https://cyberjudah.io/privacy'
             }
           >
             <Text className="text-[14px] text-grey">{t('Politique de confidentialité')}</Text>
@@ -465,7 +462,7 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
           <LinkItem
             style={{ paddingVertical: 10, paddingHorizontal: 0 }}
             href={
-              lang === 'fr' ? 'https://bible-strong.app/eula' : 'https://bible-strong.app/eula-en'
+              'https://cyberjudah.io/terms'
             }
           >
             <Text className="text-[14px] text-grey">{t("Conditions d'utilisation")}</Text>
@@ -513,7 +510,6 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
 
         <Infos />
       </ScrollView>
-      <ContactDeveloperSheet modalRef={contactDeveloperRef} />
       {isLogged && <DeleteAccountModal modalRef={deleteAccountModalRef} />}
     </SafeAreaBox>
   )
