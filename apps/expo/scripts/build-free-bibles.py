@@ -64,20 +64,27 @@ def hash_verses(verses):
 
 def fetch(source, cache):
     path = cache / Path(source['url']).name
-    if not path.exists():
-        cache.mkdir(parents=True, exist_ok=True)
-        subprocess.run(['curl', '--fail', '--silent', '--show-error', '--location', '--max-time', '120',
-                        '-o', str(path), source['url']], check=True)
-    data = path.read_bytes()
+    if path.exists():
+        data = path.read_bytes()
+        if sha256(data) != source['sha256']:
+            raise SystemExit(f'Cached source does not match its pin, delete it and rerun: {path}')
+        return data
+    cache.mkdir(parents=True, exist_ok=True)
+    partial = path.with_name(path.name + '.part')
+    subprocess.run(['curl', '--fail', '--silent', '--show-error', '--location', '--max-time', '120',
+                    '-o', str(partial), source['url']], check=True)
+    data = partial.read_bytes()
     if sha256(data) != source['sha256']:
+        partial.unlink()
         raise SystemExit(f"Source changed, review and re-pin: {source['url']} is {sha256(data)}")
+    partial.rename(path)
     return data
 
 
 def read_ebible_vpl(archive, member):
     text = zipfile.ZipFile(io.BytesIO(archive)).read(member).decode('utf-8')
-    if text.startswith('﻿'):
-        raise SystemExit(f'{member}: unexpected byte order mark')
+    if text.startswith('\ufeff') or '\r' in text:
+        raise SystemExit(f'{member}: unexpected byte order mark or carriage return')
     verses = {}
     count = 0
     book_ids = {code: canonical_book_id(n) for n, code in enumerate(EBIBLE_VPL_BOOKS, 1)}
