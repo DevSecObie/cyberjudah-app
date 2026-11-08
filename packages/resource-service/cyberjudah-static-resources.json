@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "catalogSource": "packages/resource-catalog/src/mobile-resource-catalog.json",
+  "freeBibleSources": "apps/expo/scripts/data/free-bible-sources.json",
+  "resources": [
+    {
+      "resourceId": "database:cyberjudah:en",
+      "sourcePath": "apps/expo/public/offline-artifacts/commentaries/commentary-cyberjudah-en.sqlite.zip",
+      "rights": {
+        "licence": "Owner-authorized distribution in CyberJudah app",
+        "source": "https://github.com/DevSecObie/cyberjudah/tree/7ca7efdd5c6b396c0a43b6348aa194e565e9f4a9/docs/study",
+        "credit": "CyberJudah study notes; original source links and attribution preserved."
+      }
+    },
+    {
+      "resourceId": "bible:KJV",
+      "sourcePath": "apps/expo/public/offline/bibles/bible-kjv.json.zip",
+      "rights": {
+        "licence": "Public domain (Crown rights in the United Kingdom)",
+        "source": "https://github.com/DevSecObie/cyberjudah/tree/34a20526bfeaa4de3ded554aea77e217d6d15737/data/bible",
+        "credit": "King James Version with the Apocrypha"
+      },
+      "approvalEvidence": "Coordinator t1r 2026-11-07: re-hosting of owner's already-published content; full input-commit binding is a tracked follow-up (owned-archive-provenance-2026-11-07)"
+    },
+    {
+      "resourceId": "bible-strong:KJV",
+      "sourcePath": "apps/expo/public/offline/bibles/bible-kjv-strong.sqlite.zip",
+      "rights": {
+        "licence": "Public domain",
+        "source": "https://github.com/DevSecObie/cyberjudah/blob/34a20526bfeaa4de3ded554aea77e217d6d15737/data/strongs/sources.json",
+        "credit": "James Strong, Exhaustive Concordance of the Bible (1890); tagged text from github.com/kaiserlik/kjv"
+      },
+      "approvalEvidence": "Coordinator t1r 2026-11-07: re-hosting of owner's already-published content; full input-commit binding is a tracked follow-up (owned-archive-provenance-2026-11-07)"
+    },
+    {
+      "resourceId": "bible:BHG",
+      "sourcePath": "apps/expo/public/offline/bibles/bible-step.json.zip",
+      "rights": {
+        "licence": "Text public domain; Hebrew word tags CC BY 4.0",
+        "source": "https://github.com/openscriptures/morphhb",
+        "credit": "Westminster Hebrew Institute; word tags by the Open Scriptures Hebrew Bible Project; F. H. A. Scrivener / Byzantine Text project; parsed Textus Receptus by Maurice A. Robinson"
+      },
+      "approvalEvidence": "Coordinator t1r 2026-11-07: re-hosting of owner's already-published content; full input-commit binding is a tracked follow-up (owned-archive-provenance-2026-11-07)"
+    },
+    {
+      "resourceId": "bible-interlinear:BHG:en",
+      "sourcePath": "apps/expo/public/offline/bibles/bible-step-interlinear-en.sqlite.zip",
+      "rights": {
+        "licence": "Text public domain; Hebrew word tags CC BY 4.0; Strong dictionary-derived fields CC BY-SA (version unspecified in existing record)",
+        "source": "https://github.com/openscriptures/morphhb",
+        "credit": "Westminster Hebrew Institute; Open Scriptures Hebrew Bible Project; F. H. A. Scrivener / Byzantine Text project; Maurice A. Robinson; James Strong / Open Scriptures"
+      },
+      "approvalEvidence": "Coordinator t1r 2026-11-07: re-hosting of owner's already-published content; full input-commit binding is a tracked follow-up (owned-archive-provenance-2026-11-07)"
+    },
+    {
+      "resourceId": "strong-lexicon:simple-en",
+      "sourcePath": "apps/expo/public/offline/databases/strong_lexicon.simple-en.sqlite.zip",
+      "rights": {
+        "licence": "CC BY-SA (Open Scriptures; version not stated in the existing record)",
+        "source": "https://github.com/openscriptures/strongs",
+        "credit": "James Strong; JSON edition by Open Scriptures"
+      },
+      "approvalEvidence": "Coordinator t1r 2026-11-07: re-hosting of owner's already-published content; full input-commit binding is a tracked follow-up (owned-archive-provenance-2026-11-07)"
+    },
+    {
+      "resourceId": "strong-lexicon:resources",
+      "sourcePath": "apps/expo/public/offline/databases/strong_lexicon.resources.sqlite.zip",
+      "rights": {
+        "licence": "Text public domain; transcription CC BY 4.0",
+        "source": "https://github.com/openscriptures/HebrewLexicon",
+        "credit": "Francis Brown, S. R. Driver and Charles A. Briggs; transcription by the Open Scriptures Hebrew Bible Project"
+      },
+      "approvalEvidence": "Coordinator t1r 2026-11-07: re-hosting of owner's already-published content; full input-commit binding is a tracked follow-up (owned-archive-provenance-2026-11-07)"
+    },
+    {
+      "resourceId": "strong-lexicon:entities",
+      "sourcePath": "apps/expo/public/offline/databases/bible_entities.production.sqlite.zip",
+      "rights": {
+        "licence": null,
+        "source": "https://github.com/DevSecObie/cyberjudah/tree/49681d58dc69258316879def10c57657827f9190/data/people-kjv",
+        "credit": "CyberJudah KJV people, places and other names (data/*-kjv)",
+        "ownerAuthorisation": "Coordinator t1r 2026-11-07: re-hosting of owner's already-published content; full input-commit binding is a tracked follow-up (owned-archive-provenance-2026-11-07)"
+      },
+      "approvalEvidence": "Coordinator t1r 2026-11-07: re-hosting of owner's already-published content; full input-commit binding is a tracked follow-up (owned-archive-provenance-2026-11-07)"
+    },
+    {
+      "resourceId": "database:TIMELINE:en",
+      "sourcePath": "apps/expo/public/offline/databases/en/bible-timeline-events.json.zip",
+      "rights": {
+        "licence": "GNU GPL v3 for Bible Strong Timeline layout/events; other source rights retained individually",
+        "source": "https://github.com/DevSecObie/cyberjudah-telegram",
+        "credit": "Bible Strong; CyberJudah; preserve the existing per-period sources and image credits"
+      },
+      "approvalEvidence": "Coordinator t1r 2026-11-07: re-hosting of owner's already-published content; full input-commit binding is a tracked follow-up (owned-archive-provenance-2026-11-07)"
+    },
+    {
+      "resourceId": "database:TIMELINE:fr",
+      "sourcePath": "apps/expo/public/offline/databases/bible-timeline-events.json.zip",
+      "rights": {
+        "licence": "GNU GPL v3 for Bible Strong Timeline layout/events; other source rights retained individually",
+        "source": "https://github.com/DevSecObie/cyberjudah-telegram",
+        "credit": "Bible Strong; CyberJudah; preserve the existing per-period sources and image credits"
+      },
+      "approvalEvidence": "Coordinator t1r 2026-11-07: re-hosting of owner's already-published content; full input-commit binding is a tracked follow-up (owned-archive-provenance-2026-11-07)"
+    },
+    {
+      "resourceId": "database:JEWISH_ENCYCLOPEDIA:en",
+      "sourcePath": "apps/expo/public/offline/dictionaries/dictionary-jewish-encyclopedia-en.sqlite.zip",
+      "rights": {
+        "licence": "Public domain (existing source-book metadata claim)",
+        "source": "https://github.com/DevSecObie/cyberjudah/blob/717ad8a8bb84a9358609fe7938f8127f32fcd8f2/data/library/jewish-encyclopedia/book.json",
+        "credit": "The Jewish Encyclopedia (1901-1906), Isidore Singer, editor; Funk and Wagnalls Company; CyberJudah scans"
+      },
+      "approvalEvidence": "Coordinator t1r 2026-11-07: re-hosting of owner's already-published content; full input-commit binding is a tracked follow-up (owned-archive-provenance-2026-11-07)"
+    }
+  ],
+  "cdn": [],
+  "approvedResourceIds": [
+    "bible:FMAR",
+    "bible:TR1624",
+    "bible:TR1894",
+    "database:cyberjudah:en",
+    "bible:WEB1833",
+    "bible:KJV",
+    "bible-strong:KJV",
+    "bible:BHG",
+    "bible-interlinear:BHG:en",
+    "strong-lexicon:simple-en",
+    "strong-lexicon:resources",
+    "strong-lexicon:entities",
+    "database:JEWISH_ENCYCLOPEDIA:en"
+  ],
+  "archivePins": {
+    "bible:FMAR": {
+      "sha256": "fe8b199d8f4df58f4fda81bab3b12c2bfe176069cf50decd8fd9735fea10f9d9",
+      "bytes": 1549200
+    },
+    "bible:TR1624": {
+      "sha256": "be66129fb8662f612a0333977880be7e53c607367480d619254273b0c519f215",
+      "bytes": 381848
+    },
+    "bible:TR1894": {
+      "sha256": "1e0726a6e55fe1e8a6cf47caad09545cf4dacca91d02d17a8044fdf3c092f18e",
+      "bytes": 381769
+    },
+    "database:cyberjudah:en": {
+      "sha256": "240416f02b0cc77db0913bde230e16630f43d36e3357450d6323719a4dd42a26",
+      "bytes": 10815799
+    },
+    "bible:WEB1833": {
+      "sha256": "074912f2290b29706815e79c0b1f3c0e84d7bd886e4cfb8b6726e4e6754c819d",
+      "bytes": 1410901
+    },
+    "bible:KJV": {
+      "sha256": "aa19436ac65981855b95cbfa8cd415f727b3b78a90bb1ee15f955c61d3d1964d",
+      "bytes": 1662054
+    },
+    "bible-strong:KJV": {
+      "sha256": "1d206b604ad900962d52ea06915d76e391fc0af6efc9676cf2226160bbf9ce68",
+      "bytes": 12575234
+    },
+    "bible:BHG": {
+      "sha256": "ab91f7c23a3e91732823ab2abf36205fcd3b90567f45f61d37f0acd19d5515bd",
+      "bytes": 1851335
+    },
+    "bible-interlinear:BHG:en": {
+      "sha256": "c6f5c2eec37cbc721cbe9cf461173d88ed63c57ad5b7773b953cb4cec1e68e38",
+      "bytes": 14038749
+    },
+    "strong-lexicon:simple-en": {
+      "sha256": "459c5ddab56ed876d0ac41c62f588c0fa810fec7bf767ce8207bac2b75a4ebc4",
+      "bytes": 1329091
+    },
+    "strong-lexicon:resources": {
+      "sha256": "9f40acb68b3035a1e0315c8b09770d65e462eb2d86d24b60c7268e6486c50957",
+      "bytes": 593546
+    },
+    "strong-lexicon:entities": {
+      "sha256": "a5814fa69aa65d8ab59d069a3c416ee74e73917ef225b1e90407c69fc4787124",
+      "bytes": 853648
+    },
+    "database:TIMELINE:en": {
+      "sha256": "b2fdfe01f8a6db7be9dba589ce9e402e3a8621b5969d05ebcbc2007c830231cf",
+      "bytes": 527700
+    },
+    "database:TIMELINE:fr": {
+      "sha256": "b2fdfe01f8a6db7be9dba589ce9e402e3a8621b5969d05ebcbc2007c830231cf",
+      "bytes": 527700
+    },
+    "database:JEWISH_ENCYCLOPEDIA:en": {
+      "sha256": "0c0e7c5be1211a9ae60321452625d2dc7ce8a035730884323300c0b92bca37ab",
+      "bytes": 22612534
+    }
+  },
+  "heldResources": [
+    {
+      "resourceId": "database:TIMELINE:en",
+      "reason": "ZIP member mode0600; producer must set regular-file100644 with identical inner SHA256",
+      "approvedOriginalArchive": {
+        "sha256": "b2fdfe01f8a6db7be9dba589ce9e402e3a8621b5969d05ebcbc2007c830231cf",
+        "bytes": 527700
+      }
+    },
+    {
+      "resourceId": "database:TIMELINE:fr",
+      "reason": "ZIP member mode0600; producer must set regular-file100644 with identical inner SHA256",
+      "approvedOriginalArchive": {
+        "sha256": "b2fdfe01f8a6db7be9dba589ce9e402e3a8621b5969d05ebcbc2007c830231cf",
+        "bytes": 527700
+      }
+    }
+  ]
+}
