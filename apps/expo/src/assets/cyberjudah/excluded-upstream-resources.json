@@ -95,5 +95,13 @@
   "database:wesley:en",
   "strong-lexicon:core",
   "strong-lexicon:simple-fr",
-  "study-links"
+  "study-links",
+  "bible:THAIKJV",
+  "bible:SLOKJV",
+  "bible:BLIVRETR",
+  "bible:SVD",
+  "bible:DUTSVVA",
+  "bible:FINBIBLIA",
+  "bible:FMAR",
+  "database:TIMELINE:fr"
 ]
