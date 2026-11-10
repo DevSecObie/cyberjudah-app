@@ -11,8 +11,7 @@ export default function ActionsLayout({ children, width }: ActionsLayoutProps) {
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      // Centred when every action fits (a wide iPad sheet); scrolls from the left edge otherwise.
-      contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 16 }}
+      contentContainerStyle={{ paddingHorizontal: 16 }}
       style={{ width }}
     >
       {children}

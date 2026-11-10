@@ -1,36 +1,12 @@
 import { useTranslation } from 'react-i18next'
-import { getUniverseColor, resolveUniverseColors } from '~themes/universeColors'
-import { useTheme } from '~themes/ThemeProvider'
-import { personalContentIcons } from '~common/personalContent'
 import ContextualPanel from '~common/ContextualPanel'
 import { useEntityTagsScreen } from '~common/ContextualPanel/useEntityTagsScreen'
 import Box from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import { FeatherIcon } from '~common/ui/Icon'
-import { useSelectionMenu } from '../selectionMenuContext'
-import { formatShortcut } from '~features/keyboard-shortcuts/keymap'
-import ActionItem from './ActionItem'
 import type { VerseTagsActionProps } from './VerseTagsAction'
 
-export default function VerseTagsAction(props: VerseTagsActionProps) {
-  const menu = useSelectionMenu()
-  const { t } = useTranslation()
-  const theme = useTheme()
-  if (menu)
-    return (
-      <ActionItem
-        name={personalContentIcons.tags}
-        tintColor={resolveUniverseColors(theme.colors, 'tags').foreground}
-        label={t('Tag')}
-        onPress={() => menu.openScreen('tags')}
-        shortcut={formatShortcut('tags')}
-        nested
-      />
-    )
-  return <VerseTagsPanel {...props} />
-}
-
-function VerseTagsPanel({ selectedVerses, reference }: VerseTagsActionProps) {
+export default function VerseTagsAction({ selectedVerses, reference }: VerseTagsActionProps) {
   const { t } = useTranslation()
   const tags = useEntityTagsScreen('highlights', selectedVerses)
   return (
@@ -42,11 +18,7 @@ function VerseTagsPanel({ selectedVerses, reference }: VerseTagsActionProps) {
       trigger={
         <Box className="items-center py-2 gap-2 w-[70px]">
           <Box className="items-center justify-center bg-light-grey rounded-[16px] w-[48px] h-[48px]">
-            <FeatherIcon
-              name={personalContentIcons.tags}
-              size={20}
-              color={getUniverseColor('tags')}
-            />
+            <FeatherIcon name="tag" size={20} color="primary" />
           </Box>
           <Text className="text-[10px]">{t('Tag')}</Text>
         </Box>

@@ -1,15 +1,11 @@
 import AddToStudyAction from '~features/studies/AddToStudyAction'
 import { useTranslation } from 'react-i18next'
-import { personalContentIcons } from '~common/personalContent'
-import { useTheme } from '~themes/ThemeProvider'
-import { resolveUniverseColors } from '~themes/universeColors'
 import ActionsLayout from './ActionsLayout'
 import ActionItem from './ActionItem'
 import VerseTagsAction from './VerseTagsAction'
 import VerseBookmarkAction from './VerseBookmarkAction'
 import type { VerseIds } from '~common/types'
 import type { VerseActiveStates } from '../types'
-import { formatShortcut } from '~features/keyboard-shortcuts/keymap'
 
 interface AnnotateTabProps {
   selectedVerses: VerseIds
@@ -23,6 +19,8 @@ interface AnnotateTabProps {
   onAddToStudy: () => void
   onSelectStudy?: (studyId: string, format: 'inline' | 'block') => Promise<void>
   reference?: string
+  onPinVerses: () => void
+  onEnterAnnotationMode?: () => void
   moreThanOneVerseSelected: boolean
   activeStates: VerseActiveStates
 }
@@ -39,36 +37,20 @@ const AnnotateTab = ({
   onAddToStudy,
   onSelectStudy,
   reference,
+  onPinVerses,
+  onEnterAnnotationMode,
   moreThanOneVerseSelected,
   activeStates,
 }: AnnotateTabProps) => {
   const { t } = useTranslation()
-  const theme = useTheme()
-  const { hasBookmark } = activeStates
+  const { hasBookmark, hasFocus } = activeStates
 
   return (
     <ActionsLayout width={screenWidth}>
-      <ActionItem
-        name="file-plus"
-        tintColor={resolveUniverseColors(theme.colors, 'notes').foreground}
-        label={t('Note')}
-        onPress={onCreateNoteClick}
-        shortcut={formatShortcut('note')}
-      />
+      <ActionItem name="file-plus" label={t('Note')} onPress={onCreateNoteClick} />
       <VerseTagsAction selectedVerses={selectedVerses} reference={reference} onPress={addTag} />
-      <ActionItem
-        name={personalContentIcons.links}
-        tintColor={resolveUniverseColors(theme.colors, 'links').foreground}
-        label={t('Lien')}
-        onPress={onCreateLinkClick}
-        shortcut={formatShortcut('link')}
-      />
-      <ActionItem
-        name="git-merge"
-        label={t('Relation')}
-        onPress={onCreateStudyRelationClick}
-        shortcut={formatShortcut('relation')}
-      />
+      <ActionItem name="link" label={t('Lien')} onPress={onCreateLinkClick} />
+      <ActionItem name="git-merge" label={t('Relation')} onPress={onCreateStudyRelationClick} />
       <VerseBookmarkAction
         selectedVerses={selectedVerses}
         version={version}
@@ -77,6 +59,15 @@ const AnnotateTab = ({
         isActive={hasBookmark}
       />
       <AddToStudyAction onPress={onAddToStudy} onSelect={onSelectStudy} reference={reference} />
+      <ActionItem name="crosshair" label={t('Focus')} onPress={onPinVerses} isActive={hasFocus} />
+      {onEnterAnnotationMode && (
+        <ActionItem
+          name="edit-2"
+          label={t('Mode libre')}
+          onPress={onEnterAnnotationMode}
+          variant="emphasized"
+        />
+      )}
     </ActionsLayout>
   )
 }
