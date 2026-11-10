@@ -13,6 +13,12 @@ on:
         required: true
         type: choice
         options: [preview, staging, production]
+      action:
+        description: Publish this commit, or send the channel back to the JavaScript built into the app
+        required: false
+        default: publish
+        type: choice
+        options: [publish, rollback-to-embedded]
       message:
         description: What the update changes (defaults to the last commit)
         required: false
@@ -48,6 +54,11 @@ jobs:
           OTA_PUBLISH_TOKEN: ${{ secrets.OTA_PUBLISH_TOKEN }}
           UPDATE_MESSAGE: ${{ inputs.message }}
           CHANNEL: ${{ inputs.channel }}
+          ACTION: ${{ inputs.action }}
         run: |
+          if [ "$ACTION" = rollback-to-embedded ]; then
+            yarn workspace @bible-strong/expo "update:cyberjudah:rollback-to-embedded:$CHANNEL"
+            exit 0
+          fi
           message="${UPDATE_MESSAGE:-$(git log -1 --pretty=%s)} (${GITHUB_SHA::7})"
           yarn workspace @bible-strong/expo "update:cyberjudah:$CHANNEL" --message "$message"
