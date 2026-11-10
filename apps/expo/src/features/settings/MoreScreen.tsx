@@ -1,4 +1,5 @@
-import { DONATION_URL, SOCIAL_URL, SUPPORT_ISSUES_URL } from '~helpers/serviceConnections'
+import ContactDeveloperSheet from './ContactDeveloperSheet'
+import { DONATION_URL, SOCIAL_URL } from '~helpers/serviceConnections'
 import { goBackOrHome } from '~navigation/goBackOrHome'
 import { resolveUniverseColors } from '~themes/universeColors'
 import { useResponsiveWorkspace } from '~features/app-switcher/utils/useResponsiveWorkspace'
@@ -91,6 +92,7 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
   const { isLogged, user, logout } = useLogin()
   const theme = useTheme()
   const deleteAccountModalRef = useRef<SheetRef>(null)
+  const contactDeveloperRef = useRef<SheetRef>(null)
   const [isCheckingUpdate, setIsCheckingUpdate] = useState(false)
   const openChangelogModal = useSetAtom(changelogModalAtom)
   const { hasUpdates } = useAvailableUpdatesIndicator()
@@ -382,7 +384,7 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
             <Text className="flex-[1] text-[15px]">{t('Foire aux questions')}</Text>
             <FeatherIcon name="chevron-right" size={20} color="grey" />
           </CardLinkItem>
-          <CardLinkItem href={SUPPORT_ISSUES_URL} isLast>
+          <CardLinkItem onPress={() => contactDeveloperRef.current?.present()} isLast>
             <IconCircle bg="rgba(147, 51, 234, 0.1)">
               <FeatherIcon name="send" size={20} color="quint" />
             </IconCircle>
@@ -401,13 +403,15 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
               {t('settings.community')}
             </Text>
           </SectionCardHeader>
-          <CardLinkItem href={SOCIAL_URL} disabled={!SOCIAL_URL}>
-            <IconCircle bg="rgba(59, 89, 152, 0.1)">
-              <FeatherIcon name="facebook" size={20} color="primary" />
-            </IconCircle>
-            <Text className="flex-[1] text-[15px]">{t('Nous suivre sur facebook')}</Text>
-            <FeatherIcon name="chevron-right" size={20} color="grey" />
-          </CardLinkItem>
+          {SOCIAL_URL && (
+            <CardLinkItem href={SOCIAL_URL}>
+              <IconCircle bg="rgba(59, 89, 152, 0.1)">
+                <FeatherIcon name="facebook" size={20} color="primary" />
+              </IconCircle>
+              <Text className="flex-[1] text-[15px]">{t('Nous suivre sur facebook')}</Text>
+              <FeatherIcon name="chevron-right" size={20} color="grey" />
+            </CardLinkItem>
+          )}
           <CardLinkItem
             href={
               Platform.OS === 'ios'
@@ -429,11 +433,7 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
             <FeatherIcon name="chevron-right" size={20} color="grey" />
           </CardLinkItem>
           {DONATION_URL && !appleIsReviewing && (
-            <CardLinkItem
-              href={
-                DONATION_URL
-              }
-            >
+            <CardLinkItem href={DONATION_URL}>
               <IconCircle bg="rgba(236, 72, 153, 0.1)">
                 <FeatherIcon name="heart" size={20} color="color2" />
               </IconCircle>
@@ -453,17 +453,13 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
         <Box className="overflow-hidden border-continuous px-[20px] py-[8px]">
           <LinkItem
             style={{ paddingVertical: 10, paddingHorizontal: 0 }}
-            href={
-              'https://cyberjudah.io/privacy'
-            }
+            href={'https://cyberjudah.io/privacy'}
           >
             <Text className="text-[14px] text-grey">{t('Politique de confidentialité')}</Text>
           </LinkItem>
           <LinkItem
             style={{ paddingVertical: 10, paddingHorizontal: 0 }}
-            href={
-              'https://cyberjudah.io/terms'
-            }
+            href={'https://cyberjudah.io/terms'}
           >
             <Text className="text-[14px] text-grey">{t("Conditions d'utilisation")}</Text>
           </LinkItem>
@@ -510,6 +506,7 @@ export const More = ({ closeMenu, inWorkspace = false }: MoreProps) => {
 
         <Infos />
       </ScrollView>
+      <ContactDeveloperSheet modalRef={contactDeveloperRef} />
       {isLogged && <DeleteAccountModal modalRef={deleteAccountModalRef} />}
     </SafeAreaBox>
   )

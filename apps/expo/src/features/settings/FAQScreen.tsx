@@ -1,4 +1,4 @@
-import { SUPPORT_ISSUES_URL } from '~helpers/serviceConnections'
+import { DONATION_URL, SUPPORT_ISSUES_URL } from '~helpers/serviceConnections'
 import { resolveFontFamily } from '~themes/styleValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import { colorWithOpacity } from '~themes/colorValues'
@@ -65,7 +65,7 @@ const FAQScreen = () => {
       id: 'support',
       question: t('faq.supportQuestion'),
       answer: t('faq.supportAnswer'),
-      link: undefined,
+      link: DONATION_URL ? { href: DONATION_URL, label: t('faq.donate') } : undefined,
     },
     { id: 'author', question: t('faq.authorQuestion'), answer: t('faq.authorAnswer') },
   ]

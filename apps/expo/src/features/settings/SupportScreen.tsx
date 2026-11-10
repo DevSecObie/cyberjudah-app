@@ -86,23 +86,33 @@ const LoginScreen = () => {
             développée sur mon temps libre et est totalement gratuite. Dieu m'a donné un don, et
             c'est un plaisir pour moi de l'utiliser à sa gloire.
           </Paragraph>
-          <Paragraph className="mb-[20px]" scaleLineHeight={-1}>
-            Si vous souhaitez me soutenir, vous pouvez le faire de deux façons. Soit par{' '}
-            <Paragraph
-              className="text-primary font-bold"
-              onPress={() => { if (TIPEEE_URL) void Linking.openURL(TIPEEE_URL) }}
-            >
-              Tipeee,
-            </Paragraph>{' '}
-            ou par{' '}
-            <Paragraph
-              className="text-primary font-bold"
-              onPress={() => { if (PAYPAL_URL) void Linking.openURL(PAYPAL_URL) }}
-            >
-              Paypal
+          {(TIPEEE_URL || PAYPAL_URL) && (
+            <Paragraph className="mb-[20px]" scaleLineHeight={-1}>
+              Si vous souhaitez me soutenir, vous pouvez le faire de deux façons. Soit par{' '}
+              {TIPEEE_URL && (
+                <Paragraph
+                  className="text-primary font-bold"
+                  onPress={() => {
+                    if (TIPEEE_URL) void Linking.openURL(TIPEEE_URL)
+                  }}
+                >
+                  Tipeee,
+                </Paragraph>
+              )}{' '}
+              ou par{' '}
+              {PAYPAL_URL && (
+                <Paragraph
+                  className="text-primary font-bold"
+                  onPress={() => {
+                    if (PAYPAL_URL) void Linking.openURL(PAYPAL_URL)
+                  }}
+                >
+                  Paypal
+                </Paragraph>
+              )}
+              .
             </Paragraph>
-            .
-          </Paragraph>
+          )}
           <Paragraph className="mb-[20px]" scaleLineHeight={-1}>
             Tipeee vous permet de soutenir en une fois ou mensuellement. Lorsque vous soutenez
             quelqu'un mensuellement, vous pouvez donner 1€ par mois par exemple.
@@ -119,14 +129,18 @@ const LoginScreen = () => {
           <Paragraph className="mb-[20px]" scaleLineHeight={-1}>
             Merci de m'avoir lu et bonne étude !
           </Paragraph>
-          <LinkItem href={TIPEEE_URL} disabled={!TIPEEE_URL}>
-            <Text className="font-bold text-[16px]">Lien Tipeee</Text>
-            <StyledIcon name="arrow-right" size={25} />
-          </LinkItem>
-          <LinkItem href={PAYPAL_URL} disabled={!PAYPAL_URL}>
-            <Text className="font-bold text-[16px]">Lien paypal</Text>
-            <StyledIcon name="arrow-right" size={25} />
-          </LinkItem>
+          {TIPEEE_URL && (
+            <LinkItem href={TIPEEE_URL}>
+              <Text className="font-bold text-[16px]">Lien Tipeee</Text>
+              <StyledIcon name="arrow-right" size={25} />
+            </LinkItem>
+          )}
+          {PAYPAL_URL && (
+            <LinkItem href={PAYPAL_URL}>
+              <Text className="font-bold text-[16px]">Lien paypal</Text>
+              <StyledIcon name="arrow-right" size={25} />
+            </LinkItem>
+          )}
         </Box>
       </ScrollView>
     </Container>

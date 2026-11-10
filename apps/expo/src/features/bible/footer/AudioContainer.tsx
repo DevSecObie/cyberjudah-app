@@ -89,14 +89,17 @@ const AudioContainer = ({ children, onReduce, audioMode, onChangeMode }: AudioCo
             </Chip>
           </>
         )}
-        <Chip
-          disabled={!AUDIBIBLE_REFERRAL_URL}
-          onPress={() => { if (AUDIBIBLE_REFERRAL_URL) void Linking.openURL(AUDIBIBLE_REFERRAL_URL) }}
-          accessibilityRole="link"
-          accessibilityLabel={t('accessibility.openAudibible')}
-        >
-          Audibible
-        </Chip>
+        {AUDIBIBLE_REFERRAL_URL && (
+          <Chip
+            onPress={() => {
+              if (AUDIBIBLE_REFERRAL_URL) void Linking.openURL(AUDIBIBLE_REFERRAL_URL)
+            }}
+            accessibilityRole="link"
+            accessibilityLabel={t('accessibility.openAudibible')}
+          >
+            Audibible
+          </Chip>
+        )}
       </HStack>
       <Box className="overflow-hidden border-continuous items-center justify-center mb-[10px]">
         <TouchableBox

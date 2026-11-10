@@ -1,5 +1,4 @@
-// No owned mailbox is configured. Active contact actions open the owned issue tracker.
-export const SUPPORT_EMAIL = ''
+export const SUPPORT_EMAIL = 'privacy@cyberjudah.io'
 
 export type SupportDiagnostics = Record<string, string | number | boolean | null | undefined>
 

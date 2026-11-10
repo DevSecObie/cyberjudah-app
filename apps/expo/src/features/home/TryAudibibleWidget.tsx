@@ -27,11 +27,12 @@ const TryAudibibleWidget = () => {
   const stylingTheme = useStylingTheme()
 
   const { t } = useTranslation()
+  if (!AUDIBIBLE_REFERRAL_URL) return null
   return (
     <Box className="overflow-hidden border-continuous bg-light-grey px-[20px] pb-[40px]">
       <LinkBox
         className="p-[20px] h-[100px] relative items-center bg-primary flex-row rounded-[20px] overflow-visible"
-        href={AUDIBIBLE_REFERRAL_URL} disabled={!AUDIBIBLE_REFERRAL_URL}
+        href={AUDIBIBLE_REFERRAL_URL}
         style={{
           shadowColor: 'rgb(89,131,240)',
           shadowOffset: { width: 0, height: 2 },

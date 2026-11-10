@@ -239,41 +239,43 @@ export default function DesktopHome() {
               <Box className="bg-reverse rounded-[20px] p-[16px] shadow-[0_2px_7px_rgba(89,131,240,0.1)]">
                 <PlanHome compact />
               </Box>
-              <LinkBox
-                href={AUDIBIBLE_REFERRAL_URL} disabled={!AUDIBIBLE_REFERRAL_URL}
-                className="rounded-[20px] overflow-hidden p-[24px] min-h-[200px]"
-                style={{ backgroundColor: '#122B4B' }}
-              >
-                <HStack className="gap-[12px] items-center z-10">
-                  <Box
-                    className="w-[54px] h-[54px] rounded-full items-center justify-center"
-                    style={{ backgroundColor: '#24447A' }}
-                  >
-                    <FeatherIcon name="headphones" size={30} color="white" />
-                  </Box>
-                  <Box className="flex-1 gap-[7px]">
-                    <Text className="text-[white] font-bold text-[19px]">{t('audibible.try')}</Text>
-                    <Text className="text-[white] text-[13px]">{t('audibible.description')}</Text>
-                  </Box>
-                </HStack>
-                <Image
-                  source={illustrations.audio}
-                  contentFit="contain"
-                  contentPosition="bottom right"
-                  style={{ position: 'absolute', right: 0, bottom: 0, width: 240, height: 160 }}
-                  accessible={false}
-                />
-              </LinkBox>
+              {AUDIBIBLE_REFERRAL_URL && (
+                <LinkBox
+                  href={AUDIBIBLE_REFERRAL_URL}
+                  className="rounded-[20px] overflow-hidden p-[24px] min-h-[200px]"
+                  style={{ backgroundColor: '#122B4B' }}
+                >
+                  <HStack className="gap-[12px] items-center z-10">
+                    <Box
+                      className="w-[54px] h-[54px] rounded-full items-center justify-center"
+                      style={{ backgroundColor: '#24447A' }}
+                    >
+                      <FeatherIcon name="headphones" size={30} color="white" />
+                    </Box>
+                    <Box className="flex-1 gap-[7px]">
+                      <Text className="text-[white] font-bold text-[19px]">
+                        {t('audibible.try')}
+                      </Text>
+                      <Text className="text-[white] text-[13px]">{t('audibible.description')}</Text>
+                    </Box>
+                  </HStack>
+                  <Image
+                    source={illustrations.audio}
+                    contentFit="contain"
+                    contentPosition="bottom right"
+                    style={{ position: 'absolute', right: 0, bottom: 0, width: 240, height: 160 }}
+                    accessible={false}
+                  />
+                </LinkBox>
+              )}
             </div>
           </div>
           <HStack className="items-center flex-wrap gap-[24px] border-t border-border pt-[16px]">
-            <ResourceLink href={DONATION_URL} disabled={!DONATION_URL}>
-              {t('home.desktop.support')}
-            </ResourceLink>
+            {DONATION_URL && (
+              <ResourceLink href={DONATION_URL}>{t('home.desktop.support')}</ResourceLink>
+            )}
             <ResourceLink route="FAQ">{t('FAQ')}</ResourceLink>
-            <ResourceLink href={SOCIAL_URL} disabled={!SOCIAL_URL}>
-              {t('Suivre')}
-            </ResourceLink>
+            {SOCIAL_URL && <ResourceLink href={SOCIAL_URL}>{t('Suivre')}</ResourceLink>}
             <ResourceLink href="https://cyberjudah.io">
               {t('home.desktop.downloadApp')}
             </ResourceLink>

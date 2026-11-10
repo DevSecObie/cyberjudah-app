@@ -29,11 +29,12 @@ const DonationWidget = () => {
 
   const lang = useLanguage()
   const { t } = useTranslation()
+  if (!DONATION_URL) return null
   return (
     <Box className="overflow-hidden border-continuous bg-light-grey px-[20px] pt-[20px] pb-[20px]">
       <LinkBox
         className="p-[20px] h-[130px] relative rounded-[30px] bg-primary items-center justify-center overflow-visible"
-        href={DONATION_URL} disabled={!DONATION_URL}
+        href={DONATION_URL}
         style={{
           shadowColor: 'rgb(89,131,240)',
           shadowOffset: { width: 0, height: 2 },

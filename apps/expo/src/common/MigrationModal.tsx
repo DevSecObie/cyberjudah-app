@@ -1,4 +1,3 @@
-import { SUPPORT_ISSUES_URL } from '~helpers/serviceConnections'
 import { useAtomValue } from 'jotai'
 import type { ComponentPropsWithRef as UIComponentProps } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -93,6 +92,8 @@ const Backdrop = (
   )
 }
 
+const SUPPORT_EMAIL = 'privacy@cyberjudah.io'
+
 const MigrationModal = () => {
   const { t } = useTranslation()
   const progress = useAtomValue(migrationProgressAtom)
@@ -100,7 +101,16 @@ const MigrationModal = () => {
   const isBibleMigration = progress.type === 'bible'
 
   const handleContactSupport = () => {
-    void Linking.openURL(SUPPORT_ISSUES_URL)
+    const subject = encodeURIComponent('CyberJudah - Migration Issue')
+    const failedLabels = isBibleMigration
+      ? progress.failedCollections.join(', ')
+      : progress.failedCollections.map(c => getCollectionLabel(c as SubcollectionName)).join(', ')
+    const body = encodeURIComponent(
+      `Bonjour,\n\nJ'ai rencontré un problème lors de la migration de mes données.\n\nCollections échouées: ${
+        failedLabels || 'N/A'
+      }\nErreur: ${progress.error || 'N/A'}\n\nMerci de votre aide.`
+    )
+    Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`)
   }
 
   if (!progress.isActive) {

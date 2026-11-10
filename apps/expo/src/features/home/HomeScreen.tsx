@@ -126,24 +126,29 @@ export const Home = ({ closeHome, inWorkspace = false }: HomeProps) => {
               { borderTopLeftRadius: 30, borderTopRightRadius: 30 },
             ]}
           >
-            <Box className="overflow-hidden border-continuous flex-[1]">
-              <Button
-                color="#3b5998"
-                onPress={() => { if (SOCIAL_URL) void Linking.openURL(SOCIAL_URL) }}
-                disabled={!SOCIAL_URL}
-                leftIcon={
-                  <FeatherIcon
-                    name="facebook"
-                    size={20}
-                    color="white"
-                    style={{ marginRight: 10 }}
-                  />
-                }
-              >
-                {t('Suivre')}
-              </Button>
-            </Box>
-            <Box className="overflow-hidden border-continuous w-[20px]" />
+            {SOCIAL_URL && (
+              <>
+                <Box className="overflow-hidden border-continuous flex-[1]">
+                  <Button
+                    color="#3b5998"
+                    onPress={() => {
+                      if (SOCIAL_URL) void Linking.openURL(SOCIAL_URL)
+                    }}
+                    leftIcon={
+                      <FeatherIcon
+                        name="facebook"
+                        size={20}
+                        color="white"
+                        style={{ marginRight: 10 }}
+                      />
+                    }
+                  >
+                    {t('Suivre')}
+                  </Button>
+                </Box>
+                <Box className="overflow-hidden border-continuous w-[20px]" />
+              </>
+            )}
             <Box className="overflow-hidden border-continuous flex-[1]">
               <Button
                 color="#2ecc71"
