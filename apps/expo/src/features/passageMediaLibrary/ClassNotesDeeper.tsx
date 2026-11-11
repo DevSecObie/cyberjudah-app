@@ -1,5 +1,6 @@
 import { Feather } from '@expo/vector-icons'
 import { useQueries, useQuery } from '@tanstack/react-query'
+import { Asset } from 'expo-asset'
 import React, { type ReactNode } from 'react'
 import { Image, Pressable, StyleSheet, Text as NativeText, View } from 'react-native'
 import { useRouter } from 'expo-router'
@@ -283,7 +284,7 @@ export const useClassStudyData = (blocks: NoteBlock[], topics?: string[]) => {
     name: entity.name,
     image:
       portraitOf(entity, book, chapter) ??
-      Image.resolveAssetSource(
+      Asset.fromModule(
         getStrongEntityPlaceholderSource(
           entity.category === 'supernatural' ? 'other' : entity.category,
           entity.type,
