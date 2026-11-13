@@ -93,10 +93,15 @@
   })
   if (window.matchMedia) {
     var dark = window.matchMedia('(prefers-color-scheme: dark)')
-    if (dark.addEventListener) dark.addEventListener('change', function () { setTimeout(paint, 300) })
+    if (dark.addEventListener)
+      dark.addEventListener('change', function () {
+        setTimeout(paint, 300)
+      })
   }
   try {
-    app.onEvent('themeChanged', function () { setTimeout(paint, 300) })
+    app.onEvent('themeChanged', function () {
+      setTimeout(paint, 300)
+    })
   } catch (e) {}
   // The app draws its first screen a moment after this runs.
   route()
