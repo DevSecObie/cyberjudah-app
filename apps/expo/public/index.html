@@ -9,6 +9,30 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="CyberJudah" />
     <link rel="manifest" href="/manifest.webmanifest" />
+    <!-- Opened from the Telegram bot: Telegram's Mini App script, then public/telegram.js. They
+         load before the app so Telegram's launch data is read before the app changes the address;
+         on the open web neither loads. -->
+    <script>
+      ;(function () {
+        var kept = false
+        try {
+          kept = !!sessionStorage.getItem('__telegram__initParams')
+        } catch (e) {}
+        if (/[#&]tgWebApp(Data|Version|Platform)=/.test(location.hash) || kept) {
+          document.write(
+            '<script src="https://telegram.org/js/telegram-web-app.js?59"><\/script><script src="/telegram.js"><\/script>'
+          )
+        }
+      })()
+    </script>
+    <style>
+      /* Inside Telegram: clear of the phone's edges where Telegram reports them. */
+      html.tg #root {
+        box-sizing: border-box;
+        padding-top: var(--tg-content-safe-area-inset-top, 0px);
+        padding-bottom: var(--tg-safe-area-inset-bottom, 0px);
+      }
+    </style>
     <!-- The `react-native-web` recommended style reset: https://necolas.github.io/react-native-web/docs/setup/#root-element -->
     <style id="expo-reset">
       /* These styles make the body full-height */
