@@ -34,6 +34,7 @@ import useLanguage from '~helpers/useLanguage'
 import { useQuery } from '@tanstack/react-query'
 import { getCommentaryBibleViewRoute } from '~features/commentaries/commentaryReferenceNavigation'
 import ClassNotesList from './ClassNotesList'
+import RequestNotesCard from '~features/noteRequests/RequestNotesCard'
 import ClassNotesPdfButton from '~features/notesExport/ClassNotesPdfButton'
 import { usesCyberJudahEditorial } from '~helpers/editorialProfile'
 import { CLASS_SEEK_PREFIX, getCachedClassById, loadClassNote } from './cyberJudahClasses'
@@ -338,13 +339,10 @@ const PassageMediaPlayerScreen = () => {
                   </TouchableBox>
                 )}
               </VStack>
-            ) : cachedClass?.pending ? (
-              // Up on YouTube before its notes are written, as the Telegram app lists it.
-              <VStack className="py-[40px] px-[20px] items-center">
-                <Text className="text-grey text-center">
-                  The notes for this class are coming soon.
-                </Text>
-              </VStack>
+            ) : cachedClass?.pending || (!workId && videoId) ? (
+              // Up on YouTube, or found in Said in Class, before its notes are written: ask for
+              // them, as in the Telegram app.
+              <RequestNotesCard video={videoId} title={item.title} />
             ) : null}
           </>
         ) : (

@@ -1,0 +1,2 @@
+- A class without notes yet can be asked for from its page, counted with the asks from the Telegram app, with "Tell me when they're ready".
+- When notes you asked for are published, the app says so the next time it opens, with a way into the class.

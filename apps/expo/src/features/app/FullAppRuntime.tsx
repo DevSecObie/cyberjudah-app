@@ -39,6 +39,7 @@ import { PlaybackService } from '../../../playbackService'
 import { downloadManager } from '~helpers/downloadManager'
 import { loadMobileResourceCatalog } from '~helpers/mobileResourceCatalog'
 import { useAutomaticUpdates } from '~helpers/useAutomaticUpdates'
+import NotesReady from '~features/noteRequests/NotesReady'
 import { offlineResourceRegistry } from '~features/resources/resourceAvailability'
 import DeferredVerseOfTheDayPrefetch from '~features/home/DeferredVerseOfTheDayPrefetch'
 
@@ -213,6 +214,7 @@ const FullAppRuntime = ({ theme }: FullAppRuntimeProps) => {
                     {!usesCyberJudahEditorial() && <AssistantLauncher />}
                     <ThemedToaster />
                     <AutomaticUpdates />
+                    <NotesReady />
                     <DeferredModals />
                   </StrongAudioProvider>
                 </BookSelectorSheetProvider>
