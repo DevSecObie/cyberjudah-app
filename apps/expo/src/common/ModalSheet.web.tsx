@@ -9,7 +9,7 @@ import type { ModalSheetProps } from './ModalSheet'
 import './modal-sheet.css'
 import { readSheetHeader } from './readSheetHeader'
 import { WithoutWorkspaceHeaderInset } from '~features/app-switcher/workspaceHeaderInset'
-import { IS_TELEGRAM_PHONE, LOOK_OS } from '~helpers/lookPlatform'
+import { IS_TELEGRAM_PHONE, LOOK_OS } from '~helpers/lookPlatform.web'
 import { colorWithOpacity } from '~themes/colorValues'
 
 // Inside Telegram on a phone the sheet rises from the bottom like the phone app's own sheets:

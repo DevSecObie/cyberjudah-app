@@ -42,7 +42,7 @@ import { FeatherIcon } from '~common/ui/Icon'
 import { floatingShadow } from '~common/ui/surfaces'
 import Text from '~common/ui/Text'
 import { WithoutWorkspaceHeaderInset } from '~features/app-switcher/workspaceHeaderInset'
-import { IS_TELEGRAM_PHONE, LOOK_OS } from '~helpers/lookPlatform'
+import { IS_TELEGRAM_PHONE, LOOK_OS } from '~helpers/lookPlatform.web'
 import { colorWithOpacity } from '~themes/colorValues'
 
 // Inside Telegram a sheet takes the look of that phone's own app. iPhone sheets show the page

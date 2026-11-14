@@ -1,6 +1,6 @@
 // surface-allow: Apple's switch thumb carries its own shadow; this draws that system control.
 import type { SwitchProps } from 'react-native'
-import { LOOK_OS } from '~helpers/lookPlatform'
+import { LOOK_OS } from '~helpers/lookPlatform.web'
 import { useTheme } from '~themes/ThemeProvider'
 
 /**

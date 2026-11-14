@@ -1,7 +1,7 @@
 import { Switch } from '@heroui/react/switch'
 import type { SwitchProps } from 'react-native'
 import PhoneSwitch from '~common/ui/PhoneSwitch.web'
-import { IS_TELEGRAM_PHONE } from '~helpers/lookPlatform'
+import { IS_TELEGRAM_PHONE } from '~helpers/lookPlatform.web'
 import { useTheme } from '~themes/ThemeProvider'
 
 export default function InlineCommentarySwitch(props: SwitchProps) {
