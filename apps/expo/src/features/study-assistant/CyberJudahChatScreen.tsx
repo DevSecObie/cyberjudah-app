@@ -14,7 +14,7 @@ import {
 } from 'react-native'
 import Clipboard from '@react-native-clipboard/clipboard'
 import { Image } from 'expo-image'
-import * as Haptics from 'expo-haptics'
+import * as Haptics from '~helpers/haptics'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
@@ -55,6 +55,7 @@ import {
   observeChats,
   saveChatTurn,
 } from './cyberJudahConversationRepository'
+import { LOOK_OS } from '~helpers/lookPlatform'
 
 /** The same colour at zero opacity, so the scroll-edge fade does not pass through grey. */
 function clear(color: string) {
@@ -631,7 +632,7 @@ function AccountChat({ account }: { account: string }) {
                   style={[
                     ink,
                     {
-                      fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+                      fontFamily: LOOK_OS === 'ios' ? 'Georgia' : 'serif',
                       fontSize: 30,
                       lineHeight: 37,
                       letterSpacing: -0.4,

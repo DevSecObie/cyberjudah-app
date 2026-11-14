@@ -1,6 +1,6 @@
 import { useQueries } from '@tanstack/react-query'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import * as Haptics from 'expo-haptics'
+import * as Haptics from '~helpers/haptics'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Animated, Platform, StyleSheet } from 'react-native'

@@ -1,5 +1,5 @@
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
-import * as Haptics from 'expo-haptics'
+import * as Haptics from '~helpers/haptics'
 import { StyleSheet, View, type LayoutRectangle } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {

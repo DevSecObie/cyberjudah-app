@@ -1,7 +1,7 @@
 import { twMerge } from '~common/ui/classNames'
 
-import { Platform } from 'react-native'
 import Text from '~common/ui/Text'
+import { LOOK_OS } from '~helpers/lookPlatform'
 const InterlinearMark = ({
   highlighted = false,
   passive = false,
@@ -18,7 +18,7 @@ const InterlinearMark = ({
         'text-[17px] font-bold',
         className
       )}
-      style={{ fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif' }}
+      style={{ fontFamily: LOOK_OS === 'ios' ? 'Georgia' : 'serif' }}
     >
       I
     </Text>

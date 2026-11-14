@@ -2,7 +2,8 @@ import { useConfirmDialog } from '~common/ConfirmDialog/useConfirmDialog'
 import { useTheme } from '~themes/ThemeProvider'
 import { getDefaultStore } from 'jotai/vanilla'
 import React from 'react'
-import { Platform, StyleSheet, Switch } from 'react-native'
+import { StyleSheet } from 'react-native'
+import Switch from '~common/ui/Switch'
 import { useTranslation } from 'react-i18next'
 import { Sheet, SheetScrollView, type SheetRef } from '~common/sheet'
 import Box, { TouchableBox } from '~common/ui/Box'
@@ -38,6 +39,7 @@ import { useOfflineResourceState } from '~features/resources/useOfflineResourceR
 import { useStrongIndexLexiconModuleId } from '~features/resources/useStrongIndexLexicon'
 import useConnection from '~helpers/useConnection'
 import { getLanguage } from '~i18n'
+import { LOOK_OS } from '~helpers/lookPlatform'
 const megabyteFormatters = new Map<string, Intl.NumberFormat>()
 
 const formatMegabyteValue = (bytes: number, language: string) => {
@@ -154,7 +156,7 @@ const BibleOfflineDetailsSheet = ({ sheetRef, version }: Props) => {
     !indexInstalled &&
     includeIndex
   const indexMark = strongVersionId ? 'S' : hasInterlinearIndex ? 'I' : undefined
-  const serifFontFamily = Platform.OS === 'ios' ? 'Georgia' : 'serif'
+  const serifFontFamily = LOOK_OS === 'ios' ? 'Georgia' : 'serif'
 
   const refreshInstalledState = () => {
     const store = getDefaultStore()

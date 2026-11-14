@@ -1,13 +1,15 @@
 import { Switch } from '@heroui/react/switch'
 import type { SwitchProps } from 'react-native'
+import PhoneSwitch from '~common/ui/PhoneSwitch.web'
+import { IS_TELEGRAM_PHONE } from '~helpers/lookPlatform.web'
 import { useTheme } from '~themes/ThemeProvider'
 
-export default function InlineCommentarySwitch({
-  value,
-  onValueChange,
-  disabled,
-  accessibilityLabel,
-}: SwitchProps) {
+export default function InlineCommentarySwitch(props: SwitchProps) {
+  // Inside Telegram on a phone, that phone's own switch.
+  return IS_TELEGRAM_PHONE ? <PhoneSwitch {...props} /> : <WebSwitch {...props} />
+}
+
+function WebSwitch({ value, onValueChange, disabled, accessibilityLabel }: SwitchProps) {
   const { colors } = useTheme()
   return (
     <Switch

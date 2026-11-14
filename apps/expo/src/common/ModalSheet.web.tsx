@@ -9,6 +9,12 @@ import type { ModalSheetProps } from './ModalSheet'
 import './modal-sheet.css'
 import { readSheetHeader } from './readSheetHeader'
 import { WithoutWorkspaceHeaderInset } from '~features/app-switcher/workspaceHeaderInset'
+import { IS_TELEGRAM_PHONE, LOOK_OS } from '~helpers/lookPlatform.web'
+import { colorWithOpacity } from '~themes/colorValues'
+
+// Inside Telegram on a phone the sheet rises from the bottom like the phone app's own sheets:
+// frosted glass on iPhone, solid with larger corners on Android (modal-sheet.css).
+const phoneClass = IS_TELEGRAM_PHONE ? ` bs-modal-phone bs-modal-${LOOK_OS}` : ''
 
 export default function ModalSheet({
   ref,
@@ -70,7 +76,7 @@ export default function ModalSheet({
       }}
       isDismissable={dismissible}
       isKeyboardDismissDisabled={!dismissible}
-      className="bs-modal-backdrop"
+      className={`bs-modal-backdrop${phoneClass}`}
     >
       <div style={{ width: '100%', maxWidth }}>
         <Modal.Container placement="center" className="bs-modal-container">
@@ -78,7 +84,10 @@ export default function ModalSheet({
             className="bs-modal-dialog"
             style={{
               ...webThemeVariables(theme.colors),
-              background: theme.colors.reverse,
+              background:
+                LOOK_OS === 'ios' && IS_TELEGRAM_PHONE
+                  ? colorWithOpacity(theme.colors.reverse, 0.78)
+                  : theme.colors.reverse,
               color: theme.colors.default,
               borderColor: theme.colors.border,
               fontFamily: webFontFamily(theme.fontFamily.text),

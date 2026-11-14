@@ -1,5 +1,5 @@
 import Color from 'color'
-import * as Haptics from 'expo-haptics'
+import * as Haptics from '~helpers/haptics'
 import { useAtomValue, useStore } from 'jotai/react'
 import { createContext, useContext, useRef, useState, type ReactNode, type Ref } from 'react'
 import {
