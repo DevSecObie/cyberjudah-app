@@ -5,7 +5,7 @@ import { useAtomValue } from 'jotai/react'
 import type { PrimitiveAtom } from 'jotai/vanilla'
 import { useQuery } from '@tanstack/react-query'
 import { type RefObject } from 'react'
-import { Platform } from 'react-native'
+
 import { useTranslation } from 'react-i18next'
 import { SheetHeader, SheetView, type SheetRef } from '~common/sheet'
 import Sheet from '~common/ContextualPanel/ContextualSheet'
@@ -31,6 +31,7 @@ import {
   useOfflineResourceRegistry,
 } from '~features/resources/useOfflineResourceRegistry'
 import OfflineCopiesLink from './OfflineCopiesLink'
+import { LOOK_OS } from '~helpers/lookPlatform'
 type Props = {
   bibleAtom: PrimitiveAtom<BibleTab>
   sheetRef?: RefObject<SheetRef | null>
@@ -62,7 +63,7 @@ const StrongModeSelectorSheet = ({
   const transliterationPreview = isHebrew ? 'Elohim' : 'theos'
   const morphologyPreview = isHebrew ? 'HNcmpa' : 'GNcmsn'
   const strongPreview = isHebrew ? 'H0430' : 'G2316'
-  const serifFontFamily = Platform.OS === 'ios' ? 'Georgia' : 'serif'
+  const serifFontFamily = LOOK_OS === 'ios' ? 'Georgia' : 'serif'
   const availabilityQuery = useQuery<StrongModeAvailabilityState>({
     queryKey: [
       'strong-mode-availability',

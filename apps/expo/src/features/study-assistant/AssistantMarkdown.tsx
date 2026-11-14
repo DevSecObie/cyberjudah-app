@@ -1,8 +1,8 @@
-import { Platform } from 'react-native'
 import { openInApp } from '~common/inAppBrowser'
 import { EnrichedMarkdownText } from 'react-native-enriched-markdown'
 import { useTheme } from '~themes/ThemeProvider'
 import { prepareMarkdown, safeLink } from './markdown'
+import { LOOK_OS } from '~helpers/lookPlatform'
 export default function AssistantMarkdown({
   text,
   streaming,
@@ -18,7 +18,7 @@ export default function AssistantMarkdown({
   widgets?: import('@bible-strong/ai-contract/contract').StudyWidget[]
 }) {
   const { colors } = useTheme()
-  const serif = reading ? { fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif' } : {}
+  const serif = reading ? { fontFamily: LOOK_OS === 'ios' ? 'Georgia' : 'serif' } : {}
   // The native renderer handles partial Markdown. Avoid the remend worklet, which
   // fails on the device and leaves even completed answers blank.
   return (

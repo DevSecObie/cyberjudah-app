@@ -1,14 +1,14 @@
-import { Platform } from 'react-native'
 import { TouchableBox } from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import type { SelectionStrongWordPreview } from './useSelectionStrongWords'
+import { LOOK_OS } from '~helpers/lookPlatform'
 
 export type StrongWordItemProps = {
   word: SelectionStrongWordPreview
   onPress: () => void
 }
 
-const originalFontFamily = Platform.OS === 'ios' ? 'Georgia' : 'serif'
+const originalFontFamily = LOOK_OS === 'ios' ? 'Georgia' : 'serif'
 
 export const getStrongWordCaption = (word: SelectionStrongWordPreview) =>
   [word.identity.code, word.transliteration].filter(Boolean).join(' · ')

@@ -34,6 +34,7 @@ import {
   getOfflineResourceQuerySignal,
   useOfflineResourceRegistry,
 } from '~features/resources/useOfflineResourceRegistry'
+import { LOOK_OS } from '~helpers/lookPlatform'
 type Props = {
   bibleAtom: PrimitiveAtom<BibleTab>
   sheetRef?: RefObject<SheetRef | null>
@@ -68,7 +69,7 @@ const InterlinearModeSelectorSheet = ({
   const originalPreview = isHebrew ? 'אֱלֹהִים' : 'λόγος'
   const transliterationPreview = isHebrew ? 'Elohim bara' : 'logos en'
   const glossPreview = isHebrew ? 'Dieu · H0430' : 'Parole · G3056'
-  const serifFontFamily = Platform.OS === 'ios' ? 'Georgia' : 'serif'
+  const serifFontFamily = LOOK_OS === 'ios' ? 'Georgia' : 'serif'
 
   const availabilityQuery = useQuery<InterlinearModeAvailabilityState>({
     queryKey: [

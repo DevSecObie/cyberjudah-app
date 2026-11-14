@@ -1,7 +1,7 @@
 import { resolveThemeColor } from '~themes/colorValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import React from 'react'
-import { Image, Platform } from 'react-native'
+import { Image } from 'react-native'
 import Box from '~common/ui/Box'
 import Text from '~common/ui/Text'
 import {
@@ -9,6 +9,7 @@ import {
   getCommentaryAvatarColor,
   getCommentaryHeadshot,
 } from './commentaryAvatarIdentity'
+import { LOOK_OS } from '~helpers/lookPlatform'
 export { getCommentaryInitials } from './commentaryAvatarIdentity'
 
 type Props = {
@@ -69,7 +70,7 @@ const CommentaryAvatar = ({
                 resolveThemeColor(stylingTheme, outlined ? displayedBackgroundColor : '#FFFFFF') ||
                 stylingTheme.colors.default,
             },
-            { fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif' },
+            { fontFamily: LOOK_OS === 'ios' ? 'Georgia' : 'serif' },
           ]}
         >
           {initials}

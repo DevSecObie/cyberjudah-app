@@ -1,4 +1,4 @@
-import * as Haptics from 'expo-haptics'
+import * as Haptics from '~helpers/haptics'
 import { useWindowDimensions } from 'react-native'
 import { Gesture } from 'react-native-gesture-handler'
 import { useSharedValue, withTiming } from 'react-native-reanimated'

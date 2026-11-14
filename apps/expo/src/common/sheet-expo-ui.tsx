@@ -42,6 +42,25 @@ import { FeatherIcon } from '~common/ui/Icon'
 import { floatingShadow } from '~common/ui/surfaces'
 import Text from '~common/ui/Text'
 import { WithoutWorkspaceHeaderInset } from '~features/app-switcher/workspaceHeaderInset'
+import { IS_TELEGRAM_PHONE, LOOK_OS } from '~helpers/lookPlatform'
+import { colorWithOpacity } from '~themes/colorValues'
+
+// Inside Telegram a sheet takes the look of that phone's own app. iPhone sheets show the page
+// through frosted glass, as sheet.tsx leaves their colour to the system; Android sheets stay
+// solid, with larger top corners unless the sheet asks for its own.
+const phoneSheetLook = (customColor: string | undefined, ground: string, corner?: number) => {
+  if (!IS_TELEGRAM_PHONE) return {}
+  if (LOOK_OS === 'ios') {
+    return customColor
+      ? {}
+      : {
+          backgroundColor: colorWithOpacity(ground, 0.78),
+          backdropFilter: 'blur(30px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(30px) saturate(180%)',
+        }
+  }
+  return corner === undefined ? { borderTopLeftRadius: 24, borderTopRightRadius: 24 } : {}
+}
 
 type SheetContextValue = {
   footerHeight: number
@@ -230,6 +249,7 @@ const Sheet = forwardRef<SheetRef, SheetProps>((props, ref) => {
             marginLeft: 'auto',
             marginRight: 'auto',
             ...floatingShadow,
+            ...phoneSheetLook(backgroundColor, theme.colors.reverse, props.cornerRadius),
             ...(webContainerBounds
               ? {
                   '--bible-selection-left': `${webContainerBounds.left}px`,

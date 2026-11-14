@@ -4,7 +4,7 @@ import { twMerge } from '~common/ui/classNames'
 import { colorWithOpacity, resolveThemeColor } from '~themes/colorValues'
 import { useTheme as useStylingTheme } from '~themes/ThemeProvider'
 import React, { useEffectEvent } from 'react'
-import { Platform, TouchableOpacity } from 'react-native'
+import { TouchableOpacity } from 'react-native'
 import { useQuery } from '@tanstack/react-query'
 import { getDefaultStore } from 'jotai/vanilla'
 import { useTranslation } from 'react-i18next'
@@ -45,6 +45,7 @@ import {
 import useConnection from '~helpers/useConnection'
 import { useResourceAccess } from '~features/resources/resourceAccess'
 import { localQueryOptions } from '~helpers/queryOptions'
+import { LOOK_OS } from '~helpers/lookPlatform'
 const ROW_PADDING_LEFT = 20
 const CHECKBOX_SLOT = 48
 
@@ -505,7 +506,7 @@ const VersionSelectorItem = ({
                     >
                       <Text
                         className="text-reverse text-[9px] font-bold"
-                        style={{ fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif' }}
+                        style={{ fontFamily: LOOK_OS === 'ios' ? 'Georgia' : 'serif' }}
                       >
                         S
                       </Text>
