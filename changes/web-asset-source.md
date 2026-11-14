@@ -1,0 +1,1 @@
+- Web: opening a class's notes no longer crashes when a person or place has no portrait. The placeholder picture's address is read without `Image.resolveAssetSource`, which react-native-web does not have.

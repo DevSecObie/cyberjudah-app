@@ -25,6 +25,15 @@ import { usePushRouteOnce } from '~navigation/usePushRouteOnce'
 import { useTheme } from '~themes/ThemeProvider'
 import type { NoteBlock } from './cyberJudahClasses'
 
+// A bundled picture's address. On a phone the picture is a number the app looks up; on the web
+// it is already an address (Image.resolveAssetSource does not exist there).
+const placeholderUri = (source: unknown): string => {
+  if (typeof source === 'string') return source
+  if (typeof source === 'number') return Image.resolveAssetSource?.(source)?.uri ?? ''
+  const asset = source as { uri?: string; default?: string } | null
+  return asset?.uri || asset?.default || ''
+}
+
 // The people, places and topics of a class, for its notes: chips as Bible Strong's Go Deeper study
 // (FocusVerseStudy, ADR-0088) shows them under a verse. At the head of the notes for the whole
 // class, and under each scripture for the people and places its verses name.
@@ -283,13 +292,13 @@ export const useClassStudyData = (blocks: NoteBlock[], topics?: string[]) => {
     name: entity.name,
     image:
       portraitOf(entity, book, chapter) ??
-      Image.resolveAssetSource(
+      placeholderUri(
         getStrongEntityPlaceholderSource(
           entity.category === 'supernatural' ? 'other' : entity.category,
           entity.type,
           entity.uniqueName
         )
-      ).uri,
+      ),
   })
   const verseChips = Object.fromEntries(
     collectTargets(blocks).map(target => {
